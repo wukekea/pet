@@ -36,8 +36,6 @@ function createWindow() {
 
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173');
-    // 打开开发者工具调试
-    mainWindow.webContents.openDevTools({ mode: 'detach' });
   } else {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
   }
@@ -89,10 +87,8 @@ app.on('window-all-closed', () => {
 
 // 设置鼠标穿透
 ipcMain.on('set-ignore-mouse-events', (event, ignore) => {
-  console.log('Main: set-ignore-mouse-events', ignore);
   if (mainWindow) {
     mainWindow.setIgnoreMouseEvents(ignore, { forward: true });
-    console.log('Mouse events ignored:', ignore);
   }
 });
 
