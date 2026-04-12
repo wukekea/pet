@@ -412,15 +412,6 @@ function handlePetClick() {
 
 // 开始拖动
 function handleDragStart(e: MouseEvent) {
-  if (
-    petState.value === "sleeping" ||
-    petState.value === "happy" ||
-    petState.value === "fallen" ||
-    petState.value === "celebrate" ||
-    petState.value === "chase"
-  )
-    return;
-
   isDragging.value = true;
 
   // 拖动时不穿透
