@@ -77,6 +77,196 @@ const footprintIdCounter = ref(0);
 // 鼠标位置（用于追逐）
 const mousePosition = ref<PetPosition>({ x: 0, y: 0 });
 
+// 对话气泡状态
+const dialogueText = ref<string | null>(null);
+const dialogueTimer = ref<number | null>(null);
+const isDialogueVisible = ref(false);
+
+// 根据状态获取对话内容
+const dialogueMessages: Record<string, string[]> = {
+  idle: [
+    "今天天气真好~",
+    "有人在看我吗？",
+    "发呆中...",
+    "有点无聊呢",
+    "想出去走走",
+    "主人还在忙吗？",
+    "要不要来玩？",
+    "好安静啊...",
+    "我在想事情",
+    "今天要做什么呢？",
+  ],
+  walking: [
+    "走走走~",
+    "去哪里呢？",
+    "散步真开心",
+    "探索新世界！",
+    "动起来~",
+  ],
+  jumping: [
+    "跳跳跳！",
+    "飞起来啦~",
+    "好高好高！",
+    "蹦蹦跳跳~",
+    "起飞！",
+  ],
+  sleeping: [
+    "Zzz...",
+    "做梦ing...",
+    "好困啊...",
+    "让我再睡会儿...",
+    "梦见小鱼干...",
+    "呼噜呼噜~",
+  ],
+  happy: [
+    "好开心！",
+    "太棒啦~",
+    "嘿嘿嘿~",
+    "最喜欢你了！",
+    "开心到飞起！",
+  ],
+  crying: [
+    "呜呜呜...",
+    "好难过...",
+    "不要这样...",
+    "为什么要欺负我...",
+    "哭哭...",
+  ],
+  angry: [
+    "哼！生气了！",
+    "别惹我！",
+    "我很凶的！",
+    "不可原谅！",
+    "哼哼哼！",
+  ],
+  fallen: [
+    "好晕...",
+    "摔倒了...",
+    "呜呜...好疼",
+    "天旋地转...",
+    "站不起来...",
+  ],
+  scared: [
+    "吓死我了！",
+    "不要吓我！",
+    "好可怕...",
+    "发抖发抖...",
+    "别过来！",
+  ],
+  thinking: [
+    "嗯...",
+    "让我想想...",
+    "这是个问题...",
+    "思考中...",
+    "有道理...",
+  ],
+  smug: [
+    "哼，我最强！",
+    "厉害吧~",
+    "嘿嘿，赢了！",
+    "我就知道！",
+    "小意思~",
+  ],
+  shy: [
+    "不要看我...",
+    "好害羞...",
+    "脸红了...",
+    "躲起来~",
+    "不好意思...",
+  ],
+  confused: [
+    "？？？",
+    "什么情况？",
+    "搞不懂...",
+    "这是啥？",
+    "一头雾水...",
+  ],
+  hello: [
+    "你好呀！",
+    "嗨~",
+    "很高兴见到你！",
+    "欢迎欢迎~",
+    "来玩吧！",
+  ],
+  sneeze: [
+    "阿嚏！",
+    "鼻子痒痒的...",
+    "感冒了吗？",
+    "咳咳...",
+  ],
+  yawn: [
+    "哈欠~",
+    "好困...",
+    "想睡觉了",
+    "困得睁不开眼...",
+  ],
+  scratch: [
+    "哪里痒？",
+    "挠挠挠~",
+    "好奇怪的感觉...",
+  ],
+  celebrate: [
+    "太棒啦！",
+    "庆祝一下！",
+    "好开心好开心！",
+    "耶！成功啦！",
+  ],
+  peek: [
+    "偷偷看...",
+    "有人在吗？",
+    "躲猫猫~",
+    "嘘...",
+  ],
+  chase: [
+    "追你！",
+    "别跑！",
+    "抓到你！",
+    "来追我呀~",
+  ],
+  hide: [
+    "看不见我~",
+    "躲起来！",
+    "嘘，藏好了",
+    "找不到我~",
+  ],
+};
+
+// 显示对话气泡
+function showDialogue() {
+  // 如果已经在显示或者正在拖动，不显示
+  if (isDialogueVisible.value || isDragging.value) return;
+
+  // 随机决定是否显示对话（30%概率）
+  if (Math.random() > 0.3) return;
+
+  const messages = dialogueMessages[petState.value] || dialogueMessages.idle;
+  const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
+  dialogueText.value = randomMessage;
+  isDialogueVisible.value = true;
+
+  // 清除之前的定时器
+  if (dialogueTimer.value) {
+    clearTimeout(dialogueTimer.value);
+  }
+
+  // 3秒后隐藏
+  dialogueTimer.value = window.setTimeout(() => {
+    hideDialogue();
+  }, 3000);
+}
+
+// 隐藏对话气泡
+function hideDialogue() {
+  isDialogueVisible.value = false;
+  // 等待动画结束后清除文字
+  setTimeout(() => {
+    if (!isDialogueVisible.value) {
+      dialogueText.value = null;
+    }
+  }, 300);
+}
+
 // 宠物配置
 const PET_SIZE = 80;
 const JUMP_DURATION = 800;
@@ -243,6 +433,9 @@ function moveToRandomPosition() {
 // 改变宠物状态
 function changeState(newState: PetState) {
   petState.value = newState;
+
+  // 显示对话气泡
+  showDialogue();
 
   // 清除之前的定时器
   if (stateTimer.value) {
@@ -848,6 +1041,16 @@ defineExpose({
       <!-- 偷看效果 -->
       <div class="peek-effects" v-if="petState === 'peek'">
         <span class="peek-eyes">👀</span>
+      </div>
+
+      <!-- 对话气泡 -->
+      <div
+        class="dialogue-bubble"
+        :class="{ 'dialogue-visible': isDialogueVisible, 'dialogue-left': petDirection === 'left' }"
+        v-if="dialogueText"
+      >
+        <span class="dialogue-text">{{ dialogueText }}</span>
+        <div class="dialogue-tail"></div>
       </div>
     </div>
   </div>
@@ -2561,6 +2764,127 @@ defineExpose({
 
   .happy-effects .heart {
     font-size: 12px;
+  }
+
+  .dialogue-bubble {
+    font-size: 11px;
+    padding: 6px 10px;
+    top: -45px;
+  }
+
+  .dialogue-bubble::before {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* ========================================
+   DIALOGUE BUBBLE - 对话气泡
+   ======================================== */
+.dialogue-bubble {
+  position: absolute;
+  top: -55px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: v-bind("isDark ? 'rgba(30, 30, 40, 0.95)' : 'rgba(255, 255, 255, 0.95)'");
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 8px 14px;
+  box-shadow:
+    0 4px 15px v-bind("isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(139, 92, 246, 0.15)'"),
+    0 0 0 1px v-bind("isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(139, 92, 246, 0.1)'");
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(5px) scale(0.9);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 100;
+  white-space: nowrap;
+}
+
+.dialogue-bubble::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    135deg,
+    v-bind("isDark ? 'rgba(167, 139, 250, 0.3)' : 'rgba(139, 92, 246, 0.2)'"),
+    v-bind("isDark ? 'rgba(244, 114, 182, 0.3)' : 'rgba(253, 164, 175, 0.2)'")
+  );
+  border-radius: 18px;
+  z-index: -1;
+  opacity: 0.5;
+}
+
+.dialogue-bubble.dialogue-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.dialogue-bubble.dialogue-left {
+  transform: translateX(-30%) translateY(5px) scale(0.9);
+}
+
+.dialogue-bubble.dialogue-left.dialogue-visible {
+  transform: translateX(-30%) translateY(0) scale(1);
+}
+
+.dialogue-text {
+  color: v-bind("isDark ? '#e2e8f0' : '#374151'");
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px v-bind("isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.5)'");
+}
+
+.dialogue-tail {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 8px;
+  background: v-bind("isDark ? 'rgba(30, 30, 40, 0.95)' : 'rgba(255, 255, 255, 0.95)'");
+  clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+}
+
+.dialogue-bubble.dialogue-left .dialogue-tail {
+  left: 65%;
+}
+
+/* 气泡弹跳动画 */
+@keyframes bubble-bounce {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.8);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-3px) scale(1.02);
+  }
+  70% {
+    transform: translateX(-50%) translateY(1px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+.dialogue-bubble.dialogue-visible {
+  animation: bubble-bounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* 气泡轻微浮动效果 */
+.dialogue-bubble.dialogue-visible::after {
+  content: "";
+  animation: bubble-float 2s ease-in-out infinite;
+}
+
+@keyframes bubble-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
   }
 }
 </style>
