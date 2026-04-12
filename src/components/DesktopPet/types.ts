@@ -20,7 +20,9 @@ export type PetState =
   | "celebrate"
   | "peek"
   | "chase"
-  | "hide";
+  | "hide"
+  | "dancing"
+  | "rolling";
 
 export type PetDirection = "left" | "right";
 

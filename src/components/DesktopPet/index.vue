@@ -16,6 +16,7 @@ import {
 import {
   handleDragStart,
   handlePetClick,
+  handlePetDoubleClick,
   togglePet,
   initScreenSize,
   initPet,
@@ -125,7 +126,8 @@ defineExpose({
       }"
       @mousedown="handleDragStart"
       @click="handlePetClick"
-      title="拖动：移动位置 | 单击：开心"
+      @dblclick="handlePetDoubleClick"
+      title="拖动：移动位置 | 单击：互动 | 双击：跳舞/翻滚"
     >
       <!-- 阴影 -->
       <div class="pet-shadow"></div>
@@ -266,20 +268,43 @@ defineExpose({
         <span class="confetti confetti-3">✨</span>
       </div>
 
-      <!-- 偷看效果 -->
+      <!-- 嬉戏庆祝效果 -->
+      <div class="celebrate-effects" v-if="petState === 'celebrate'">
+        <span class="confetti">🎉</span>
+        <span class="confetti confetti-2">🎊</span>
+        <span class="confetti confetti-3">✨</span>
+      </div>
+
+      <!-- 像看效果 -->
       <div class="peek-effects" v-if="petState === 'peek'">
         <span class="peek-eyes">👀</span>
       </div>
 
-      <!-- 对话气泡 -->
-      <div
-        class="dialogue-bubble"
-        :class="{ 'dialogue-visible': isDialogueVisible, 'dialogue-left': petDirection === 'left' }"
-        v-if="dialogueText"
-      >
-        <span class="dialogue-text">{{ dialogueText }}</span>
-        <div class="dialogue-tail"></div>
+      <!-- 跳舞效果 -->
+      <div class="dancing-effects" v-if="petState === 'dancing'">
+        <span class="music-note">🎵</span>
+        <span class="music-note note-2">🎶</span>
+        <span class="music-note note-3">💃</span>
       </div>
+
+      <!-- 翻滚效果 -->
+      <div class="rolling-effects" v-if="petState === 'rolling'">
+        <span class="spin-star">⭐</span>
+      </div>
+    </div>
+
+    <!-- 对话气泡（放在 pet-container 外部，不受翻滚影响） -->
+    <div
+      class="dialogue-bubble"
+      :class="{ 'dialogue-visible': isDialogueVisible, 'dialogue-left': petDirection === 'left' }"
+      :style="{
+        left: `${position.x + 40}px`,
+        top: `${position.y - 55}px`,
+      }"
+      v-if="dialogueText"
+    >
+      <span class="dialogue-text">{{ dialogueText }}</span>
+      <div class="dialogue-tail"></div>
     </div>
   </div>
 </template>

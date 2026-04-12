@@ -557,9 +557,7 @@
    DIALOGUE BUBBLE - 对话气泡
    ======================================== */
 .dialogue-bubble {
-  position: absolute;
-  top: -55px;
-  left: 50%;
+  position: fixed;
   transform: translateX(-50%);
   backdrop-filter: blur(8px);
   border-radius: 16px;
@@ -567,7 +565,8 @@
   pointer-events: none;
   opacity: 0;
   transform: translateX(-50%) translateY(5px) scale(0.9);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 100;
   white-space: nowrap;
 }
@@ -1714,5 +1713,152 @@
   .dialogue-bubble::before {
     width: 60px;
     height: 60px;
+  }
+}
+
+/* ========================================
+   DANCING EFFECTS - 跳舞效果
+   ======================================== */
+.dancing-effects {
+  position: absolute;
+  inset: -20px;
+  pointer-events: none;
+}
+.music-note {
+  position: absolute;
+  font-size: 20px;
+  opacity: 0;
+  animation: music-float 1.5s ease-in-out infinite;
+}
+.music-note.note-2 {
+  top: -15px;
+  left: -10px;
+  animation-delay: 0.3s;
+}
+.music-note.note-3 {
+  top: -20px;
+  right: -5px;
+  animation-delay: 0.6s;
+}
+@keyframes music-float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-15px) scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-25px) scale(0.8);
+    opacity: 0;
+  }
+}
+.pet-dancing .pet-body {
+  animation: dance-body 0.4s ease-in-out infinite;
+}
+@keyframes dance-body {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(-10deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(10deg);
+  }
+  75% {
+    transform: translateY(-8px) rotate(-5deg);
+  }
+}
+.pet-dancing .pet-arm {
+  animation: dance-arm 0.3s ease-in-out infinite;
+}
+@keyframes dance-arm {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(45deg);
+  }
+}
+.pet-dancing .pet-leg {
+  animation: dance-leg 0.2s ease-in-out infinite;
+}
+@keyframes dance-leg {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+/* ========================================
+   ROLLING EFFECTS - 翻滚效果
+   ======================================== */
+.rolling-effects {
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+}
+.spin-star {
+  position: absolute;
+  font-size: 24px;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: star-spin 0.5s linear infinite;
+  z-index: 10;
+}
+@keyframes star-spin {
+  0% {
+    transform: translateX(-50%) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-50%) rotate(180deg) scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(-50%) rotate(360deg) scale(1);
+    opacity: 1;
+  }
+}
+.pet-rolling .pet-container {
+  animation: roll-container 0.6s ease-in-out;
+}
+@keyframes roll-container {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.pet-rolling .pet-body {
+  animation: roll-body 0.6s ease-in-out;
+}
+@keyframes roll-body {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  75% {
+    transform: scale(0.95);
   }
 }

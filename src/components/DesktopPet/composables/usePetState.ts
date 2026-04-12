@@ -22,6 +22,8 @@ import {
   PEEK_DURATION,
   CHASE_DURATION,
   HIDE_DURATION,
+  DANCING_DURATION,
+  ROLLING_DURATION,
   WALK_SPEED,
   FOOTPRINT_INTERVAL,
   FOOTPRINT_LIFETIME,
@@ -71,6 +73,8 @@ const NON_MOVING_STATES: PetState[] = [
   "peek",
   "chase",
   "hide",
+  "dancing",
+  "rolling",
 ];
 
 // 随机移动到新位置
@@ -175,6 +179,12 @@ export function changeState(newState: PetState) {
     case "hide":
       stateTimer.value = window.setTimeout(() => changeState("idle"), HIDE_DURATION);
       break;
+    case "dancing":
+      stateTimer.value = window.setTimeout(() => changeState("idle"), DANCING_DURATION);
+      break;
+    case "rolling":
+      setTimeout(() => changeState("idle"), ROLLING_DURATION);
+      break;
   }
 }
 // 动画循环
@@ -221,6 +231,14 @@ export function handlePetClick() {
     const reactions: PetState[] = ["happy", "scared", "fallen", "smug", "shy", "celebrate"];
     changeState(reactions[Math.floor(Math.random() * reactions.length)]);
   }
+}
+
+// 双击宠物 - 触发特殊动作
+export function handlePetDoubleClick() {
+  if (isDragging.value) return;
+  // 双击触发跳舞或翻滚
+  const specialActions: PetState[] = ["dancing", "rolling"];
+  changeState(specialActions[Math.floor(Math.random() * specialActions.length)]);
 }
 // 拖拽相关
 let dragOffset = { x: 0, y: 0 };

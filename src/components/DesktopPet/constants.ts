@@ -26,6 +26,8 @@ export const CELEBRATE_DURATION = 3000;
 export const PEEK_DURATION = 3000;
 export const CHASE_DURATION = 5000;
 export const HIDE_DURATION = 4000;
+export const DANCING_DURATION = 4000;
+export const ROLLING_DURATION = 2000;
 
 // 不允许移动的状态
 export const NON_MOVING_STATES = [
@@ -47,4 +49,6 @@ export const NON_MOVING_STATES = [
   "peek",
   "chase",
   "hide",
+  "dancing",
+  "rolling",
 ] as const;
