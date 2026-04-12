@@ -46,16 +46,9 @@ function createWindow() {
 }
 
 function createTray() {
-  const icon = nativeImage.createFromDataURL(
-    'data:image/svg+xml;base64,' + Buffer.from(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
-        <circle cx="32" cy="32" r="28" fill="#8b5cf6"/>
-        <circle cx="24" cy="28" r="4" fill="white"/>
-        <circle cx="40" cy="28" r="4" fill="white"/>
-        <path d="M 24 40 Q 32 48 40 40" stroke="white" stroke-width="3" fill="none"/>
-      </svg>
-    `).toString('base64')
-  );
+  // 加载 PNG 图标文件
+  const iconPath = path.join(__dirname, 'icon.png');
+  const icon = nativeImage.createFromPath(iconPath);
 
   tray = new Tray(icon);
 
