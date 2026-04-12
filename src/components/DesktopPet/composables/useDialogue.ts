@@ -13,10 +13,15 @@ export function showDialogue() {
   // 如果已经在显示或者正在拖动，不显示
   if (isDialogueVisible.value || isDragging.value) return;
 
-  // 随机决定是否显示对话（30%概率）
-  if (Math.random() > 0.3) return;
+  const currentState = petState.value;
 
-  const messages = dialogueMessages[petState.value] || dialogueMessages.idle;
+  // 翻滚和跳舞状态必定显示专属台词
+  const isSpecialState = currentState === "dancing" || currentState === "rolling";
+
+  // 其他状态只有30%概率显示对话
+  if (!isSpecialState && Math.random() > 0.3) return;
+
+  const messages = dialogueMessages[currentState] || dialogueMessages.idle;
   const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
   dialogueText.value = randomMessage;
