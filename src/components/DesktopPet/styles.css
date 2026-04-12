@@ -471,16 +471,73 @@
 }
 
 /* 其他效果 */
-.thinking-effects,
-.smug-effects,
-.shy-effects,
-.confused-effects,
-.hello-effects,
-.sneeze-effects,
-.yawn-effects,
-.scratch-effects,
+.thinking-effects {
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.smug-effects {
+  position: absolute;
+  top: -30px;
+  right: -20px;
+  pointer-events: none;
+}
+
+.shy-effects {
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.confused-effects {
+  position: absolute;
+  top: -35px;
+  right: -10px;
+  pointer-events: none;
+}
+
+.hello-effects {
+  position: absolute;
+  top: -20px;
+  right: -25px;
+  pointer-events: none;
+}
+
+.sneeze-effects {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.yawn-effects {
+  position: absolute;
+  top: -25px;
+  right: -15px;
+  pointer-events: none;
+}
+
+.scratch-effects {
+  position: absolute;
+  top: -35px;
+  right: -5px;
+  pointer-events: none;
+}
+
 .peek-effects {
   position: absolute;
+  top: -30px;
+  left: 60%;
   pointer-events: none;
 }
 
