@@ -1,0 +1,50 @@
+// 宠物状态类型
+export type PetState =
+  | "idle"
+  | "walking"
+  | "jumping"
+  | "sleeping"
+  | "happy"
+  | "crying"
+  | "angry"
+  | "fallen"
+  | "scared"
+  | "thinking"
+  | "smug"
+  | "shy"
+  | "confused"
+  | "hello"
+  | "sneeze"
+  | "yawn"
+  | "scratch"
+  | "celebrate"
+  | "peek"
+  | "chase"
+  | "hide";
+
+export type PetDirection = "left" | "right";
+
+export interface PetPosition {
+  x: number;
+  y: number;
+}
+
+// 脚印数据接口
+export interface Footprint {
+  id: number;
+  x: number;
+  y: number;
+  isLeft: boolean;
+  direction: PetDirection;
+  createdAt: number;
+}
+
+// Electron API 类型声明
+declare global {
+  interface Window {
+    electronAPI?: {
+      setIgnoreMouseEvents: (ignore: boolean) => void;
+      getScreenSize: () => Promise<{ width: number; height: number }>;
+    };
+  }
+}

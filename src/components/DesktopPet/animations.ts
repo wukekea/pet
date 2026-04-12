@@ -1,0 +1,50 @@
+import type { PetState } from "./types";
+
+// 状态动画映射
+export const stateAnimations: Record<PetState, string[]> = {
+  idle: ["idle"],
+  walking: ["walking"],
+  jumping: ["jumping"],
+  sleeping: ["sleeping"],
+  happy: ["happy"],
+  crying: ["crying"],
+  angry: ["angry"],
+  fallen: ["fallen"],
+  scared: ["scared"],
+  thinking: ["thinking"],
+  smug: ["smug"],
+  shy: ["shy"],
+  confused: ["confused"],
+  hello: ["hello"],
+  sneeze: ["sneeze"],
+  yawn: ["yawn"],
+  scratch: ["scratch"],
+  celebrate: ["celebrate"],
+  peek: ["peek"],
+  chase: ["chase"],
+  hide: ["hide"],
+};
+
+// 状态持续时间配置
+export const stateDurations: Partial<Record<PetState, number>> = {
+  idle: 4000,
+  sleeping: 8000,
+  jumping: 800,
+  happy: 1500,
+  crying: 3000,
+  angry: 2500,
+  fallen: 2000,
+  scared: 1500,
+  thinking: 4000,
+  smug: 2500,
+  shy: 2000,
+  confused: 2000,
+  hello: 1500,
+  sneeze: 1000,
+  yawn: 2000,
+  scratch: 2000,
+  celebrate: 3000,
+  peek: 3000,
+  chase: 5000,
+  hide: 4000,
+};
