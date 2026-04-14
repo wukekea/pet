@@ -1431,8 +1431,28 @@
   animation: thinking-sway 2s ease-in-out infinite;
 }
 
+
 .pet-thinking .arm-left {
-  transform: rotate(-60deg) translateY(-10px);
+  transform: rotate(30deg) translateX(5px) translateY(-8px);
+  animation: thinking-chin 2s ease-in-out infinite;
+}
+
+.pet-thinking .arm-right {
+ 
+}
+
+@keyframes thinking-chin {
+  0%, 100% {
+    transform: rotate(30deg) translateX(5px) translateY(-8px);
+  }
+  50% {
+    transform: rotate(50deg) translateX(5px) translateY(-8px);
+  }
+}
+
+/* 思考时眼睛眯起 */
+.pet-thinking .eye {
+  transform: scaleY(0.6);
 }
 
 @keyframes smug-sway {
