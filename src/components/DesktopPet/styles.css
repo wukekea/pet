@@ -10,6 +10,333 @@
 }
 
 /* ========================================
+   宠物方向转向样式
+   宠物可以向四个方向转动：
+   - front: 正面（面朝用户）
+   - left: 向左
+   - right: 向右
+   - back: 背面
+   ======================================== */
+
+/* 容器转向动画 */
+.pet-container {
+  transition: transform 0.3s ease;
+}
+
+/* 正面 - 默认状态 */
+.pet-front .pet-body {
+  transform: rotateY(0deg);
+}
+
+/* 背面 - 背对用户 */
+.pet-back .pet-body {
+  transform: rotateY(180deg);
+}
+
+/* 背面时隐藏脸部元素 */
+.pet-back .pet-face {
+  opacity: 0.3;
+}
+
+.pet-back .pet-eyes {
+  opacity: 0;
+}
+
+.pet-back .pet-mouth {
+  opacity: 0;
+}
+
+.pet-back .pet-cheek {
+  opacity: 0;
+}
+
+/* 背面时耳朵更突出 */
+.pet-back .ear-left {
+  transform: rotate(-15deg) scale(1.1);
+}
+
+.pet-back .ear-right {
+  transform: rotate(15deg) scale(1.1);
+}
+
+/* 向左转 - 显示右侧脸 */
+.pet-left .pet-body {
+  transform: rotateY(15deg);
+}
+
+/* 向右转 - 显示左侧脸 */
+.pet-right .pet-body {
+  transform: rotateY(-15deg);
+}
+
+/* 向左看时的脸部调整 */
+.pet-left .pet-face {
+  transform: translateX(-3px);
+}
+
+.pet-left .pet-eyes {
+  transform: translateX(-50%) translateX(2px);
+}
+
+.pet-left .eye-left {
+  transform: scale(0.85);
+}
+
+.pet-left .eye-right {
+  transform: scale(1.1);
+}
+
+.pet-left .eye-left .eye-shine {
+  right: 1px;
+}
+
+.pet-left .eye-right .eye-shine {
+  right: 3px;
+}
+
+.pet-left .pet-cheek.cheek-left {
+  opacity: 0.4;
+  transform: scale(0.8);
+}
+
+.pet-left .pet-cheek.cheek-right {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.pet-left .pet-mouth {
+  transform: translateX(-50%) translateX(2px);
+}
+
+.pet-left .ear-left {
+  transform: rotate(-15deg) translateX(-2px);
+}
+
+.pet-left .ear-right {
+  transform: rotate(15deg) translateX(2px) translateY(-2px);
+}
+
+/* 向左转时：右手在前 */
+.pet-left .arm-left {
+  transform: rotate(20deg) translateX(-5px);
+  z-index: 1;
+  opacity: 0.7;
+}
+
+.pet-left .arm-right {
+  transform: rotate(-20deg) translateX(3px);
+  z-index: 10;
+}
+
+/* 向右看时的脸部调整 */
+.pet-right .pet-face {
+  transform: translateX(3px);
+}
+
+.pet-right .pet-eyes {
+  transform: translateX(-50%) translateX(-2px);
+}
+
+.pet-right .eye-left {
+  transform: scale(1.1);
+}
+
+.pet-right .eye-right {
+  transform: scale(0.85);
+}
+
+.pet-right .eye-left .eye-shine {
+  right: 3px;
+}
+
+.pet-right .eye-right .eye-shine {
+  right: 1px;
+}
+
+.pet-right .pet-cheek.cheek-left {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.pet-right .pet-cheek.cheek-right {
+  opacity: 0.4;
+  transform: scale(0.8);
+}
+
+.pet-right .pet-mouth {
+  transform: translateX(-50%) translateX(-2px);
+}
+
+.pet-right .ear-left {
+  transform: rotate(-15deg) translateX(-2px) translateY(-2px);
+}
+
+.pet-right .ear-right {
+  transform: rotate(15deg) translateX(2px);
+}
+
+/* 向右转时：左手在前 */
+.pet-right .arm-left {
+  transform: rotate(20deg) translateX(5px);
+  z-index: 10;
+}
+
+.pet-right .arm-right {
+  transform: rotate(-20deg) translateX(-5px);
+  z-index: 1;
+  opacity: 0.7;
+}
+
+/* ========================================
+   行走时的方向动画
+   ======================================== */
+.pet-walking.pet-left .pet-body {
+  animation: walk-left 0.4s ease-in-out infinite;
+}
+
+.pet-walking.pet-right .pet-body {
+  animation: walk-right 0.4s ease-in-out infinite;
+}
+
+@keyframes walk-left {
+  0%,
+  100% {
+    transform: rotateY(15deg) translateY(0);
+  }
+  50% {
+    transform: rotateY(15deg) translateY(-5px);
+  }
+}
+
+@keyframes walk-right {
+  0%,
+  100% {
+    transform: rotateY(-15deg) translateY(0);
+  }
+  50% {
+    transform: rotateY(-15deg) translateY(-5px);
+  }
+}
+
+/* 向左走时脚步 */
+.pet-walking.pet-left .leg-left {
+  animation: leg-walk-left-forward 0.4s ease-in-out infinite;
+}
+
+.pet-walking.pet-left .leg-right {
+  animation: leg-walk-left-back 0.4s ease-in-out infinite;
+}
+
+.pet-walking.pet-right .leg-left {
+  animation: leg-walk-right-back 0.4s ease-in-out infinite;
+}
+
+.pet-walking.pet-right .leg-right {
+  animation: leg-walk-right-forward 0.4s ease-in-out infinite;
+}
+
+@keyframes leg-walk-left-forward {
+  0%,
+  100% {
+    transform: translateX(-2px) translateY(0);
+  }
+  50% {
+    transform: translateX(-4px) translateY(-3px);
+  }
+}
+
+@keyframes leg-walk-left-back {
+  0%,
+  100% {
+    transform: translateX(3px) translateY(-3px);
+  }
+  50% {
+    transform: translateX(3px) translateY(0);
+  }
+}
+
+@keyframes leg-walk-right-forward {
+  0%,
+  100% {
+    transform: translateX(2px) translateY(0);
+  }
+  50% {
+    transform: translateX(4px) translateY(-3px);
+  }
+}
+
+@keyframes leg-walk-right-back {
+  0%,
+  100% {
+    transform: translateX(-3px) translateY(-3px);
+  }
+  50% {
+    transform: translateX(-3px) translateY(0);
+  }
+}
+
+/* 行走时手臂摆动 */
+.pet-walking.pet-left .arm-left {
+  animation: arm-swing-left-back 0.4s ease-in-out infinite;
+}
+
+.pet-walking.pet-left .arm-right {
+  animation: arm-swing-left-dir 0.4s ease-in-out infinite;
+}
+
+.pet-walking.pet-right .arm-left {
+  animation: arm-swing-right-dir 0.4s ease-in-out infinite;
+}
+
+.pet-walking.pet-right .arm-right {
+  animation: arm-swing-right-back 0.4s ease-in-out infinite;
+}
+
+@keyframes arm-swing-left-dir {
+  /* 右手向前摆动 */
+  0%,
+  100% {
+    transform: rotate(-20deg) translateX(3px);
+  }
+  50% {
+    transform: rotate(-30deg) translateX(3px);
+  }
+}
+
+@keyframes arm-swing-left-back {
+  /* 左手向后摆动 */
+  0%,
+  100% {
+    transform: rotate(20deg) translateX(-5px);
+  }
+  50% {
+    transform: rotate(10deg) translateX(-5px);
+  }
+}
+
+@keyframes arm-swing-right-dir {
+  /* 左手向前摆动 */
+  0%,
+  100% {
+    transform: rotate(20deg) translateX(5px);
+  }
+  50% {
+    transform: rotate(30deg) translateX(5px);
+  }
+}
+
+@keyframes arm-swing-right-back {
+  /* 右手向后摆动 */
+  0%,
+  100% {
+    transform: rotate(-20deg) translateX(-5px);
+  }
+  50% {
+    transform: rotate(-10deg) translateX(-5px);
+  }
+}
+
+/* ========================================
    FOOTPRINTS - 脚印轨迹
    ======================================== */
 .footprints-container {
@@ -565,8 +892,9 @@
   pointer-events: none;
   opacity: 0;
   transform: translateX(-50%) translateY(5px) scale(0.9);
-  transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-              transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition:
+    opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 100;
   white-space: nowrap;
 }
@@ -619,7 +947,8 @@
 
 /* 跳跃动画 */
 @keyframes jump {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) scale(1, 1);
   }
   50% {
@@ -631,23 +960,25 @@
   animation: jump 0.8s ease-in-out;
 }
 
-/* 行走动画 */
+/* 行走动画（正面） */
 @keyframes walk {
-  0%, 100% {
-    transform: translateY(0);
+  0%,
+  100% {
+    transform: rotateY(0deg) translateY(0);
   }
   50% {
-    transform: translateY(-5px);
+    transform: rotateY(0deg) translateY(-5px);
   }
 }
 
-.pet-walking .pet-body {
+.pet-walking.pet-front .pet-body {
   animation: walk 0.4s ease-in-out infinite;
 }
 
 /* 空闲动画 */
 @keyframes idle {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) scale(1);
   }
   50% {
@@ -661,7 +992,10 @@
 
 /* 眨眼动画 */
 @keyframes blink {
-  0%, 45%, 55%, 100% {
+  0%,
+  45%,
+  55%,
+  100% {
     transform: scaleY(1);
   }
   50% {
@@ -676,7 +1010,8 @@
 
 /* 耳朵摆动动画 */
 @keyframes ear-wiggle {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-15deg);
   }
   50% {
@@ -689,7 +1024,8 @@
 }
 
 @keyframes ear-wiggle-right {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(15deg);
   }
   50% {
@@ -703,7 +1039,8 @@
 
 /* 睡觉动画 */
 @keyframes sleep {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) scale(1);
   }
   50% {
@@ -755,7 +1092,8 @@
 }
 
 @keyframes arm-happy-left {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(20deg);
   }
   50% {
@@ -764,7 +1102,8 @@
 }
 
 @keyframes arm-happy-right {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-20deg);
   }
   50% {
@@ -782,7 +1121,8 @@
 
 /* 大哭动画 */
 @keyframes crying {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -812,7 +1152,8 @@
 }
 
 @keyframes mouth-cry {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -828,7 +1169,8 @@
 }
 
 @keyframes cheek-tremble {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -837,7 +1179,8 @@
 }
 
 @keyframes arm-cry-left {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-60deg) translateX(10px);
   }
   50% {
@@ -846,7 +1189,8 @@
 }
 
 @keyframes arm-cry-right {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(60deg) translateX(-10px);
   }
   50% {
@@ -866,7 +1210,8 @@
 
 /* 生气动画 */
 @keyframes angry {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1) rotate(0deg);
   }
   25% {
@@ -959,7 +1304,8 @@
 
 /* 惊吓动画 */
 @keyframes scared {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -986,7 +1332,8 @@
 }
 
 @keyframes arm-scared-left {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-60deg);
   }
   50% {
@@ -995,7 +1342,8 @@
 }
 
 @keyframes arm-scared-right {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(60deg);
   }
   50% {
@@ -1013,7 +1361,8 @@
 
 /* 行走动画 */
 @keyframes arm-swing-left {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(20deg);
   }
   50% {
@@ -1022,7 +1371,8 @@
 }
 
 @keyframes arm-swing-right {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-20deg);
   }
   50% {
@@ -1039,7 +1389,8 @@
 }
 
 @keyframes leg-move-left {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -1048,7 +1399,8 @@
 }
 
 @keyframes leg-move-right {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(-3px);
   }
   50% {
@@ -1066,7 +1418,8 @@
 
 /* 其他状态动画 */
 @keyframes thinking-sway {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-3deg);
   }
   50% {
@@ -1083,7 +1436,8 @@
 }
 
 @keyframes smug-sway {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-2deg) scale(1.02);
   }
   50% {
@@ -1106,7 +1460,8 @@
 }
 
 @keyframes shy-tremble {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -1139,7 +1494,8 @@
 }
 
 @keyframes confused-tilt {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-10deg);
   }
   50% {
@@ -1157,7 +1513,8 @@
 }
 
 @keyframes hello-sway {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-3deg);
   }
   50% {
@@ -1175,7 +1532,8 @@
 }
 
 @keyframes wave-hand {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-60deg);
   }
   50% {
@@ -1188,7 +1546,8 @@
 }
 
 @keyframes sneeze-forward {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -1211,7 +1570,8 @@
 }
 
 @keyframes yawn-stretch {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -1242,7 +1602,8 @@
 }
 
 @keyframes scratch-tilt {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-5deg);
   }
   50% {
@@ -1263,7 +1624,8 @@
 }
 
 @keyframes celebrate-jump {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) scale(1);
   }
   50% {
@@ -1286,7 +1648,8 @@
 }
 
 @keyframes celebrate-arm-left {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(20deg);
   }
   50% {
@@ -1295,7 +1658,8 @@
 }
 
 @keyframes celebrate-arm-right {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-20deg);
   }
   50% {
@@ -1316,7 +1680,8 @@
 }
 
 @keyframes peek-look {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
   }
   50% {
@@ -1330,7 +1695,8 @@
 
 /* 效果动画 */
 @keyframes float-up {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -1427,7 +1793,8 @@
 }
 
 @keyframes exclaim-bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -1444,7 +1811,8 @@
 }
 
 @keyframes think-float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -1457,7 +1825,8 @@
 }
 
 @keyframes thumb-bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(0deg);
   }
   50% {
@@ -1470,7 +1839,8 @@
 }
 
 @keyframes shy-blink {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -1483,7 +1853,8 @@
 }
 
 @keyframes confused-bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -1496,7 +1867,8 @@
 }
 
 @keyframes wave-animation {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-10deg);
   }
   50% {
@@ -1528,7 +1900,8 @@
 }
 
 @keyframes yawn-float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
     opacity: 0.8;
   }
@@ -1543,7 +1916,8 @@
 }
 
 @keyframes scratch-bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -1582,7 +1956,8 @@
 }
 
 @keyframes peek-blink {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -1741,7 +2116,8 @@
   animation-delay: 0.6s;
 }
 @keyframes music-float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) scale(1);
     opacity: 1;
   }
@@ -1758,7 +2134,8 @@
   animation: dance-body 0.4s ease-in-out infinite;
 }
 @keyframes dance-body {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
   }
   25% {
@@ -1775,7 +2152,8 @@
   animation: dance-arm 0.3s ease-in-out infinite;
 }
 @keyframes dance-arm {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(0deg);
   }
   50% {
@@ -1786,7 +2164,8 @@
   animation: dance-leg 0.2s ease-in-out infinite;
 }
 @keyframes dance-leg {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -1849,7 +2228,8 @@
   animation: roll-body 0.6s ease-in-out;
 }
 @keyframes roll-body {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   25% {
