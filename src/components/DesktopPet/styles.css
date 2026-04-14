@@ -1280,8 +1280,26 @@
   animation: fallen 2s ease-in-out;
 }
 
+@keyframes fallen-eye-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .pet-fallen .eye {
+  animation: fallen-eye-spin 1s linear infinite;
+}
+
+.pet-fallen .eye-left {
+  transform: rotate(0deg);
+}
+
+.pet-fallen .eye-right {
   transform: rotate(180deg);
+  animation-delay: -0.5s;
 }
 
 .pet-fallen .mouth-smile {
@@ -1289,9 +1307,13 @@
 }
 
 .pet-fallen .mouth-o {
+  display: none;
+}
+
+.pet-fallen .mouth-sad {
   display: block;
-  width: 10px;
-  height: 12px;
+  width: 14px;
+  height: 8px;
 }
 
 .pet-fallen .arm-left {
