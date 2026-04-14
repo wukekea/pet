@@ -27,6 +27,7 @@ import {
 import type { PetState } from "../types";
 import {
   animationFrameId,
+  isDebugPanelOpen,
   isDragging,
   isVisible,
   mousePosition,
@@ -425,6 +426,8 @@ export async function initScreenSize() {
 // 处理鼠标移动
 export function handleMouseMove(e: MouseEvent) {
   mousePosition.value = { x: e.clientX, y: e.clientY };
+  // 调试面板打开时，不自动控制穿透
+  if (isDebugPanelOpen.value) return;
   const onPet = isMouseOnPet(e.clientX, e.clientY);
   setPassthrough(!onPet);
 }

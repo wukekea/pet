@@ -89,7 +89,11 @@ app.on("window-all-closed", () => {
 // 设置鼠标穿透
 ipcMain.on("set-ignore-mouse-events", (event, ignore) => {
   if (mainWindow) {
-    mainWindow.setIgnoreMouseEvents(ignore, { forward: true });
+    if (ignore) {
+      mainWindow.setIgnoreMouseEvents(true, { forward: true });
+    } else {
+      mainWindow.setIgnoreMouseEvents(false);
+    }
   }
 });
 

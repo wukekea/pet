@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref } from "vue";
 import DesktopPet from "@/components/DesktopPet/index.vue";
+import DebugPanel from "@/components/DebugPanel/index.vue";
 
 const isLoaded = ref(false);
 
@@ -16,6 +17,8 @@ onMounted(() => {
   <div class="app-shell" :class="{ 'is-loaded': isLoaded }">
     <!-- 桌面宠物 -->
     <DesktopPet />
+    <!-- 调试面板 -->
+    <DebugPanel />
   </div>
 </template>
 

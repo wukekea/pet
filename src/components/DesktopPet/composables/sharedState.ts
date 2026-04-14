@@ -22,3 +22,6 @@ export const isDragging = ref(false);
 export const stateTimer = ref<number | null>(null);
 export const animationFrameId = ref<number | null>(null);
 export const mousePosition = ref<PetPosition>({ x: 0, y: 0 });
+
+// 调试面板是否打开 - 打开时禁用自动穿透控制
+export const isDebugPanelOpen = ref(false);
