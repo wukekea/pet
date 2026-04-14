@@ -2,7 +2,13 @@ import { ref } from "vue";
 import type { PetPosition } from "../types";
 import { PET_SIZE } from "../constants";
 import { setPassthrough } from "./useScreen";
-import { stateTimer, petState, petDirection, position, targetPosition } from "./usePetState";
+import {
+  stateTimer,
+  petState,
+  petDirection,
+  position,
+  targetPosition,
+} from "./sharedState";
 import { addFootprint } from "./useFootprints";
 import { changeState } from "./usePetState";
 import { screenSize } from "./useScreen";
@@ -43,13 +49,32 @@ export function handleDragging(e: MouseEvent) {
   const mouseX = e.clientX;
   const mouseY = e.clientY;
 
+  // 计算移动方向
+  const newX = mouseX - dragOffset.value.x;
+  const newY = mouseY - dragOffset.value.y;
+  const dx = newX - position.value.x;
+  const dy = newY - position.value.y;
+
   // 根据移动方向设置朝向
-  petDirection.value = mouseX > position.value.x ? "right" : "left";
+  // 水平移动为主
+  if (Math.abs(dx) > Math.abs(dy) * 2) {
+    petDirection.value = dx > 0 ? "right" : "left";
+  } else if (Math.abs(dy) > Math.abs(dx) * 2) {
+    // 垂直移动为主
+    petDirection.value = dy > 0 ? "front" : "back";
+  } else {
+    // 斜向移动
+    if (dx > 0) {
+      petDirection.value = "right";
+    } else {
+      petDirection.value = "left";
+    }
+  }
 
   // 更新位置
   position.value = {
-    x: mouseX - dragOffset.value.x,
-    y: mouseY - dragOffset.value.y,
+    x: newX,
+    y: newY,
   };
 
   // 添加脚印
@@ -81,6 +106,8 @@ export function handleDragEnd() {
   window.removeEventListener("mousemove", handleDragging);
   window.removeEventListener("mouseup", handleDragEnd);
 
+  // 恢复正面朝向
+  petDirection.value = "front";
   // 恢复空闲状态
   changeState("idle");
 }

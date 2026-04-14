@@ -1,16 +1,26 @@
-import { ref, watch, onMounted, onBeforeUnmount } from "vue";
-import type { PetPosition } from "../types";
+import { ref } from "vue";
 import { PET_SIZE } from "../constants";
+import type { PetPosition } from "../types";
 
 // 当前穿透状态
 let isPassthrough = true;
 
 // 屏幕尺寸
-export const screenSize = ref({ width: window.innerWidth, height: window.innerHeight });
+export const screenSize = ref({
+  width: window.innerWidth,
+  height: window.innerHeight,
+});
 
 // 设置穿透状态
 export function setPassthrough(ignore: boolean) {
-  console.log("setPassthrough called:", ignore, "current:", isPassthrough, "electronAPI:", !!window.electronAPI);
+  console.log(
+    "setPassthrough called:",
+    ignore,
+    "current:",
+    isPassthrough,
+    "electronAPI:",
+    !!window.electronAPI,
+  );
   if (ignore !== isPassthrough) {
     if (window.electronAPI) {
       window.electronAPI.setIgnoreMouseEvents(ignore);
@@ -23,7 +33,11 @@ export function setPassthrough(ignore: boolean) {
 }
 
 // 检测鼠标是否在宠物上
-export function isMouseOnPet(x: number, y: number, position: PetPosition): boolean {
+export function isMouseOnPet(
+  x: number,
+  y: number,
+  position: PetPosition,
+): boolean {
   const petCenterX = position.x + PET_SIZE / 2;
   const petCenterY = position.y + PET_SIZE / 2;
   const distance = Math.sqrt((x - petCenterX) ** 2 + (y - petCenterY) ** 2);
@@ -46,7 +60,10 @@ export function handleResize(position: PetPosition) {
 }
 
 // 初始化屏幕尺寸
-export async function initScreenSize(position: PetPosition, targetPosition: PetPosition) {
+export async function initScreenSize(
+  position: PetPosition,
+  targetPosition: PetPosition,
+) {
   if (window.electronAPI) {
     try {
       const size = await window.electronAPI.getScreenSize();

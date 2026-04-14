@@ -1,5 +1,4 @@
-import { ref, computed } from "vue";
-import { petState } from "./usePetState";
+import { ref } from "vue";
 
 // 当前主题（使用系统主题）
 export const isDark = ref(false);

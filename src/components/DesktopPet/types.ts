@@ -24,7 +24,8 @@ export type PetState =
   | "dancing"
   | "rolling";
 
-export type PetDirection = "left" | "right";
+// 宠物朝向：front(正面), left(左转), right(右转), back(背面)
+export type PetDirection = "front" | "left" | "right" | "back";
 
 export interface PetPosition {
   x: number;

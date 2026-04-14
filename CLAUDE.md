@@ -80,6 +80,7 @@ pet/
 #### 宠物状态
 
 支持 20+ 种状态动画：
+
 - 基础状态：idle、walking、jumping、sleeping
 - 情绪状态：happy、crying、angry、scared
 - 特殊状态：fallen、thinking、smug、shy、confused、hello、sneeze、yawn、scratch、celebrate、peek、chase、hide
@@ -100,6 +101,7 @@ pet/
 ### 3. 预加载脚本 (electron/preload.cjs)
 
 通过 contextBridge 暴露安全的 API：
+
 - `setIgnoreMouseEvents(ignore)`: 设置鼠标穿透
 - `getScreenSize()`: 获取屏幕尺寸
 

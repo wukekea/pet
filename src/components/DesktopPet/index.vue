@@ -296,7 +296,10 @@ defineExpose({
     <!-- 对话气泡（放在 pet-container 外部，不受翻滚影响） -->
     <div
       class="dialogue-bubble"
-      :class="{ 'dialogue-visible': isDialogueVisible, 'dialogue-left': petDirection === 'left' }"
+      :class="{
+        'dialogue-visible': isDialogueVisible,
+        'dialogue-left': petDirection === 'left',
+      }"
       :style="{
         left: `${position.x + 40}px`,
         top: `${position.y - 55}px`,
@@ -396,10 +399,14 @@ defineExpose({
 }
 
 .dialogue-bubble {
-  background: v-bind("isDark ? 'rgba(30, 30, 40, 0.95)' : 'rgba(255, 255, 255, 0.95)'");
+  background: v-bind(
+    "isDark ? 'rgba(30, 30, 40, 0.95)' : 'rgba(255, 255, 255, 0.95)'"
+  );
   box-shadow:
-    0 4px 15px v-bind("isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(139, 92, 246, 0.15)'"),
-    0 0 0 1px v-bind("isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(139, 92, 246, 0.1)'");
+    0 4px 15px
+      v-bind("isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(139, 92, 246, 0.15)'"),
+    0 0 0 1px
+      v-bind("isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(139, 92, 246, 0.1)'");
 }
 
 .dialogue-bubble::before {
@@ -412,10 +419,13 @@ defineExpose({
 
 .dialogue-text {
   color: v-bind("isDark ? '#e2e8f0' : '#374151'");
-  text-shadow: 0 1px 2px v-bind("isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.5)'");
+  text-shadow: 0 1px 2px
+    v-bind("isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.5)'");
 }
 
 .dialogue-tail {
-  background: v-bind("isDark ? 'rgba(30, 30, 40, 0.95)' : 'rgba(255, 255, 255, 0.95)'");
+  background: v-bind(
+    "isDark ? 'rgba(30, 30, 40, 0.95)' : 'rgba(255, 255, 255, 0.95)'"
+  );
 }
 </style>

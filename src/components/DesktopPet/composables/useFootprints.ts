@@ -1,6 +1,11 @@
 import { ref } from "vue";
 import type { PetDirection, Footprint } from "../types";
-import { PET_SIZE, FOOTPRINT_INTERVAL, FOOTPRINT_LIFETIME, MAX_FOOTPRINTS } from "../constants";
+import {
+  PET_SIZE,
+  FOOTPRINT_INTERVAL,
+  FOOTPRINT_LIFETIME,
+  MAX_FOOTPRINTS,
+} from "../constants";
 
 // 脚印状态
 export const footprints = ref<Footprint[]>([]);
@@ -41,7 +46,7 @@ export function addFootprint(x: number, y: number, direction: PetDirection) {
 export function cleanupFootprints() {
   const now = Date.now();
   footprints.value = footprints.value.filter(
-    (fp) => now - fp.createdAt < FOOTPRINT_LIFETIME
+    (fp) => now - fp.createdAt < FOOTPRINT_LIFETIME,
   );
 }
 

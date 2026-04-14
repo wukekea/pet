@@ -23,6 +23,8 @@ export const stateAnimations: Record<PetState, string[]> = {
   peek: ["peek"],
   chase: ["chase"],
   hide: ["hide"],
+  dancing: ["dancing"],
+  rolling: ["rolling"],
 };
 
 // 状态持续时间配置

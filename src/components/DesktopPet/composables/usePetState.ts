@@ -1,41 +1,45 @@
-import { ref } from "vue";
-import type { PetState, PetDirection, PetPosition } from "../types";
 import {
-  PET_SIZE,
-  IDLE_DURATION,
-  SLEEP_DURATION,
-  HAPPY_DURATION,
-  JUMP_DURATION,
-  CRYING_DURATION,
   ANGRY_DURATION,
-  FALLEN_DURATION,
-  SCARED_DURATION,
-  THINKING_DURATION,
-  SMUG_DURATION,
-  SHY_DURATION,
-  CONFUSED_DURATION,
-  HELLO_DURATION,
-  SNEEZE_DURATION,
-  YAWN_DURATION,
-  SCRATCH_DURATION,
   CELEBRATE_DURATION,
-  PEEK_DURATION,
   CHASE_DURATION,
-  HIDE_DURATION,
+  CONFUSED_DURATION,
+  CRYING_DURATION,
   DANCING_DURATION,
+  FALLEN_DURATION,
+  HAPPY_DURATION,
+  HELLO_DURATION,
+  HIDE_DURATION,
+  IDLE_DURATION,
+  JUMP_DURATION,
+  PEEK_DURATION,
+  PET_SIZE,
   ROLLING_DURATION,
+  SCARED_DURATION,
+  SCRATCH_DURATION,
+  SHY_DURATION,
+  SLEEP_DURATION,
+  SMUG_DURATION,
+  SNEEZE_DURATION,
+  THINKING_DURATION,
   WALK_SPEED,
-  FOOTPRINT_INTERVAL,
-  FOOTPRINT_LIFETIME,
-  MAX_FOOTPRINTS,
-  NON_MOVING_STATES,
+  YAWN_DURATION,
 } from "../constants";
-import { petState, petDirection, position, targetPosition, isDragging, stateTimer, animationFrameId, mousePosition } from "./sharedState";
-import { screenSize, isVisible } from "./sharedState";
+import type { PetState } from "../types";
+import {
+  animationFrameId,
+  isDragging,
+  isVisible,
+  mousePosition,
+  petDirection,
+  petState,
+  position,
+  screenSize,
+  stateTimer,
+  targetPosition,
+} from "./sharedState";
 
-import { addFootprint, cleanupFootprints } from "./useFootprints";
 import { showDialogue } from "./useDialogue";
-import { isDark, checkSystemTheme } from "./useTheme";
+import { addFootprint, cleanupFootprints } from "./useFootprints";
 
 // 内部函数定义
 function setPassthrough(ignore: boolean) {
@@ -77,6 +81,28 @@ const NON_MOVING_STATES: PetState[] = [
   "rolling",
 ];
 
+// 根据移动方向更新宠物朝向
+function updateDirection(dx: number, dy: number) {
+  // 如果水平移动较大
+  if (Math.abs(dx) > Math.abs(dy) * 2) {
+    petDirection.value = dx > 0 ? "right" : "left";
+  } else if (Math.abs(dy) > Math.abs(dx) * 2) {
+    // 如果垂直移动较大
+    petDirection.value = dy > 0 ? "front" : "back";
+  } else {
+    // 斜向移动
+    if (dx > 0 && dy > 0) {
+      petDirection.value = "right";
+    } else if (dx > 0 && dy < 0) {
+      petDirection.value = "right";
+    } else if (dx < 0 && dy > 0) {
+      petDirection.value = "left";
+    } else {
+      petDirection.value = "left";
+    }
+  }
+}
+
 // 随机移动到新位置
 export function moveToRandomPosition() {
   if (NON_MOVING_STATES.includes(petState.value)) return;
@@ -86,8 +112,10 @@ export function moveToRandomPosition() {
     x: Math.random() * maxX,
     y: Math.random() * (maxY - 100) + 100,
   };
-  petDirection.value =
-    targetPosition.value.x > position.value.x ? "right" : "left";
+  // 根据移动方向设置朝向
+  const dx = targetPosition.value.x - position.value.x;
+  const dy = targetPosition.value.y - position.value.y;
+  updateDirection(dx, dy);
   petState.value = "walking";
 }
 // 改变宠物状态
@@ -123,64 +151,115 @@ export function changeState(newState: PetState) {
       }, IDLE_DURATION);
       break;
     case "sleeping":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), SLEEP_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        SLEEP_DURATION,
+      );
       break;
     case "jumping":
       setTimeout(() => changeState("idle"), JUMP_DURATION);
       break;
     case "happy":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), HAPPY_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        HAPPY_DURATION,
+      );
       break;
     case "crying":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), CRYING_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        CRYING_DURATION,
+      );
       break;
     case "angry":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), ANGRY_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        ANGRY_DURATION,
+      );
       break;
     case "fallen":
       setTimeout(() => changeState("idle"), FALLEN_DURATION);
       break;
     case "scared":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), SCARED_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        SCARED_DURATION,
+      );
       break;
     case "thinking":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), THINKING_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        THINKING_DURATION,
+      );
       break;
     case "smug":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), SMUG_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        SMUG_DURATION,
+      );
       break;
     case "shy":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), SHY_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        SHY_DURATION,
+      );
       break;
     case "confused":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), CONFUSED_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        CONFUSED_DURATION,
+      );
       break;
     case "hello":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), HELLO_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        HELLO_DURATION,
+      );
       break;
     case "sneeze":
       setTimeout(() => changeState("idle"), SNEEZE_DURATION);
       break;
     case "yawn":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), YAWN_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        YAWN_DURATION,
+      );
       break;
     case "scratch":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), SCRATCH_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        SCRATCH_DURATION,
+      );
       break;
     case "celebrate":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), CELEBRATE_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        CELEBRATE_DURATION,
+      );
       break;
     case "peek":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), PEEK_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        PEEK_DURATION,
+      );
       break;
     case "chase":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), CHASE_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        CHASE_DURATION,
+      );
       break;
     case "hide":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), HIDE_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        HIDE_DURATION,
+      );
       break;
     case "dancing":
-      stateTimer.value = window.setTimeout(() => changeState("idle"), DANCING_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        DANCING_DURATION,
+      );
       break;
     case "rolling":
       setTimeout(() => changeState("idle"), ROLLING_DURATION);
@@ -199,9 +278,12 @@ export function animate() {
     if (distance > 5) {
       const speed = 3;
       const ratio = speed / distance;
-      position.value.x += dx * ratio;
-      position.value.y += dy * ratio;
-      petDirection.value = dx > 0 ? "right" : "left";
+      const moveX = dx * ratio;
+      const moveY = dy * ratio;
+      position.value.x += moveX;
+      position.value.y += moveY;
+      // 根据移动方向设置朝向
+      updateDirection(moveX, moveY);
       addFootprint(position.value.x, position.value.y, petDirection.value);
     }
   }
@@ -209,16 +291,29 @@ export function animate() {
   if (isVisible.value && petState.value !== "chase") {
     const dx = targetPosition.value.x - position.value.x;
     const dy = targetPosition.value.y - position.value.y;
-    const distance = Math.sqrt(dx * dx + dy * dy)
-    if (distance > WALK_SPEED && petState.value === "walking" && !isDragging.value) {
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (
+      distance > WALK_SPEED &&
+      petState.value === "walking" &&
+      !isDragging.value
+    ) {
       const ratio = WALK_SPEED / distance;
-      position.value.x += dx * ratio;
-      position.value.y += dy * ratio;
-      petDirection.value = dx > 0 ? "right" : "left";
+      const moveX = dx * ratio;
+      const moveY = dy * ratio;
+      position.value.x += moveX;
+      position.value.y += moveY;
+      // 根据移动方向设置朝向
+      updateDirection(moveX, moveY);
       addFootprint(position.value.x, position.value.y, petDirection.value);
-    } else if (distance <= WALK_SPEED && petState.value === "walking" && !isDragging.value) {
+    } else if (
+      distance <= WALK_SPEED &&
+      petState.value === "walking" &&
+      !isDragging.value
+    ) {
       position.value.x = targetPosition.value.x;
       position.value.y = targetPosition.value.y;
+      // 恢复正面朝向
+      petDirection.value = "front";
       changeState("idle");
     }
   }
@@ -228,7 +323,14 @@ export function animate() {
 export function handlePetClick() {
   if (isDragging.value) return;
   if (petState.value !== "sleeping") {
-    const reactions: PetState[] = ["happy", "scared", "fallen", "smug", "shy", "celebrate"];
+    const reactions: PetState[] = [
+      "happy",
+      "scared",
+      "fallen",
+      "smug",
+      "shy",
+      "celebrate",
+    ];
     changeState(reactions[Math.floor(Math.random() * reactions.length)]);
   }
 }
@@ -238,7 +340,9 @@ export function handlePetDoubleClick() {
   if (isDragging.value) return;
   // 双击触发跳舞或翻滚
   const specialActions: PetState[] = ["dancing", "rolling"];
-  changeState(specialActions[Math.floor(Math.random() * specialActions.length)]);
+  changeState(
+    specialActions[Math.floor(Math.random() * specialActions.length)],
+  );
 }
 // 拖拽相关
 let dragOffset = { x: 0, y: 0 };
@@ -246,7 +350,10 @@ let dragOffset = { x: 0, y: 0 };
 export function handleDragStart(e: MouseEvent) {
   isDragging.value = true;
   setPassthrough(false);
-  dragOffset = { x: e.clientX - position.value.x, y: e.clientY - position.value.y };
+  dragOffset = {
+    x: e.clientX - position.value.x,
+    y: e.clientY - position.value.y,
+  };
   if (stateTimer.value) clearTimeout(stateTimer.value);
   petState.value = "walking";
   window.addEventListener("mousemove", handleDragging);
@@ -256,8 +363,14 @@ function handleDragging(e: MouseEvent) {
   if (!isDragging.value || !isVisible.value) return;
   const mouseX = e.clientX;
   const mouseY = e.clientY;
-  petDirection.value = mouseX > position.value.x ? "right" : "left";
-  position.value = { x: mouseX - dragOffset.x, y: mouseY - dragOffset.y };
+  // 计算移动方向
+  const newX = mouseX - dragOffset.x;
+  const newY = mouseY - dragOffset.y;
+  const dx = newX - position.value.x;
+  const dy = newY - position.value.y;
+  // 根据移动方向设置朝向
+  updateDirection(dx, dy);
+  position.value = { x: newX, y: newY };
   addFootprint(position.value.x, position.value.y, petDirection.value);
   targetPosition.value = { ...position.value };
   const maxX = screenSize.value.width - PET_SIZE;
@@ -273,6 +386,8 @@ function handleDragEnd() {
   targetPosition.value = { ...position.value };
   window.removeEventListener("mousemove", handleDragging);
   window.removeEventListener("mouseup", handleDragEnd);
+  // 恢复正面朝向
+  petDirection.value = "front";
   changeState("idle");
 }
 // 切换宠物显示
@@ -316,7 +431,9 @@ export function handleMouseMove(e: MouseEvent) {
 // 初始化宠物
 export function initPet(checkSystemThemeFn: () => void) {
   checkSystemThemeFn();
-  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", checkSystemThemeFn);
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", checkSystemThemeFn);
   const savedState = localStorage.getItem("pet-visibility");
   if (savedState !== null) {
     isVisible.value = savedState === "true";

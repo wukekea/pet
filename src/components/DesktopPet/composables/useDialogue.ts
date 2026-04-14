@@ -16,7 +16,8 @@ export function showDialogue() {
   const currentState = petState.value;
 
   // 翻滚和跳舞状态必定显示专属台词
-  const isSpecialState = currentState === "dancing" || currentState === "rolling";
+  const isSpecialState =
+    currentState === "dancing" || currentState === "rolling";
 
   // 其他状态只有30%概率显示对话
   if (!isSpecialState && Math.random() > 0.3) return;

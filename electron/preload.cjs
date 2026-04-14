@@ -1,8 +1,8 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld('electronAPI', {
+contextBridge.exposeInMainWorld("electronAPI", {
   setIgnoreMouseEvents: (ignore) => {
-    ipcRenderer.send('set-ignore-mouse-events', ignore);
+    ipcRenderer.send("set-ignore-mouse-events", ignore);
   },
-  getScreenSize: () => ipcRenderer.invoke('get-screen-size')
+  getScreenSize: () => ipcRenderer.invoke("get-screen-size"),
 });
