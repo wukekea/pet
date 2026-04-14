@@ -109,11 +109,11 @@
 }
 
 .pet-left .ear-left {
-  transform: rotate(-15deg) translateX(-2px);
+  transform: rotate(-15deg) translateX(-2px) translateY(-2px);
 }
 
 .pet-left .ear-right {
-  transform: rotate(15deg) translateX(2px) translateY(-2px);
+  transform: rotate(15deg) translateX(2px) ;
 }
 
 /* 向左转时：右手在前 */
@@ -168,11 +168,11 @@
 }
 
 .pet-right .ear-left {
-  transform: rotate(-15deg) translateX(-2px) translateY(-2px);
+  transform: rotate(-15deg) translateX(-2px);
 }
 
 .pet-right .ear-right {
-  transform: rotate(15deg) translateX(2px);
+  transform: rotate(15deg) translateX(2px) translateY(-2px);
 }
 
 /* 向右转时：左手在前 */
