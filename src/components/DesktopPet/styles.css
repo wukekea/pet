@@ -1576,14 +1576,14 @@
 @keyframes wave-hand {
   0%,
   100% {
-    transform: rotate(-60deg);
+    transform: rotate(120deg) translateY(12px) translateX(-2px);
   }
   50% {
-    transform: rotate(-30deg);
+    transform: rotate(180deg) translateY(12px) translateX(-2px);
   }
 }
 
-.pet-hello .arm-right {
+.pet-hello .arm-left {
   animation: wave-hand 0.3s ease-in-out infinite;
 }
 
