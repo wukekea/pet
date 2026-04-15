@@ -30,11 +30,11 @@
 | 文件路径 | 修改内容 |
 |---------|---------|
 | `src/components/DesktopPet/types.ts` | 新增 ScheduleState、TimeSlot、ScheduleConfig 类型，新增 yawn、sleepy、stretch 状态 |
-| `src/components/DesktopPet/constants.ts` | 新增 YAWN_DURATION、SLEEPY_DURATION、STRETCH_DURATION，更新 NON_MOVING_STATES |
+| `src/components/DesktopPet/constants.ts` | 新增 YAWN_DURATION、SLEEPY_DURATION、STRETCH_DURATION、DREAM_TALK_INTERVAL，更新 NON_MOVING_STATES |
 | `src/components/DesktopPet/composables/sharedState.ts` | 新增作息状态变量 |
-| `src/components/DesktopPet/composables/usePetState.ts` | 修改状态切换逻辑，集成作息控制 |
-| `src/components/DesktopPet/composables/useDialogue.ts` | 新增 getTimeGreetingForSleep() 函数（早安、午安、晚安） |
-| `src/components/DesktopPet/dialogues.ts` | 添加新状态对话消息 |
+| `src/components/DesktopPet/composables/usePetState.ts` | 修改状态切换逻辑，集成作息控制，添加梦话定时器 |
+| `src/components/DesktopPet/composables/useDialogue.ts` | 新增 getTimeGreetingForSleep() 函数，新增 getDreamTalk() 函数 |
+| `src/components/DesktopPet/dialogues.ts` | 添加新状态对话消息，添加梦话列表 |
 | `src/components/DesktopPet/animations.ts` | 添加新状态动画映射和持续时间 |
 | `src/components/DesktopPet/index.vue` | 初始化作息系统，添加新状态 UI 效果 |
 | `src/components/DesktopPet/styles.css` | 添加新状态样式 |
@@ -159,6 +159,9 @@ export function resetScheduleConfig(): ScheduleConfig
 ```typescript
 // 根据时间获取睡眠唤醒问候语（早安/午安/晚安）
 export function getTimeGreetingForSleep(): string
+
+// 随机获取梦话（仅在睡眠期间使用）
+export function getDreamTalk(): string
 ```
 
 ### 六、UI 效果设计
