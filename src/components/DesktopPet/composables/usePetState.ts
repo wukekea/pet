@@ -39,7 +39,11 @@ import {
   targetPosition,
 } from "./sharedState";
 
-import { showDialogue } from "./useDialogue";
+import {
+  showDialogue,
+  getTimeGreeting,
+  showCustomDialogue,
+} from "./useDialogue";
 import { addFootprint, cleanupFootprints } from "./useFootprints";
 
 // 内部函数定义
@@ -443,7 +447,13 @@ export function initPet(checkSystemThemeFn: () => void) {
   }
   if (isVisible.value) {
     animate();
-    setTimeout(() => changeState("idle"), 1000);
+    // 每次启动都打招呼
+    setTimeout(() => {
+      changeState("hello");
+      // 显示问候语
+      const greeting = getTimeGreeting();
+      showCustomDialogue(greeting);
+    }, 500);
   }
   window.addEventListener("resize", handleResize);
   window.addEventListener("mousemove", handleMouseMove);

@@ -8,6 +8,35 @@ export const dialogueText = ref<string | null>(null);
 export const dialogueTimer = ref<number | null>(null);
 export const isDialogueVisible = ref(false);
 
+// 根据时间获取问候语
+export function getTimeGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 11) {
+    return "早上好！";
+  } else if (hour >= 11 && hour < 13) {
+    return "中午好！";
+  } else if (hour >= 13 && hour < 18) {
+    return "下午好！";
+  } else {
+    return "晚上好！";
+  }
+}
+
+// 显示自定义对话（用于打招呼等场景）
+export function showCustomDialogue(text: string) {
+  dialogueText.value = text;
+  isDialogueVisible.value = true;
+
+  if (dialogueTimer.value) {
+    clearTimeout(dialogueTimer.value);
+  }
+
+  // 3秒后隐藏
+  dialogueTimer.value = window.setTimeout(() => {
+    hideDialogue();
+  }, 3000);
+}
+
 // 显示对话气泡
 export function showDialogue() {
   // 如果已经在显示或者正在拖动，不显示
