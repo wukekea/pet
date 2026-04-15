@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, watch } from "vue";
-import type { PetState, PetDirection, Footprint } from "./types";
 import { getFootprintOpacity } from "./composables/useFootprints";
 // 状态变量从 sharedState 导入
 import {
@@ -9,8 +8,6 @@ import {
   position,
   isVisible,
   isDragging,
-  animationFrameId,
-  stateTimer,
 } from "./composables/sharedState";
 // 函数从 usePetState 导入
 import {

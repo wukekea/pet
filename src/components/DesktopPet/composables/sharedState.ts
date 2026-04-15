@@ -4,7 +4,7 @@ import type { PetDirection, PetPosition, PetState } from "../types";
 
 // 宠物核心状态
 export const petState = ref<PetState>("idle");
-export const petDirection = ref<PetDirection>("right");
+export const petDirection = ref<PetDirection>("front");
 export const position = ref<PetPosition>({
   x: 50,
   y: window.innerHeight - 120,
