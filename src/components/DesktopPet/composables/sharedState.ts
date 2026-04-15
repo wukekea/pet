@@ -26,6 +26,12 @@ export const mousePosition = ref<PetPosition>({ x: 0, y: 0 });
 // 调试面板是否打开 - 打开时禁用自动穿透控制
 export const isDebugPanelOpen = ref(false);
 
+// 作息设置弹窗是否打开 - 打开时禁用自动穿透控制
+export const isScheduleModalOpen = ref(false);
+
+// 右键菜单是否打开 - 打开时禁用自动穿透控制
+export const isContextMenuOpen = ref(false);
+
 // 作息相关状态
 export const isInSleepSchedule = ref(false); // 当前是否处于睡眠作息时间段
 export const scheduleEnabled = ref(false); // 作息功能是否启用

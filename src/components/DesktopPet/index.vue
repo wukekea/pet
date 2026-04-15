@@ -8,6 +8,8 @@ import {
   position,
   isVisible,
   isDragging,
+  isContextMenuOpen,
+  isScheduleModalOpen,
 } from "./composables/sharedState";
 // 函数从 usePetState 导入
 import {
@@ -108,6 +110,8 @@ const handleContextMenu = (e: MouseEvent) => {
   e.stopPropagation();
   // 先禁用穿透
   setPassthrough(false);
+  // 设置全局状态
+  isContextMenuOpen.value = true;
   contextMenuX.value = e.clientX;
   contextMenuY.value = e.clientY;
   contextMenuVisible.value = true;
@@ -116,6 +120,7 @@ const handleContextMenu = (e: MouseEvent) => {
 // 关闭右键菜单
 const closeContextMenu = () => {
   contextMenuVisible.value = false;
+  isContextMenuOpen.value = false;
   // 只有没有其他弹窗时才恢复穿透
   if (!scheduleModalVisible.value) {
     setPassthrough(true);
@@ -126,8 +131,11 @@ const closeContextMenu = () => {
 const openScheduleModal = () => {
   // 先禁用穿透（确保穿透被禁用）
   setPassthrough(false);
+  // 设置全局状态
+  isScheduleModalOpen.value = true;
   // 关闭菜单但不恢复穿透
   contextMenuVisible.value = false;
+  isContextMenuOpen.value = false;
   scheduleConfig.value = getScheduleConfig();
   scheduleModalVisible.value = true;
 };
@@ -135,6 +143,7 @@ const openScheduleModal = () => {
 // 关闭作息配置弹窗
 const closeScheduleModal = () => {
   scheduleModalVisible.value = false;
+  isScheduleModalOpen.value = false;
   // 恢复穿透
   setPassthrough(true);
 };
