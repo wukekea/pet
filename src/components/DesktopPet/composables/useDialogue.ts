@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { dialogueMessages } from "../dialogues";
+import { dialogueMessages, dreamTalkMessages } from "../dialogues";
 import { petState } from "./sharedState";
 import { isDragging } from "./sharedState";
 
@@ -77,4 +77,10 @@ export function hideDialogue() {
       dialogueText.value = null;
     }
   }, 300);
+}
+
+// 随机获取梦话（仅在睡眠期间使用）
+export function getDreamTalk(): string {
+  const messages = dreamTalkMessages;
+  return messages[Math.floor(Math.random() * messages.length)];
 }

@@ -25,6 +25,9 @@ export const stateAnimations: Record<PetState, string[]> = {
   hide: ["hide"],
   dancing: ["dancing"],
   rolling: ["rolling"],
+  yawn: ["yawn"],
+  sleepy: ["sleepy"],
+  stretch: ["stretch"],
 };
 
 // 状态持续时间配置
@@ -49,4 +52,7 @@ export const stateDurations: Partial<Record<PetState, number>> = {
   peek: 3000,
   chase: 5000,
   hide: 4000,
+  yawn: 2000,
+  sleepy: 3000,
+  stretch: 2500,
 };

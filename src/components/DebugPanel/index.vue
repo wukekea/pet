@@ -74,6 +74,14 @@ const actionGroups = [
       { state: "rolling" as PetState, label: "翻滚", icon: "↻" },
     ],
   },
+  {
+    name: "作息状态",
+    actions: [
+      { state: "yawn" as PetState, label: "哈欠", icon: "😴" },
+      { state: "sleepy" as PetState, label: "朦胧", icon: "💤" },
+      { state: "stretch" as PetState, label: "伸懒腰", icon: "✨" },
+    ],
+  },
 ];
 
 // 触发状态

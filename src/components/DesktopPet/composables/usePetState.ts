@@ -23,6 +23,9 @@ import {
   THINKING_DURATION,
   WALK_SPEED,
   GRIN_DURATION,
+  YAWN_DURATION,
+  SLEEPY_DURATION,
+  STRETCH_DURATION,
 } from "../constants";
 import type { PetState } from "../types";
 import {
@@ -37,14 +40,23 @@ import {
   screenSize,
   stateTimer,
   targetPosition,
+  isInSleepSchedule,
+  scheduleEnabled,
 } from "./sharedState";
 
 import {
   showDialogue,
   getTimeGreeting,
   showCustomDialogue,
+  getDreamTalk,
 } from "./useDialogue";
 import { addFootprint, cleanupFootprints } from "./useFootprints";
+import {
+  startScheduleMonitor,
+  stopScheduleMonitor,
+  onSleepStart,
+  onSleepEnd,
+} from "./useSchedule";
 
 // 内部函数定义
 function setPassthrough(ignore: boolean) {
@@ -84,6 +96,9 @@ const NON_MOVING_STATES: PetState[] = [
   "hide",
   "dancing",
   "rolling",
+  "yawn",
+  "sleepy",
+  "stretch",
 ];
 
 // 根据移动方向更新宠物朝向
@@ -134,32 +149,65 @@ export function changeState(newState: PetState) {
     case "idle":
       stateTimer.value = window.setTimeout(() => {
         if (!isDragging.value) {
+          if (isInSleepSchedule.value) {
+            // 睡眠作息期间，只能进入睡眠状态
+            changeState("sleeping");
+            return;
+          }
+          // 闲暇期间的可用状态（排除睡眠相关状态）
+          const freeStates: PetState[] = [
+            "jumping",
+            "crying",
+            "angry",
+            "fallen",
+            "scared",
+            "thinking",
+            "smug",
+            "shy",
+            "confused",
+            "hello",
+            "sneeze",
+            "grin",
+            "scratch",
+            "celebrate",
+            "peek",
+          ];
           const random = Math.random();
-          if (random < 0.08) changeState("sleeping");
-          else if (random < 0.15) changeState("jumping");
-          else if (random < 0.2) changeState("crying");
-          else if (random < 0.25) changeState("angry");
-          else if (random < 0.3) changeState("fallen");
-          else if (random < 0.35) changeState("scared");
-          else if (random < 0.4) changeState("thinking");
-          else if (random < 0.45) changeState("smug");
-          else if (random < 0.5) changeState("shy");
-          else if (random < 0.55) changeState("confused");
-          else if (random < 0.6) changeState("hello");
-          else if (random < 0.65) changeState("sneeze");
-          else if (random < 0.7) changeState("grin");
-          else if (random < 0.75) changeState("scratch");
-          else if (random < 0.8) changeState("celebrate");
-          else if (random < 0.85) changeState("peek");
-          else moveToRandomPosition();
+          if (random < 0.1 && !scheduleEnabled.value) {
+            // 只有未启用作息时才允许随机睡眠
+            changeState("sleeping");
+          } else if (random < 0.85) {
+            // 从可用状态中随机选择
+            const state =
+              freeStates[Math.floor(Math.random() * freeStates.length)];
+            changeState(state);
+          } else {
+            moveToRandomPosition();
+          }
         }
       }, IDLE_DURATION);
       break;
     case "sleeping":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        SLEEP_DURATION,
-      );
+      // 通知作息系统开始睡眠
+      onSleepStart();
+      // 作息模式下的睡眠持续时间由作息结束时间决定
+      if (isInSleepSchedule.value) {
+        // 睡眠作息期间，不设置固定定时器，等待作息结束
+        // 但设置一个检查定时器，每分钟检查是否应该醒来
+        stateTimer.value = window.setTimeout(() => {
+          if (!isInSleepSchedule.value) {
+            changeState("idle");
+          } else {
+            // 继续睡眠，递归调用
+            changeState("sleeping");
+          }
+        }, 60000); // 每分钟检查一次
+      } else {
+        stateTimer.value = window.setTimeout(() => {
+          onSleepEnd();
+          changeState("idle");
+        }, SLEEP_DURATION);
+      }
       break;
     case "jumping":
       setTimeout(() => changeState("idle"), JUMP_DURATION);
@@ -269,6 +317,29 @@ export function changeState(newState: PetState) {
     case "rolling":
       setTimeout(() => changeState("idle"), ROLLING_DURATION);
       break;
+    case "yawn":
+      // 打哈欠后进入睡眠状态
+      stateTimer.value = window.setTimeout(() => {
+        changeState("sleeping");
+      }, YAWN_DURATION);
+      break;
+    case "sleepy":
+      // 睡眼朦胧后，检查是否仍在睡眠作息
+      stateTimer.value = window.setTimeout(() => {
+        if (isInSleepSchedule.value) {
+          changeState("sleeping");
+        } else {
+          changeState("idle");
+        }
+      }, SLEEPY_DURATION);
+      break;
+    case "stretch":
+      // 伸懒腰后进入空闲状态
+      stateTimer.value = window.setTimeout(() => {
+        onSleepEnd();
+        changeState("idle");
+      }, STRETCH_DURATION);
+      break;
   }
 }
 // 动画循环
@@ -327,7 +398,12 @@ export function animate() {
 // 点击宠物
 export function handlePetClick() {
   if (isDragging.value) return;
-  if (petState.value !== "sleeping") {
+  if (petState.value === "sleeping") {
+    // 睡眠期间点击，触发睡眼朦胧状态
+    changeState("sleepy");
+    // 显示梦话
+    showCustomDialogue(getDreamTalk());
+  } else {
     const reactions: PetState[] = [
       "happy",
       "scared",
@@ -445,14 +521,23 @@ export function initPet(checkSystemThemeFn: () => void) {
   if (savedState !== null) {
     isVisible.value = savedState === "true";
   }
+
+  // 启动作息监控
+  startScheduleMonitor();
+
   if (isVisible.value) {
     animate();
     // 每次启动都打招呼
     setTimeout(() => {
-      changeState("hello");
-      // 显示问候语
-      const greeting = getTimeGreeting();
-      showCustomDialogue(greeting);
+      // 如果处于睡眠作息，不打招呼直接进入睡眠
+      if (isInSleepSchedule.value) {
+        changeState("sleeping");
+      } else {
+        changeState("hello");
+        // 显示问候语
+        const greeting = getTimeGreeting();
+        showCustomDialogue(greeting);
+      }
     }, 500);
   }
   window.addEventListener("resize", handleResize);
@@ -463,6 +548,8 @@ export function initPet(checkSystemThemeFn: () => void) {
 export function cleanupPet() {
   if (animationFrameId.value) cancelAnimationFrame(animationFrameId.value);
   if (stateTimer.value) clearTimeout(stateTimer.value);
+  // 停止作息监控
+  stopScheduleMonitor();
   window.removeEventListener("resize", handleResize);
   window.removeEventListener("mousemove", handleMouseMove);
 }

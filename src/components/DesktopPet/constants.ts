@@ -29,6 +29,12 @@ export const HIDE_DURATION = 4000;
 export const DANCING_DURATION = 4000;
 export const ROLLING_DURATION = 2000;
 
+// 作息相关状态持续时间
+export const YAWN_DURATION = 2000; // 打哈欠持续时间
+export const SLEEPY_DURATION = 3000; // 睡眼朦胧持续时间
+export const STRETCH_DURATION = 2500; // 伸懒腰持续时间
+export const DREAM_TALK_INTERVAL = 15000; // 梦话间隔时间（毫秒）
+
 // 不允许移动的状态
 export const NON_MOVING_STATES = [
   "sleeping",
@@ -51,4 +57,7 @@ export const NON_MOVING_STATES = [
   "hide",
   "dancing",
   "rolling",
+  "yawn",
+  "sleepy",
+  "stretch",
 ] as const;

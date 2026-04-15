@@ -2287,3 +2287,206 @@
     transform: scale(0.95);
   }
 }
+
+/* ========================================
+   YAWN EFFECTS - 打哈欠效果
+   ======================================== */
+.yawn-effects {
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.yawn-icon {
+  font-size: 24px;
+  animation: yawn-float 2s ease-in-out infinite;
+}
+@keyframes yawn-float {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+.pet-yawn .pet-body {
+  animation: yawn-body 2s ease-in-out;
+}
+@keyframes yawn-body {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(-5px) scale(1.02);
+  }
+  60% {
+    transform: translateY(0) scale(1);
+  }
+}
+.pet-yawn .eye {
+  transform: scaleY(0.3);
+}
+.pet-yawn .mouth-smile {
+  display: none;
+}
+.pet-yawn .mouth-o {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  animation: yawn-mouth 2s ease-in-out;
+}
+@keyframes yawn-mouth {
+  0% {
+    width: 10px;
+    height: 10px;
+  }
+  30%,
+  70% {
+    width: 16px;
+    height: 16px;
+  }
+  100% {
+    width: 10px;
+    height: 10px;
+  }
+}
+.pet-yawn .arm-left {
+  /* 左手捂嘴 */
+  transform: rotate(30deg) translateX(5px) translateY(-10px);
+}
+.pet-yawn .arm-right {
+  transform: rotate(-20deg);
+  /* 右手下垂 */
+  
+}
+
+/* ========================================
+   SLEEPY EFFECTS - 睡眼朦胧效果
+   ======================================== */
+.sleepy-effects {
+  position: absolute;
+  top: -35px;
+  right: -15px;
+  pointer-events: none;
+}
+.sleepy-icon {
+  font-size: 24px;
+  animation: sleepy-float 3s ease-in-out infinite;
+}
+@keyframes sleepy-float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-10px) scale(1.1);
+    opacity: 1;
+  }
+}
+.pet-sleepy .pet-body {
+  animation: sleepy-sway 0.8s ease-in-out infinite;
+}
+@keyframes sleepy-sway {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+.pet-sleepy .eye {
+  transform: scaleY(0.2);
+}
+.pet-sleepy .mouth-smile {
+  width: 8px;
+  height: 4px;
+  border-radius: 0 0 50% 50%;
+}
+
+/* ========================================
+   STRETCH EFFECTS - 伸懒腰效果
+   ======================================== */
+.stretch-effects {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.stretch-icon {
+  font-size: 24px;
+  animation: stretch-sparkle 2.5s ease-in-out;
+}
+@keyframes stretch-sparkle {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  30% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+}
+.pet-stretch .pet-body {
+  animation: stretch-body 2.5s ease-in-out;
+}
+@keyframes stretch-body {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  30%,
+  70% {
+    transform: scaleY(1.1);
+  }
+}
+.pet-stretch .eye {
+  transform: scaleY(0.5);
+}
+.pet-stretch .mouth-smile {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+@keyframes stretch-arm-up {
+  0%,
+  100% {
+    transform: rotate(20deg);
+  }
+  30%,
+  70% {
+    transform: rotate(-80deg) translateY(-15px);
+  }
+}
+@keyframes stretch-arm-up-right {
+  0%,
+  100% {
+    transform: rotate(-20deg);
+  }
+  30%,
+  70% {
+    transform: rotate(80deg) translateY(-15px);
+  }
+}
+.pet-stretch .arm-left {
+  animation: stretch-arm-up 2.5s ease-in-out;
+}
+.pet-stretch .arm-right {
+  animation: stretch-arm-up-right 2.5s ease-in-out;
+}

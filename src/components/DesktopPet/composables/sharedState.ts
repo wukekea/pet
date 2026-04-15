@@ -25,3 +25,9 @@ export const mousePosition = ref<PetPosition>({ x: 0, y: 0 });
 
 // 调试面板是否打开 - 打开时禁用自动穿透控制
 export const isDebugPanelOpen = ref(false);
+
+// 作息相关状态
+export const isInSleepSchedule = ref(false); // 当前是否处于睡眠作息时间段
+export const scheduleEnabled = ref(false); // 作息功能是否启用
+export const dreamTalkTimerId = ref<number | null>(null); // 梦话定时器
+export const scheduleEndTime = ref<number | null>(null); // 当前作息结束时间（毫秒时间戳）
