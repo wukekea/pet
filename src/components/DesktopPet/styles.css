@@ -863,8 +863,8 @@
 
 .peek-effects {
   position: absolute;
-  top: -30px;
-  left: 60%;
+  top: -35px;
+  left: 55%;
   pointer-events: none;
 }
 
@@ -876,7 +876,7 @@
 .sneeze-cloud,
 .grin-text,
 .scratch-icon,
-.peek-eyes {
+.peek-icon {
   display: block;
 }
 
@@ -1717,7 +1717,7 @@
 }
 
 .pet-peek .pet-body {
-  transform: scaleX(0.6) translateX(25%);
+  transform: translateX(5px);
 }
 
 @keyframes peek-look {
@@ -1732,6 +1732,24 @@
 
 .pet-peek .eye {
   animation: peek-look 1s ease-in-out infinite;
+}
+
+/* 偷看效果 */
+@keyframes peek-shy {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-5px) scale(1.1);
+    opacity: 1;
+  }
+}
+
+.peek-icon {
+  animation: peek-shy 1.5s ease-in-out infinite;
+  font-size: 24px;
 }
 
 /* 效果动画 */
@@ -1994,20 +2012,6 @@
 
 .confetti-3 {
   animation-delay: 0.4s;
-}
-
-@keyframes peek-blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.3;
-  }
-}
-
-.peek-eyes {
-  animation: peek-blink 0.5s ease-in-out infinite;
 }
 
 @keyframes tear-fall {

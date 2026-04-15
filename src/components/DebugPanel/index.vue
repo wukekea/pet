@@ -67,7 +67,7 @@ const actionGroups = [
     name: "特殊状态",
     actions: [
       { state: "celebrate" as PetState, label: "庆祝", icon: "★" },
-      { state: "peek" as PetState, label: "偷看", icon: "◉" },
+      { state: "peek" as PetState, label: "偷看", icon: "🤫" },
       { state: "chase" as PetState, label: "追逐", icon: "→" },
       { state: "hide" as PetState, label: "躲藏", icon: "▢" },
       { state: "dancing" as PetState, label: "跳舞", icon: "♪" },

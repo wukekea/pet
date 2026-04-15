@@ -275,9 +275,9 @@ defineExpose({
         <span class="confetti confetti-3">✨</span>
       </div>
 
-      <!-- 像看效果 -->
+      <!-- 偷看效果 -->
       <div class="peek-effects" v-if="petState === 'peek'">
-        <span class="peek-eyes">👀</span>
+        <span class="peek-icon">🤫</span>
       </div>
 
       <!-- 跳舞效果 -->
