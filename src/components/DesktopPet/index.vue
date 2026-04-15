@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, watch, ref } from "vue";
+import { computed, onMounted, onBeforeUnmount, ref } from "vue";
 import { getFootprintOpacity } from "./composables/useFootprints";
 // 状态变量从 sharedState 导入
 import {
@@ -16,7 +16,6 @@ import {
   handleDragStart,
   handlePetClick,
   handlePetDoubleClick,
-  togglePet,
   initScreenSize,
   initPet,
   cleanupPet,
@@ -74,14 +73,8 @@ onBeforeUnmount(() => {
   cleanupPet();
 });
 
-// 监听可见性变化，保存到存储
-watch(isVisible, (value) => {
-  localStorage.setItem("pet-visibility", String(value));
-});
-
 // 暴露方法供外部调用
 defineExpose({
-  togglePet,
   isVisible,
 });
 
@@ -453,11 +446,6 @@ onBeforeUnmount(() => {
             <div class="menu-item" @click="openScheduleModal">
               <span class="menu-icon">🌙</span>
               <span class="menu-text">作息设置</span>
-            </div>
-            <div class="menu-divider"></div>
-            <div class="menu-item" @click="togglePet(); closeContextMenu()">
-              <span class="menu-icon">{{ isVisible ? '💫' : '✨' }}</span>
-              <span class="menu-text">{{ isVisible ? '休息一下' : '出来玩' }}</span>
             </div>
           </div>
         </div>

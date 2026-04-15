@@ -519,10 +519,6 @@ export function initPet(checkSystemThemeFn: () => void) {
   window
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", checkSystemThemeFn);
-  const savedState = localStorage.getItem("pet-visibility");
-  if (savedState !== null) {
-    isVisible.value = savedState === "true";
-  }
 
   // 启动作息监控
   startScheduleMonitor();
