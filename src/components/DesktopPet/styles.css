@@ -113,7 +113,7 @@
 }
 
 .pet-left .ear-right {
-  transform: rotate(15deg) translateX(2px) ;
+  transform: rotate(15deg) translateX(2px);
 }
 
 /* 向左转时：右手在前 */
@@ -847,7 +847,7 @@
   gap: 5px;
 }
 
-.yawn-effects {
+.grin-effects {
   position: absolute;
   top: -25px;
   right: -15px;
@@ -874,7 +874,7 @@
 .confused-icon,
 .wave,
 .sneeze-cloud,
-.yawn-text,
+.grin-text,
 .scratch-icon,
 .peek-eyes {
   display: block;
@@ -1453,18 +1453,17 @@
   animation: thinking-sway 2s ease-in-out infinite;
 }
 
-
 .pet-thinking .arm-left {
   transform: rotate(30deg) translateX(5px) translateY(-8px);
   animation: thinking-chin 2s ease-in-out infinite;
 }
 
 .pet-thinking .arm-right {
- 
 }
 
 @keyframes thinking-chin {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(30deg) translateX(5px) translateY(-8px);
   }
   50% {
@@ -1611,7 +1610,7 @@
   border-radius: 50%;
 }
 
-@keyframes yawn-stretch {
+@keyframes grin-stretch {
   0%,
   100% {
     transform: scale(1);
@@ -1621,25 +1620,25 @@
   }
 }
 
-.pet-yawn .pet-body {
-  animation: yawn-stretch 2s ease-in-out infinite;
+.pet-grin .pet-body {
+  animation: grin-stretch 2s ease-in-out infinite;
 }
 
-.pet-yawn .eye {
+.pet-grin .eye {
   transform: scaleY(0.3);
 }
 
-.pet-yawn .mouth-smile {
+.pet-grin .mouth-smile {
   width: 14px;
   height: 14px;
   border-radius: 50%;
 }
 
-.pet-yawn .arm-left {
+.pet-grin .arm-left {
   transform: rotate(-60deg) translateY(-5px);
 }
 
-.pet-yawn .arm-right {
+.pet-grin .arm-right {
   transform: rotate(60deg) translateY(-5px);
 }
 
@@ -1941,7 +1940,7 @@
   animation: sneeze-puff 0.5s ease-out infinite;
 }
 
-@keyframes yawn-float {
+@keyframes grin-float {
   0%,
   100% {
     transform: translateY(0);
@@ -1953,8 +1952,8 @@
   }
 }
 
-.yawn-text {
-  animation: yawn-float 2s ease-in-out infinite;
+.grin-text {
+  animation: grin-float 2s ease-in-out infinite;
 }
 
 @keyframes scratch-bounce {

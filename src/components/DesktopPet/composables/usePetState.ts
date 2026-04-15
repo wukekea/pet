@@ -22,7 +22,7 @@ import {
   SNEEZE_DURATION,
   THINKING_DURATION,
   WALK_SPEED,
-  YAWN_DURATION,
+  GRIN_DURATION,
 } from "../constants";
 import type { PetState } from "../types";
 import {
@@ -72,7 +72,7 @@ const NON_MOVING_STATES: PetState[] = [
   "confused",
   "hello",
   "sneeze",
-  "yawn",
+  "grin",
   "scratch",
   "celebrate",
   "peek",
@@ -143,7 +143,7 @@ export function changeState(newState: PetState) {
           else if (random < 0.55) changeState("confused");
           else if (random < 0.6) changeState("hello");
           else if (random < 0.65) changeState("sneeze");
-          else if (random < 0.7) changeState("yawn");
+          else if (random < 0.7) changeState("grin");
           else if (random < 0.75) changeState("scratch");
           else if (random < 0.8) changeState("celebrate");
           else if (random < 0.85) changeState("peek");
@@ -220,10 +220,10 @@ export function changeState(newState: PetState) {
     case "sneeze":
       setTimeout(() => changeState("idle"), SNEEZE_DURATION);
       break;
-    case "yawn":
+    case "grin":
       stateTimer.value = window.setTimeout(
         () => changeState("idle"),
-        YAWN_DURATION,
+        GRIN_DURATION,
       );
       break;
     case "scratch":

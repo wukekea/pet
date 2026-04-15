@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { changeState } from "../DesktopPet/composables/usePetState";
-import { petState, isDebugPanelOpen } from "../DesktopPet/composables/sharedState";
+import {
+  petState,
+  isDebugPanelOpen,
+} from "../DesktopPet/composables/sharedState";
 import { isDark } from "../DesktopPet/composables/useTheme";
 import type { PetState } from "../DesktopPet/types";
 
@@ -488,11 +491,7 @@ defineExpose({
 
 /* 激活状态 */
 .action-btn.active {
-  background: linear-gradient(
-    145deg,
-    #8b5cf6 0%,
-    #7c3aed 100%
-  );
+  background: linear-gradient(145deg, #8b5cf6 0%, #7c3aed 100%);
   box-shadow:
     0 4px 12px rgba(139, 92, 246, 0.4),
     0 2px 4px rgba(0, 0, 0, 0.1),

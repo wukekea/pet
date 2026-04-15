@@ -20,7 +20,7 @@ export const SHY_DURATION = 2000;
 export const CONFUSED_DURATION = 2000;
 export const HELLO_DURATION = 1500;
 export const SNEEZE_DURATION = 1000;
-export const YAWN_DURATION = 2000;
+export const GRIN_DURATION = 2000;
 export const SCRATCH_DURATION = 2000;
 export const CELEBRATE_DURATION = 3000;
 export const PEEK_DURATION = 3000;
@@ -43,7 +43,7 @@ export const NON_MOVING_STATES = [
   "confused",
   "hello",
   "sneeze",
-  "yawn",
+  "grin",
   "scratch",
   "celebrate",
   "peek",

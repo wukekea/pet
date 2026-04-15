@@ -15,7 +15,7 @@ export type PetState =
   | "confused"
   | "hello"
   | "sneeze"
-  | "yawn"
+  | "grin"
   | "scratch"
   | "celebrate"
   | "peek"

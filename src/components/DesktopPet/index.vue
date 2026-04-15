@@ -251,9 +251,9 @@ defineExpose({
         <span class="sneeze-text">阿嚏!</span>
       </div>
 
-      <!-- 打哈欠效果 -->
-      <div class="yawn-effects" v-if="petState === 'yawn'">
-        <span class="yawn-text">哈~</span>
+      <!-- 坏笑效果 -->
+      <div class="grin-effects" v-if="petState === 'grin'">
+        <span class="grin-text">嘿嘿~</span>
       </div>
 
       <!-- 挠头效果 -->
