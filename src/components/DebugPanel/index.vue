@@ -59,7 +59,7 @@ const actionGroups = [
       { state: "confused" as PetState, label: "疑惑", icon: "?" },
       { state: "hello" as PetState, label: "招呼", icon: "⌒" },
       { state: "sneeze" as PetState, label: "喷嚏", icon: "~" },
-      { state: "yawn" as PetState, label: "哈欠", icon: "○" },
+      { state: "grin" as PetState, label: "坏笑", icon: "◡" },
       { state: "scratch" as PetState, label: "挠头", icon: "?" },
     ],
   },
