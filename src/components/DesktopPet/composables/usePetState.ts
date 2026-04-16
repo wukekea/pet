@@ -407,10 +407,8 @@ export function handlePetClick() {
   if (isDragging.value) return;
   // 睡眠作息期间，只响应睡眼朦胧表情
   if (petState.value === "sleeping" || petState.value === "sleepy") {
-    // 睡眠或睡眼朦胧期间点击，继续显示睡眼朦胧状态
+    // 睡眠或睡眼朦胧期间点击，显示睡眼朦胧状态和专有对话
     changeState("sleepy");
-    // 显示梦话
-    showCustomDialogue(getDreamTalk());
   } else {
     const reactions: PetState[] = [
       "happy",
@@ -430,7 +428,6 @@ export function handlePetDoubleClick() {
   // 睡眠作息期间，只响应睡眼朦胧表情
   if (petState.value === "sleeping" || petState.value === "sleepy") {
     changeState("sleepy");
-    showCustomDialogue(getDreamTalk());
     return;
   }
   // 双击触发跳舞或翻滚
