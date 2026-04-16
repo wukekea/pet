@@ -2,6 +2,13 @@ import { ref } from "vue";
 import { dialogueMessages, dreamTalkMessages } from "../dialogues";
 import { petState } from "./sharedState";
 import { isDragging } from "./sharedState";
+import {
+  getTimePeriod,
+  TIME_PERIOD_MORNING,
+  TIME_PERIOD_NOON,
+  TIME_PERIOD_AFTERNOON,
+  TIME_PERIOD_DAWN,
+} from "@/constants/time";
 
 // 对话气泡状态
 export const dialogueText = ref<string | null>(null);
@@ -10,15 +17,20 @@ export const isDialogueVisible = ref(false);
 
 // 根据时间获取问候语
 export function getTimeGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 11) {
-    return "早上好！";
-  } else if (hour >= 11 && hour < 13) {
-    return "中午好！";
-  } else if (hour >= 13 && hour < 18) {
-    return "下午好！";
-  } else {
-    return "晚上好！";
+  const period = getTimePeriod();
+
+  switch (period) {
+    case TIME_PERIOD_MORNING:
+      return "早上好！";
+    case TIME_PERIOD_NOON:
+      return "中午好！";
+    case TIME_PERIOD_AFTERNOON:
+      return "下午好！";
+    case TIME_PERIOD_DAWN:
+      return "这么晚了还不睡吗？";
+    default:
+      // 黄昏和夜晚合并为晚上好
+      return "晚上好！";
   }
 }
 
