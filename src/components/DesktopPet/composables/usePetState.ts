@@ -141,9 +141,11 @@ export function moveToRandomPosition() {
   petState.value = "walking";
 }
 // 改变宠物状态
-export function changeState(newState: PetState) {
+export function changeState(newState: PetState, skipDialogue = false) {
   petState.value = newState;
-  showDialogue();
+  if (!skipDialogue) {
+    showDialogue();
+  }
   if (stateTimer.value) {
     clearTimeout(stateTimer.value);
   }
@@ -556,14 +558,18 @@ export function initPet(checkSystemThemeFn: () => void) {
     animate();
     // 每次启动都打招呼
     setTimeout(() => {
-      // 如果处于睡眠作息，不打招呼直接进入睡眠
+      // 显示问候语
+      const greeting = getTimeGreeting();
+      showCustomDialogue(greeting);
+
       if (isInSleepSchedule.value) {
-        changeState("sleeping");
+        // 睡眠作息：打招呼 -> 停顿 -> 打哈欠 -> 睡眠
+        changeState("hello", true);
+        setTimeout(() => {
+          changeState("yawn", true);
+        }, HELLO_DURATION + 1500);
       } else {
-        changeState("hello");
-        // 显示问候语
-        const greeting = getTimeGreeting();
-        showCustomDialogue(greeting);
+        changeState("hello", true);
       }
     }, 500);
   }
