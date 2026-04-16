@@ -438,7 +438,10 @@ export function handleDragStart(e: MouseEvent) {
     y: e.clientY - position.value.y,
   };
   if (stateTimer.value) clearTimeout(stateTimer.value);
-  petState.value = "walking";
+  // 睡眠状态下拖拽时保持睡眠状态，不改为 walking
+  if (petState.value !== "sleeping") {
+    petState.value = "walking";
+  }
   window.addEventListener("mousemove", handleDragging);
   window.addEventListener("mouseup", handleDragEnd);
 }
@@ -471,7 +474,12 @@ function handleDragEnd() {
   window.removeEventListener("mouseup", handleDragEnd);
   // 恢复正面朝向
   petDirection.value = "front";
-  changeState("idle");
+  // 睡眠状态下拖拽结束后恢复睡眠状态
+  if (petState.value === "sleeping") {
+    changeState("sleeping");
+  } else {
+    changeState("idle");
+  }
 }
 // 切换宠物显示
 export function togglePet() {
