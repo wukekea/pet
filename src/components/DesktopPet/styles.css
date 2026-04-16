@@ -2411,6 +2411,69 @@
 }
 
 /* ========================================
+   SLEEPWALKING - 睡眠行走状态
+   ======================================== */
+.pet-sleepwalking .pet-body {
+  animation: walk 0.4s ease-in-out infinite;
+}
+
+.pet-sleepwalking .pet-eyes {
+  display: flex;
+}
+
+.pet-sleepwalking .eye {
+  transform: scaleY(0.2);
+}
+
+.pet-sleepwalking .mouth-smile {
+  width: 8px;
+  height: 4px;
+  border-radius: 0 0 50% 50%;
+}
+
+.pet-sleepwalking .arm-left {
+  animation: arm-swing-left 0.4s ease-in-out infinite;
+}
+
+.pet-sleepwalking .arm-right {
+  animation: arm-swing-right 0.4s ease-in-out infinite;
+}
+
+.pet-sleepwalking .leg-left {
+  animation: leg-move-left 0.4s ease-in-out infinite;
+}
+
+.pet-sleepwalking .leg-right {
+  animation: leg-move-right 0.4s ease-in-out infinite;
+}
+
+/* ========================================
+   SLEEPWALKING EFFECTS - 睡眠行走效果
+   ======================================== */
+.sleepwalking-effects {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.sleepwalking-icon {
+  font-size: 20px;
+  animation: sleepwalking-sparkle 0.8s ease-in-out infinite;
+}
+@keyframes sleepwalking-sparkle {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1.1);
+  }
+}
+
+/* ========================================
    STRETCH EFFECTS - 伸懒腰效果
    ======================================== */
 .stretch-effects {

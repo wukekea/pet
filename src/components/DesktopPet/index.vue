@@ -465,6 +465,11 @@ onBeforeUnmount(() => {
         <span class="sleepy-icon">💤</span>
       </div>
 
+      <!-- 睡眠行走效果 -->
+      <div class="sleepwalking-effects" v-if="petState === 'sleepwalking'">
+        <span class="sleepwalking-icon">💤</span>
+      </div>
+
       <!-- 伸懒腰效果 -->
       <div class="stretch-effects" v-if="petState === 'stretch'">
         <span class="stretch-icon">✨</span>

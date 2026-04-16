@@ -6,6 +6,7 @@ import {
   CRYING_DURATION,
   DANCING_DURATION,
   FALLEN_DURATION,
+  GRIN_DURATION,
   HAPPY_DURATION,
   HELLO_DURATION,
   HIDE_DURATION,
@@ -18,46 +19,45 @@ import {
   SCRATCH_DURATION,
   SHY_DURATION,
   SLEEP_DURATION,
+  SLEEPY_DURATION,
   SMUG_DURATION,
   SNEEZE_DURATION,
+  STRETCH_DURATION,
   THINKING_DURATION,
   WALK_SPEED,
-  GRIN_DURATION,
   YAWN_DURATION,
-  SLEEPY_DURATION,
-  STRETCH_DURATION,
 } from "../constants";
 import type { PetState } from "../types";
 import {
   animationFrameId,
-  isDebugPanelOpen,
-  isScheduleModalOpen,
   isContextMenuOpen,
+  isDebugPanelOpen,
   isDragging,
+  isInSleepSchedule,
+  isScheduleModalOpen,
   isVisible,
   mousePosition,
   petDirection,
   petState,
   position,
+  scheduleEnabled,
   screenSize,
   stateTimer,
   targetPosition,
-  isInSleepSchedule,
-  scheduleEnabled,
 } from "./sharedState";
 
 import {
-  showDialogue,
+  getDreamTalk,
   getTimeGreeting,
   showCustomDialogue,
-  getDreamTalk,
+  showDialogue,
 } from "./useDialogue";
 import { addFootprint, cleanupFootprints } from "./useFootprints";
 import {
+  onSleepEnd,
+  onSleepStart,
   startScheduleMonitor,
   stopScheduleMonitor,
-  onSleepStart,
-  onSleepEnd,
 } from "./useSchedule";
 
 // 内部函数定义
@@ -342,6 +342,9 @@ export function changeState(newState: PetState) {
         changeState("idle");
       }, STRETCH_DURATION);
       break;
+    case "sleepwalking":
+      // 睡眠行走状态下不需要定时器，保持该状态直到拖拽结束
+      break;
   }
 }
 // 动画循环
@@ -445,8 +448,10 @@ export function handleDragStart(e: MouseEvent) {
     y: e.clientY - position.value.y,
   };
   if (stateTimer.value) clearTimeout(stateTimer.value);
-  // 睡眠或睡眼朦胧状态下拖拽时保持当前状态，不改为 walking
-  if (petState.value !== "sleeping" && petState.value !== "sleepy") {
+  // 睡眠状态下拖拽时进入睡眠行走状态（手脚会动，眼睛像睡眼朦胧）
+  if (petState.value === "sleeping" || petState.value === "sleepy") {
+    petState.value = "sleepwalking";
+  } else {
     petState.value = "walking";
   }
   window.addEventListener("mousemove", handleDragging);
@@ -481,8 +486,12 @@ function handleDragEnd() {
   window.removeEventListener("mouseup", handleDragEnd);
   // 恢复正面朝向
   petDirection.value = "front";
-  // 睡眠或睡眼朦胧状态下拖拽结束后恢复睡眠状态
-  if (petState.value === "sleeping" || petState.value === "sleepy") {
+  // 睡眠行走状态下拖拽结束后恢复睡眠状态
+  if (
+    petState.value === "sleepwalking" ||
+    petState.value === "sleeping" ||
+    petState.value === "sleepy"
+  ) {
     changeState("sleeping");
   } else {
     changeState("idle");
