@@ -400,8 +400,9 @@ export function animate() {
 // 点击宠物
 export function handlePetClick() {
   if (isDragging.value) return;
-  if (petState.value === "sleeping") {
-    // 睡眠期间点击，触发睡眼朦胧状态
+  // 睡眠作息期间，只响应睡眼朦胧表情
+  if (petState.value === "sleeping" || petState.value === "sleepy") {
+    // 睡眠或睡眼朦胧期间点击，继续显示睡眼朦胧状态
     changeState("sleepy");
     // 显示梦话
     showCustomDialogue(getDreamTalk());
@@ -421,6 +422,12 @@ export function handlePetClick() {
 // 双击宠物 - 触发特殊动作
 export function handlePetDoubleClick() {
   if (isDragging.value) return;
+  // 睡眠作息期间，只响应睡眼朦胧表情
+  if (petState.value === "sleeping" || petState.value === "sleepy") {
+    changeState("sleepy");
+    showCustomDialogue(getDreamTalk());
+    return;
+  }
   // 双击触发跳舞或翻滚
   const specialActions: PetState[] = ["dancing", "rolling"];
   changeState(
@@ -438,8 +445,8 @@ export function handleDragStart(e: MouseEvent) {
     y: e.clientY - position.value.y,
   };
   if (stateTimer.value) clearTimeout(stateTimer.value);
-  // 睡眠状态下拖拽时保持睡眠状态，不改为 walking
-  if (petState.value !== "sleeping") {
+  // 睡眠或睡眼朦胧状态下拖拽时保持当前状态，不改为 walking
+  if (petState.value !== "sleeping" && petState.value !== "sleepy") {
     petState.value = "walking";
   }
   window.addEventListener("mousemove", handleDragging);
@@ -474,8 +481,8 @@ function handleDragEnd() {
   window.removeEventListener("mouseup", handleDragEnd);
   // 恢复正面朝向
   petDirection.value = "front";
-  // 睡眠状态下拖拽结束后恢复睡眠状态
-  if (petState.value === "sleeping") {
+  // 睡眠或睡眼朦胧状态下拖拽结束后恢复睡眠状态
+  if (petState.value === "sleeping" || petState.value === "sleepy") {
     changeState("sleeping");
   } else {
     changeState("idle");
