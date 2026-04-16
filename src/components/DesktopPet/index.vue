@@ -194,10 +194,39 @@ const handleTimeChange = (type: "hour" | "minute", e: Event) => {
     newValue = max;
   }
 
-  // 更新输入框的显示值
-  target.value = newValue.toString();
+  // 更新输入框的显示值（补零到两位）
+  target.value = newValue.toString().padStart(2, "0");
 
   return newValue;
+};
+
+// 格式化时间显示为两位数字
+const formatTime = (value: number) => {
+  return value.toString().padStart(2, "0");
+};
+
+// 增减时间值
+const adjustTime = (
+  slot: {
+    startHour: number;
+    startMinute: number;
+    endHour: number;
+    endMinute: number;
+    state: string;
+  },
+  field: "startHour" | "startMinute" | "endHour" | "endMinute",
+  delta: number,
+) => {
+  const max = field.includes("Hour") ? 23 : 59;
+  let newValue = slot[field] + delta;
+
+  if (newValue > max) {
+    newValue = 0;
+  } else if (newValue < 0) {
+    newValue = max;
+  }
+
+  slot[field] = newValue;
 };
 
 // 生命周期
@@ -542,46 +571,118 @@ onBeforeUnmount(() => {
                     </div>
                     <div class="slot-time-inputs">
                       <div class="time-group">
-                        <input
-                          type="number"
-                          :value="slot.startHour"
-                          @input="
-                            (e) =>
-                              (slot.startHour = handleTimeChange('hour', e))
-                          "
-                          class="time-input"
-                        />
+                        <div class="time-input-wrapper">
+                          <input
+                            type="text"
+                            inputmode="numeric"
+                            :value="formatTime(slot.startHour)"
+                            @input="
+                              (e) =>
+                                (slot.startHour = handleTimeChange('hour', e))
+                            "
+                            class="time-input"
+                          />
+                          <div class="time-controls">
+                            <button
+                              class="time-btn time-btn-up"
+                              @click.stop="adjustTime(slot, 'startHour', 1)"
+                            >
+                              ▲
+                            </button>
+                            <button
+                              class="time-btn time-btn-down"
+                              @click.stop="adjustTime(slot, 'startHour', -1)"
+                            >
+                              ▼
+                            </button>
+                          </div>
+                        </div>
                         <span class="time-colon">:</span>
-                        <input
-                          type="number"
-                          :value="slot.startMinute"
-                          @input="
-                            (e) =>
-                              (slot.startMinute = handleTimeChange('minute', e))
-                          "
-                          class="time-input"
-                        />
+                        <div class="time-input-wrapper">
+                          <input
+                            type="text"
+                            inputmode="numeric"
+                            :value="formatTime(slot.startMinute)"
+                            @input="
+                              (e) =>
+                                (slot.startMinute = handleTimeChange(
+                                  'minute',
+                                  e,
+                                ))
+                            "
+                            class="time-input"
+                          />
+                          <div class="time-controls">
+                            <button
+                              class="time-btn time-btn-up"
+                              @click.stop="adjustTime(slot, 'startMinute', 1)"
+                            >
+                              ▲
+                            </button>
+                            <button
+                              class="time-btn time-btn-down"
+                              @click.stop="adjustTime(slot, 'startMinute', -1)"
+                            >
+                              ▼
+                            </button>
+                          </div>
+                        </div>
                       </div>
                       <span class="time-arrow">→</span>
                       <div class="time-group">
-                        <input
-                          type="number"
-                          :value="slot.endHour"
-                          @input="
-                            (e) => (slot.endHour = handleTimeChange('hour', e))
-                          "
-                          class="time-input"
-                        />
+                        <div class="time-input-wrapper">
+                          <input
+                            type="text"
+                            inputmode="numeric"
+                            :value="formatTime(slot.endHour)"
+                            @input="
+                              (e) =>
+                                (slot.endHour = handleTimeChange('hour', e))
+                            "
+                            class="time-input"
+                          />
+                          <div class="time-controls">
+                            <button
+                              class="time-btn time-btn-up"
+                              @click.stop="adjustTime(slot, 'endHour', 1)"
+                            >
+                              ▲
+                            </button>
+                            <button
+                              class="time-btn time-btn-down"
+                              @click.stop="adjustTime(slot, 'endHour', -1)"
+                            >
+                              ▼
+                            </button>
+                          </div>
+                        </div>
                         <span class="time-colon">:</span>
-                        <input
-                          type="number"
-                          :value="slot.endMinute"
-                          @input="
-                            (e) =>
-                              (slot.endMinute = handleTimeChange('minute', e))
-                          "
-                          class="time-input"
-                        />
+                        <div class="time-input-wrapper">
+                          <input
+                            type="text"
+                            inputmode="numeric"
+                            :value="formatTime(slot.endMinute)"
+                            @input="
+                              (e) =>
+                                (slot.endMinute = handleTimeChange('minute', e))
+                            "
+                            class="time-input"
+                          />
+                          <div class="time-controls">
+                            <button
+                              class="time-btn time-btn-up"
+                              @click.stop="adjustTime(slot, 'endMinute', 1)"
+                            >
+                              ▲
+                            </button>
+                            <button
+                              class="time-btn time-btn-down"
+                              @click.stop="adjustTime(slot, 'endMinute', -1)"
+                            >
+                              ▼
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <select v-model="slot.state" class="state-select">
@@ -1085,9 +1186,15 @@ onBeforeUnmount(() => {
   gap: 2px;
 }
 
+.time-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .time-input {
   width: 50px;
-  padding: 6px 4px;
+  padding: 6px 18px 6px 4px;
   border: 1px solid
     v-bind("isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.15)'");
   border-radius: 8px;
@@ -1105,6 +1212,46 @@ onBeforeUnmount(() => {
   outline: none;
   border-color: #8b5cf6;
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+.time-controls {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.time-btn {
+  width: 14px;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: v-bind("isDark ? '#a78bfa' : '#8b5cf6'");
+  font-size: 8px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.time-btn:hover {
+  opacity: 1;
+  background: v-bind(
+    "isDark ? 'rgba(167, 139, 250, 0.15)' : 'rgba(139, 92, 246, 0.1)'"
+  );
+  border-radius: 2px;
+}
+
+.time-btn:active {
+  transform: scale(0.9);
 }
 
 .time-colon {
