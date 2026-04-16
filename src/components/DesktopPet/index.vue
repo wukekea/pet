@@ -482,6 +482,10 @@ onBeforeUnmount(() => {
       :class="{
         'dialogue-visible': isDialogueVisible,
         'dialogue-left': petDirection === 'left',
+        'dialogue-cloud':
+          petState === 'sleeping' ||
+          petState === 'sleepy' ||
+          petState === 'yawn',
       }"
       :style="{
         left: `${position.x + 40}px`,
@@ -1433,6 +1437,129 @@ onBeforeUnmount(() => {
   }
   100% {
     opacity: 0;
+  }
+}
+
+/* ========================================
+   梦幻云朵对话气泡（睡眠状态专用）
+   ======================================== */
+
+/* 云朵主体 */
+.dialogue-bubble.dialogue-cloud {
+  border-radius: 24px;
+  padding: 10px 16px;
+  background: v-bind(
+    "isDark ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.2) 50%, rgba(236, 72, 153, 0.15) 100%)' : 'linear-gradient(135deg, rgba(224, 231, 255, 0.98) 0%, rgba(252, 231, 243, 0.98) 50%, rgba(255, 241, 224, 0.98) 100%)'"
+  );
+  box-shadow:
+    0 8px 32px
+      v-bind("isDark ? 'rgba(99, 102, 241, 0.3)' : 'rgba(168, 85, 247, 0.15)'"),
+    inset 0 1px 0
+      v-bind("isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.8)'"),
+    0 0 0 1px
+      v-bind("isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(199, 210, 254, 0.5)'");
+  animation: cloud-float 3s ease-in-out infinite;
+  position: relative;
+}
+
+/* 云朵顶部蓬松凸起 */
+.dialogue-bubble.dialogue-cloud::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 20%;
+  width: 20px;
+  height: 20px;
+  background: v-bind(
+    "isDark ? 'rgba(99, 102, 241, 0.25)' : 'rgba(224, 231, 255, 0.98)'"
+  );
+  border-radius: 50%;
+  box-shadow:
+    18px 2px 0 4px
+      v-bind("isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(237, 233, 254, 0.98)'"),
+    35px 5px 0 2px
+      v-bind(
+        "isDark ? 'rgba(168, 85, 247, 0.18)' : 'rgba(252, 231, 243, 0.98)'"
+      );
+  z-index: -1;
+}
+
+/* 云朵左侧蓬松凸起 */
+.dialogue-bubble.dialogue-cloud::after {
+  content: "";
+  position: absolute;
+  top: 20%;
+  left: -12px;
+  width: 18px;
+  height: 18px;
+  background: v-bind(
+    "isDark ? 'rgba(139, 92, 246, 0.22)' : 'rgba(237, 233, 254, 0.98)'"
+  );
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* 云朵文字 */
+.dialogue-bubble.dialogue-cloud .dialogue-text {
+  position: relative;
+  color: v-bind("isDark ? '#c7d2fe' : '#6366f1'");
+  font-weight: 500;
+  text-shadow: 0 1px 2px
+    v-bind("isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.8)'");
+}
+
+/* 云朵气泡尾巴 - 连续小气泡 */
+.dialogue-bubble.dialogue-cloud .dialogue-tail {
+  position: absolute;
+  bottom: -6px;
+  left: 28%;
+  width: 6px;
+  height: 6px;
+  background: v-bind(
+    "isDark ? 'rgba(99, 102, 241, 0.25)' : 'rgba(224, 231, 255, 0.98)'"
+  );
+  border-radius: 50%;
+  transform: none;
+  clip-path: none;
+  box-shadow:
+    8px 7px 0 0
+      v-bind("isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(237, 233, 254, 0.95)'"),
+    16px 14px 0 -1px
+      v-bind("isDark ? 'rgba(168, 85, 247, 0.15)' : 'rgba(252, 231, 243, 0.9)'");
+}
+
+.dialogue-bubble.dialogue-cloud.dialogue-left .dialogue-tail {
+  left: 55%;
+}
+
+/* 云朵浮动动画 */
+@keyframes cloud-float {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-3px) scale(1.02);
+  }
+}
+
+.dialogue-bubble.dialogue-cloud.dialogue-visible {
+  animation:
+    cloud-appear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+    cloud-float 3s ease-in-out infinite 0.5s;
+}
+
+@keyframes cloud-appear {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.8);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-5px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
   }
 }
 </style>
