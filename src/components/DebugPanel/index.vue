@@ -6,7 +6,12 @@ import {
   isDebugPanelOpen,
 } from "../DesktopPet/composables/sharedState";
 import { isDark } from "../DesktopPet/composables/useTheme";
+import {
+  currentWeather,
+  setWeather,
+} from "../DesktopPet/composables/useWeather";
 import type { PetState } from "../DesktopPet/types";
+import type { WeatherType } from "../DesktopPet/types";
 
 // 设置鼠标穿透
 // passthrough: true = 启用穿透（点击穿透）
@@ -83,6 +88,20 @@ const actionGroups = [
     ],
   },
 ];
+
+// 天气选项
+const weatherOptions: { value: WeatherType; label: string; icon: string }[] = [
+  { value: "sunny", label: "晴天", icon: "☀️" },
+  { value: "cloudy", label: "多云", icon: "☁️" },
+  { value: "lightRain", label: "小雨", icon: "🌧️" },
+  { value: "heavyRain", label: "暴雨", icon: "⛈️" },
+  { value: "thunderstorm", label: "雷阵雨", icon: "🌩️" },
+  { value: "lightSnow", label: "小雪", icon: "🌨️" },
+  { value: "heavySnow", label: "大雪", icon: "❄️" },
+];
+
+// 当前天气
+const activeWeather = computed(() => currentWeather.value);
 
 // 触发状态
 const triggerState = (state: PetState) => {
@@ -213,6 +232,24 @@ defineExpose({
             >
               <span class="btn-icon">{{ action.icon }}</span>
               <span class="btn-label">{{ action.label }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 天气切换 -->
+        <div class="action-group">
+          <div class="group-title">天气效果</div>
+          <div class="action-buttons">
+            <button
+              v-for="weather in weatherOptions"
+              :key="weather.value"
+              class="action-btn"
+              :class="{ active: activeWeather === weather.value }"
+              @click="setWeather(weather.value)"
+              :title="weather.label"
+            >
+              <span class="btn-icon">{{ weather.icon }}</span>
+              <span class="btn-label">{{ weather.label }}</span>
             </button>
           </div>
         </div>

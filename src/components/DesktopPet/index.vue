@@ -28,6 +28,7 @@ import {
   updateScheduleConfig,
 } from "./composables/useSchedule";
 import type { ScheduleConfig } from "./types";
+import WeatherBackground from "./WeatherBackground.vue";
 import "./styles.css";
 
 // Electron API 类型声明
@@ -245,6 +246,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <!-- 天气背景 -->
+  <WeatherBackground />
+
   <div
     v-if="isVisible"
     class="desktop-pet"

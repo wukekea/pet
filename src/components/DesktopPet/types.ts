@@ -64,6 +64,16 @@ export interface ScheduleConfig {
   slots: TimeSlot[]; // 时间段配置列表
 }
 
+// 天气类型
+export type WeatherType =
+  | "sunny" // 晴天
+  | "cloudy" // 多云
+  | "lightRain" // 小雨
+  | "heavyRain" // 暴雨
+  | "thunderstorm" // 雷阵雨
+  | "lightSnow" // 小雪
+  | "heavySnow"; // 大雪
+
 // Electron API 类型声明
 declare global {
   interface Window {

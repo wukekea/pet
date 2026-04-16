@@ -1,0 +1,673 @@
+/* ========================================
+   WEATHER BACKGROUND - 天气背景效果
+   设计风格：柔美梦幻，仅在宠物周围显示
+   ======================================== */
+
+/* 基础容器 - 围绕宠物的小区域 */
+.weather-background {
+  position: fixed;
+  width: 240px;
+  height: 240px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible;
+  border-radius: 50%;
+}
+
+/* ========================================
+   晴天 SUNNY
+   温暖金色光芒，柔和光斑飘浮
+   ======================================== */
+.weather-sunny {
+  background: radial-gradient(
+    circle,
+    rgba(253, 230, 138, 0.25) 0%,
+    rgba(251, 191, 36, 0.15) 30%,
+    rgba(251, 191, 36, 0.05) 50%,
+    transparent 70%
+  );
+}
+
+.weather-sunny.dark-theme {
+  background: radial-gradient(
+    circle,
+    rgba(253, 230, 138, 0.15) 0%,
+    rgba(251, 191, 36, 0.08) 30%,
+    rgba(251, 191, 36, 0.03) 50%,
+    transparent 70%
+  );
+}
+
+.sunny-container {
+  position: absolute;
+  inset: 0;
+}
+
+/* 太阳 - 缩小尺寸 */
+.sun {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 50px;
+  height: 50px;
+}
+
+.sun-core {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    #fef08a,
+    #fbbf24 40%,
+    #f59e0b 70%,
+    #d97706 100%
+  );
+  box-shadow:
+    0 0 20px rgba(251, 191, 36, 0.8),
+    0 0 40px rgba(251, 191, 36, 0.4);
+  animation: sun-pulse 3s ease-in-out infinite;
+}
+
+.dark-theme .sun-core {
+  box-shadow:
+    0 0 15px rgba(253, 230, 138, 0.6),
+    0 0 30px rgba(253, 230, 138, 0.3);
+}
+
+@keyframes sun-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+  }
+}
+
+/* 太阳光芒 */
+.sun-rays {
+  position: absolute;
+  inset: 0;
+  animation: sun-rotate 30s linear infinite;
+}
+
+.ray {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(251, 191, 36, 0.7) 0%,
+    rgba(251, 191, 36, 0) 100%
+  );
+  transform-origin: left center;
+  transform: rotate(calc(var(--i) * 45deg)) translateX(15px);
+  border-radius: 0 2px 2px 0;
+}
+
+.dark-theme .ray {
+  background: linear-gradient(
+    90deg,
+    rgba(253, 230, 138, 0.4) 0%,
+    rgba(253, 230, 138, 0) 100%
+  );
+}
+
+@keyframes sun-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 光斑粒子 */
+.light-particles {
+  position: absolute;
+  inset: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(
+    circle,
+    rgba(251, 191, 36, 0.9) 0%,
+    rgba(251, 191, 36, 0) 70%
+  );
+  border-radius: 50%;
+  left: calc(var(--i) * 12%);
+  animation: particle-float 5s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.4s);
+}
+
+.dark-theme .particle {
+  background: radial-gradient(
+    circle,
+    rgba(253, 230, 138, 0.7) 0%,
+    rgba(253, 230, 138, 0) 70%
+  );
+}
+
+@keyframes particle-float {
+  0%,
+  100% {
+    top: 20%;
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    top: 50%;
+    opacity: 0.8;
+    transform: scale(0.8);
+  }
+  75% {
+    opacity: 0.4;
+  }
+  100% {
+    top: 75%;
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
+
+/* ========================================
+   多云 CLOUDY
+   柔软云朵飘动
+   ======================================== */
+.weather-cloudy {
+  background: radial-gradient(
+    circle,
+    rgba(226, 232, 240, 0.3) 0%,
+    rgba(203, 213, 225, 0.15) 40%,
+    transparent 70%
+  );
+}
+
+.weather-cloudy.dark-theme {
+  background: radial-gradient(
+    circle,
+    rgba(51, 65, 85, 0.2) 0%,
+    rgba(30, 41, 59, 0.1) 40%,
+    transparent 70%
+  );
+}
+
+.cloudy-container {
+  position: absolute;
+  inset: -20px;
+}
+
+.clouds {
+  position: absolute;
+  inset: 0;
+}
+
+/* 云朵样式 */
+.cloud {
+  position: absolute;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(241, 245, 249, 0.8) 50%,
+    rgba(226, 232, 240, 0.7) 100%
+  );
+  border-radius: 50px;
+  filter: blur(1px);
+  box-shadow:
+    0 4px 12px rgba(148, 163, 184, 0.1),
+    inset 0 2px 8px rgba(255, 255, 255, 0.8);
+}
+
+.dark-theme .cloud {
+  background: linear-gradient(
+    180deg,
+    rgba(71, 85, 105, 0.5) 0%,
+    rgba(51, 65, 85, 0.4) 50%,
+    rgba(30, 41, 59, 0.3) 100%
+  );
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 2px 8px rgba(100, 116, 139, 0.15);
+}
+
+.cloud-1 {
+  width: 80px;
+  height: 25px;
+  top: 15%;
+  left: -10px;
+  animation: cloud-drift 20s linear infinite;
+}
+
+.cloud-2 {
+  width: 60px;
+  height: 18px;
+  top: 35%;
+  right: 0;
+  animation: cloud-drift 25s linear infinite;
+  animation-delay: -8s;
+}
+
+.cloud-3 {
+  width: 70px;
+  height: 22px;
+  top: 55%;
+  left: 20%;
+  animation: cloud-drift 22s linear infinite;
+  animation-delay: -15s;
+}
+
+.cloud-4 {
+  width: 50px;
+  height: 15px;
+  top: 70%;
+  right: 10%;
+  animation: cloud-drift 28s linear infinite;
+  animation-delay: -5s;
+}
+
+.cloud-5 {
+  width: 55px;
+  height: 16px;
+  top: 25%;
+  left: 50%;
+  animation: cloud-drift 24s linear infinite;
+  animation-delay: -12s;
+}
+
+@keyframes cloud-drift {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(calc(280px));
+  }
+}
+
+/* ========================================
+   雨天效果
+   ======================================== */
+.rain-container {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.rain-drops {
+  position: absolute;
+  inset: -50px;
+}
+
+/* 小雨 */
+.weather-lightRain {
+  background: radial-gradient(
+    circle,
+    rgba(148, 163, 184, 0.15) 0%,
+    rgba(100, 116, 139, 0.08) 50%,
+    transparent 70%
+  );
+}
+
+.weather-lightRain.dark-theme {
+  background: radial-gradient(
+    circle,
+    rgba(51, 65, 85, 0.15) 0%,
+    rgba(30, 41, 59, 0.08) 50%,
+    transparent 70%
+  );
+}
+
+.rain-drop {
+  position: absolute;
+  width: 1px;
+  height: 12px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(148, 163, 184, 0.6) 30%,
+    rgba(148, 163, 184, 0.8) 60%,
+    transparent 100%
+  );
+  left: calc(var(--i) * 4%);
+  top: -15px;
+  animation: rain-fall 1.2s linear infinite;
+  animation-delay: calc(var(--i) * 0.05s);
+}
+
+.dark-theme .rain-drop {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(100, 116, 139, 0.5) 30%,
+    rgba(100, 116, 139, 0.7) 60%,
+    transparent 100%
+  );
+}
+
+@keyframes rain-fall {
+  0% {
+    transform: translateY(-15px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(300px);
+    opacity: 0;
+  }
+}
+
+/* 暴雨 */
+.weather-heavyRain {
+  background: radial-gradient(
+    circle,
+    rgba(71, 85, 105, 0.2) 0%,
+    rgba(51, 65, 85, 0.12) 50%,
+    transparent 70%
+  );
+}
+
+.weather-heavyRain.dark-theme {
+  background: radial-gradient(
+    circle,
+    rgba(30, 41, 59, 0.2) 0%,
+    rgba(15, 23, 42, 0.12) 50%,
+    transparent 70%
+  );
+}
+
+.rain-drop.heavy {
+  width: 2px;
+  height: 18px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(100, 116, 139, 0.7) 30%,
+    rgba(100, 116, 139, 0.9) 60%,
+    transparent 100%
+  );
+  animation-duration: 0.8s;
+  animation-delay: calc(var(--i) * 0.02s);
+}
+
+.rain-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(51, 65, 85, 0.1) 0%,
+    transparent 70%
+  );
+  animation: rain-pulse 3s ease-in-out infinite;
+}
+
+@keyframes rain-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* 雷阵雨 */
+.weather-thunderstorm {
+  background: radial-gradient(
+    circle,
+    rgba(51, 65, 85, 0.25) 0%,
+    rgba(30, 41, 59, 0.15) 50%,
+    transparent 70%
+  );
+}
+
+.weather-thunderstorm.dark-theme {
+  background: radial-gradient(
+    circle,
+    rgba(15, 23, 42, 0.25) 0%,
+    rgba(0, 0, 0, 0.15) 50%,
+    transparent 70%
+  );
+}
+
+.rain-drop.thunder {
+  width: 2px;
+  height: 15px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(148, 163, 184, 0.6) 30%,
+    rgba(148, 163, 184, 0.8) 60%,
+    transparent 100%
+  );
+  animation-duration: 0.6s;
+  animation-delay: calc(var(--i) * 0.025s);
+}
+
+/* 闪电效果 */
+.lightning {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 80px;
+}
+
+.lightning-bolt {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 3px;
+  height: 60px;
+  background: linear-gradient(
+    180deg,
+    rgba(253, 224, 71, 0.9) 0%,
+    rgba(253, 224, 71, 0.6) 50%,
+    transparent 100%
+  );
+  transform: translateX(-50%);
+  opacity: 0;
+  filter: blur(0.5px);
+  box-shadow:
+    0 0 10px rgba(253, 224, 71, 0.8),
+    0 0 20px rgba(253, 224, 71, 0.5);
+  animation: lightning-flash 5s ease-in-out infinite;
+}
+
+.lightning-bolt::before,
+.lightning-bolt::after {
+  content: "";
+  position: absolute;
+  background: inherit;
+}
+
+.lightning-bolt::before {
+  width: 2px;
+  height: 25px;
+  top: 20px;
+  left: -10px;
+  transform: rotate(-25deg);
+}
+
+.lightning-bolt::after {
+  width: 2px;
+  height: 20px;
+  top: 30px;
+  right: -12px;
+  transform: rotate(20deg);
+}
+
+@keyframes lightning-flash {
+  0%,
+  88%,
+  90%,
+  92%,
+  94%,
+  100% {
+    opacity: 0;
+  }
+  89%,
+  91%,
+  93% {
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   雪天效果
+   ======================================== */
+.snow-container {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* 小雪 */
+.weather-lightSnow {
+  background: radial-gradient(
+    circle,
+    rgba(186, 230, 253, 0.2) 0%,
+    rgba(226, 232, 240, 0.1) 50%,
+    transparent 70%
+  );
+}
+
+.weather-lightSnow.dark-theme {
+  background: radial-gradient(
+    circle,
+    rgba(30, 58, 95, 0.2) 0%,
+    rgba(30, 41, 59, 0.1) 50%,
+    transparent 70%
+  );
+}
+
+.snowflakes {
+  position: absolute;
+  inset: 0;
+}
+
+.snowflake {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.8) 40%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  border-radius: 50%;
+  left: calc(var(--i) * 5%);
+  top: -10px;
+  animation: snowfall 6s linear infinite;
+  animation-delay: calc(var(--i) * 0.2s);
+}
+
+.dark-theme .snowflake {
+  background: radial-gradient(
+    circle,
+    rgba(226, 232, 240, 0.9) 0%,
+    rgba(226, 232, 240, 0.6) 40%,
+    rgba(226, 232, 240, 0) 70%
+  );
+}
+
+@keyframes snowfall {
+  0% {
+    transform: translateY(-10px) rotate(0deg) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(130px) rotate(180deg) translateX(15px);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(280px) rotate(360deg) translateX(-10px);
+    opacity: 0;
+  }
+}
+
+/* 大雪 */
+.weather-heavySnow {
+  background: radial-gradient(
+    circle,
+    rgba(186, 230, 253, 0.3) 0%,
+    rgba(226, 232, 240, 0.15) 50%,
+    transparent 70%
+  );
+}
+
+.weather-heavySnow.dark-theme {
+  background: radial-gradient(
+    circle,
+    rgba(30, 58, 95, 0.25) 0%,
+    rgba(30, 41, 59, 0.12) 50%,
+    transparent 70%
+  );
+}
+
+.snowflake.heavy {
+  width: 6px;
+  height: 6px;
+  animation-duration: 4s;
+  animation-delay: calc(var(--i) * 0.08s);
+}
+
+.snow-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.08) 0%,
+    transparent 60%
+  );
+}
+
+.dark-theme .snow-overlay {
+  background: radial-gradient(
+    circle,
+    rgba(226, 232, 240, 0.05) 0%,
+    transparent 60%
+  );
+}
+
+/* ========================================
+   性能优化
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  .sun-rays,
+  .cloud,
+  .rain-drop,
+  .snowflake,
+  .lightning-bolt,
+  .sun-core,
+  .particle {
+    animation: none !important;
+  }
+}
