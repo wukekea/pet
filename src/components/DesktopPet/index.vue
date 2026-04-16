@@ -129,7 +129,12 @@ const openScheduleModal = () => {
   // 关闭菜单但不恢复穿透
   contextMenuVisible.value = false;
   isContextMenuOpen.value = false;
-  scheduleConfig.value = getScheduleConfig();
+  // 创建深拷贝，避免直接修改原始配置
+  const config = getScheduleConfig();
+  scheduleConfig.value = {
+    enabled: config.enabled,
+    slots: config.slots.map((slot) => ({ ...slot })),
+  };
   scheduleModalVisible.value = true;
 };
 

@@ -27,10 +27,7 @@ export function loadScheduleConfig(): ScheduleConfig {
     if (saved) {
       const config = JSON.parse(saved) as ScheduleConfig;
       // 验证配置格式
-      if (
-        typeof config.enabled === "boolean" &&
-        Array.isArray(config.slots)
-      ) {
+      if (typeof config.enabled === "boolean" && Array.isArray(config.slots)) {
         return config;
       }
     }
