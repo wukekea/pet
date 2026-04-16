@@ -1444,20 +1444,19 @@ onBeforeUnmount(() => {
    梦幻云朵对话气泡（睡眠状态专用）
    ======================================== */
 
-/* 云朵主体 */
+/* 云朵主体 - 柔和蓬松感 */
 .dialogue-bubble.dialogue-cloud {
-  border-radius: 24px;
-  padding: 10px 16px;
+  border: none;
+  border-radius: 50%;
+  padding: 14px 20px 12px;
   background: v-bind(
-    "isDark ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.2) 50%, rgba(236, 72, 153, 0.15) 100%)' : 'linear-gradient(135deg, rgba(224, 231, 255, 0.98) 0%, rgba(252, 231, 243, 0.98) 50%, rgba(255, 241, 224, 0.98) 100%)'"
+    "isDark ? 'radial-gradient(ellipse 120% 100% at 50% 60%, rgba(99, 102, 241, 0.3) 0%, rgba(139, 92, 246, 0.2) 40%, transparent 70%)' : 'radial-gradient(ellipse 120% 100% at 50% 60%, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.85) 40%, transparent 70%)'"
   );
   box-shadow:
-    0 8px 32px
-      v-bind("isDark ? 'rgba(99, 102, 241, 0.3)' : 'rgba(168, 85, 247, 0.15)'"),
-    inset 0 1px 0
-      v-bind("isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.8)'"),
-    0 0 0 1px
-      v-bind("isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(199, 210, 254, 0.5)'");
+    0 0 40px
+      v-bind("isDark ? 'rgba(99, 102, 241, 0.2)' : 'rgba(168, 85, 247, 0.1)'"),
+    0 0 80px
+      v-bind("isDark ? 'rgba(139, 92, 246, 0.1)' : 'rgba(199, 210, 254, 0.15)'");
   animation: cloud-float 3s ease-in-out infinite;
   position: relative;
 }
@@ -1471,61 +1470,50 @@ onBeforeUnmount(() => {
   width: 20px;
   height: 20px;
   background: v-bind(
-    "isDark ? 'rgba(99, 102, 241, 0.25)' : 'rgba(224, 231, 255, 0.98)'"
+    "isDark ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.95)'"
   );
   border-radius: 50%;
   box-shadow:
     18px 2px 0 4px
-      v-bind("isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(237, 233, 254, 0.98)'"),
+      v-bind("isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(237, 233, 254, 0.95)'"),
     35px 5px 0 2px
-      v-bind(
-        "isDark ? 'rgba(168, 85, 247, 0.18)' : 'rgba(252, 231, 243, 0.98)'"
-      );
+      v-bind("isDark ? 'rgba(168, 85, 247, 0.18)' : 'rgba(252, 231, 243, 0.9)'");
   z-index: -1;
 }
 
 /* 云朵左侧蓬松凸起 */
 .dialogue-bubble.dialogue-cloud::after {
-  content: "";
-  position: absolute;
-  top: 20%;
-  left: -12px;
-  width: 18px;
-  height: 18px;
-  background: v-bind(
-    "isDark ? 'rgba(139, 92, 246, 0.22)' : 'rgba(237, 233, 254, 0.98)'"
-  );
-  border-radius: 50%;
-  z-index: -1;
+  display: none;
 }
 
-/* 云朵文字 */
+/* 云朵文字 - 梦幻感 */
 .dialogue-bubble.dialogue-cloud .dialogue-text {
   position: relative;
+  z-index: 1;
   color: v-bind("isDark ? '#c7d2fe' : '#6366f1'");
   font-weight: 500;
-  text-shadow: 0 1px 2px
-    v-bind("isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.8)'");
+  text-shadow: 0 1px 3px
+    v-bind("isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.9)'");
 }
 
-/* 云朵气泡尾巴 - 连续小气泡 */
+/* 云朵气泡尾巴 - 梦幻小气泡 */
 .dialogue-bubble.dialogue-cloud .dialogue-tail {
   position: absolute;
-  bottom: -6px;
-  left: 28%;
-  width: 6px;
-  height: 6px;
+  bottom: -5px;
+  left: 30%;
+  width: 5px;
+  height: 5px;
   background: v-bind(
-    "isDark ? 'rgba(99, 102, 241, 0.25)' : 'rgba(224, 231, 255, 0.98)'"
+    "isDark ? 'rgba(139, 92, 246, 0.25)' : 'rgba(241, 245, 249, 0.9)'"
   );
   border-radius: 50%;
   transform: none;
   clip-path: none;
   box-shadow:
-    8px 7px 0 0
-      v-bind("isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(237, 233, 254, 0.95)'"),
-    16px 14px 0 -1px
-      v-bind("isDark ? 'rgba(168, 85, 247, 0.15)' : 'rgba(252, 231, 243, 0.9)'");
+    6px 6px 0 0
+      v-bind("isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(237, 233, 254, 0.85)'"),
+    12px 12px 0 -1px
+      v-bind("isDark ? 'rgba(168, 85, 247, 0.15)' : 'rgba(199, 210, 254, 0.7)'");
 }
 
 .dialogue-bubble.dialogue-cloud.dialogue-left .dialogue-tail {
