@@ -175,6 +175,31 @@ const removeTimeSlot = (index: number) => {
   scheduleConfig.value.slots.splice(index, 1);
 };
 
+// 处理时间输入（循环）
+const handleTimeChange = (type: "hour" | "minute", e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const max = type === "hour" ? 23 : 59;
+
+  // 获取用户输入的值
+  let newValue = parseInt(target.value);
+
+  if (isNaN(newValue)) {
+    newValue = 0;
+  }
+
+  // 超出范围时循环
+  if (newValue > max) {
+    newValue = 0;
+  } else if (newValue < 0) {
+    newValue = max;
+  }
+
+  // 更新输入框的显示值
+  target.value = newValue.toString();
+
+  return newValue;
+};
+
 // 生命周期
 onMounted(() => {
   document.addEventListener("click", handleGlobalClick);
@@ -458,7 +483,11 @@ onBeforeUnmount(() => {
           class="schedule-modal-overlay"
           @click="closeScheduleModal"
         >
-          <div class="schedule-modal" :class="{ 'dark-mode': isDark }" @click.stop>
+          <div
+            class="schedule-modal"
+            :class="{ 'dark-mode': isDark }"
+            @click.stop
+          >
             <!-- 装饰元素 -->
             <div class="modal-decor">
               <span class="decor-star star-1">⭐</span>
@@ -509,23 +538,27 @@ onBeforeUnmount(() => {
                     :class="{ 'is-sleep': slot.state === 'sleep' }"
                   >
                     <div class="slot-icon">
-                      {{ slot.state === 'sleep' ? '😴' : '🎈' }}
+                      {{ slot.state === "sleep" ? "😴" : "🎈" }}
                     </div>
                     <div class="slot-time-inputs">
                       <div class="time-group">
                         <input
                           type="number"
-                          v-model.number="slot.startHour"
-                          min="0"
-                          max="23"
+                          :value="slot.startHour"
+                          @input="
+                            (e) =>
+                              (slot.startHour = handleTimeChange('hour', e))
+                          "
                           class="time-input"
                         />
                         <span class="time-colon">:</span>
                         <input
                           type="number"
-                          v-model.number="slot.startMinute"
-                          min="0"
-                          max="59"
+                          :value="slot.startMinute"
+                          @input="
+                            (e) =>
+                              (slot.startMinute = handleTimeChange('minute', e))
+                          "
                           class="time-input"
                         />
                       </div>
@@ -533,17 +566,20 @@ onBeforeUnmount(() => {
                       <div class="time-group">
                         <input
                           type="number"
-                          v-model.number="slot.endHour"
-                          min="0"
-                          max="23"
+                          :value="slot.endHour"
+                          @input="
+                            (e) => (slot.endHour = handleTimeChange('hour', e))
+                          "
                           class="time-input"
                         />
                         <span class="time-colon">:</span>
                         <input
                           type="number"
-                          v-model.number="slot.endMinute"
-                          min="0"
-                          max="59"
+                          :value="slot.endMinute"
+                          @input="
+                            (e) =>
+                              (slot.endMinute = handleTimeChange('minute', e))
+                          "
                           class="time-input"
                         />
                       </div>
@@ -561,7 +597,9 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="modal-footer">
-              <button class="btn btn-cancel" @click="closeScheduleModal">取消</button>
+              <button class="btn btn-cancel" @click="closeScheduleModal">
+                取消
+              </button>
               <button class="btn btn-save" @click="saveSchedule">
                 <span>✓</span> 保存
               </button>
@@ -702,11 +740,15 @@ onBeforeUnmount(() => {
 .menu-bubble {
   min-width: 140px;
   padding: 8px;
-  background: v-bind("isDark ? 'rgba(40, 35, 60, 0.95)' : 'rgba(255, 255, 255, 0.95)'");
+  background: v-bind(
+    "isDark ? 'rgba(40, 35, 60, 0.95)' : 'rgba(255, 255, 255, 0.95)'"
+  );
   border-radius: 16px;
   box-shadow:
-    0 8px 32px v-bind("isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(139, 92, 246, 0.2)'"),
-    0 0 0 2px v-bind("isDark ? 'rgba(167, 139, 250, 0.3)' : 'rgba(139, 92, 246, 0.15)'");
+    0 8px 32px
+      v-bind("isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(139, 92, 246, 0.2)'"),
+    0 0 0 2px
+      v-bind("isDark ? 'rgba(167, 139, 250, 0.3)' : 'rgba(139, 92, 246, 0.15)'");
   backdrop-filter: blur(12px);
   pointer-events: auto !important;
 }
@@ -722,7 +764,9 @@ onBeforeUnmount(() => {
 }
 
 .menu-item:hover {
-  background: v-bind("isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(139, 92, 246, 0.1)'");
+  background: v-bind(
+    "isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(139, 92, 246, 0.1)'"
+  );
   transform: scale(1.02);
 }
 
@@ -739,7 +783,9 @@ onBeforeUnmount(() => {
 .menu-divider {
   height: 1px;
   margin: 6px 8px;
-  background: v-bind("isDark ? 'rgba(167, 139, 250, 0.15)' : 'rgba(139, 92, 246, 0.1)'");
+  background: v-bind(
+    "isDark ? 'rgba(167, 139, 250, 0.15)' : 'rgba(139, 92, 246, 0.1)'"
+  );
 }
 
 /* ========================================
@@ -752,20 +798,26 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: v-bind("isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(139, 92, 246, 0.15)'");
+  background: v-bind(
+    "isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(139, 92, 246, 0.15)'"
+  );
   backdrop-filter: blur(8px);
   pointer-events: auto !important;
 }
 
 .schedule-modal {
-  width: 380px;
+  width: 480px;
   max-width: 90vw;
-  max-height: 80vh;
+  height: 70vh;
   border-radius: 24px;
-  background: v-bind("isDark ? 'rgba(35, 30, 55, 0.98)' : 'rgba(255, 255, 255, 0.98)'");
+  background: v-bind(
+    "isDark ? 'rgba(35, 30, 55, 0.98)' : 'rgba(255, 255, 255, 0.98)'"
+  );
   box-shadow:
-    0 20px 60px v-bind("isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(139, 92, 246, 0.25)'"),
-    0 0 0 1px v-bind("isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.1)'");
+    0 20px 60px
+      v-bind("isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(139, 92, 246, 0.25)'"),
+    0 0 0 1px
+      v-bind("isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.1)'");
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -790,13 +842,32 @@ onBeforeUnmount(() => {
   animation: twinkle 2s ease-in-out infinite;
 }
 
-.star-1 { top: 20px; right: 60px; animation-delay: 0s; }
-.star-2 { top: 40px; right: 20px; animation-delay: 0.5s; }
-.star-3 { top: 60px; right: 80px; animation-delay: 1s; }
+.star-1 {
+  top: 20px;
+  right: 60px;
+  animation-delay: 0s;
+}
+.star-2 {
+  top: 40px;
+  right: 20px;
+  animation-delay: 0.5s;
+}
+.star-3 {
+  top: 60px;
+  right: 80px;
+  animation-delay: 1s;
+}
 
 @keyframes twinkle {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.2); }
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
 }
 
 .modal-header {
@@ -833,7 +904,9 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   border: none;
-  background: v-bind("isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)'");
+  background: v-bind(
+    "isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)'"
+  );
   color: v-bind("isDark ? '#9ca3af' : '#9ca3af'");
   border-radius: 50%;
   cursor: pointer;
@@ -858,9 +931,12 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   padding: 16px 18px;
-  background: v-bind("isDark ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.05)'");
+  background: v-bind(
+    "isDark ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.05)'"
+  );
   border-radius: 16px;
-  border: 1px solid v-bind("isDark ? 'rgba(167, 139, 250, 0.15)' : 'rgba(139, 92, 246, 0.1)'");
+  border: 1px solid
+    v-bind("isDark ? 'rgba(167, 139, 250, 0.15)' : 'rgba(139, 92, 246, 0.1)'");
   margin-bottom: 20px;
 }
 
@@ -886,7 +962,9 @@ onBeforeUnmount(() => {
   height: 28px;
   border: none;
   border-radius: 14px;
-  background: v-bind("isDark ? 'rgba(107, 114, 128, 0.3)' : 'rgba(156, 163, 175, 0.3)'");
+  background: v-bind(
+    "isDark ? 'rgba(107, 114, 128, 0.3)' : 'rgba(156, 163, 175, 0.3)'"
+  );
   cursor: pointer;
   position: relative;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -938,7 +1016,8 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px dashed v-bind("isDark ? 'rgba(167, 139, 250, 0.4)' : 'rgba(139, 92, 246, 0.4)'");
+  border: 2px dashed
+    v-bind("isDark ? 'rgba(167, 139, 250, 0.4)' : 'rgba(139, 92, 246, 0.4)'");
   background: transparent;
   border-radius: 8px;
   color: v-bind("isDark ? '#a78bfa' : '#8b5cf6'");
@@ -949,7 +1028,9 @@ onBeforeUnmount(() => {
 }
 
 .add-btn:hover {
-  background: v-bind("isDark ? 'rgba(167, 139, 250, 0.15)' : 'rgba(139, 92, 246, 0.1)'");
+  background: v-bind(
+    "isDark ? 'rgba(167, 139, 250, 0.15)' : 'rgba(139, 92, 246, 0.1)'"
+  );
   border-style: solid;
   transform: scale(1.1);
 }
@@ -965,18 +1046,25 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
-  background: v-bind("isDark ? 'rgba(55, 48, 85, 0.4)' : 'rgba(250, 245, 255, 0.7)'");
+  background: v-bind(
+    "isDark ? 'rgba(55, 48, 85, 0.4)' : 'rgba(250, 245, 255, 0.7)'"
+  );
   border-radius: 14px;
-  border: 1px solid v-bind("isDark ? 'rgba(167, 139, 250, 0.15)' : 'rgba(139, 92, 246, 0.1)'");
+  border: 1px solid
+    v-bind("isDark ? 'rgba(167, 139, 250, 0.15)' : 'rgba(139, 92, 246, 0.1)'");
   transition: all 0.2s ease;
 }
 
 .slot-card:hover {
-  border-color: v-bind("isDark ? 'rgba(167, 139, 250, 0.3)' : 'rgba(139, 92, 246, 0.25)'");
+  border-color: v-bind(
+    "isDark ? 'rgba(167, 139, 250, 0.3)' : 'rgba(139, 92, 246, 0.25)'"
+  );
 }
 
 .slot-card.is-sleep {
-  background: v-bind("isDark ? 'rgba(99, 102, 241, 0.15)' : 'rgba(165, 180, 252, 0.2)'");
+  background: v-bind(
+    "isDark ? 'rgba(99, 102, 241, 0.15)' : 'rgba(165, 180, 252, 0.2)'"
+  );
 }
 
 .slot-icon {
@@ -998,11 +1086,14 @@ onBeforeUnmount(() => {
 }
 
 .time-input {
-  width: 36px;
+  width: 50px;
   padding: 6px 4px;
-  border: 1px solid v-bind("isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.15)'");
+  border: 1px solid
+    v-bind("isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.15)'");
   border-radius: 8px;
-  background: v-bind("isDark ? 'rgba(30, 27, 45, 0.8)' : 'rgba(255, 255, 255, 0.9)'");
+  background: v-bind(
+    "isDark ? 'rgba(30, 27, 45, 0.8)' : 'rgba(255, 255, 255, 0.9)'"
+  );
   color: v-bind("isDark ? '#e2e8f0' : '#374151'");
   font-size: 14px;
   font-weight: 500;
@@ -1029,9 +1120,12 @@ onBeforeUnmount(() => {
 
 .state-select {
   padding: 8px 12px;
-  border: 1px solid v-bind("isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.15)'");
+  border: 1px solid
+    v-bind("isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.15)'");
   border-radius: 10px;
-  background: v-bind("isDark ? 'rgba(30, 27, 45, 0.8)' : 'rgba(255, 255, 255, 0.9)'");
+  background: v-bind(
+    "isDark ? 'rgba(30, 27, 45, 0.8)' : 'rgba(255, 255, 255, 0.9)'"
+  );
   color: v-bind("isDark ? '#e2e8f0' : '#374151'");
   font-size: 13px;
   font-weight: 500;
@@ -1045,25 +1139,28 @@ onBeforeUnmount(() => {
 }
 
 .remove-btn {
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
+  border: 1px solid
+    v-bind("isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.2)'");
   background: transparent;
-  color: #f87171;
-  border-radius: 50%;
+  color: #ef4444;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
-  opacity: 0.5;
+  font-size: 18px;
+  font-weight: 500;
+  opacity: 0.7;
   transition: all 0.2s ease;
 }
 
 .remove-btn:hover {
   opacity: 1;
-  background: rgba(248, 113, 113, 0.15);
-  transform: scale(1.1);
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  transform: scale(1.05);
 }
 
 .modal-footer {
@@ -1087,12 +1184,16 @@ onBeforeUnmount(() => {
 }
 
 .btn-cancel {
-  background: v-bind("isDark ? 'rgba(107, 114, 128, 0.2)' : 'rgba(156, 163, 175, 0.15)'");
+  background: v-bind(
+    "isDark ? 'rgba(107, 114, 128, 0.2)' : 'rgba(156, 163, 175, 0.15)'"
+  );
   color: v-bind("isDark ? '#9ca3af' : '#6b7280'");
 }
 
 .btn-cancel:hover {
-  background: v-bind("isDark ? 'rgba(107, 114, 128, 0.3)' : 'rgba(156, 163, 175, 0.25)'");
+  background: v-bind(
+    "isDark ? 'rgba(107, 114, 128, 0.3)' : 'rgba(156, 163, 175, 0.25)'"
+  );
 }
 
 .btn-save {
@@ -1122,13 +1223,25 @@ onBeforeUnmount(() => {
 }
 
 @keyframes menu-pop-in {
-  0% { opacity: 0; transform: scale(0.8) translateY(-10px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 @keyframes menu-pop-out {
-  0% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(0.9); }
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
 }
 
 .modal-pop-enter-active {
@@ -1140,17 +1253,29 @@ onBeforeUnmount(() => {
 }
 
 @keyframes modal-pop-in {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes modal-pop-in .schedule-modal {
-  0% { transform: scale(0.9) translateY(20px); }
-  100% { transform: scale(1) translateY(0); }
+  0% {
+    transform: scale(0.9) translateY(20px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
 }
 
 @keyframes modal-pop-out {
-  0% { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 </style>
