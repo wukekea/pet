@@ -230,7 +230,7 @@ onUnmounted(() => {
           :style="{
             '--delay': getRandomDelay(i, 0.8),
             '--x-start': `${10 + i * 7}%`,
-            '--x-end': `${15 + i * 6}%`,
+            '--y-start': `${15 + (i % 5) * 18}%`,
           }"
         ></span>
       </div>
