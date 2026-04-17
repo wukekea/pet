@@ -419,7 +419,7 @@
     rgba(120, 144, 156, 0.2) 100%
   );
   border-radius: 0 0 1.5px 1.5px;
-  animation: rain-fall-light var(--duration) linear infinite;
+  animation: rain-fall-light var(--duration) linear forwards;
   animation-delay: var(--delay);
 }
 
@@ -464,7 +464,7 @@
     rgba(120, 144, 156, 0.2) 100%
   );
   border-radius: 0 0 2px 2px;
-  animation: rain-fall var(--duration) linear infinite;
+  animation: rain-fall var(--duration) linear forwards;
   animation-delay: var(--delay);
 }
 
@@ -572,7 +572,7 @@
     rgba(69, 90, 100, 0.35) 80%,
     transparent 100%
   );
-  animation: rain-fall-heavy var(--duration) linear infinite;
+  animation: rain-fall-heavy var(--duration) linear forwards;
   animation-delay: var(--delay);
 }
 
@@ -647,7 +647,7 @@
     rgba(96, 125, 139, 0.3) 80%,
     transparent 100%
   );
-  animation: rain-fall-heavy var(--duration) linear infinite;
+  animation: rain-fall-heavy var(--duration) linear forwards;
   animation-delay: var(--delay);
 }
 

@@ -134,12 +134,20 @@ export function showWeatherDialogue() {
 // 待触发的天气对话（用于退场动画结束后触发）
 let pendingWeatherDialogue = false;
 
+// 判断是否是有退场动画的天气
+const hasExitAnimation = (weather: string): boolean => {
+  return weather === 'cloudy' ||
+         weather === 'lightRain' ||
+         weather === 'heavyRain' ||
+         weather === 'thunderstorm';
+};
+
 // 监听天气变化
 watch(currentWeather, (newWeather, oldWeather) => {
   // 天气变化时，判断是否需要等待退场动画
   if (newWeather !== oldWeather && newWeather !== "default") {
-    // 从多云切换走时，需要等待退场动画结束
-    if (oldWeather === 'cloudy') {
+    // 从有退场动画的天气切换走时，需要等待退场动画结束
+    if (oldWeather && hasExitAnimation(oldWeather)) {
       pendingWeatherDialogue = true;
     } else {
       // 其他天气切换，直接触发

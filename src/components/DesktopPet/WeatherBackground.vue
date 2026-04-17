@@ -5,10 +5,17 @@ import { isDark } from "./composables/useTheme";
 import { position } from "./composables/sharedState";
 import "./weather.css";
 
-// 天气背景样式类（退出多云时保持 cloudy 样式）
-const weatherClass = computed(() =>
-  isWeatherChanging.value ? 'weather-cloudy' : `weather-${currentWeather.value}`
-);
+// 天气背景样式类（退场时保持原天气样式）
+const weatherClass = computed(() => {
+  if (isWeatherChanging.value) {
+    // 根据剩余的效果类型返回对应样式
+    if (clouds.value.length > 0) return 'weather-cloudy';
+    if (rainDrops.value.some(d => d.type === 'light')) return 'weather-lightRain';
+    if (rainDrops.value.some(d => d.type === 'heavy')) return 'weather-heavyRain';
+    if (rainDrops.value.some(d => d.type === 'storm')) return 'weather-thunderstorm';
+  }
+  return `weather-${currentWeather.value}`;
+});
 const themeClass = computed(() =>
   isDark.value ? "dark-theme" : "light-theme",
 );
@@ -80,6 +87,152 @@ onUnmounted(() => {
     clearInterval(rippleTimer);
   }
 });
+
+// ========== 雨天效果配置 ==========
+// 雨滴类型
+type RainType = 'light' | 'heavy' | 'storm';
+
+// 雨滴配置
+const rainConfigs: Record<RainType, {
+  dropCount: number;
+  dropClass: string;
+  baseDuration: number;
+  durationVariation: number;
+  generateInterval: number;
+  maxDrops: number;
+}> = {
+  light: {
+    dropCount: 20,
+    dropClass: 'light',
+    baseDuration: 2,
+    durationVariation: 0.9,
+    generateInterval: 100,
+    maxDrops: 30,
+  },
+  heavy: {
+    dropCount: 50,
+    dropClass: 'heavy',
+    baseDuration: 0.5,
+    durationVariation: 0.32,
+    generateInterval: 30,
+    maxDrops: 80,
+  },
+  storm: {
+    dropCount: 65,
+    dropClass: 'storm',
+    baseDuration: 0.5,
+    durationVariation: 0.32,
+    generateInterval: 20,
+    maxDrops: 100,
+  },
+};
+
+// 雨滴数据结构
+interface RainDrop {
+  id: number;
+  type: RainType;
+  x: string;
+  duration: number;
+  delay: number;
+}
+const rainDrops = ref<RainDrop[]>([]);
+let rainDropId = 0;
+let rainTimer: ReturnType<typeof setInterval> | null = null;
+
+// 获取当前雨的类型
+const getCurrentRainType = (): RainType | null => {
+  const weather = currentWeather.value;
+  if (weather === 'lightRain') return 'light';
+  if (weather === 'heavyRain') return 'heavy';
+  if (weather === 'thunderstorm') return 'storm';
+  return null;
+};
+
+// 生成雨滴
+const spawnRainDrop = () => {
+  // 退出状态下不再生成新雨滴
+  if (isWeatherChanging.value) return;
+
+  const rainType = getCurrentRainType();
+  if (!rainType) return;
+
+  const config = rainConfigs[rainType];
+  rainDrops.value.push({
+    id: ++rainDropId,
+    type: rainType,
+    x: `${Math.floor(Math.random() * 100)}%`,
+    duration: config.baseDuration + Math.random() * config.durationVariation,
+    delay: 0,
+  });
+};
+
+// 移除雨滴（动画结束后调用）
+const removeRainDrop = (id: number) => {
+  const index = rainDrops.value.findIndex((d) => d.id === id);
+  if (index !== -1) {
+    rainDrops.value.splice(index, 1);
+  }
+};
+
+// 监听雨滴列表变化，所有雨滴消失后重置退出状态并启动新天气效果
+watch(
+  rainDrops,
+  (newDrops) => {
+    if (isWeatherChanging.value && newDrops.length === 0) {
+      isWeatherChanging.value = false;
+
+      // 检查新天气是否需要启动效果（如多云）
+      const newWeather = currentWeather.value;
+      if (newWeather === 'cloudy') {
+        clouds.value = [];
+        spawnCloud();
+        const scheduleNextCloud = () => {
+          const randomDelay = CLOUD_GENERATE_INTERVAL + Math.random() * 5000;
+          cloudTimer = setTimeout(() => {
+            spawnCloud();
+            scheduleNextCloud();
+          }, randomDelay);
+        };
+        scheduleNextCloud();
+      }
+    }
+  },
+  { deep: true }
+);
+
+// 启动雨滴生成
+const startRainGeneration = () => {
+  const rainType = getCurrentRainType();
+  if (!rainType) return;
+
+  const config = rainConfigs[rainType];
+
+  // 立即生成一批雨滴
+  for (let i = 0; i < config.dropCount; i++) {
+    rainDrops.value.push({
+      id: ++rainDropId,
+      type: rainType,
+      x: `${(i * 5) % 100}%`,
+      duration: config.baseDuration + (i % 4) * 0.08,
+      delay: parseFloat(getRandomDelay(i, 0.3)),
+    });
+  }
+
+  // 持续生成新雨滴
+  rainTimer = setInterval(() => {
+    if (rainDrops.value.length < config.maxDrops) {
+      spawnRainDrop();
+    }
+  }, config.generateInterval);
+};
+
+// 停止雨滴生成
+const stopRainGeneration = () => {
+  if (rainTimer) {
+    clearInterval(rainTimer);
+    rainTimer = null;
+  }
+};
 
 // ========== 多云效果配置 ==========
 // 基础速度（px/s）- 修改此值可统一调整所有云朵速度
@@ -165,33 +318,49 @@ const startCloudExit = () => {
   });
 };
 
-// 监听云朵列表变化，所有云朵消失后重置退出状态
+// 监听云朵列表变化，所有云朵消失后重置退出状态并启动新天气效果
 watch(
   clouds,
   (newClouds) => {
     if (isWeatherChanging.value && newClouds.length === 0) {
       // 所有云朵消失，恢复状态
       isWeatherChanging.value = false;
+
+      // 检查新天气是否需要启动效果（如雨天）
+      const newWeather = currentWeather.value;
+      const isNewRain = ['lightRain', 'heavyRain', 'thunderstorm'].includes(newWeather);
+      if (isNewRain) {
+        rainDrops.value = [];
+        startRainGeneration();
+      }
     }
   },
   { deep: true }
 );
 
-// 监听天气变化，启动/停止云朵生成
+// 监听天气变化，启动/停止云朵和雨滴生成
 watch(
   currentWeather,
   (newWeather, oldWeather) => {
-    // 从多云切换到其他天气：启动退出动画
+    const isOldRain = ['lightRain', 'heavyRain', 'thunderstorm'].includes(oldWeather || '');
+    const isNewRain = ['lightRain', 'heavyRain', 'thunderstorm'].includes(newWeather);
+
+    // 从多云切换到其他天气：启动云朵退出动画
     if (oldWeather === 'cloudy' && newWeather !== 'cloudy' && clouds.value.length > 0) {
-      // 停止生成新云
       if (cloudTimer) {
         clearTimeout(cloudTimer);
         cloudTimer = null;
       }
-      // 设置退出状态，启动退出动画
       isWeatherChanging.value = true;
       startCloudExit();
-      return; // 保持在多云状态，等待云朵全部消失
+      return;
+    }
+
+    // 从雨天切换到非雨天：启动雨滴退出
+    if (isOldRain && !isNewRain && rainDrops.value.length > 0) {
+      stopRainGeneration();
+      isWeatherChanging.value = true;
+      return;
     }
 
     // 正常切换逻辑
@@ -199,20 +368,24 @@ watch(
       clearTimeout(cloudTimer);
       cloudTimer = null;
     }
+    stopRainGeneration();
 
     // 非 cloudy 天气时清空云朵
     if (newWeather !== 'cloudy') {
       clouds.value = [];
-      isWeatherChanging.value = false;
     }
 
+    // 非雨天时清空雨滴
+    if (!isNewRain) {
+      rainDrops.value = [];
+    }
+
+    // 重置退出状态
+    isWeatherChanging.value = false;
+
     if (newWeather === 'cloudy') {
-      // 重置退出状态，清空旧云朵，开始生成新云朵
-      isWeatherChanging.value = false;
       clouds.value = [];
-      // 立即生成第一朵云
       spawnCloud();
-      // 每隔 CLOUD_GENERATE_INTERVAL + 随机(0-5s) 生成一朵新云
       const scheduleNextCloud = () => {
         const randomDelay = CLOUD_GENERATE_INTERVAL + Math.random() * 5000;
         cloudTimer = setTimeout(() => {
@@ -222,6 +395,12 @@ watch(
       };
       scheduleNextCloud();
     }
+
+    // 启动雨天
+    if (isNewRain) {
+      rainDrops.value = [];
+      startRainGeneration();
+    }
   },
   { immediate: true }
 );
@@ -230,6 +409,7 @@ onUnmounted(() => {
   if (cloudTimer) {
     clearTimeout(cloudTimer);
   }
+  stopRainGeneration();
 });
 
 // ========== 闪电效果 ==========
@@ -432,20 +612,21 @@ onUnmounted(() => {
 
     <!-- 小雨效果 - 稀疏细腻的雨丝 -->
     <div
-      v-if="currentWeather === 'lightRain' && !isWeatherChanging"
+      v-if="(currentWeather === 'lightRain' || (isWeatherChanging && rainDrops.some(d => d.type === 'light'))) && rainDrops.some(d => d.type === 'light')"
       class="rain-container light-rain"
     >
       <!-- 雨丝 -->
       <div class="rain-drops light">
         <span
-          v-for="i in 20"
-          :key="i"
+          v-for="drop in rainDrops.filter(d => d.type === 'light')"
+          :key="drop.id"
           class="rain-drop light"
           :style="{
-            '--delay': getRandomDelay(i, 0.3),
-            '--x': `${(i * 5) % 100}%`,
-            '--duration': `${2 + (i % 3) * 0.3}s`,
+            '--delay': `${drop.delay}s`,
+            '--x': drop.x,
+            '--duration': `${drop.duration}s`,
           }"
+          @animationend="removeRainDrop(drop.id)"
         ></span>
       </div>
       <!-- 涟漪效果 -->
@@ -467,19 +648,20 @@ onUnmounted(() => {
 
     <!-- 暴雨效果 - 密集倾盆大雨 -->
     <div
-      v-if="currentWeather === 'heavyRain' && !isWeatherChanging"
+      v-if="(currentWeather === 'heavyRain' || (isWeatherChanging && rainDrops.some(d => d.type === 'heavy'))) && rainDrops.some(d => d.type === 'heavy')"
       class="rain-container heavy-rain"
     >
       <div class="rain-drops heavy">
         <span
-          v-for="i in 50"
-          :key="i"
+          v-for="drop in rainDrops.filter(d => d.type === 'heavy')"
+          :key="drop.id"
           class="rain-drop heavy"
           :style="{
-            '--delay': getRandomDelay(i, 0.08),
-            '--x': getRandomPos(i),
-            '--duration': `${0.4 + (i % 4) * 0.08}s`,
+            '--delay': `${drop.delay}s`,
+            '--x': drop.x,
+            '--duration': `${drop.duration}s`,
           }"
+          @animationend="removeRainDrop(drop.id)"
         ></span>
       </div>
       <div class="rain-overlay"></div>
@@ -488,23 +670,25 @@ onUnmounted(() => {
 
     <!-- 雷阵雨效果 - 暴雨 + 闪电 -->
     <div
-      v-if="currentWeather === 'thunderstorm' && !isWeatherChanging"
+      v-if="(currentWeather === 'thunderstorm' || (isWeatherChanging && rainDrops.some(d => d.type === 'storm'))) && rainDrops.some(d => d.type === 'storm')"
       class="rain-container thunderstorm"
     >
       <div class="rain-drops storm">
         <span
-          v-for="i in 65"
-          :key="i"
+          v-for="drop in rainDrops.filter(d => d.type === 'storm')"
+          :key="drop.id"
           class="rain-drop storm"
           :style="{
-            '--delay': getRandomDelay(i, 0.06),
-            '--x': getRandomPos(i),
-            '--duration': `${0.4 + (i % 4) * 0.08}s`,
+            '--delay': `${drop.delay}s`,
+            '--x': drop.x,
+            '--duration': `${drop.duration}s`,
           }"
+          @animationend="removeRainDrop(drop.id)"
         ></span>
       </div>
-      <!-- 闪电效果 -->
+      <!-- 闪电效果（退场时不显示） -->
       <div
+        v-if="!isWeatherChanging"
         class="lightning-container"
         :class="{ 'lightning-active': lightningActive }"
       >
