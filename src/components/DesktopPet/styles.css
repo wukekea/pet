@@ -941,6 +941,22 @@
   left: 65%;
 }
 
+/* 云朵对话气泡 - 完全透明 */
+.dialogue-bubble.dialogue-cloud {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.dialogue-bubble.dialogue-cloud::before,
+.dialogue-bubble.dialogue-cloud::after {
+  display: none !important;
+  content: none !important;
+}
+
 /* ========================================
    ANIMATIONS
    ======================================== */

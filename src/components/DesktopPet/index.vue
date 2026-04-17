@@ -482,6 +482,7 @@ onBeforeUnmount(() => {
 
     <!-- 对话气泡（放在 pet-container 外部，不受翻滚影响） -->
     <div
+      v-if="dialogueText"
       class="dialogue-bubble"
       :class="{
         'dialogue-visible': isDialogueVisible,
@@ -492,13 +493,76 @@ onBeforeUnmount(() => {
           petState === 'yawn',
       }"
       :style="{
-        left: `${position.x + 40}px`,
-        top: `${position.y - 55}px`,
+        left: `${
+          petState === 'sleeping' ||
+          petState === 'sleepy' ||
+          petState === 'yawn'
+            ? position.x + 30
+            : position.x + 40
+        }px`,
+        top: `${
+          petState === 'sleeping' ||
+          petState === 'sleepy' ||
+          petState === 'yawn'
+            ? position.y - 70
+            : position.y - 55
+        }px`,
       }"
-      v-if="dialogueText"
     >
+      <!-- 云朵样式气泡（睡眠状态） -->
+      <svg
+        v-if="
+          petState === 'sleeping' ||
+          petState === 'sleepy' ||
+          petState === 'yawn'
+        "
+        class="cloud-bubble"
+        :class="{ 'dark-theme': isDark }"
+        viewBox="0 0 120 42"
+      >
+        <g class="cloud-group">
+          <!-- 底部大椭圆（承载文字区域） -->
+          <ellipse cx="56" cy="32" rx="45" ry="10" class="cloud-part" />
+          <!-- 中间椭圆 -->
+          <ellipse cx="35" cy="22" rx="26" ry="14" class="cloud-part" />
+          <ellipse cx="75" cy="20" rx="24" ry="13" class="cloud-part" />
+          <!-- 顶部小椭圆 -->
+          <ellipse cx="50" cy="12" rx="16" ry="10" class="cloud-part" />
+          <ellipse cx="72" cy="10" rx="14" ry="9" class="cloud-part" />
+        </g>
+      </svg>
+      <!-- 云朵尾巴（三个小气泡） -->
+      <svg
+        v-if="
+          petState === 'sleeping' ||
+          petState === 'sleepy' ||
+          petState === 'yawn'
+        "
+        class="cloud-tail"
+        :class="{ 'dark-theme': isDark }"
+        viewBox="0 0 20 25"
+      >
+        <g class="tail-group">
+          <!-- 最上面的气泡（最大，靠近云朵） -->
+          <ellipse cx="6" cy="5" rx="5" ry="4" class="tail-part" />
+          <!-- 中间的气泡 -->
+          <ellipse cx="10" cy="13" rx="4" ry="3.5" class="tail-part" />
+          <!-- 最下面的气泡（最小） -->
+          <ellipse cx="14" cy="20" rx="3" ry="2.5" class="tail-part" />
+        </g>
+      </svg>
       <span class="dialogue-text">{{ dialogueText }}</span>
-      <div class="dialogue-tail"></div>
+      <!-- 普通气泡尾巴 -->
+      <div
+        v-if="
+          !(
+            petState === 'sleeping' ||
+            petState === 'sleepy' ||
+            petState === 'yawn'
+          )
+        "
+        class="dialogue-tail"
+      ></div>
     </div>
 
     <!-- 右键菜单 -->
@@ -1448,80 +1512,103 @@ onBeforeUnmount(() => {
    梦幻云朵对话气泡（睡眠状态专用）
    ======================================== */
 
-/* 云朵主体 - 柔和蓬松感 */
+/* 云朵气泡主体 */
 .dialogue-bubble.dialogue-cloud {
-  border: none;
-  border-radius: 50%;
-  padding: 14px 20px 12px;
-  background: v-bind(
-    "isDark ? 'radial-gradient(ellipse 120% 100% at 50% 60%, rgba(99, 102, 241, 0.3) 0%, rgba(139, 92, 246, 0.2) 40%, transparent 70%)' : 'radial-gradient(ellipse 120% 100% at 50% 60%, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.85) 40%, transparent 70%)'"
-  );
-  box-shadow:
-    0 0 40px
-      v-bind("isDark ? 'rgba(99, 102, 241, 0.2)' : 'rgba(168, 85, 247, 0.1)'"),
-    0 0 80px
-      v-bind("isDark ? 'rgba(139, 92, 246, 0.1)' : 'rgba(199, 210, 254, 0.15)'");
-  animation: cloud-float 3s ease-in-out infinite;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0;
+  width: 120px;
+  height: 42px;
   position: relative;
 }
 
-/* 云朵顶部蓬松凸起 */
 .dialogue-bubble.dialogue-cloud::before {
-  content: "";
+  display: none !important;
+  content: none !important;
+}
+
+/* 云朵 SVG */
+.cloud-bubble {
   position: absolute;
-  top: -10px;
-  left: 20%;
-  width: 20px;
-  height: 20px;
-  background: v-bind(
-    "isDark ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.95)'"
-  );
-  border-radius: 50%;
-  box-shadow:
-    18px 2px 0 4px
-      v-bind("isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(237, 233, 254, 0.95)'"),
-    35px 5px 0 2px
-      v-bind("isDark ? 'rgba(168, 85, 247, 0.18)' : 'rgba(252, 231, 243, 0.9)'");
-  z-index: -1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
-/* 云朵左侧蓬松凸起 */
-.dialogue-bubble.dialogue-cloud::after {
-  display: none;
+.cloud-bubble .cloud-group {
+  opacity: 0.9;
 }
 
-/* 云朵文字 - 梦幻感 */
+.cloud-bubble .cloud-part {
+  fill: white;
+}
+
+.cloud-bubble.dark-theme .cloud-part {
+  fill: #8b5cf6;
+}
+
+/* 云朵文字 - 居中显示在云朵内部 */
 .dialogue-bubble.dialogue-cloud .dialogue-text {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 1;
   color: v-bind("isDark ? '#c7d2fe' : '#6366f1'");
   font-weight: 500;
   text-shadow: 0 1px 3px
     v-bind("isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.9)'");
+  white-space: nowrap;
 }
 
-/* 云朵气泡尾巴 - 梦幻小气泡 */
-.dialogue-bubble.dialogue-cloud .dialogue-tail {
+/* 云朵尾巴 SVG */
+.cloud-tail {
   position: absolute;
-  bottom: -5px;
-  left: 30%;
-  width: 5px;
-  height: 5px;
-  background: v-bind(
-    "isDark ? 'rgba(139, 92, 246, 0.25)' : 'rgba(241, 245, 249, 0.9)'"
-  );
-  border-radius: 50%;
-  transform: none;
-  clip-path: none;
-  box-shadow:
-    6px 6px 0 0
-      v-bind("isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(237, 233, 254, 0.85)'"),
-    12px 12px 0 -1px
-      v-bind("isDark ? 'rgba(168, 85, 247, 0.15)' : 'rgba(199, 210, 254, 0.7)'");
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 25px;
+  pointer-events: none;
 }
 
-.dialogue-bubble.dialogue-cloud.dialogue-left .dialogue-tail {
-  left: 55%;
+.dialogue-bubble.dialogue-cloud.dialogue-left .cloud-tail {
+  left: 60%;
+}
+
+.cloud-tail .tail-group {
+  opacity: 0.9;
+}
+
+.cloud-tail .tail-part {
+  fill: white;
+}
+
+.cloud-tail.dark-theme .tail-part {
+  fill: #8b5cf6;
+}
+
+/* 云朵气泡隐藏普通尾巴 */
+.dialogue-bubble.dialogue-cloud .dialogue-tail {
+  display: none;
+}
+
+/* 云朵顶部装饰 - 已移除，改用整体云朵 */
+.dialogue-bubble.dialogue-cloud::before,
+.dialogue-bubble.dialogue-cloud::after {
+  display: none;
+}
+
+/* 云朵装饰 SVG - 已移除 */
+.cloud-decoration {
+  display: none;
+}
+
+/* 云朵尾巴 SVG - 已移除 */
+.dialogue-tail-svg {
+  display: none;
 }
 
 /* 云朵浮动动画 */
