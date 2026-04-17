@@ -66,6 +66,7 @@ export interface ScheduleConfig {
 
 // 天气类型
 export type WeatherType =
+  | "default" // 默认（无特效）
   | "sunny" // 晴天
   | "cloudy" // 多云
   | "lightRain" // 小雨

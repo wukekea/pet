@@ -91,6 +91,7 @@ const actionGroups = [
 
 // 天气选项
 const weatherOptions: { value: WeatherType; label: string; icon: string }[] = [
+  { value: "default", label: "默认", icon: "○" },
   { value: "sunny", label: "晴天", icon: "☀️" },
   { value: "cloudy", label: "多云", icon: "☁️" },
   { value: "lightRain", label: "小雨", icon: "🌧️" },

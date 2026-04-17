@@ -2,7 +2,7 @@ import { ref } from "vue";
 import type { WeatherType } from "../types";
 
 // 当前天气状态
-export const currentWeather = ref<WeatherType>("sunny");
+export const currentWeather = ref<WeatherType>("default");
 
 // 设置天气
 export function setWeather(weather: WeatherType) {
