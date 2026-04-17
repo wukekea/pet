@@ -79,6 +79,85 @@ onUnmounted(() => {
   }
 });
 
+// ========== 多云效果配置 ==========
+// 基础速度（px/s）- 修改此值可统一调整所有云朵速度
+const CLOUD_BASE_SPEED = 12;
+// 每朵云生成的时间间隔
+const CLOUD_GENERATE_INTERVAL = 10000;
+
+// 云朵位置配置：起始X、结束X、速度乘率、垂直位置
+const cloudPositions = [
+  { startX: -90, endX: 270, speedMultiplier: 0.95, top: '5%' },
+  { startX: -90, endX: 270, speedMultiplier: 0.85, top: '20%' },
+  { startX: -90, endX: 270, speedMultiplier: 0.90, top: '35%' },
+];
+
+// 计算云朵动画持续时间（秒）
+const getCloudDuration = (config: typeof cloudPositions[0]) => {
+  const distance = config.endX - config.startX;
+  const speed = CLOUD_BASE_SPEED * config.speedMultiplier;
+  return (distance / speed).toFixed(1);
+};
+
+// 当前显示的云朵列表
+interface Cloud {
+  id: number;
+  config: (typeof cloudPositions)[0];
+}
+const clouds = ref<Cloud[]>([]);
+let cloudId = 0;
+let cloudTimer: ReturnType<typeof setInterval> | null = null;
+
+// 随机选择一个位置生成云朵
+const spawnCloud = () => {
+  const randomConfig = cloudPositions[Math.floor(Math.random() * cloudPositions.length)];
+  clouds.value.push({
+    id: ++cloudId,
+    config: randomConfig,
+  });
+};
+
+// 移除云朵（动画结束后调用）
+const removeCloud = (id: number) => {
+  const index = clouds.value.findIndex((c) => c.id === id);
+  if (index !== -1) {
+    clouds.value.splice(index, 1);
+  }
+};
+
+// 监听天气变化，启动/停止云朵生成
+watch(
+  currentWeather,
+  (newWeather) => {
+    if (cloudTimer) {
+      clearTimeout(cloudTimer);
+      cloudTimer = null;
+    }
+    clouds.value = [];
+
+    if (newWeather === 'cloudy') {
+      // 立即生成第一朵云
+      spawnCloud();
+      // 每隔 CLOUD_GENERATE_INTERVAL + 随机(0-5s) 生成一朵新云
+      const scheduleNextCloud = () => {
+        const randomDelay = CLOUD_GENERATE_INTERVAL + Math.random() * 5000;
+        cloudTimer = setTimeout(() => {
+          spawnCloud();
+          scheduleNextCloud();
+        }, randomDelay);
+      };
+      scheduleNextCloud();
+    }
+  },
+  { immediate: true }
+);
+
+onUnmounted(() => {
+  if (cloudTimer) {
+    clearTimeout(cloudTimer);
+  }
+});
+
 // ========== 闪电效果 ==========
 const lightningActive = ref(false);
 const lightningBolt = ref<string | null>(null);
@@ -255,12 +334,17 @@ onUnmounted(() => {
     <div v-if="currentWeather === 'cloudy'" class="cloudy-container">
       <div class="cloud-layer layer-back">
         <svg
-          v-for="i in 3"
-          :key="`back-${i}`"
-          class="cloud cloud-back"
-          :class="`cloud-anim-${i}`"
+          v-for="cloud in clouds"
+          :key="cloud.id"
+          class="cloud cloud-back cloud-anim"
           viewBox="0 0 100 50"
-          :style="{ '--delay': `${i * 2}s`, '--offset': `${i * 30}px` }"
+          :style="{
+            '--cloud-start-x': `${cloud.config.startX}px`,
+            '--cloud-end-x': `${cloud.config.endX}px`,
+            '--cloud-duration': `${getCloudDuration(cloud.config)}s`,
+            top: cloud.config.top,
+          }"
+          @animationend="removeCloud(cloud.id)"
         >
           <g class="cloud-group" :class="{ 'dark-theme': isDark }">
             <ellipse cx="30" cy="35" rx="25" ry="15" class="cloud-part" />

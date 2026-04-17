@@ -353,42 +353,19 @@
 }
 
 /* 云朵动画 - 从背景外依次飘入 */
-.cloud-anim-1 {
-  top: 5%;
-  animation: cloud-drift 35s linear infinite backwards;
-}
-
-.cloud-anim-2 {
-  top: 20%;
-  animation: cloud-drift 40s linear infinite backwards;
-  animation-delay: 8s;
-}
-
-.cloud-anim-3 {
-  top: 35%;
-  animation: cloud-drift 38s linear infinite backwards;
-  animation-delay: 16s;
-}
-
-.cloud-anim-4 {
-  top: 12%;
-  animation: cloud-drift 30s linear infinite backwards;
-  animation-delay: 4s;
-}
-
-.cloud-anim-5 {
-  top: 28%;
-  animation: cloud-drift 32s linear infinite backwards;
-  animation-delay: 12s;
+/* 使用 CSS 变量接收位置和时长参数，由 Vue 组件配置 */
+.cloud-anim {
+  animation: cloud-drift var(--cloud-duration, 35s) linear forwards;
 }
 
 /* 云朵从背景左侧外面开始，慢慢飘入，最后飘出右侧 */
+/* 使用 CSS 变量接收位置参数，由 Vue 组件配置 */
 @keyframes cloud-drift {
   0% {
-    transform: translateX(-120px);
+    transform: translateX(var(--cloud-start-x, -120px));
   }
   100% {
-    transform: translateX(320px);
+    transform: translateX(var(--cloud-end-x, 320px));
   }
 }
 
