@@ -63,8 +63,10 @@ watch(
     }
     ripples.value = [];
     if (newWeather === "lightRain") {
-      // 每 500ms 生成一个新涟漪
-      rippleTimer = setInterval(addRipple, 500);
+      // 延迟 1.5s 后开始生成涟漪（等雨水先落地）
+      rippleTimer = setTimeout(() => {
+        rippleTimer = setInterval(addRipple, 500);
+      }, 1500);
     }
   },
   { immediate: true },
