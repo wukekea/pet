@@ -22,8 +22,7 @@ const getRandomDelay = (index: number, base: number = 0.5) =>
   `${(index * 0.15 + Math.sin(index) * base).toFixed(2)}s`;
 
 // 生成随机位置
-const getRandomPos = (index: number) =>
-  `${((index * 37) % 100)}%`;
+const getRandomPos = (index: number) => `${(index * 37) % 100}%`;
 
 // ========== 闪电效果 ==========
 const lightningActive = ref(false);
@@ -162,27 +161,12 @@ onUnmounted(() => {
     :class="[weatherClass, themeClass]"
     :style="weatherStyle"
   >
-    <!-- 晴天效果 - 温暖的阳光与漂浮光点 -->
+    <!-- 晴天效果 - 温柔的光晕与漂浮光点 -->
     <div v-if="currentWeather === 'sunny'" class="sunny-container">
-      <!-- 光晕背景 -->
-      <div class="sun-glow"></div>
-      <!-- 主太阳 -->
-      <div class="sun-main">
-        <div class="sun-face"></div>
-        <svg class="sun-rays" viewBox="0 0 100 100">
-          <g class="rays-group">
-            <line
-              v-for="i in 12"
-              :key="i"
-              class="sun-ray"
-              x1="50" y1="50"
-              :x2="50 + Math.cos((i - 1) * 30 * Math.PI / 180) * 45"
-              :y2="50 + Math.sin((i - 1) * 30 * Math.PI / 180) * 45"
-              :style="{ '--ray-index': i }"
-            />
-          </g>
-        </svg>
-      </div>
+      <!-- 多层光晕背景 -->
+      <div class="sun-glow sun-glow-outer"></div>
+      <div class="sun-glow sun-glow-mid"></div>
+      <div class="sun-glow sun-glow-inner"></div>
       <!-- 漂浮光点 -->
       <div class="floating-particles">
         <span
@@ -191,8 +175,8 @@ onUnmounted(() => {
           class="particle"
           :style="{
             '--delay': getRandomDelay(i, 0.8),
-            '--x-start': `${10 + (i * 7)}%`,
-            '--x-end': `${15 + (i * 6)}%`,
+            '--x-start': `${10 + i * 7}%`,
+            '--x-end': `${15 + i * 6}%`,
           }"
         ></span>
       </div>
@@ -232,7 +216,10 @@ onUnmounted(() => {
     </div>
 
     <!-- 小雨效果 - 稀疏细腻的雨丝 -->
-    <div v-if="currentWeather === 'lightRain'" class="rain-container light-rain">
+    <div
+      v-if="currentWeather === 'lightRain'"
+      class="rain-container light-rain"
+    >
       <!-- 雨丝 -->
       <div class="rain-drops light">
         <span
@@ -255,7 +242,7 @@ onUnmounted(() => {
           :style="{
             '--delay': getRandomDelay(i, 1.5),
             '--x': `${(i * 25) % 100}%`,
-            '--y': `${65 + (i * 8)}%`,
+            '--y': `${65 + i * 8}%`,
           }"
         ></span>
       </div>
@@ -264,7 +251,10 @@ onUnmounted(() => {
     </div>
 
     <!-- 暴雨效果 - 密集倾盆大雨 -->
-    <div v-if="currentWeather === 'heavyRain'" class="rain-container heavy-rain">
+    <div
+      v-if="currentWeather === 'heavyRain'"
+      class="rain-container heavy-rain"
+    >
       <div class="rain-drops heavy">
         <span
           v-for="i in 50"
@@ -282,7 +272,10 @@ onUnmounted(() => {
     </div>
 
     <!-- 雷阵雨效果 - 暴雨 + 闪电 -->
-    <div v-if="currentWeather === 'thunderstorm'" class="rain-container thunderstorm">
+    <div
+      v-if="currentWeather === 'thunderstorm'"
+      class="rain-container thunderstorm"
+    >
       <div class="rain-drops storm">
         <span
           v-for="i in 65"
@@ -296,7 +289,10 @@ onUnmounted(() => {
         ></span>
       </div>
       <!-- 闪电效果 -->
-      <div class="lightning-container" :class="{ 'lightning-active': lightningActive }">
+      <div
+        class="lightning-container"
+        :class="{ 'lightning-active': lightningActive }"
+      >
         <!-- 背景闪光 -->
         <div class="lightning-flash"></div>
         <!-- 闪电图形 -->
@@ -322,16 +318,16 @@ onUnmounted(() => {
             filter="url(#lightning-glow)"
           />
           <!-- 内部亮线 -->
-          <path
-            :d="lightningBolt"
-            class="bolt-core"
-          />
+          <path :d="lightningBolt" class="bolt-core" />
         </svg>
       </div>
     </div>
 
     <!-- 小雪效果 - 优雅飘落 -->
-    <div v-if="currentWeather === 'lightSnow'" class="snow-container light-snow">
+    <div
+      v-if="currentWeather === 'lightSnow'"
+      class="snow-container light-snow"
+    >
       <div class="snowflakes">
         <span
           v-for="i in 18"
@@ -355,14 +351,17 @@ onUnmounted(() => {
           :style="{
             '--delay': getRandomDelay(i, 0.8),
             '--x': getRandomPos(i),
-            '--y': `${20 + (i * 8)}%`,
+            '--y': `${20 + i * 8}%`,
           }"
         ></span>
       </div>
     </div>
 
     <!-- 大雪效果 -->
-    <div v-if="currentWeather === 'heavySnow'" class="snow-container heavy-snow">
+    <div
+      v-if="currentWeather === 'heavySnow'"
+      class="snow-container heavy-snow"
+    >
       <div class="snowflakes heavy">
         <span
           v-for="i in 40"
