@@ -5,8 +5,10 @@ import { isDark } from "./composables/useTheme";
 import { position } from "./composables/sharedState";
 import "./weather.css";
 
-// 天气背景样式类
-const weatherClass = computed(() => `weather-${currentWeather.value}`);
+// 天气背景样式类（退出多云时保持 cloudy 样式）
+const weatherClass = computed(() =>
+  isWeatherChanging.value ? 'weather-cloudy' : `weather-${currentWeather.value}`
+);
 const themeClass = computed(() =>
   isDark.value ? "dark-theme" : "light-theme",
 );
@@ -82,6 +84,8 @@ onUnmounted(() => {
 // ========== 多云效果配置 ==========
 // 基础速度（px/s）- 修改此值可统一调整所有云朵速度
 const CLOUD_BASE_SPEED = 12;
+// 云朵退出时的速度倍数
+const CLOUD_EXIT_SPEED_MULTIPLIER = 10;
 // 每朵云生成的时间间隔
 const CLOUD_GENERATE_INTERVAL = 10000;
 
@@ -93,9 +97,10 @@ const cloudPositions = [
 ];
 
 // 计算云朵动画持续时间（秒）
-const getCloudDuration = (config: typeof cloudPositions[0]) => {
-  const distance = config.endX - config.startX;
-  const speed = CLOUD_BASE_SPEED * config.speedMultiplier;
+const getCloudDuration = (cloud: Cloud) => {
+  const distance = cloud.config.endX - cloud.startPosition;
+  const speedMultiplier = isWeatherChanging.value ? CLOUD_EXIT_SPEED_MULTIPLIER : 1;
+  const speed = CLOUD_BASE_SPEED * cloud.config.speedMultiplier * speedMultiplier;
   return (distance / speed).toFixed(1);
 };
 
@@ -103,17 +108,30 @@ const getCloudDuration = (config: typeof cloudPositions[0]) => {
 interface Cloud {
   id: number;
   config: (typeof cloudPositions)[0];
+  startPosition: number; // 动画起始位置（用于退出时从当前位置继续）
+  startTime: number; // 动画开始时间
+  renderKey: number; // 用于强制重新渲染
 }
 const clouds = ref<Cloud[]>([]);
 let cloudId = 0;
-let cloudTimer: ReturnType<typeof setInterval> | null = null;
+let cloudTimer: ReturnType<typeof setTimeout> | null = null;
+
+// 云朵退出状态
+const isWeatherChanging = ref(false);
+let exitKey = 0; // 退出时的渲染 key
 
 // 随机选择一个位置生成云朵
 const spawnCloud = () => {
+  // 退出状态下不再生成新云
+  if (isWeatherChanging.value) return;
+
   const randomConfig = cloudPositions[Math.floor(Math.random() * cloudPositions.length)];
   clouds.value.push({
     id: ++cloudId,
     config: randomConfig,
+    startPosition: randomConfig.startX,
+    startTime: Date.now(),
+    renderKey: 0,
   });
 };
 
@@ -125,17 +143,74 @@ const removeCloud = (id: number) => {
   }
 };
 
+// 启动云朵退出动画
+const startCloudExit = () => {
+  const now = Date.now();
+  exitKey++; // 更新退出 key
+  clouds.value.forEach((cloud) => {
+    // 计算已运行时间和当前位置
+    const distance = cloud.config.endX - cloud.config.startX;
+    const normalSpeed = CLOUD_BASE_SPEED * cloud.config.speedMultiplier;
+    const normalDuration = distance / normalSpeed;
+
+    const elapsed = (now - cloud.startTime) / 1000; // 秒
+    const progress = Math.min(elapsed / normalDuration, 1);
+
+    // 当前位置
+    const currentX = cloud.config.startX + distance * progress;
+
+    // 更新云朵的起始位置和开始时间（从当前位置继续）
+    cloud.startPosition = currentX;
+    cloud.startTime = now;
+    cloud.renderKey = exitKey; // 更新 renderKey 强制重新渲染
+  });
+};
+
+// 监听云朵列表变化，所有云朵消失后重置退出状态
+watch(
+  clouds,
+  (newClouds) => {
+    if (isWeatherChanging.value && newClouds.length === 0) {
+      // 所有云朵消失，恢复状态
+      isWeatherChanging.value = false;
+    }
+  },
+  { deep: true }
+);
+
 // 监听天气变化，启动/停止云朵生成
 watch(
   currentWeather,
-  (newWeather) => {
+  (newWeather, oldWeather) => {
+    // 从多云切换到其他天气：启动退出动画
+    if (oldWeather === 'cloudy' && newWeather !== 'cloudy' && clouds.value.length > 0) {
+      // 停止生成新云
+      if (cloudTimer) {
+        clearTimeout(cloudTimer);
+        cloudTimer = null;
+      }
+      // 设置退出状态，启动退出动画
+      isWeatherChanging.value = true;
+      startCloudExit();
+      return; // 保持在多云状态，等待云朵全部消失
+    }
+
+    // 正常切换逻辑
     if (cloudTimer) {
       clearTimeout(cloudTimer);
       cloudTimer = null;
     }
-    clouds.value = [];
+
+    // 非 cloudy 天气时清空云朵
+    if (newWeather !== 'cloudy') {
+      clouds.value = [];
+      isWeatherChanging.value = false;
+    }
 
     if (newWeather === 'cloudy') {
+      // 重置退出状态，清空旧云朵，开始生成新云朵
+      isWeatherChanging.value = false;
+      clouds.value = [];
       // 立即生成第一朵云
       spawnCloud();
       // 每隔 CLOUD_GENERATE_INTERVAL + 随机(0-5s) 生成一朵新云
@@ -296,7 +371,7 @@ onUnmounted(() => {
     :style="weatherStyle"
   >
     <!-- 晴天效果 - 温柔的光晕与漂浮光点 -->
-    <div v-if="currentWeather === 'sunny'" class="sunny-container">
+    <div v-if="currentWeather === 'sunny' && !isWeatherChanging" class="sunny-container">
       <!-- 多层光晕背景 -->
       <div class="sun-glow sun-glow-outer"></div>
       <div class="sun-glow sun-glow-mid"></div>
@@ -331,17 +406,17 @@ onUnmounted(() => {
     </div>
 
     <!-- 多云效果 - 柔软的云朵层叠 -->
-    <div v-if="currentWeather === 'cloudy'" class="cloudy-container">
+    <div v-if="currentWeather === 'cloudy' || isWeatherChanging" class="cloudy-container">
       <div class="cloud-layer layer-back">
         <svg
           v-for="cloud in clouds"
-          :key="cloud.id"
+          :key="`${cloud.id}-${cloud.renderKey}`"
           class="cloud cloud-back cloud-anim"
           viewBox="0 0 100 50"
           :style="{
-            '--cloud-start-x': `${cloud.config.startX}px`,
+            '--cloud-start-x': `${cloud.startPosition}px`,
             '--cloud-end-x': `${cloud.config.endX}px`,
-            '--cloud-duration': `${getCloudDuration(cloud.config)}s`,
+            '--cloud-duration': `${getCloudDuration(cloud)}s`,
             top: cloud.config.top,
           }"
           @animationend="removeCloud(cloud.id)"
@@ -358,7 +433,7 @@ onUnmounted(() => {
 
     <!-- 小雨效果 - 稀疏细腻的雨丝 -->
     <div
-      v-if="currentWeather === 'lightRain'"
+      v-if="currentWeather === 'lightRain' && !isWeatherChanging"
       class="rain-container light-rain"
     >
       <!-- 雨丝 -->
@@ -393,7 +468,7 @@ onUnmounted(() => {
 
     <!-- 暴雨效果 - 密集倾盆大雨 -->
     <div
-      v-if="currentWeather === 'heavyRain'"
+      v-if="currentWeather === 'heavyRain' && !isWeatherChanging"
       class="rain-container heavy-rain"
     >
       <div class="rain-drops heavy">
@@ -414,7 +489,7 @@ onUnmounted(() => {
 
     <!-- 雷阵雨效果 - 暴雨 + 闪电 -->
     <div
-      v-if="currentWeather === 'thunderstorm'"
+      v-if="currentWeather === 'thunderstorm' && !isWeatherChanging"
       class="rain-container thunderstorm"
     >
       <div class="rain-drops storm">
@@ -466,7 +541,7 @@ onUnmounted(() => {
 
     <!-- 小雪效果 - 优雅飘落 -->
     <div
-      v-if="currentWeather === 'lightSnow'"
+      v-if="currentWeather === 'lightSnow' && !isWeatherChanging"
       class="snow-container light-snow"
     >
       <div class="snowflakes">
@@ -500,7 +575,7 @@ onUnmounted(() => {
 
     <!-- 大雪效果 -->
     <div
-      v-if="currentWeather === 'heavySnow'"
+      v-if="currentWeather === 'heavySnow' && !isWeatherChanging"
       class="snow-container heavy-snow"
     >
       <div class="snowflakes heavy">
