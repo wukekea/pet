@@ -323,12 +323,22 @@
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.05));
 }
 
+/* 云朵组 - 使用 CSS opacity 使整朵云透明度一致 */
+.cloud-group {
+  opacity: 0.85;
+}
+
+.cloud-group.dark-theme {
+  opacity: 0.6;
+}
+
+/* 云朵部分使用实色填充 */
 .cloud-part {
-  fill: rgba(255, 255, 255, 0.85);
+  fill: white;
 }
 
 .dark-theme .cloud-part {
-  fill: rgba(96, 125, 139, 0.6);
+  fill: #78909c;
 }
 
 .cloud-back {

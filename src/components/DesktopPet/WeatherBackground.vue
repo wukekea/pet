@@ -207,10 +207,12 @@ onUnmounted(() => {
           viewBox="0 0 100 50"
           :style="{ '--delay': `${i * 2}s`, '--offset': `${i * 30}px` }"
         >
-          <ellipse cx="30" cy="35" rx="25" ry="15" class="cloud-part" />
-          <ellipse cx="50" cy="28" rx="30" ry="20" class="cloud-part" />
-          <ellipse cx="70" cy="35" rx="22" ry="14" class="cloud-part" />
-          <ellipse cx="45" cy="38" rx="20" ry="12" class="cloud-part" />
+          <g class="cloud-group" :class="{ 'dark-theme': isDark }">
+            <ellipse cx="30" cy="35" rx="25" ry="15" class="cloud-part" />
+            <ellipse cx="50" cy="28" rx="30" ry="20" class="cloud-part" />
+            <ellipse cx="70" cy="35" rx="22" ry="14" class="cloud-part" />
+            <ellipse cx="45" cy="38" rx="20" ry="12" class="cloud-part" />
+          </g>
         </svg>
       </div>
     </div>
