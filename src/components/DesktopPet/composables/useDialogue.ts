@@ -6,7 +6,7 @@ import {
 } from "../dialogues";
 import { petState } from "./sharedState";
 import { isDragging } from "./sharedState";
-import { currentWeather } from "./useWeather";
+import { currentWeather, isWeatherChanging } from "./useWeather";
 import {
   getTimePeriod,
   TIME_PERIOD_MORNING,
@@ -131,10 +131,28 @@ export function showWeatherDialogue() {
   }
 }
 
-// 监听天气变化，触发天气对话
+// 待触发的天气对话（用于退场动画结束后触发）
+let pendingWeatherDialogue = false;
+
+// 监听天气变化
 watch(currentWeather, (newWeather, oldWeather) => {
-  // 天气变化时触发对话（排除初始化和恢复默认的情况）
+  // 天气变化时，判断是否需要等待退场动画
   if (newWeather !== oldWeather && newWeather !== "default") {
+    // 从多云切换走时，需要等待退场动画结束
+    if (oldWeather === 'cloudy') {
+      pendingWeatherDialogue = true;
+    } else {
+      // 其他天气切换，直接触发
+      showWeatherDialogue();
+    }
+  }
+});
+
+// 监听天气切换状态，退场动画结束后触发天气对话
+watch(isWeatherChanging, (isChanging, wasChanging) => {
+  // 从 true 变为 false 时，退场动画结束
+  if (wasChanging && !isChanging && pendingWeatherDialogue) {
+    pendingWeatherDialogue = false;
     showWeatherDialogue();
   }
 });

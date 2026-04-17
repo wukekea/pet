@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted } from "vue";
-import { currentWeather } from "./composables/useWeather";
+import { currentWeather, isWeatherChanging } from "./composables/useWeather";
 import { isDark } from "./composables/useTheme";
 import { position } from "./composables/sharedState";
 import "./weather.css";
@@ -116,8 +116,7 @@ const clouds = ref<Cloud[]>([]);
 let cloudId = 0;
 let cloudTimer: ReturnType<typeof setTimeout> | null = null;
 
-// 云朵退出状态
-const isWeatherChanging = ref(false);
+// 云朵退出状态（已移至 useWeather.ts）
 let exitKey = 0; // 退出时的渲染 key
 
 // 随机选择一个位置生成云朵
