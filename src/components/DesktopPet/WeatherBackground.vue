@@ -24,6 +24,58 @@ const getRandomDelay = (index: number, base: number = 0.5) =>
 // 生成随机位置
 const getRandomPos = (index: number) => `${(index * 37) % 100}%`;
 
+// 涟漪数据（带唯一 key）
+const ripples = ref<{ id: number; x: string; y: string }[]>([]);
+let rippleId = 0;
+
+// 创建一个新涟漪
+const createRipple = () => ({
+  id: ++rippleId,
+  x: `${Math.floor(Math.random() * 100)}%`,
+  y: `${60 + Math.floor(Math.random() * 30)}%`,
+});
+
+// 添加一个涟漪
+const addRipple = () => {
+  // 限制最大数量，避免堆积太多
+  if (ripples.value.length < 8) {
+    ripples.value.push(createRipple());
+  }
+};
+
+// 移除涟漪（动画结束后调用）
+const removeRipple = (id: number) => {
+  const index = ripples.value.findIndex((r) => r.id === id);
+  if (index !== -1) {
+    ripples.value.splice(index, 1);
+  }
+};
+
+// 定时器
+let rippleTimer: ReturnType<typeof setInterval> | null = null;
+
+watch(
+  currentWeather,
+  (newWeather) => {
+    if (rippleTimer) {
+      clearInterval(rippleTimer);
+      rippleTimer = null;
+    }
+    ripples.value = [];
+    if (newWeather === "lightRain") {
+      // 每 500ms 生成一个新涟漪
+      rippleTimer = setInterval(addRipple, 500);
+    }
+  },
+  { immediate: true },
+);
+
+onUnmounted(() => {
+  if (rippleTimer) {
+    clearInterval(rippleTimer);
+  }
+});
+
 // ========== 闪电效果 ==========
 const lightningActive = ref(false);
 const lightningBolt = ref<string | null>(null);
@@ -238,14 +290,14 @@ onUnmounted(() => {
       <!-- 涟漪效果 -->
       <div class="ripples">
         <span
-          v-for="i in 4"
-          :key="i"
+          v-for="ripple in ripples"
+          :key="ripple.id"
           class="ripple"
           :style="{
-            '--delay': getRandomDelay(i, 1.5),
-            '--x': `${(i * 25) % 100}%`,
-            '--y': `${65 + i * 8}%`,
+            '--x': ripple.x,
+            '--y': ripple.y,
           }"
+          @animationend="removeRipple(ripple.id)"
         ></span>
       </div>
       <!-- 雾气效果 -->

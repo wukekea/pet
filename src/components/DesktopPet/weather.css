@@ -538,8 +538,7 @@
   top: var(--y);
   border: 1px solid rgba(176, 190, 197, 0.5);
   border-radius: 50%;
-  animation: ripple-spread 2s ease-out infinite;
-  animation-delay: var(--delay);
+  animation: ripple-spread 2s ease-out forwards;
 }
 
 .dark-theme .ripple {
