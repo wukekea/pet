@@ -521,8 +521,10 @@ onBeforeUnmount(() => {
         viewBox="0 0 120 42"
       >
         <g class="cloud-group">
-          <!-- 底部大椭圆（承载文字区域） -->
-          <ellipse cx="56" cy="32" rx="45" ry="10" class="cloud-part" />
+          <!-- 底部由多个小椭圆组成 -->
+          <ellipse cx="25" cy="32" rx="20" ry="10" class="cloud-part" />
+          <ellipse cx="55" cy="34" rx="22" ry="9" class="cloud-part" />
+          <ellipse cx="85" cy="32" rx="18" ry="10" class="cloud-part" />
           <!-- 中间椭圆 -->
           <ellipse cx="35" cy="22" rx="26" ry="14" class="cloud-part" />
           <ellipse cx="75" cy="20" rx="24" ry="13" class="cloud-part" />
