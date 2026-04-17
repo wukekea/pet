@@ -1,7 +1,12 @@
-import { ref } from "vue";
-import { dialogueMessages, dreamTalkMessages } from "../dialogues";
+import { ref, watch } from "vue";
+import {
+  dialogueMessages,
+  dreamTalkMessages,
+  weatherDialogues,
+} from "../dialogues";
 import { petState } from "./sharedState";
 import { isDragging } from "./sharedState";
+import { currentWeather } from "./useWeather";
 import {
   getTimePeriod,
   TIME_PERIOD_MORNING,
@@ -65,6 +70,16 @@ export function showDialogue() {
   // 其他状态只有30%概率显示对话
   if (!isSpecialState && Math.random() > 0.3) return;
 
+  // 有 20% 概率显示天气相关台词（非默认天气时）
+  const weather = currentWeather.value;
+  if (weather !== "default" && Math.random() < 0.2) {
+    const weatherMessage = getWeatherDialogue();
+    if (weatherMessage) {
+      showCustomDialogue(weatherMessage);
+      return;
+    }
+  }
+
   const messages = dialogueMessages[currentState] || dialogueMessages.idle;
   const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
@@ -98,3 +113,28 @@ export function getDreamTalk(): string {
   const messages = dreamTalkMessages;
   return messages[Math.floor(Math.random() * messages.length)];
 }
+
+// 随机获取天气台词
+export function getWeatherDialogue(): string | null {
+  const weather = currentWeather.value;
+  const messages = weatherDialogues[weather] || weatherDialogues.default;
+  return messages[Math.floor(Math.random() * messages.length)];
+}
+
+// 显示天气对话
+export function showWeatherDialogue() {
+  if (isDialogueVisible.value || isDragging.value) return;
+
+  const message = getWeatherDialogue();
+  if (message) {
+    showCustomDialogue(message);
+  }
+}
+
+// 监听天气变化，触发天气对话
+watch(currentWeather, (newWeather, oldWeather) => {
+  // 天气变化时触发对话（排除初始化和恢复默认的情况）
+  if (newWeather !== oldWeather && newWeather !== "default") {
+    showWeatherDialogue();
+  }
+});
