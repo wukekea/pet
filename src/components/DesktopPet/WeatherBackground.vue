@@ -12,9 +12,10 @@ const themeClass = computed(() =>
 );
 
 // 天气背景位置 - 跟随宠物位置，居中显示
+// 偏移量：left 向右偏移 40px，top 向上偏移（负值），使宠物在天气背景中位置偏下
 const weatherStyle = computed(() => ({
   left: `${position.value.x + 40}px`,
-  top: `${position.value.y + 40}px`,
+  top: `${position.value.y - 20}px`,
 }));
 
 // 生成随机数序列用于动画延迟
