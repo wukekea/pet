@@ -59,6 +59,7 @@ import {
   startScheduleMonitor,
   stopScheduleMonitor,
 } from "./useSchedule";
+import { initWeatherService, cleanupWeatherService } from "./useQWeather";
 
 // 内部函数定义
 function setPassthrough(ignore: boolean) {
@@ -551,6 +552,9 @@ export function initPet(checkSystemThemeFn: () => void) {
   // 启动作息监控
   startScheduleMonitor();
 
+  // 启动天气服务
+  initWeatherService();
+
   if (isVisible.value) {
     animate();
     // 每次启动都打招呼
@@ -580,6 +584,8 @@ export function cleanupPet() {
   if (stateTimer.value) clearTimeout(stateTimer.value);
   // 停止作息监控
   stopScheduleMonitor();
+  // 停止天气服务
+  cleanupWeatherService();
   window.removeEventListener("resize", handleResize);
   window.removeEventListener("mousemove", handleMouseMove);
 }

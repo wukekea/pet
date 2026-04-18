@@ -81,6 +81,45 @@ declare global {
     electronAPI?: {
       setIgnoreMouseEvents: (ignore: boolean) => void;
       getScreenSize: () => Promise<{ width: number; height: number }>;
+      fetchIpLocation: (amapKey: string) => Promise<{
+        success: boolean;
+        lat?: number;
+        lon?: number;
+        city?: string;
+        message?: string;
+      }>;
+      fetchCityByLocation: (
+        lat: number,
+        lon: number,
+        apiKey: string,
+        apiHost: string,
+      ) => Promise<{
+        code: string;
+        message?: string;
+        location?: Array<{
+          id: string;
+          name: string;
+          adm1: string;
+          adm2: string;
+        }>;
+      }>;
+      fetchWeather: (
+        locationId: string,
+        apiKey: string,
+        apiHost: string,
+      ) => Promise<{
+        code: string;
+        message?: string;
+        now?: {
+          obsTime: string;
+          temp: string;
+          icon: string;
+          text: string;
+          windDir: string;
+          windScale: string;
+          humidity: string;
+        };
+      }>;
     };
   }
 }

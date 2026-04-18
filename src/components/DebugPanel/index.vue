@@ -10,6 +10,7 @@ import {
   currentWeather,
   setWeather,
 } from "../DesktopPet/composables/useWeather";
+import { weatherStatus } from "../DesktopPet/composables/useQWeather";
 import type { PetState } from "../DesktopPet/types";
 import type { WeatherType } from "../DesktopPet/types";
 
@@ -103,6 +104,34 @@ const weatherOptions: { value: WeatherType; label: string; icon: string }[] = [
 
 // 当前天气
 const activeWeather = computed(() => currentWeather.value);
+
+// 当前天气中文名（宠物背景天气）
+const activeWeatherLabel = computed(() => {
+  const option = weatherOptions.find((w) => w.value === activeWeather.value);
+  return option ? option.label : activeWeather.value;
+});
+
+// 真实天气描述（API 返回）
+const realWeatherText = computed(() => {
+  const text = weatherStatus.value.weatherText;
+  const temp = weatherStatus.value.weatherTemp;
+  if (text && temp) {
+    return `${text} ${temp}°C`;
+  }
+  return "未获取";
+});
+
+// 天气服务状态文本
+const weatherStatusText = computed(() => {
+  if (weatherStatus.value.isLoading) return "更新中...";
+  if (weatherStatus.value.error) return `错误: ${weatherStatus.value.error}`;
+  if (!weatherStatus.value.enabled) return "未启用";
+  if (weatherStatus.value.lastUpdate) {
+    const time = new Date(weatherStatus.value.lastUpdate).toLocaleTimeString();
+    return `已更新 (${time})`;
+  }
+  return "等待更新";
+});
 
 // 触发状态
 const triggerState = (state: PetState) => {
@@ -212,6 +241,29 @@ defineExpose({
       <div class="current-state">
         <span class="state-label">当前状态:</span>
         <span class="state-value">{{ activeState }}</span>
+      </div>
+
+      <!-- 天气信息 -->
+      <div class="weather-info">
+        <div class="weather-row">
+          <span class="weather-label">📍 城市:</span>
+          <span class="weather-value">{{
+            weatherStatus.cityName || "未获取"
+          }}</span>
+        </div>
+        <div class="weather-row">
+          <span class="weather-label">🌤️ 天气:</span>
+          <span class="weather-value">{{ realWeatherText }}</span>
+        </div>
+        <div class="weather-row">
+          <span class="weather-label">🔄 状态:</span>
+          <span
+            class="weather-value"
+            :class="weatherStatus.isLoading ? 'loading' : ''"
+          >
+            {{ weatherStatusText }}
+          </span>
+        </div>
       </div>
 
       <!-- 动作分组 -->
@@ -425,6 +477,70 @@ defineExpose({
 .dark-mode .state-value {
   color: #a78bfa;
   background: rgba(167, 139, 250, 0.15);
+}
+
+/* ========================================
+   天气信息
+   ======================================== */
+.weather-info {
+  padding: 10px 16px;
+  background: linear-gradient(
+    90deg,
+    rgba(34, 197, 94, 0.08) 0%,
+    transparent 100%
+  );
+  border-bottom: 1px solid rgba(34, 197, 94, 0.1);
+}
+
+.dark-mode .weather-info {
+  background: linear-gradient(
+    90deg,
+    rgba(34, 197, 94, 0.12) 0%,
+    transparent 100%
+  );
+  border-bottom-color: rgba(34, 197, 94, 0.15);
+}
+
+.weather-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.weather-label {
+  font-size: 11px;
+  color: #6b7280;
+  letter-spacing: 0.3px;
+}
+
+.weather-value {
+  font-size: 11px;
+  font-weight: 500;
+  color: #059669;
+}
+
+.weather-value.loading {
+  color: #f59e0b;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.dark-mode .weather-label {
+  color: #9ca3af;
+}
+
+.dark-mode .weather-value {
+  color: #34d399;
 }
 
 /* ========================================
