@@ -35,3 +35,4 @@ pnpm-debug.log*
 
 # 测试覆盖率
 coverage
+.claude/settings.local.json

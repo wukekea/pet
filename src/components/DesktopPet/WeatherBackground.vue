@@ -34,7 +34,14 @@ const RAIN_POOL_SIZE = 200; // 预创建数量，覆盖最大雨滴需求
 // 初始化雨滴对象池
 const initRainDropPool = () => {
   for (let i = 0; i < RAIN_POOL_SIZE; i++) {
-    rainDropPool.push({ id: 0, x: '', duration: 0, delay: 0, width: 0, height: 0 });
+    rainDropPool.push({
+      id: 0,
+      x: "",
+      duration: 0,
+      delay: 0,
+      width: 0,
+      height: 0,
+    });
   }
 };
 initRainDropPool();
@@ -45,7 +52,7 @@ const acquireRainDrop = (): RainDrop => {
   const drop = rainDropPool.pop();
   if (drop) return drop;
   // 池空了才创建新对象
-  return { id: 0, x: '', duration: 0, delay: 0, width: 0, height: 0 };
+  return { id: 0, x: "", duration: 0, delay: 0, width: 0, height: 0 };
 };
 
 // 归还雨滴对象到池中
@@ -60,7 +67,14 @@ const SNOW_POOL_SIZE = 80; // 预创建数量，覆盖最大雪花需求
 // 初始化雪花对象池
 const initSnowFlakePool = () => {
   for (let i = 0; i < SNOW_POOL_SIZE; i++) {
-    snowFlakePool.push({ id: 0, x: '', duration: 0, delay: 0, size: 0, sway: 0 });
+    snowFlakePool.push({
+      id: 0,
+      x: "",
+      duration: 0,
+      delay: 0,
+      size: 0,
+      sway: 0,
+    });
   }
 };
 initSnowFlakePool();
@@ -70,7 +84,7 @@ let snowFlakeId = 0;
 const acquireSnowFlake = (): SnowFlake => {
   const flake = snowFlakePool.pop();
   if (flake) return flake;
-  return { id: 0, x: '', duration: 0, delay: 0, size: 0, sway: 0 };
+  return { id: 0, x: "", duration: 0, delay: 0, size: 0, sway: 0 };
 };
 
 // 归还雪花对象到池中
@@ -172,40 +186,40 @@ onUnmounted(() => {
 // ========== 雨天效果配置 ==========
 // 雨量配置（三种雨共用同一套动画，仅雨量不同）
 interface RainConfig {
-  dropCount: number;      // 初始雨滴数量
-  maxDrops: number;       // 最大雨滴数量
+  dropCount: number; // 初始雨滴数量
+  maxDrops: number; // 最大雨滴数量
   generateInterval: number; // 生成间隔（ms）
-  dropWidth: number;      // 雨滴粗细（px）
-  dropHeight: number;     // 雨滴长度（px）
-  hasRipple: boolean;     // 是否有涟漪效果
-  hasLightning: boolean;  // 是否有闪电效果
+  dropWidth: number; // 雨滴粗细（px）
+  dropHeight: number; // 雨滴长度（px）
+  hasRipple: boolean; // 是否有涟漪效果
+  hasLightning: boolean; // 是否有闪电效果
 }
 
 const rainConfigs: Record<string, RainConfig> = {
   lightRain: {
-    dropCount: 25,        // 适中初始雨滴
-    maxDrops: 45,         // 屏幕上最多45颗
+    dropCount: 25, // 适中初始雨滴
+    maxDrops: 45, // 屏幕上最多45颗
     generateInterval: 70, // 70ms一颗
-    dropWidth: 1.5,       // 较细
-    dropHeight: 18,       // 较短
+    dropWidth: 1.5, // 较细
+    dropHeight: 18, // 较短
     hasRipple: true,
     hasLightning: false,
   },
   heavyRain: {
-    dropCount: 60,        // 较多初始雨滴
-    maxDrops: 100,        // 屏幕上最多100颗
+    dropCount: 60, // 较多初始雨滴
+    maxDrops: 100, // 屏幕上最多100颗
     generateInterval: 30, // 生成快，30ms一颗
-    dropWidth: 2.5,       // 较粗
-    dropHeight: 25,       // 较长
+    dropWidth: 2.5, // 较粗
+    dropHeight: 25, // 较长
     hasRipple: false,
     hasLightning: false,
   },
   thunderstorm: {
-    dropCount: 100,       // 大量初始雨滴
-    maxDrops: 180,        // 屏幕上最多180颗
+    dropCount: 100, // 大量初始雨滴
+    maxDrops: 180, // 屏幕上最多180颗
     generateInterval: 12, // 生成非常快，12ms一颗
-    dropWidth: 3,         // 最粗
-    dropHeight: 30,       // 最长
+    dropWidth: 3, // 最粗
+    dropHeight: 30, // 最长
     hasRipple: false,
     hasLightning: true,
   },
@@ -214,15 +228,15 @@ const rainConfigs: Record<string, RainConfig> = {
 // ========== 雪天效果配置 ==========
 // 雪量配置（两种雪共用同一套动画，仅雪量不同）
 interface SnowConfig {
-  flakeCount: number;      // 初始雪花数量
-  maxFlakes: number;       // 最大雪花数量
+  flakeCount: number; // 初始雪花数量
+  maxFlakes: number; // 最大雪花数量
   generateInterval: number; // 生成间隔（ms）
-  minSize: number;         // 最小尺寸
-  maxSize: number;         // 最大尺寸
-  minDuration: number;     // 最小下落时长
-  maxDuration: number;     // 最大下落时长
-  hasSparkles: boolean;    // 是否有闪光效果
-  hasSnowGround: boolean;  // 是否有积雪效果
+  minSize: number; // 最小尺寸
+  maxSize: number; // 最大尺寸
+  minDuration: number; // 最小下落时长
+  maxDuration: number; // 最大下落时长
+  hasSparkles: boolean; // 是否有闪光效果
+  hasSnowGround: boolean; // 是否有积雪效果
 }
 
 const snowConfigs: Record<string, SnowConfig> = {
@@ -253,7 +267,7 @@ const snowConfigs: Record<string, SnowConfig> = {
 // 获取当前雪的配置
 const getCurrentSnowConfig = (): SnowConfig | null => {
   const weather = currentWeather.value;
-  if (['lightSnow', 'heavySnow'].includes(weather)) {
+  if (["lightSnow", "heavySnow"].includes(weather)) {
     return snowConfigs[weather];
   }
   return null;
@@ -270,9 +284,12 @@ const spawnSnowFlake = () => {
   const flake = acquireSnowFlake();
   flake.id = ++snowFlakeId;
   flake.x = `${Math.floor(Math.random() * 100)}%`;
-  flake.duration = config.minDuration + Math.random() * (config.maxDuration - config.minDuration);
+  flake.duration =
+    config.minDuration +
+    Math.random() * (config.maxDuration - config.minDuration);
   flake.delay = 0;
-  flake.size = config.minSize + Math.random() * (config.maxSize - config.minSize);
+  flake.size =
+    config.minSize + Math.random() * (config.maxSize - config.minSize);
   flake.sway = 15 + Math.random() * 25;
 
   snowFlakes.value.push(flake);
@@ -332,7 +349,7 @@ let snowTimer: ReturnType<typeof setInterval> | null = null;
 // 获取当前雨的配置
 const getCurrentRainConfig = (): RainConfig | null => {
   const weather = currentWeather.value;
-  if (['lightRain', 'heavyRain', 'thunderstorm'].includes(weather)) {
+  if (["lightRain", "heavyRain", "thunderstorm"].includes(weather)) {
     return rainConfigs[weather];
   }
   return null;
@@ -376,15 +393,21 @@ const removeRainDrop = (id: number) => {
 watch(
   rainDrops,
   (newDrops) => {
-    if (isWeatherChanging.value && newDrops.length === 0 && snowFlakes.value.length === 0) {
+    if (
+      isWeatherChanging.value &&
+      newDrops.length === 0 &&
+      snowFlakes.value.length === 0
+    ) {
       isWeatherChanging.value = false;
 
       // 检查新天气是否需要启动效果
       const newWeather = currentWeather.value;
-      const isNewRain = ['lightRain', 'heavyRain', 'thunderstorm'].includes(newWeather);
-      const isNewSnow = ['lightSnow', 'heavySnow'].includes(newWeather);
+      const isNewRain = ["lightRain", "heavyRain", "thunderstorm"].includes(
+        newWeather,
+      );
+      const isNewSnow = ["lightSnow", "heavySnow"].includes(newWeather);
 
-      if (newWeather === 'cloudy') {
+      if (newWeather === "cloudy") {
         clouds.value = [];
         spawnCloud();
         const scheduleNextCloud = () => {
@@ -404,22 +427,28 @@ watch(
       }
     }
   },
-  { deep: true }
+  { deep: true },
 );
 
 // 监听雪花列表变化，所有雪花消失后重置退出状态并启动新天气效果
 watch(
   snowFlakes,
   (newFlakes) => {
-    if (isWeatherChanging.value && newFlakes.length === 0 && rainDrops.value.length === 0) {
+    if (
+      isWeatherChanging.value &&
+      newFlakes.length === 0 &&
+      rainDrops.value.length === 0
+    ) {
       isWeatherChanging.value = false;
 
       // 检查新天气是否需要启动效果
       const newWeather = currentWeather.value;
-      const isNewRain = ['lightRain', 'heavyRain', 'thunderstorm'].includes(newWeather);
-      const isNewSnow = ['lightSnow', 'heavySnow'].includes(newWeather);
+      const isNewRain = ["lightRain", "heavyRain", "thunderstorm"].includes(
+        newWeather,
+      );
+      const isNewSnow = ["lightSnow", "heavySnow"].includes(newWeather);
 
-      if (newWeather === 'cloudy') {
+      if (newWeather === "cloudy") {
         clouds.value = [];
         spawnCloud();
         const scheduleNextCloud = () => {
@@ -439,7 +468,7 @@ watch(
       }
     }
   },
-  { deep: true }
+  { deep: true },
 );
 
 // 启动雨滴生成
@@ -493,16 +522,19 @@ const CLOUD_GENERATE_INTERVAL = 10000;
 
 // 云朵位置配置：起始X、结束X、速度乘率、垂直位置
 const cloudPositions = [
-  { startX: -90, endX: 270, speedMultiplier: 0.95, top: '5%' },
-  { startX: -90, endX: 270, speedMultiplier: 0.85, top: '20%' },
-  { startX: -90, endX: 270, speedMultiplier: 0.90, top: '35%' },
+  { startX: -90, endX: 270, speedMultiplier: 0.95, top: "5%" },
+  { startX: -90, endX: 270, speedMultiplier: 0.85, top: "20%" },
+  { startX: -90, endX: 270, speedMultiplier: 0.9, top: "35%" },
 ];
 
 // 计算云朵动画持续时间（秒）
 const getCloudDuration = (cloud: Cloud) => {
   const distance = cloud.config.endX - cloud.startPosition;
-  const speedMultiplier = isWeatherChanging.value ? CLOUD_EXIT_SPEED_MULTIPLIER : 1;
-  const speed = CLOUD_BASE_SPEED * cloud.config.speedMultiplier * speedMultiplier;
+  const speedMultiplier = isWeatherChanging.value
+    ? CLOUD_EXIT_SPEED_MULTIPLIER
+    : 1;
+  const speed =
+    CLOUD_BASE_SPEED * cloud.config.speedMultiplier * speedMultiplier;
   return (distance / speed).toFixed(1);
 };
 
@@ -526,7 +558,8 @@ const spawnCloud = () => {
   // 退出状态下不再生成新云
   if (isWeatherChanging.value) return;
 
-  const randomConfig = cloudPositions[Math.floor(Math.random() * cloudPositions.length)];
+  const randomConfig =
+    cloudPositions[Math.floor(Math.random() * cloudPositions.length)];
   clouds.value.push({
     id: ++cloudId,
     config: randomConfig,
@@ -577,8 +610,10 @@ watch(
 
       // 检查新天气是否需要启动效果
       const newWeather = currentWeather.value;
-      const isNewRain = ['lightRain', 'heavyRain', 'thunderstorm'].includes(newWeather);
-      const isNewSnow = ['lightSnow', 'heavySnow'].includes(newWeather);
+      const isNewRain = ["lightRain", "heavyRain", "thunderstorm"].includes(
+        newWeather,
+      );
+      const isNewSnow = ["lightSnow", "heavySnow"].includes(newWeather);
 
       if (isNewRain) {
         rainDrops.value = [];
@@ -589,20 +624,28 @@ watch(
       }
     }
   },
-  { deep: true }
+  { deep: true },
 );
 
 // 监听天气变化，启动/停止云朵和雨滴生成
 watch(
   currentWeather,
   (newWeather, oldWeather) => {
-    const isOldRain = ['lightRain', 'heavyRain', 'thunderstorm'].includes(oldWeather || '');
-    const isNewRain = ['lightRain', 'heavyRain', 'thunderstorm'].includes(newWeather);
-    const isOldSnow = ['lightSnow', 'heavySnow'].includes(oldWeather || '');
-    const isNewSnow = ['lightSnow', 'heavySnow'].includes(newWeather);
+    const isOldRain = ["lightRain", "heavyRain", "thunderstorm"].includes(
+      oldWeather || "",
+    );
+    const isNewRain = ["lightRain", "heavyRain", "thunderstorm"].includes(
+      newWeather,
+    );
+    const isOldSnow = ["lightSnow", "heavySnow"].includes(oldWeather || "");
+    const isNewSnow = ["lightSnow", "heavySnow"].includes(newWeather);
 
     // 从多云切换到其他天气：启动云朵退出动画
-    if (oldWeather === 'cloudy' && newWeather !== 'cloudy' && clouds.value.length > 0) {
+    if (
+      oldWeather === "cloudy" &&
+      newWeather !== "cloudy" &&
+      clouds.value.length > 0
+    ) {
       if (cloudTimer) {
         clearTimeout(cloudTimer);
         cloudTimer = null;
@@ -651,7 +694,7 @@ watch(
     stopSnowGeneration();
 
     // 非 cloudy 天气时清空云朵
-    if (newWeather !== 'cloudy') {
+    if (newWeather !== "cloudy") {
       clouds.value = [];
     }
 
@@ -668,7 +711,7 @@ watch(
     // 重置退出状态
     isWeatherChanging.value = false;
 
-    if (newWeather === 'cloudy') {
+    if (newWeather === "cloudy") {
       clouds.value = [];
       spawnCloud();
       const scheduleNextCloud = () => {
@@ -693,7 +736,7 @@ watch(
       startSnowGeneration();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onUnmounted(() => {
@@ -842,7 +885,10 @@ onUnmounted(() => {
     :style="weatherStyle"
   >
     <!-- 晴天效果 - 温柔的光晕与漂浮光点 -->
-    <div v-if="currentWeather === 'sunny' && !isWeatherChanging" class="sunny-container">
+    <div
+      v-if="currentWeather === 'sunny' && !isWeatherChanging"
+      class="sunny-container"
+    >
       <!-- 多层光晕背景 -->
       <div class="sun-glow sun-glow-outer"></div>
       <div class="sun-glow sun-glow-mid"></div>
@@ -877,7 +923,10 @@ onUnmounted(() => {
     </div>
 
     <!-- 多云效果 - 柔软的云朵层叠 -->
-    <div v-if="currentWeather === 'cloudy' || isWeatherChanging" class="cloudy-container">
+    <div
+      v-if="currentWeather === 'cloudy' || isWeatherChanging"
+      class="cloudy-container"
+    >
       <div class="cloud-layer layer-back">
         <svg
           v-for="cloud in clouds"
@@ -904,7 +953,11 @@ onUnmounted(() => {
 
     <!-- 雨天效果 - 统一动画，雨量不同 -->
     <div
-      v-if="(['lightRain', 'heavyRain', 'thunderstorm'].includes(currentWeather) || (isWeatherChanging && rainDrops.length > 0)) && rainDrops.length > 0"
+      v-if="
+        (['lightRain', 'heavyRain', 'thunderstorm'].includes(currentWeather) ||
+          (isWeatherChanging && rainDrops.length > 0)) &&
+        rainDrops.length > 0
+      "
       class="rain-container"
     >
       <!-- 雨滴 -->
@@ -924,7 +977,10 @@ onUnmounted(() => {
         ></span>
       </div>
       <!-- 涟漪效果（仅小雨） -->
-      <div v-if="currentWeather === 'lightRain' && !isWeatherChanging" class="ripples">
+      <div
+        v-if="currentWeather === 'lightRain' && !isWeatherChanging"
+        class="ripples"
+      >
         <span
           v-for="ripple in ripples"
           :key="ripple.id"
@@ -976,7 +1032,11 @@ onUnmounted(() => {
 
     <!-- 雪天效果 - 统一动画，雪量不同 -->
     <div
-      v-if="(['lightSnow', 'heavySnow'].includes(currentWeather) || (isWeatherChanging && snowFlakes.length > 0)) && snowFlakes.length > 0"
+      v-if="
+        (['lightSnow', 'heavySnow'].includes(currentWeather) ||
+          (isWeatherChanging && snowFlakes.length > 0)) &&
+        snowFlakes.length > 0
+      "
       class="snow-container"
     >
       <!-- 雪花 -->
@@ -996,7 +1056,10 @@ onUnmounted(() => {
         ></span>
       </div>
       <!-- 雪花闪光（仅小雪） -->
-      <div v-if="currentWeather === 'lightSnow' && !isWeatherChanging" class="sparkles">
+      <div
+        v-if="currentWeather === 'lightSnow' && !isWeatherChanging"
+        class="sparkles"
+      >
         <span
           v-for="i in 8"
           :key="i"
@@ -1009,7 +1072,10 @@ onUnmounted(() => {
         ></span>
       </div>
       <!-- 积雪效果（仅大雪） -->
-      <div v-if="currentWeather === 'heavySnow' && !isWeatherChanging" class="snow-ground"></div>
+      <div
+        v-if="currentWeather === 'heavySnow' && !isWeatherChanging"
+        class="snow-ground"
+      ></div>
     </div>
   </div>
 </template>
