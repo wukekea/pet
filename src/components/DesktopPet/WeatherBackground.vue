@@ -94,29 +94,37 @@ interface RainConfig {
   dropCount: number;      // 初始雨滴数量
   maxDrops: number;       // 最大雨滴数量
   generateInterval: number; // 生成间隔（ms）
+  dropWidth: number;      // 雨滴粗细（px）
+  dropHeight: number;     // 雨滴长度（px）
   hasRipple: boolean;     // 是否有涟漪效果
   hasLightning: boolean;  // 是否有闪电效果
 }
 
 const rainConfigs: Record<string, RainConfig> = {
   lightRain: {
-    dropCount: 60,
-    maxDrops: 60,
-    generateInterval: 40,
+    dropCount: 25,        // 适中初始雨滴
+    maxDrops: 45,         // 屏幕上最多45颗
+    generateInterval: 70, // 70ms一颗
+    dropWidth: 1.5,       // 较细
+    dropHeight: 18,       // 较短
     hasRipple: true,
     hasLightning: false,
   },
   heavyRain: {
-    dropCount: 80,
-    maxDrops: 100,
-    generateInterval: 35,
+    dropCount: 60,        // 较多初始雨滴
+    maxDrops: 100,        // 屏幕上最多100颗
+    generateInterval: 30, // 生成快，30ms一颗
+    dropWidth: 2.5,       // 较粗
+    dropHeight: 25,       // 较长
     hasRipple: false,
     hasLightning: false,
   },
   thunderstorm: {
-    dropCount: 100,
-    maxDrops: 150,
-    generateInterval: 20,
+    dropCount: 100,       // 大量初始雨滴
+    maxDrops: 180,        // 屏幕上最多180颗
+    generateInterval: 12, // 生成非常快，12ms一颗
+    dropWidth: 3,         // 最粗
+    dropHeight: 30,       // 最长
     hasRipple: false,
     hasLightning: true,
   },
@@ -128,6 +136,8 @@ interface RainDrop {
   x: string;
   duration: number;
   delay: number;
+  width: number;   // 雨滴粗细
+  height: number;  // 雨滴长度
 }
 const rainDrops = ref<RainDrop[]>([]);
 let rainDropId = 0;
@@ -159,6 +169,8 @@ const spawnRainDrop = () => {
     x: `${Math.floor(Math.random() * 100)}%`,
     duration: baseDuration + Math.random() * durationVariation,
     delay: 0,
+    width: config.dropWidth,
+    height: config.dropHeight,
   });
 };
 
@@ -213,6 +225,8 @@ const startRainGeneration = (initialBatch: boolean = true) => {
         x: `${(i * 5) % 100}%`,
         duration: baseDuration + (i % 4) * 0.05,
         delay: parseFloat(getRandomDelay(i, 0.2)),
+        width: config.dropWidth,
+        height: config.dropHeight,
       });
     }
   }
@@ -634,6 +648,8 @@ onUnmounted(() => {
             '--delay': `${drop.delay}s`,
             '--x': drop.x,
             '--duration': `${drop.duration}s`,
+            '--width': `${drop.width}px`,
+            '--height': `${drop.height}px`,
           }"
           @animationend="removeRainDrop(drop.id)"
         ></span>

@@ -445,8 +445,8 @@
 /* 统一雨滴样式 */
 .rain-drop {
   position: absolute;
-  width: 2px;
-  height: 20px;
+  width: var(--width, 2px);
+  height: var(--height, 20px);
   left: var(--x);
   top: -25px;
   background: linear-gradient(
