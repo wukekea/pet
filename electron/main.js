@@ -121,7 +121,6 @@ ipcMain.handle(
 ipcMain.handle("fetch-weather", async (event, locationId, apiKey, apiHost) => {
   try {
     const url = `https://${apiHost}/v7/weather/now?location=${locationId}`;
-    console.log("请求天气 API:", url);
 
     const response = await fetch(url, {
       headers: {
@@ -142,7 +141,6 @@ ipcMain.handle(
   async (event, lat, lon, apiKey, apiHost) => {
     try {
       const url = `https://${apiHost}/geo/v2/city/lookup?location=${lon},${lat}`;
-      console.log("请求城市查询 API:", url);
 
       const response = await fetch(url, {
         headers: {
@@ -161,7 +159,6 @@ ipcMain.handle(
 // IP 定位服务（高德地图）
 ipcMain.handle("fetch-ip-location", async (event, amapKey) => {
   try {
-    console.log("请求 IP 定位（高德地图）...");
     const response = await fetch(
       `https://restapi.amap.com/v3/ip?key=${amapKey}`,
     );
@@ -177,9 +174,6 @@ ipcMain.handle("fetch-ip-location", async (event, amapKey) => {
       const centerLon = (lon1 + lon2) / 2;
       const centerLat = (lat1 + lat2) / 2;
 
-      console.log(
-        `IP 定位成功: ${data.city || data.province} (${centerLat}, ${centerLon})`,
-      );
       return {
         success: true,
         lat: centerLat,

@@ -52,7 +52,6 @@ async function getIpLocation(): Promise<{ lat: number; lon: number } | null> {
       return null;
     }
 
-    console.log(`IP 定位成功: ${data.city} (${data.lat}, ${data.lon})`);
     return { lat: data.lat!, lon: data.lon! };
   } catch (error) {
     console.error("IP 定位请求失败:", error);
@@ -82,9 +81,6 @@ async function fetchCityByLocation(
     weatherStatus.value.cityId = loc.id;
     weatherStatus.value.cityName = `${loc.adm2} ${loc.name}`.trim();
 
-    console.log(
-      `城市查询成功: ${weatherStatus.value.cityName} (ID: ${loc.id})`,
-    );
     return loc.id;
   } catch (error) {
     console.error("城市查询请求失败:", error);
@@ -116,7 +112,6 @@ async function fetchWeather(
     weatherStatus.value.weatherText = data.now.text;
     weatherStatus.value.weatherTemp = data.now.temp;
 
-    console.log(`天气获取成功: ${data.now.text} ${data.now.temp}°C`);
     return mapWeatherCode(data.now.icon);
   } catch (error) {
     console.error("天气请求失败:", error);
@@ -186,7 +181,6 @@ async function performUpdate(): Promise<boolean> {
       lastUpdate: weatherStatus.value.lastUpdate,
     });
 
-    console.log(`天气更新成功: ${weatherStatus.value.cityName} - ${weather}`);
     return true;
   } finally {
     weatherStatus.value.isLoading = false;
@@ -240,8 +234,6 @@ export function stopWeatherService(): void {
     clearInterval(updateTimerId);
     updateTimerId = null;
   }
-
-  console.log("天气服务已停止");
 }
 
 /**
@@ -264,10 +256,6 @@ export async function relocateCity(): Promise<boolean> {
  */
 export function initWeatherService(): void {
   if (!hasApiKey()) {
-    console.log("天气服务未启用：请配置和风天气 API Key");
-    console.log(
-      "可在 .env.local 中设置 VITE_QWEATHER_API_KEY 和 VITE_QWEATHER_API_HOST",
-    );
     return;
   }
 
