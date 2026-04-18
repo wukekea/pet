@@ -680,7 +680,7 @@
     transparent 100%
   );
   border-radius: 50%;
-  animation: snowfall var(--duration) ease-in-out infinite;
+  animation: snowfall var(--duration) ease-in-out forwards;
   animation-delay: var(--delay);
   box-shadow:
     0 0 3px rgba(255, 255, 255, 0.8),
@@ -775,41 +775,7 @@
   );
 }
 
-.snowflake.heavy {
-  width: var(--size);
-  height: var(--size);
-}
-
-.snow-overlay {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.12) 0%,
-    transparent 60%
-  );
-  animation: snow-glow 3s ease-in-out infinite;
-}
-
-.dark-theme .snow-overlay {
-  background: radial-gradient(
-    circle,
-    rgba(227, 242, 253, 0.08) 0%,
-    transparent 60%
-  );
-}
-
-@keyframes snow-glow {
-  0%,
-  100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-/* 积雪效果 */
+/* 积雪效果（仅大雪） */
 .snow-ground {
   position: absolute;
   bottom: 0;
