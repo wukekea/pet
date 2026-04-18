@@ -37,6 +37,9 @@ export interface PetPosition {
 }
 
 // 脚印数据接口
+// 脚印类型
+export type FootprintType = "default" | "snow" | "water";
+
 export interface Footprint {
   id: number;
   x: number;
@@ -44,6 +47,7 @@ export interface Footprint {
   isLeft: boolean;
   direction: PetDirection;
   createdAt: number;
+  type: FootprintType;
 }
 
 // 作息状态类型

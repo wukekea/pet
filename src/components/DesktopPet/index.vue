@@ -335,6 +335,7 @@ onBeforeUnmount(() => {
         :class="[
           footprint.isLeft ? 'footprint-left' : 'footprint-right',
           `footprint-${footprint.direction}`,
+          `footprint-type-${footprint.type}`,
         ]"
         :style="{
           left: `${footprint.x}px`,

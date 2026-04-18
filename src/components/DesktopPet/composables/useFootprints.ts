@@ -1,17 +1,34 @@
 import { ref } from "vue";
-import type { PetDirection, Footprint } from "../types";
+import type { PetDirection, Footprint, FootprintType } from "../types";
 import {
   PET_SIZE,
   FOOTPRINT_INTERVAL,
   FOOTPRINT_LIFETIME,
   MAX_FOOTPRINTS,
 } from "../constants";
+import { currentWeather } from "./useWeather";
 
 // 脚印状态
 export const footprints = ref<Footprint[]>([]);
 export const lastFootprintTime = ref(0);
 export const lastFootprintWasLeft = ref(false);
 export const footprintIdCounter = ref(0);
+
+// 根据天气获取脚印类型
+function getFootprintType(): FootprintType {
+  const weather = currentWeather.value;
+  if (weather === "lightSnow" || weather === "heavySnow") {
+    return "snow";
+  }
+  if (
+    weather === "lightRain" ||
+    weather === "heavyRain" ||
+    weather === "thunderstorm"
+  ) {
+    return "water";
+  }
+  return "default";
+}
 
 // 添加脚印
 export function addFootprint(x: number, y: number, direction: PetDirection) {
@@ -32,6 +49,7 @@ export function addFootprint(x: number, y: number, direction: PetDirection) {
     isLeft: lastFootprintWasLeft.value,
     direction: direction,
     createdAt: now,
+    type: getFootprintType(),
   };
 
   footprints.value.push(newFootprint);
