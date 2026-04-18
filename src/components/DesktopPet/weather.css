@@ -371,7 +371,7 @@
 
 /* ========================================
    雨天效果
-   细腻雨丝，梦幻涟漪
+   统一动画，雨量通过参数控制
    ======================================== */
 .rain-container {
   position: absolute;
@@ -380,7 +380,7 @@
   overflow: hidden;
 }
 
-/* 小雨 */
+/* 雨天背景 - 小雨 */
 .weather-lightRain {
   background: radial-gradient(
     ellipse at 50% 50%,
@@ -399,69 +399,62 @@
   );
 }
 
+/* 雨天背景 - 暴雨 */
+.weather-heavyRain {
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(96, 125, 139, 0.3) 0%,
+    rgba(69, 90, 100, 0.18) 40%,
+    transparent 70%
+  );
+}
+
+.weather-heavyRain.dark-theme {
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(38, 50, 56, 0.35) 0%,
+    rgba(30, 40, 46, 0.2) 40%,
+    transparent 70%
+  );
+}
+
+/* 雨天背景 - 雷阵雨 */
+.weather-thunderstorm {
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(55, 71, 79, 0.4) 0%,
+    rgba(38, 50, 56, 0.25) 40%,
+    transparent 70%
+  );
+}
+
+.weather-thunderstorm.dark-theme {
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(30, 40, 46, 0.45) 0%,
+    rgba(20, 26, 30, 0.28) 40%,
+    transparent 70%
+  );
+}
+
 .rain-drops {
   position: absolute;
   inset: -50px;
 }
 
-/* 小雨 - 细长、稀疏 */
-.rain-drop.light {
-  position: absolute;
-  width: 1.5px;
-  height: 25px;
-  left: var(--x);
-  top: -30px;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(176, 190, 197, 0.25) 15%,
-    rgba(144, 164, 174, 0.5) 50%,
-    rgba(120, 144, 156, 0.2) 100%
-  );
-  border-radius: 0 0 1.5px 1.5px;
-  animation: rain-fall-light var(--duration) linear forwards;
-  animation-delay: var(--delay);
-}
-
-.dark-theme .rain-drop.light {
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(96, 125, 139, 0.25) 15%,
-    rgba(69, 90, 100, 0.4) 50%,
-    rgba(55, 71, 79, 0.15) 100%
-  );
-}
-
-@keyframes rain-fall-light {
-  0% {
-    transform: translateY(-25px);
-    opacity: 0;
-  }
-  15% {
-    opacity: 0.9;
-  }
-  85% {
-    opacity: 0.7;
-  }
-  100% {
-    transform: translateY(350px);
-    opacity: 0;
-  }
-}
-
+/* 统一雨滴样式 */
 .rain-drop {
   position: absolute;
   width: 2px;
-  height: 15px;
+  height: 20px;
   left: var(--x);
-  top: -20px;
+  top: -25px;
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(176, 190, 197, 0.3) 20%,
-    rgba(144, 164, 174, 0.6) 60%,
-    rgba(120, 144, 156, 0.2) 100%
+    rgba(120, 144, 156, 0.3) 15%,
+    rgba(96, 125, 139, 0.55) 50%,
+    rgba(69, 90, 100, 0.25) 100%
   );
   border-radius: 0 0 2px 2px;
   animation: rain-fall var(--duration) linear forwards;
@@ -472,8 +465,8 @@
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(96, 125, 139, 0.4) 20%,
-    rgba(69, 90, 100, 0.6) 60%,
+    rgba(96, 125, 139, 0.35) 15%,
+    rgba(69, 90, 100, 0.5) 50%,
     rgba(55, 71, 79, 0.2) 100%
   );
 }
@@ -487,15 +480,15 @@
     opacity: 1;
   }
   90% {
-    opacity: 0.8;
+    opacity: 0.85;
   }
   100% {
-    transform: translateY(320px);
+    transform: translateY(340px);
     opacity: 0;
   }
 }
 
-/* 涟漪效果 */
+/* 涟漪效果（仅小雨） */
 .ripples {
   position: absolute;
   bottom: 20%;
@@ -530,128 +523,21 @@
   }
 }
 
-/* 雾气 */
+/* 雾气（所有雨天共用） */
 .mist {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
     transparent 50%,
-    rgba(176, 190, 197, 0.1) 100%
+    rgba(120, 144, 156, 0.08) 100%
   );
   filter: blur(10px);
 }
 
-/* 暴雨 */
-.weather-heavyRain {
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(96, 125, 139, 0.3) 0%,
-    rgba(69, 90, 100, 0.18) 40%,
-    transparent 70%
-  );
-}
-
-.weather-heavyRain.dark-theme {
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(38, 50, 56, 0.35) 0%,
-    rgba(30, 40, 46, 0.2) 40%,
-    transparent 70%
-  );
-}
-
-.rain-drop.heavy {
-  width: 2.5px;
-  height: 28px;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(120, 144, 156, 0.35) 10%,
-    rgba(96, 125, 139, 0.65) 45%,
-    rgba(69, 90, 100, 0.35) 80%,
-    transparent 100%
-  );
-  animation: rain-fall-heavy var(--duration) linear forwards;
-  animation-delay: var(--delay);
-}
-
-@keyframes rain-fall-heavy {
-  0% {
-    transform: translateY(-30px);
-    opacity: 0;
-  }
-  8% {
-    opacity: 1;
-  }
-  92% {
-    opacity: 0.9;
-  }
-  100% {
-    transform: translateY(360px);
-    opacity: 0;
-  }
-}
-
-.heavy-mist {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle,
-    rgba(69, 90, 100, 0.15) 0%,
-    transparent 70%
-  );
-  filter: blur(8px);
-  animation: mist-swirl 4s ease-in-out infinite;
-}
-
-@keyframes mist-swirl {
-  0%,
-  100% {
-    opacity: 0.5;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05);
-  }
-}
-
-/* 雷阵雨 */
-.weather-thunderstorm {
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(55, 71, 79, 0.4) 0%,
-    rgba(38, 50, 56, 0.25) 40%,
-    transparent 70%
-  );
-}
-
-.weather-thunderstorm.dark-theme {
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(30, 40, 46, 0.45) 0%,
-    rgba(20, 26, 30, 0.28) 40%,
-    transparent 70%
-  );
-}
-
-.rain-drop.storm {
-  width: 2.5px;
-  height: 28px;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(144, 164, 174, 0.35) 10%,
-    rgba(120, 144, 156, 0.6) 45%,
-    rgba(96, 125, 139, 0.3) 80%,
-    transparent 100%
-  );
-  animation: rain-fall-heavy var(--duration) linear forwards;
-  animation-delay: var(--delay);
-}
-
-/* 闪电容器 */
+/* ========================================
+   闪电效果（仅雷阵雨）
+   ======================================== */
 .lightning-container {
   position: absolute;
   inset: 0;

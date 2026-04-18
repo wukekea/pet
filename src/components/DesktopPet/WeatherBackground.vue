@@ -8,11 +8,10 @@ import "./weather.css";
 // 天气背景样式类（退场时保持原天气样式）
 const weatherClass = computed(() => {
   if (isWeatherChanging.value) {
-    // 根据剩余的效果类型返回对应样式
-    if (clouds.value.length > 0) return 'weather-cloudy';
-    if (rainDrops.value.some(d => d.type === 'light')) return 'weather-lightRain';
-    if (rainDrops.value.some(d => d.type === 'heavy')) return 'weather-heavyRain';
-    if (rainDrops.value.some(d => d.type === 'storm')) return 'weather-thunderstorm';
+    // 根据是否有雨滴判断是否显示雨天背景
+    if (rainDrops.value.length > 0) {
+      return `weather-${currentWeather.value}`;
+    }
   }
   return `weather-${currentWeather.value}`;
 });
@@ -68,15 +67,16 @@ watch(
   currentWeather,
   (newWeather) => {
     if (rippleTimer) {
+      clearTimeout(rippleTimer);
       clearInterval(rippleTimer);
       rippleTimer = null;
     }
     ripples.value = [];
     if (newWeather === "lightRain") {
-      // 延迟 1.5s 后开始生成涟漪（等雨水先落地）
+      // 延迟 1s 后开始生成涟漪（等雨水先落地）
       rippleTimer = setTimeout(() => {
         rippleTimer = setInterval(addRipple, 500);
-      }, 1500);
+      }, 1000);
     }
   },
   { immediate: true },
@@ -89,48 +89,42 @@ onUnmounted(() => {
 });
 
 // ========== 雨天效果配置 ==========
-// 雨滴类型
-type RainType = 'light' | 'heavy' | 'storm';
+// 雨量配置（三种雨共用同一套动画，仅雨量不同）
+interface RainConfig {
+  dropCount: number;      // 初始雨滴数量
+  maxDrops: number;       // 最大雨滴数量
+  generateInterval: number; // 生成间隔（ms）
+  hasRipple: boolean;     // 是否有涟漪效果
+  hasLightning: boolean;  // 是否有闪电效果
+}
 
-// 雨滴配置
-const rainConfigs: Record<RainType, {
-  dropCount: number;
-  dropClass: string;
-  baseDuration: number;
-  durationVariation: number;
-  generateInterval: number;
-  maxDrops: number;
-}> = {
-  light: {
-    dropCount: 20,
-    dropClass: 'light',
-    baseDuration: 2,
-    durationVariation: 0.9,
-    generateInterval: 100,
-    maxDrops: 30,
+const rainConfigs: Record<string, RainConfig> = {
+  lightRain: {
+    dropCount: 60,
+    maxDrops: 60,
+    generateInterval: 40,
+    hasRipple: true,
+    hasLightning: false,
   },
-  heavy: {
-    dropCount: 50,
-    dropClass: 'heavy',
-    baseDuration: 0.5,
-    durationVariation: 0.32,
-    generateInterval: 30,
-    maxDrops: 80,
-  },
-  storm: {
-    dropCount: 65,
-    dropClass: 'storm',
-    baseDuration: 0.5,
-    durationVariation: 0.32,
-    generateInterval: 20,
+  heavyRain: {
+    dropCount: 80,
     maxDrops: 100,
+    generateInterval: 35,
+    hasRipple: false,
+    hasLightning: false,
+  },
+  thunderstorm: {
+    dropCount: 100,
+    maxDrops: 150,
+    generateInterval: 20,
+    hasRipple: false,
+    hasLightning: true,
   },
 };
 
 // 雨滴数据结构
 interface RainDrop {
   id: number;
-  type: RainType;
   x: string;
   duration: number;
   delay: number;
@@ -139,12 +133,12 @@ const rainDrops = ref<RainDrop[]>([]);
 let rainDropId = 0;
 let rainTimer: ReturnType<typeof setInterval> | null = null;
 
-// 获取当前雨的类型
-const getCurrentRainType = (): RainType | null => {
+// 获取当前雨的配置
+const getCurrentRainConfig = (): RainConfig | null => {
   const weather = currentWeather.value;
-  if (weather === 'lightRain') return 'light';
-  if (weather === 'heavyRain') return 'heavy';
-  if (weather === 'thunderstorm') return 'storm';
+  if (['lightRain', 'heavyRain', 'thunderstorm'].includes(weather)) {
+    return rainConfigs[weather];
+  }
   return null;
 };
 
@@ -153,15 +147,17 @@ const spawnRainDrop = () => {
   // 退出状态下不再生成新雨滴
   if (isWeatherChanging.value) return;
 
-  const rainType = getCurrentRainType();
-  if (!rainType) return;
+  const config = getCurrentRainConfig();
+  if (!config) return;
 
-  const config = rainConfigs[rainType];
+  // 统一的雨滴动画参数
+  const baseDuration = 0.6;
+  const durationVariation = 0.3;
+
   rainDrops.value.push({
     id: ++rainDropId,
-    type: rainType,
     x: `${Math.floor(Math.random() * 100)}%`,
-    duration: config.baseDuration + Math.random() * config.durationVariation,
+    duration: baseDuration + Math.random() * durationVariation,
     delay: 0,
   });
 };
@@ -201,21 +197,24 @@ watch(
 );
 
 // 启动雨滴生成
-const startRainGeneration = () => {
-  const rainType = getCurrentRainType();
-  if (!rainType) return;
+// initialBatch: 是否立即生成初始批次（雨天之间切换时传 false）
+const startRainGeneration = (initialBatch: boolean = true) => {
+  const config = getCurrentRainConfig();
+  if (!config) return;
 
-  const config = rainConfigs[rainType];
+  // 统一的雨滴动画参数
+  const baseDuration = 0.6;
 
-  // 立即生成一批雨滴
-  for (let i = 0; i < config.dropCount; i++) {
-    rainDrops.value.push({
-      id: ++rainDropId,
-      type: rainType,
-      x: `${(i * 5) % 100}%`,
-      duration: config.baseDuration + (i % 4) * 0.08,
-      delay: parseFloat(getRandomDelay(i, 0.3)),
-    });
+  // 立即生成一批雨滴（仅首次进入雨天时）
+  if (initialBatch) {
+    for (let i = 0; i < config.dropCount; i++) {
+      rainDrops.value.push({
+        id: ++rainDropId,
+        x: `${(i * 5) % 100}%`,
+        duration: baseDuration + (i % 4) * 0.05,
+        delay: parseFloat(getRandomDelay(i, 0.2)),
+      });
+    }
   }
 
   // 持续生成新雨滴
@@ -356,10 +355,20 @@ watch(
       return;
     }
 
-    // 从雨天切换到非雨天：启动雨滴退出
+    // 从雨天切换到非雨天：启动雨滴退出（等待现有雨滴落尽）
     if (isOldRain && !isNewRain && rainDrops.value.length > 0) {
       stopRainGeneration();
       isWeatherChanging.value = true;
+      return;
+    }
+
+    // 雨天之间切换：平滑过渡，不清空现有雨滴
+    if (isOldRain && isNewRain) {
+      stopRainGeneration();
+      isWeatherChanging.value = false;
+      // 不清空 rainDrops，现有雨滴继续落下
+      // 以新参数启动生成器，不生成初始批次
+      startRainGeneration(false);
       return;
     }
 
@@ -396,7 +405,7 @@ watch(
       scheduleNextCloud();
     }
 
-    // 启动雨天
+    // 启动雨天（从非雨天切换到雨天）
     if (isNewRain) {
       rainDrops.value = [];
       startRainGeneration();
@@ -610,17 +619,17 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- 小雨效果 - 稀疏细腻的雨丝 -->
+    <!-- 雨天效果 - 统一动画，雨量不同 -->
     <div
-      v-if="(currentWeather === 'lightRain' || (isWeatherChanging && rainDrops.some(d => d.type === 'light'))) && rainDrops.some(d => d.type === 'light')"
-      class="rain-container light-rain"
+      v-if="(['lightRain', 'heavyRain', 'thunderstorm'].includes(currentWeather) || (isWeatherChanging && rainDrops.length > 0)) && rainDrops.length > 0"
+      class="rain-container"
     >
-      <!-- 雨丝 -->
-      <div class="rain-drops light">
+      <!-- 雨滴 -->
+      <div class="rain-drops">
         <span
-          v-for="drop in rainDrops.filter(d => d.type === 'light')"
+          v-for="drop in rainDrops"
           :key="drop.id"
-          class="rain-drop light"
+          class="rain-drop"
           :style="{
             '--delay': `${drop.delay}s`,
             '--x': drop.x,
@@ -629,8 +638,8 @@ onUnmounted(() => {
           @animationend="removeRainDrop(drop.id)"
         ></span>
       </div>
-      <!-- 涟漪效果 -->
-      <div class="ripples">
+      <!-- 涟漪效果（仅小雨） -->
+      <div v-if="currentWeather === 'lightRain' && !isWeatherChanging" class="ripples">
         <span
           v-for="ripple in ripples"
           :key="ripple.id"
@@ -644,51 +653,9 @@ onUnmounted(() => {
       </div>
       <!-- 雾气效果 -->
       <div class="mist"></div>
-    </div>
-
-    <!-- 暴雨效果 - 密集倾盆大雨 -->
-    <div
-      v-if="(currentWeather === 'heavyRain' || (isWeatherChanging && rainDrops.some(d => d.type === 'heavy'))) && rainDrops.some(d => d.type === 'heavy')"
-      class="rain-container heavy-rain"
-    >
-      <div class="rain-drops heavy">
-        <span
-          v-for="drop in rainDrops.filter(d => d.type === 'heavy')"
-          :key="drop.id"
-          class="rain-drop heavy"
-          :style="{
-            '--delay': `${drop.delay}s`,
-            '--x': drop.x,
-            '--duration': `${drop.duration}s`,
-          }"
-          @animationend="removeRainDrop(drop.id)"
-        ></span>
-      </div>
-      <div class="rain-overlay"></div>
-      <div class="heavy-mist"></div>
-    </div>
-
-    <!-- 雷阵雨效果 - 暴雨 + 闪电 -->
-    <div
-      v-if="(currentWeather === 'thunderstorm' || (isWeatherChanging && rainDrops.some(d => d.type === 'storm'))) && rainDrops.some(d => d.type === 'storm')"
-      class="rain-container thunderstorm"
-    >
-      <div class="rain-drops storm">
-        <span
-          v-for="drop in rainDrops.filter(d => d.type === 'storm')"
-          :key="drop.id"
-          class="rain-drop storm"
-          :style="{
-            '--delay': `${drop.delay}s`,
-            '--x': drop.x,
-            '--duration': `${drop.duration}s`,
-          }"
-          @animationend="removeRainDrop(drop.id)"
-        ></span>
-      </div>
-      <!-- 闪电效果（退场时不显示） -->
+      <!-- 闪电效果（仅雷阵雨，退场时不显示） -->
       <div
-        v-if="!isWeatherChanging"
+        v-if="currentWeather === 'thunderstorm' && !isWeatherChanging"
         class="lightning-container"
         :class="{ 'lightning-active': lightningActive }"
       >
