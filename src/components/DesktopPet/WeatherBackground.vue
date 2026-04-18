@@ -5,6 +5,89 @@ import { isDark } from "./composables/useTheme";
 import { position } from "./composables/sharedState";
 import "./weather.css";
 
+// ========== 类型定义 ==========
+// 雨滴数据结构
+interface RainDrop {
+  id: number;
+  x: string;
+  duration: number;
+  delay: number;
+  width: number;
+  height: number;
+}
+
+// 雪花数据结构
+interface SnowFlake {
+  id: number;
+  x: string;
+  duration: number;
+  delay: number;
+  size: number;
+  sway: number;
+}
+
+// ========== 对象池 ==========
+// 雨滴对象池：预创建对象，避免频繁内存分配
+const rainDropPool: RainDrop[] = [];
+const RAIN_POOL_SIZE = 200; // 预创建数量，覆盖最大雨滴需求
+
+// 初始化雨滴对象池
+const initRainDropPool = () => {
+  for (let i = 0; i < RAIN_POOL_SIZE; i++) {
+    rainDropPool.push({ id: 0, x: '', duration: 0, delay: 0, width: 0, height: 0 });
+  }
+};
+initRainDropPool();
+
+// 从池中获取雨滴对象
+let rainDropId = 0;
+const acquireRainDrop = (): RainDrop => {
+  const drop = rainDropPool.pop();
+  if (drop) return drop;
+  // 池空了才创建新对象
+  return { id: 0, x: '', duration: 0, delay: 0, width: 0, height: 0 };
+};
+
+// 归还雨滴对象到池中
+const releaseRainDrop = (drop: RainDrop) => {
+  rainDropPool.push(drop);
+};
+
+// 雪花对象池：预创建对象，避免频繁内存分配
+const snowFlakePool: SnowFlake[] = [];
+const SNOW_POOL_SIZE = 80; // 预创建数量，覆盖最大雪花需求
+
+// 初始化雪花对象池
+const initSnowFlakePool = () => {
+  for (let i = 0; i < SNOW_POOL_SIZE; i++) {
+    snowFlakePool.push({ id: 0, x: '', duration: 0, delay: 0, size: 0, sway: 0 });
+  }
+};
+initSnowFlakePool();
+
+// 从池中获取雪花对象
+let snowFlakeId = 0;
+const acquireSnowFlake = (): SnowFlake => {
+  const flake = snowFlakePool.pop();
+  if (flake) return flake;
+  return { id: 0, x: '', duration: 0, delay: 0, size: 0, sway: 0 };
+};
+
+// 归还雪花对象到池中
+const releaseSnowFlake = (flake: SnowFlake) => {
+  snowFlakePool.push(flake);
+};
+
+// ========== 响应式数组 ==========
+// 雨滴响应式数组
+const rainDrops = ref<RainDrop[]>([]);
+// 雪花响应式数组
+const snowFlakes = ref<SnowFlake[]>([]);
+// 涟漪数据（带唯一 key）
+const ripples = ref<{ id: number; x: string; y: string }[]>([]);
+let rippleId = 0;
+
+// ========== 计算属性 ==========
 // 天气背景样式类（退场时保持原天气样式）
 const weatherClass = computed(() => {
   if (isWeatherChanging.value) {
@@ -26,6 +109,7 @@ const weatherStyle = computed(() => ({
   top: `${position.value.y - 20}px`,
 }));
 
+// ========== 工具函数 ==========
 // 生成随机数序列用于动画延迟
 const getRandomDelay = (index: number, base: number = 0.5) =>
   `${(index * 0.15 + Math.sin(index) * base).toFixed(2)}s`;
@@ -33,10 +117,7 @@ const getRandomDelay = (index: number, base: number = 0.5) =>
 // 生成随机位置
 const getRandomPos = (index: number) => `${(index * 37) % 100}%`;
 
-// 涟漪数据（带唯一 key）
-const ripples = ref<{ id: number; x: string; y: string }[]>([]);
-let rippleId = 0;
-
+// ========== 涟漪效果 ==========
 // 创建一个新涟漪
 const createRipple = () => ({
   id: ++rippleId,
@@ -169,19 +250,6 @@ const snowConfigs: Record<string, SnowConfig> = {
   },
 };
 
-// 雪花数据结构
-interface SnowFlake {
-  id: number;
-  x: string;
-  duration: number;
-  delay: number;
-  size: number;
-  sway: number;
-}
-const snowFlakes = ref<SnowFlake[]>([]);
-let snowFlakeId = 0;
-let snowTimer: ReturnType<typeof setInterval> | null = null;
-
 // 获取当前雪的配置
 const getCurrentSnowConfig = (): SnowConfig | null => {
   const weather = currentWeather.value;
@@ -191,27 +259,31 @@ const getCurrentSnowConfig = (): SnowConfig | null => {
   return null;
 };
 
-// 生成雪花
+// 生成雪花（使用对象池）
 const spawnSnowFlake = () => {
   if (isWeatherChanging.value) return;
 
   const config = getCurrentSnowConfig();
   if (!config) return;
 
-  snowFlakes.value.push({
-    id: ++snowFlakeId,
-    x: `${Math.floor(Math.random() * 100)}%`,
-    duration: config.minDuration + Math.random() * (config.maxDuration - config.minDuration),
-    delay: 0,
-    size: config.minSize + Math.random() * (config.maxSize - config.minSize),
-    sway: 15 + Math.random() * 25,
-  });
+  // 从对象池获取
+  const flake = acquireSnowFlake();
+  flake.id = ++snowFlakeId;
+  flake.x = `${Math.floor(Math.random() * 100)}%`;
+  flake.duration = config.minDuration + Math.random() * (config.maxDuration - config.minDuration);
+  flake.delay = 0;
+  flake.size = config.minSize + Math.random() * (config.maxSize - config.minSize);
+  flake.sway = 15 + Math.random() * 25;
+
+  snowFlakes.value.push(flake);
 };
 
-// 移除雪花（动画结束后调用）
+// 移除雪花（动画结束后调用，归还对象池）
 const removeSnowFlake = (id: number) => {
   const index = snowFlakes.value.findIndex((f) => f.id === id);
   if (index !== -1) {
+    const flake = snowFlakes.value[index];
+    releaseSnowFlake(flake); // 归还对象池
     snowFlakes.value.splice(index, 1);
   }
 };
@@ -224,14 +296,16 @@ const startSnowGeneration = (initialBatch: boolean = true) => {
   // 立即生成一批雪花（仅首次进入雪天时）
   if (initialBatch) {
     for (let i = 0; i < config.flakeCount; i++) {
-      snowFlakes.value.push({
-        id: ++snowFlakeId,
-        x: `${(i * 5 + Math.random() * 10) % 100}%`,
-        duration: config.minDuration + (i % 4) * 0.5,
-        delay: parseFloat(getRandomDelay(i, 0.5)),
-        size: config.minSize + (i % 3) * 2,
-        sway: 15 + (i % 5) * 5,
-      });
+      // 从对象池获取
+      const flake = acquireSnowFlake();
+      flake.id = ++snowFlakeId;
+      flake.x = `${(i * 5 + Math.random() * 10) % 100}%`;
+      flake.duration = config.minDuration + (i % 4) * 0.5;
+      flake.delay = parseFloat(getRandomDelay(i, 0.5));
+      flake.size = config.minSize + (i % 3) * 2;
+      flake.sway = 15 + (i % 5) * 5;
+
+      snowFlakes.value.push(flake);
     }
   }
 
@@ -251,18 +325,9 @@ const stopSnowGeneration = () => {
   }
 };
 
-// 雨滴数据结构
-interface RainDrop {
-  id: number;
-  x: string;
-  duration: number;
-  delay: number;
-  width: number;   // 雨滴粗细
-  height: number;  // 雨滴长度
-}
-const rainDrops = ref<RainDrop[]>([]);
-let rainDropId = 0;
+// 雨滴相关变量
 let rainTimer: ReturnType<typeof setInterval> | null = null;
+let snowTimer: ReturnType<typeof setInterval> | null = null;
 
 // 获取当前雨的配置
 const getCurrentRainConfig = (): RainConfig | null => {
@@ -273,7 +338,7 @@ const getCurrentRainConfig = (): RainConfig | null => {
   return null;
 };
 
-// 生成雨滴
+// 生成雨滴（使用对象池）
 const spawnRainDrop = () => {
   // 退出状态下不再生成新雨滴
   if (isWeatherChanging.value) return;
@@ -285,20 +350,24 @@ const spawnRainDrop = () => {
   const baseDuration = 0.6;
   const durationVariation = 0.3;
 
-  rainDrops.value.push({
-    id: ++rainDropId,
-    x: `${Math.floor(Math.random() * 100)}%`,
-    duration: baseDuration + Math.random() * durationVariation,
-    delay: 0,
-    width: config.dropWidth,
-    height: config.dropHeight,
-  });
+  // 从对象池获取
+  const drop = acquireRainDrop();
+  drop.id = ++rainDropId;
+  drop.x = `${Math.floor(Math.random() * 100)}%`;
+  drop.duration = baseDuration + Math.random() * durationVariation;
+  drop.delay = 0;
+  drop.width = config.dropWidth;
+  drop.height = config.dropHeight;
+
+  rainDrops.value.push(drop);
 };
 
-// 移除雨滴（动画结束后调用）
+// 移除雨滴（动画结束后调用，归还对象池）
 const removeRainDrop = (id: number) => {
   const index = rainDrops.value.findIndex((d) => d.id === id);
   if (index !== -1) {
+    const drop = rainDrops.value[index];
+    releaseRainDrop(drop); // 归还对象池
     rainDrops.value.splice(index, 1);
   }
 };
@@ -385,14 +454,16 @@ const startRainGeneration = (initialBatch: boolean = true) => {
   // 立即生成一批雨滴（仅首次进入雨天时）
   if (initialBatch) {
     for (let i = 0; i < config.dropCount; i++) {
-      rainDrops.value.push({
-        id: ++rainDropId,
-        x: `${(i * 5) % 100}%`,
-        duration: baseDuration + (i % 4) * 0.05,
-        delay: parseFloat(getRandomDelay(i, 0.2)),
-        width: config.dropWidth,
-        height: config.dropHeight,
-      });
+      // 从对象池获取
+      const drop = acquireRainDrop();
+      drop.id = ++rainDropId;
+      drop.x = `${(i * 5) % 100}%`;
+      drop.duration = baseDuration + (i % 4) * 0.05;
+      drop.delay = parseFloat(getRandomDelay(i, 0.2));
+      drop.width = config.dropWidth;
+      drop.height = config.dropHeight;
+
+      rainDrops.value.push(drop);
     }
   }
 
