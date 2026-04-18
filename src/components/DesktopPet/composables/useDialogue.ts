@@ -136,10 +136,12 @@ let pendingWeatherDialogue = false;
 
 // 判断是否是有退场动画的天气
 const hasExitAnimation = (weather: string): boolean => {
-  return weather === 'cloudy' ||
-         weather === 'lightRain' ||
-         weather === 'heavyRain' ||
-         weather === 'thunderstorm';
+  return (
+    weather === "cloudy" ||
+    weather === "lightRain" ||
+    weather === "heavyRain" ||
+    weather === "thunderstorm"
+  );
 };
 
 // 监听天气变化

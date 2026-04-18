@@ -28,6 +28,7 @@ export const stateAnimations: Record<PetState, string[]> = {
   yawn: ["yawn"],
   sleepy: ["sleepy"],
   stretch: ["stretch"],
+  sleepwalking: ["sleepwalking"],
 };
 
 // 状态持续时间配置

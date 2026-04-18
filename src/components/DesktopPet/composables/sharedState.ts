@@ -29,6 +29,9 @@ export const isDebugPanelOpen = ref(false);
 // 作息设置弹窗是否打开 - 打开时禁用自动穿透控制
 export const isScheduleModalOpen = ref(false);
 
+// 数据统计弹窗是否打开 - 打开时禁用自动穿透控制
+export const isStatsModalOpen = ref(false);
+
 // 右键菜单是否打开 - 打开时禁用自动穿透控制
 export const isContextMenuOpen = ref(false);
 

@@ -75,6 +75,30 @@ export type WeatherType =
   | "lightSnow" // 小雪
   | "heavySnow"; // 大雪
 
+// 统计数据接口
+export interface StatsData {
+  // 统计开始日期（ISO 格式）
+  startDate: string;
+  // 最后活跃日期（YYYY-MM-DD）
+  lastActiveDate: string;
+  // 连续使用天数
+  streakDays: number;
+  // 总陪伴时长（秒）
+  totalDuration: number;
+  // 今日陪伴时长（秒）
+  todayDuration: number;
+  // 应用启动次数
+  launchCount: number;
+  // 互动次数
+  interactions: {
+    click: number; // 点击次数
+    doubleClick: number; // 双击次数
+    drag: number; // 拖拽次数
+  };
+  // 各状态触发次数
+  stateCounts: Record<string, number>;
+}
+
 // Electron API 类型声明
 declare global {
   interface Window {

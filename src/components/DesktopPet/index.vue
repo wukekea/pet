@@ -10,6 +10,7 @@ import {
   isDragging,
   isContextMenuOpen,
   isScheduleModalOpen,
+  isStatsModalOpen,
 } from "./composables/sharedState";
 // 函数从 usePetState 导入
 import {
@@ -27,19 +28,16 @@ import {
   getScheduleConfig,
   updateScheduleConfig,
 } from "./composables/useSchedule";
+import {
+  initStats,
+  cleanupStats,
+  useStatsRef,
+  resetStats as resetStatsData,
+} from "./composables/useStats";
+import { formatDuration, getStatsDays } from "./composables/useStatsStorage";
 import type { ScheduleConfig } from "./types";
 import WeatherBackground from "./WeatherBackground.vue";
 import "./styles.css";
-
-// Electron API 类型声明
-declare global {
-  interface Window {
-    electronAPI?: {
-      setIgnoreMouseEvents: (ignore: boolean) => void;
-      getScreenSize: () => Promise<{ width: number; height: number }>;
-    };
-  }
-}
 
 // 宠物颜色 - 根据主题变化
 const petColors = computed(() => {
@@ -67,11 +65,15 @@ onMounted(async () => {
 
   // 初始化宠物
   initPet(checkSystemTheme);
+
+  // 初始化统计
+  initStats();
 });
 
 // 清理
 onBeforeUnmount(() => {
   cleanupPet();
+  cleanupStats();
 });
 
 // 暴露方法供外部调用
@@ -98,6 +100,49 @@ const scheduleConfig = ref<ScheduleConfig>({
   slots: [],
 });
 
+// 数据统计弹窗状态
+const statsModalVisible = ref(false);
+const statsData = useStatsRef();
+
+// 过滤掉"发呆"状态的状态统计，并按次数降序排列
+const filteredStateCounts = computed(() => {
+  const entries = Object.entries(statsData.value.stateCounts)
+    .filter(([state]) => state !== "idle")
+    .sort((a, b) => b[1] - a[1]);
+  return Object.fromEntries(entries);
+});
+
+// 状态名称映射
+const stateNameMap: Record<string, string> = {
+  idle: "发呆",
+  walking: "行走",
+  jumping: "跳跃",
+  sleeping: "睡觉",
+  happy: "开心",
+  crying: "大哭",
+  angry: "生气",
+  fallen: "摔倒",
+  scared: "惊吓",
+  thinking: "思考",
+  smug: "得意",
+  shy: "害羞",
+  confused: "疑惑",
+  hello: "招呼",
+  sneeze: "喷嚏",
+  grin: "坏笑",
+  scratch: "挠头",
+  celebrate: "庆祝",
+  peek: "偷看",
+  chase: "追逐",
+  hide: "躲藏",
+  dancing: "跳舞",
+  rolling: "翻滚",
+  yawn: "哈欠",
+  sleepy: "困倦",
+  stretch: "伸懒腰",
+  sleepwalking: "梦游",
+};
+
 // 打开右键菜单
 const handleContextMenu = (e: MouseEvent) => {
   e.preventDefault();
@@ -116,7 +161,7 @@ const closeContextMenu = () => {
   contextMenuVisible.value = false;
   isContextMenuOpen.value = false;
   // 只有没有其他弹窗时才恢复穿透
-  if (!scheduleModalVisible.value) {
+  if (!scheduleModalVisible.value && !statsModalVisible.value) {
     setPassthrough(true);
   }
 };
@@ -145,6 +190,33 @@ const closeScheduleModal = () => {
   isScheduleModalOpen.value = false;
   // 恢复穿透
   setPassthrough(true);
+};
+
+// 打开数据统计弹窗
+const openStatsModal = () => {
+  // 先禁用穿透
+  setPassthrough(false);
+  // 设置全局状态
+  isStatsModalOpen.value = true;
+  // 关闭菜单但不恢复穿透
+  contextMenuVisible.value = false;
+  isContextMenuOpen.value = false;
+  statsModalVisible.value = true;
+};
+
+// 关闭数据统计弹窗
+const closeStatsModal = () => {
+  statsModalVisible.value = false;
+  isStatsModalOpen.value = false;
+  // 恢复穿透
+  setPassthrough(true);
+};
+
+// 重置统计数据
+const resetStats = () => {
+  if (confirm("确定要重置所有统计数据吗？此操作不可撤销。")) {
+    resetStatsData();
+  }
 };
 
 // 保存作息配置
@@ -585,6 +657,11 @@ onBeforeUnmount(() => {
               <span class="menu-icon">🌙</span>
               <span class="menu-text">作息设置</span>
             </div>
+            <div class="menu-divider"></div>
+            <div class="menu-item" @click="openStatsModal">
+              <span class="menu-icon">📊</span>
+              <span class="menu-text">数据统计</span>
+            </div>
           </div>
         </div>
       </Transition>
@@ -787,6 +864,169 @@ onBeforeUnmount(() => {
               </button>
               <button class="btn btn-save" @click="saveSchedule">
                 <span>✓</span> 保存
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+
+      <!-- 数据统计弹窗 -->
+      <Transition name="modal-pop">
+        <div
+          v-if="statsModalVisible"
+          class="stats-modal-overlay"
+          @click="closeStatsModal"
+        >
+          <div class="stats-modal" :class="{ 'dark-mode': isDark }" @click.stop>
+            <!-- 装饰元素 -->
+            <div class="modal-decor">
+              <span class="decor-star star-1">📊</span>
+              <span class="decor-star star-2">✨</span>
+              <span class="decor-star star-3">🎉</span>
+            </div>
+
+            <div class="modal-header">
+              <div class="header-title">
+                <span class="title-icon">📊</span>
+                <span class="title-text stats-title">数据统计</span>
+              </div>
+              <button class="modal-close" @click="closeStatsModal">
+                <span>✕</span>
+              </button>
+            </div>
+
+            <div class="modal-body">
+              <!-- 统计日期信息 -->
+              <div class="stats-info-bar">
+                <span class="stats-date">
+                  📅 统计开始：{{
+                    new Date(statsData.startDate).toLocaleDateString()
+                  }}
+                </span>
+                <span class="stats-days">
+                  已陪伴 {{ getStatsDays(statsData.startDate) }} 天
+                </span>
+              </div>
+
+              <!-- 核心数据卡片 -->
+              <div class="stats-cards">
+                <!-- 连续使用 -->
+                <div class="stat-card streak-card">
+                  <div class="stat-icon">🔥</div>
+                  <div class="stat-content">
+                    <div class="stat-value">{{ statsData.streakDays }}</div>
+                    <div class="stat-label">连续使用</div>
+                  </div>
+                </div>
+
+                <!-- 总陪伴时长 -->
+                <div class="stat-card duration-card">
+                  <div class="stat-icon">⏱️</div>
+                  <div class="stat-content">
+                    <div class="stat-value">
+                      {{ formatDuration(statsData.totalDuration) }}
+                    </div>
+                    <div class="stat-label">总陪伴时长</div>
+                  </div>
+                </div>
+
+                <!-- 今日时长 -->
+                <div class="stat-card today-card">
+                  <div class="stat-icon">🌟</div>
+                  <div class="stat-content">
+                    <div class="stat-value">
+                      {{ formatDuration(statsData.todayDuration) }}
+                    </div>
+                    <div class="stat-label">今日陪伴</div>
+                  </div>
+                </div>
+
+                <!-- 启动次数 -->
+                <div class="stat-card launch-card">
+                  <div class="stat-icon">🚀</div>
+                  <div class="stat-content">
+                    <div class="stat-value">{{ statsData.launchCount }}</div>
+                    <div class="stat-label">启动次数</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 互动统计 -->
+              <div class="stats-section">
+                <div class="section-title">
+                  <span class="section-icon">🎮</span>
+                  互动统计
+                </div>
+                <div class="interactions-grid">
+                  <div class="interaction-item">
+                    <span class="interaction-icon">👆</span>
+                    <span class="interaction-label">点击</span>
+                    <span class="interaction-value">{{
+                      statsData.interactions.click
+                    }}</span>
+                  </div>
+                  <div class="interaction-item">
+                    <span class="interaction-icon">👆👆</span>
+                    <span class="interaction-label">双击</span>
+                    <span class="interaction-value">{{
+                      statsData.interactions.doubleClick
+                    }}</span>
+                  </div>
+                  <div class="interaction-item">
+                    <span class="interaction-icon">✋</span>
+                    <span class="interaction-label">拖拽</span>
+                    <span class="interaction-value">{{
+                      statsData.interactions.drag
+                    }}</span>
+                  </div>
+                </div>
+                <div class="interactions-total">
+                  总互动次数：<span class="total-value">{{
+                    statsData.interactions.click +
+                    statsData.interactions.doubleClick +
+                    statsData.interactions.drag
+                  }}</span>
+                </div>
+              </div>
+
+              <!-- 状态触发统计 -->
+              <div
+                class="stats-section"
+                v-if="Object.keys(filteredStateCounts).length > 0"
+              >
+                <div class="section-title">
+                  <span class="section-icon">🎭</span>
+                  状态触发
+                </div>
+                <div class="state-list">
+                  <div
+                    v-for="(count, state) in filteredStateCounts"
+                    :key="state"
+                    class="state-item"
+                  >
+                    <span class="state-name">{{
+                      stateNameMap[state] || state
+                    }}</span>
+                    <div class="state-bar-bg">
+                      <div
+                        class="state-bar"
+                        :style="{
+                          width: `${Math.min(100, (count / Math.max(...Object.values(filteredStateCounts))) * 100)}%`,
+                        }"
+                      ></div>
+                    </div>
+                    <span class="state-count">{{ count }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-reset" @click="resetStats">
+                <span>🔄</span> 重置数据
+              </button>
+              <button class="btn btn-save" @click="closeStatsModal">
+                <span>✓</span> 关闭
               </button>
             </div>
           </div>
@@ -1642,5 +1882,319 @@ onBeforeUnmount(() => {
     opacity: 1;
     transform: translateX(-50%) translateY(0) scale(1);
   }
+}
+
+/* ========================================
+   数据统计弹窗样式
+   ======================================== */
+.stats-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: v-bind(
+    "isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(16, 185, 129, 0.1)'"
+  );
+  backdrop-filter: blur(8px);
+  pointer-events: auto !important;
+}
+
+.stats-modal {
+  width: 480px;
+  max-width: 90vw;
+  max-height: 80vh;
+  border-radius: 24px;
+  background: v-bind(
+    "isDark ? 'rgba(30, 35, 40, 0.98)' : 'rgba(255, 255, 255, 0.98)'"
+  );
+  box-shadow:
+    0 20px 60px
+      v-bind("isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(16, 185, 129, 0.2)'"),
+    0 0 0 1px
+      v-bind("isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)'");
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  pointer-events: auto !important;
+}
+
+.stats-title {
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stats-info-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: v-bind(
+    "isDark ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)'"
+  );
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.stats-date {
+  color: v-bind("isDark ? '#9ca3af' : '#6b7280'");
+}
+
+.stats-days {
+  font-weight: 600;
+  color: #10b981;
+}
+
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.streak-card {
+  background: linear-gradient(
+    135deg,
+    rgba(251, 146, 60, 0.15),
+    rgba(249, 115, 22, 0.1)
+  );
+  border: 1px solid rgba(251, 146, 60, 0.2);
+}
+
+.duration-card {
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.15),
+    rgba(168, 85, 247, 0.1)
+  );
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.today-card {
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.15),
+    rgba(6, 182, 212, 0.1)
+  );
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.launch-card {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.15),
+    rgba(99, 102, 241, 0.1)
+  );
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.stat-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.stat-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: v-bind("isDark ? '#f1f5f9' : '#1f2937'");
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: v-bind("isDark ? '#9ca3af' : '#6b7280'");
+  margin-top: 2px;
+}
+
+.stats-section {
+  margin-bottom: 16px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: v-bind("isDark ? '#e2e8f0' : '#374151'");
+  margin-bottom: 12px;
+}
+
+.section-icon {
+  font-size: 16px;
+}
+
+.interactions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.interaction-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: v-bind(
+    "isDark ? 'rgba(55, 65, 81, 0.4)' : 'rgba(243, 244, 246, 0.8)'"
+  );
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.interaction-item:hover {
+  background: v-bind(
+    "isDark ? 'rgba(55, 65, 81, 0.6)' : 'rgba(229, 231, 235, 0.9)'"
+  );
+}
+
+.interaction-icon {
+  font-size: 18px;
+}
+
+.interaction-label {
+  font-size: 11px;
+  color: v-bind("isDark ? '#9ca3af' : '#6b7280'");
+}
+
+.interaction-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: v-bind("isDark ? '#f1f5f9' : '#1f2937'");
+}
+
+.interactions-total {
+  text-align: center;
+  font-size: 13px;
+  color: v-bind("isDark ? '#9ca3af' : '#6b7280'");
+}
+
+.total-value {
+  font-weight: 700;
+  color: #10b981;
+  font-size: 15px;
+}
+
+.state-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.state-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: v-bind(
+    "isDark ? 'rgba(55, 65, 81, 0.3)' : 'rgba(243, 244, 246, 0.6)'"
+  );
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.state-item:hover {
+  background: v-bind(
+    "isDark ? 'rgba(55, 65, 81, 0.5)' : 'rgba(229, 231, 235, 0.8)'"
+  );
+}
+
+.state-name {
+  width: 60px;
+  font-size: 13px;
+  font-weight: 500;
+  color: v-bind("isDark ? '#e2e8f0' : '#374151'");
+  flex-shrink: 0;
+}
+
+.state-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: v-bind(
+    "isDark ? 'rgba(75, 85, 99, 0.5)' : 'rgba(209, 213, 219, 0.5)'"
+  );
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.state-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #06b6d4);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.state-count {
+  width: 40px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  color: v-bind("isDark ? '#a78bfa' : '#8b5cf6'");
+  flex-shrink: 0;
+}
+
+.btn-reset {
+  background: v-bind(
+    "isDark ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.1)'"
+  );
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-reset:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: translateY(-2px);
+}
+
+/* 滚动条样式 */
+.state-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.state-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.state-list::-webkit-scrollbar-thumb {
+  background: v-bind(
+    "isDark ? 'rgba(167, 139, 250, 0.3)' : 'rgba(139, 92, 246, 0.2)'"
+  );
+  border-radius: 2px;
+}
+
+.state-list::-webkit-scrollbar-thumb:hover {
+  background: v-bind(
+    "isDark ? 'rgba(167, 139, 250, 0.5)' : 'rgba(139, 92, 246, 0.4)'"
+  );
 }
 </style>

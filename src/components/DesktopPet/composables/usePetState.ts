@@ -35,6 +35,7 @@ import {
   isDragging,
   isInSleepSchedule,
   isScheduleModalOpen,
+  isStatsModalOpen,
   isVisible,
   mousePosition,
   petDirection,
@@ -60,6 +61,12 @@ import {
   stopScheduleMonitor,
 } from "./useSchedule";
 import { initWeatherService, cleanupWeatherService } from "./useQWeather";
+import {
+  recordClick,
+  recordDoubleClick,
+  recordDrag,
+  recordState,
+} from "./useStats";
 
 // 内部函数定义
 function setPassthrough(ignore: boolean) {
@@ -144,6 +151,8 @@ export function moveToRandomPosition() {
 // 改变宠物状态
 export function changeState(newState: PetState, skipDialogue = false) {
   petState.value = newState;
+  // 记录状态触发
+  recordState(newState);
   if (!skipDialogue) {
     showDialogue();
   }
@@ -406,6 +415,8 @@ export function animate() {
 // 点击宠物
 export function handlePetClick() {
   if (isDragging.value) return;
+  // 记录点击互动
+  recordClick();
   // 睡眠作息期间，只响应睡眼朦胧表情
   if (petState.value === "sleeping" || petState.value === "sleepy") {
     // 睡眠或睡眼朦胧期间点击，显示睡眼朦胧状态和专有对话
@@ -426,6 +437,8 @@ export function handlePetClick() {
 // 双击宠物 - 触发特殊动作
 export function handlePetDoubleClick() {
   if (isDragging.value) return;
+  // 记录双击互动
+  recordDoubleClick();
   // 睡眠作息期间，只响应睡眼朦胧表情
   if (petState.value === "sleeping" || petState.value === "sleepy") {
     changeState("sleepy");
@@ -443,6 +456,8 @@ let dragOffset = { x: 0, y: 0 };
 export function handleDragStart(e: MouseEvent) {
   isDragging.value = true;
   setPassthrough(false);
+  // 记录拖拽互动
+  recordDrag();
   dragOffset = {
     x: e.clientX - position.value.x,
     y: e.clientY - position.value.y,
@@ -532,10 +547,11 @@ export async function initScreenSize() {
 // 处理鼠标移动
 export function handleMouseMove(e: MouseEvent) {
   mousePosition.value = { x: e.clientX, y: e.clientY };
-  // 调试面板、作息弹窗或右键菜单打开时，不自动控制穿透
+  // 调试面板、作息弹窗、统计弹窗或右键菜单打开时，不自动控制穿透
   if (
     isDebugPanelOpen.value ||
     isScheduleModalOpen.value ||
+    isStatsModalOpen.value ||
     isContextMenuOpen.value
   )
     return;
