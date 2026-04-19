@@ -26,7 +26,8 @@ export type PetState =
   | "yawn"
   | "sleepy"
   | "stretch"
-  | "sleepwalking";
+  | "sleepwalking"
+  | "bathing";
 
 // 宠物朝向：front(正面), left(左转), right(右转), back(背面)
 export type PetDirection = "front" | "left" | "right" | "back";

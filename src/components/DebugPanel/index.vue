@@ -79,6 +79,10 @@ const actionGroups = [
       { state: "stretch" as PetState, label: "伸懒腰", icon: "✨" },
     ],
   },
+  {
+    name: "日常状态",
+    actions: [{ state: "bathing" as PetState, label: "洗澡", icon: "🛁" }],
+  },
 ];
 
 // 天气选项

@@ -520,6 +520,91 @@ onBeforeUnmount(() => {
       <div class="stretch-effects" v-if="petState === 'stretch'">
         <span class="stretch-icon">✨</span>
       </div>
+
+      <!-- 洗澡效果 -->
+      <div class="bathing-effects" v-if="petState === 'bathing'">
+        <!-- 莲蓬头淋浴器 -->
+        <div class="shower-head-unit">
+          <!-- 固定支架 -->
+          <div class="shower-bracket">
+            <div class="bracket-pipe"></div>
+            <div class="bracket-arm"></div>
+          </div>
+          <!-- 莲蓬头主体 -->
+          <div class="shower-head">
+            <div class="head-top"></div>
+            <div class="head-dome">
+              <div class="head-rim"></div>
+            </div>
+            <div class="head-plate">
+              <!-- 出水孔阵列 -->
+              <div class="nozzle-row">
+                <span class="nozzle"></span>
+                <span class="nozzle"></span>
+                <span class="nozzle"></span>
+                <span class="nozzle"></span>
+                <span class="nozzle"></span>
+              </div>
+              <div class="nozzle-row">
+                <span class="nozzle"></span>
+                <span class="nozzle"></span>
+                <span class="nozzle"></span>
+                <span class="nozzle"></span>
+              </div>
+              <div class="nozzle-row">
+                <span class="nozzle"></span>
+                <span class="nozzle"></span>
+                <span class="nozzle"></span>
+              </div>
+            </div>
+          </div>
+          <!-- 水流 -->
+          <div class="water-streams">
+            <span class="stream s-1"></span>
+            <span class="stream s-2"></span>
+            <span class="stream s-3"></span>
+            <span class="stream s-4"></span>
+            <span class="stream s-5"></span>
+            <span class="stream s-6"></span>
+            <span class="stream s-7"></span>
+            <span class="stream s-8"></span>
+            <span class="stream s-9"></span>
+          </div>
+        </div>
+
+        <!-- 水雾效果 -->
+        <div class="water-mist"></div>
+
+        <!-- 泡泡群 -->
+        <div class="bubble-cluster">
+          <span class="bubble b-1"></span>
+          <span class="bubble b-2"></span>
+          <span class="bubble b-3"></span>
+          <span class="bubble b-4"></span>
+          <span class="bubble b-5"></span>
+          <span class="bubble b-6"></span>
+        </div>
+
+        <!-- 水花溅起 -->
+        <div class="splash-effect">
+          <span class="water-splash ws-1"></span>
+          <span class="water-splash ws-2"></span>
+          <span class="water-splash ws-3"></span>
+        </div>
+
+        <!-- 干净闪光星星 -->
+        <div class="clean-stars">
+          <span class="star star-1">✦</span>
+          <span class="star star-2">✧</span>
+          <span class="star star-3">✦</span>
+          <span class="star star-4">✧</span>
+          <span class="star star-5">✦</span>
+          <span class="star star-6">✧</span>
+        </div>
+
+        <!-- 彩虹光环 -->
+        <div class="rainbow-aura"></div>
+      </div>
     </div>
 
     <!-- 对话气泡（放在 pet-container 外部，不受翻滚影响） -->
