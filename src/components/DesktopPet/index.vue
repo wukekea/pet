@@ -43,6 +43,28 @@ import { STATE_NAMES } from "./constants";
 import type { ScheduleConfig } from "./types";
 import WeatherBackground from "./WeatherBackground.vue";
 import EatingEffects from "./EatingEffects.vue";
+// 效果组件
+import SleepBubble from "./effects/SleepBubble.vue";
+import HappyEffects from "./effects/HappyEffects.vue";
+import DizzyEffects from "./effects/DizzyEffects.vue";
+import ScaredEffects from "./effects/ScaredEffects.vue";
+import ThinkingEffects from "./effects/ThinkingEffects.vue";
+import SmugEffects from "./effects/SmugEffects.vue";
+import ShyEffects from "./effects/ShyEffects.vue";
+import ConfusedEffects from "./effects/ConfusedEffects.vue";
+import HelloEffects from "./effects/HelloEffects.vue";
+import SneezeEffects from "./effects/SneezeEffects.vue";
+import GrinEffects from "./effects/GrinEffects.vue";
+import ScratchEffects from "./effects/ScratchEffects.vue";
+import CelebrateEffects from "./effects/CelebrateEffects.vue";
+import PeekEffects from "./effects/PeekEffects.vue";
+import DancingEffects from "./effects/DancingEffects.vue";
+import RollingEffects from "./effects/RollingEffects.vue";
+import YawnEffects from "./effects/YawnEffects.vue";
+import SleepyEffects from "./effects/SleepyEffects.vue";
+import SleepwalkingEffects from "./effects/SleepwalkingEffects.vue";
+import StretchEffects from "./effects/StretchEffects.vue";
+import BathingEffects from "./effects/BathingEffects.vue";
 import "./styles.css";
 
 // 食物类型列表
@@ -425,242 +447,67 @@ onBeforeUnmount(() => {
       </div>
 
       <!-- 睡眠气泡 -->
-      <div class="sleep-bubble" v-if="petState === 'sleeping'">
-        <span>Z</span>
-        <span class="z2">Z</span>
-        <span class="z3">Z</span>
-      </div>
+      <SleepBubble v-if="petState === 'sleeping'" />
 
       <!-- 开心效果 -->
-      <div class="happy-effects" v-if="petState === 'happy'">
-        <div class="heart heart-1">❤️</div>
-        <div class="heart heart-2">✨</div>
-        <div class="heart heart-3">💖</div>
-      </div>
+      <HappyEffects v-if="petState === 'happy'" />
 
       <!-- 晕眩效果（摔倒时显示） -->
-      <div class="dizzy-effects" v-if="petState === 'fallen'">
-        <span class="dizzy-star">⭐</span>
-        <span class="dizzy-star star-2">💫</span>
-        <span class="dizzy-star star-3">✴️</span>
-      </div>
+      <DizzyEffects v-if="petState === 'fallen'" />
 
       <!-- 惊吓效果 -->
-      <div class="scared-effects" v-if="petState === 'scared'">
-        <span class="exclaim">❗</span>
-        <span class="exclaim exclaim-2">❗</span>
-      </div>
+      <ScaredEffects v-if="petState === 'scared'" />
 
       <!-- 思考效果 -->
-      <div class="thinking-effects" v-if="petState === 'thinking'">
-        <span class="think-icon">💭</span>
-      </div>
+      <ThinkingEffects v-if="petState === 'thinking'" />
 
       <!-- 得意效果 -->
-      <div class="smug-effects" v-if="petState === 'smug'">
-        <span class="thumb-up">👍</span>
-      </div>
+      <SmugEffects v-if="petState === 'smug'" />
 
       <!-- 害羞效果 -->
-      <div class="shy-effects" v-if="petState === 'shy'">
-        <span class="shy-icon">🫣</span>
-      </div>
+      <ShyEffects v-if="petState === 'shy'" />
 
       <!-- 疑惑效果 -->
-      <div class="confused-effects" v-if="petState === 'confused'">
-        <span class="confused-icon">🤔</span>
-      </div>
+      <ConfusedEffects v-if="petState === 'confused'" />
 
       <!-- 打招呼效果 -->
-      <div class="hello-effects" v-if="petState === 'hello'">
-        <span class="wave">👋</span>
-      </div>
+      <HelloEffects v-if="petState === 'hello'" />
 
       <!-- 打喷嚏效果 -->
-      <div class="sneeze-effects" v-if="petState === 'sneeze'">
-        <span class="sneeze-cloud">💨</span>
-        <span class="sneeze-text">阿嚏!</span>
-      </div>
+      <SneezeEffects v-if="petState === 'sneeze'" />
 
       <!-- 坏笑效果 -->
-      <div class="grin-effects" v-if="petState === 'grin'">
-        <span class="grin-text">嘿嘿~</span>
-      </div>
+      <GrinEffects v-if="petState === 'grin'" />
 
       <!-- 挠头效果 -->
-      <div class="scratch-effects" v-if="petState === 'scratch'">
-        <span class="scratch-icon">❓</span>
-      </div>
+      <ScratchEffects v-if="petState === 'scratch'" />
 
       <!-- 跳跃庆祝效果 -->
-      <div class="celebrate-effects" v-if="petState === 'celebrate'">
-        <!-- 彩带 -->
-        <div class="confetti-ribbon cr-1"></div>
-        <div class="confetti-ribbon cr-2"></div>
-        <div class="confetti-ribbon cr-3"></div>
-        <div class="confetti-ribbon cr-4"></div>
-        <div class="confetti-ribbon cr-5"></div>
-        <div class="confetti-ribbon cr-6"></div>
-        <!-- 星星 -->
-        <div class="celebrate-star cs-1">✦</div>
-        <div class="celebrate-star cs-2">✧</div>
-        <div class="celebrate-star cs-3">⭐</div>
-        <div class="celebrate-star cs-4">✨</div>
-        <!-- 彩色圆点 -->
-        <div class="celebrate-dot cd-1"></div>
-        <div class="celebrate-dot cd-2"></div>
-        <div class="celebrate-dot cd-3"></div>
-        <div class="celebrate-dot cd-4"></div>
-        <!-- 光环 -->
-        <div class="celebrate-glow"></div>
-      </div>
+      <CelebrateEffects v-if="petState === 'celebrate'" />
 
       <!-- 偷看效果 -->
-      <div class="peek-effects" v-if="petState === 'peek'">
-        <span class="peek-icon">🤫</span>
-      </div>
+      <PeekEffects v-if="petState === 'peek'" />
 
       <!-- 跳舞效果 -->
-      <div class="dancing-effects" v-if="petState === 'dancing'">
-        <!-- 霓虹音符 -->
-        <div class="neon-note nn-1">♪</div>
-        <div class="neon-note nn-2">♫</div>
-        <div class="neon-note nn-3">♬</div>
-        <div class="neon-note nn-4">♩</div>
-        <div class="neon-note nn-5">♪</div>
-        <div class="neon-note nn-6">♫</div>
-        <!-- 脉冲光环 -->
-        <div class="pulse-ring ring-1"></div>
-        <div class="pulse-ring ring-2"></div>
-        <div class="pulse-ring ring-3"></div>
-        <!-- 迪斯科光点 -->
-        <div class="disco-dot dd-1"></div>
-        <div class="disco-dot dd-2"></div>
-        <div class="disco-dot dd-3"></div>
-        <div class="disco-dot dd-4"></div>
-        <div class="disco-dot dd-5"></div>
-        <div class="disco-dot dd-6"></div>
-        <div class="disco-dot dd-7"></div>
-        <div class="disco-dot dd-8"></div>
-        <!-- 节拍闪光 -->
-        <div class="beat-flash"></div>
-      </div>
+      <DancingEffects v-if="petState === 'dancing'" />
 
       <!-- 翻滚效果 -->
-      <div class="rolling-effects" v-if="petState === 'rolling'">
-        <span class="spin-star">⭐</span>
-      </div>
+      <RollingEffects v-if="petState === 'rolling'" />
 
       <!-- 打哈欠效果 -->
-      <div class="yawn-effects" v-if="petState === 'yawn'">
-        <span class="yawn-icon">😴</span>
-      </div>
+      <YawnEffects v-if="petState === 'yawn'" />
 
       <!-- 睡眼朦胧效果 -->
-      <div class="sleepy-effects" v-if="petState === 'sleepy'">
-        <span class="sleepy-icon">💤</span>
-      </div>
+      <SleepyEffects v-if="petState === 'sleepy'" />
 
       <!-- 睡眠行走效果 -->
-      <div class="sleepwalking-effects" v-if="petState === 'sleepwalking'">
-        <span class="sleepwalking-icon">💤</span>
-      </div>
+      <SleepwalkingEffects v-if="petState === 'sleepwalking'" />
 
       <!-- 伸懒腰效果 -->
-      <div class="stretch-effects" v-if="petState === 'stretch'">
-        <span class="stretch-icon">✨</span>
-      </div>
+      <StretchEffects v-if="petState === 'stretch'" />
 
       <!-- 洗澡效果 -->
-      <div class="bathing-effects" v-if="petState === 'bathing'">
-        <!-- 莲蓬头淋浴器 -->
-        <div class="shower-head-unit">
-          <!-- 固定支架 -->
-          <div class="shower-bracket">
-            <div class="bracket-pipe"></div>
-            <div class="bracket-arm"></div>
-          </div>
-          <!-- 莲蓬头主体 -->
-          <div class="shower-head">
-            <div class="head-top"></div>
-            <div class="head-dome">
-              <div class="head-rim"></div>
-            </div>
-            <div class="head-plate">
-              <!-- 出水孔阵列 -->
-              <div class="nozzle-row">
-                <span class="nozzle"></span>
-                <span class="nozzle"></span>
-                <span class="nozzle"></span>
-                <span class="nozzle"></span>
-                <span class="nozzle"></span>
-              </div>
-              <div class="nozzle-row">
-                <span class="nozzle"></span>
-                <span class="nozzle"></span>
-                <span class="nozzle"></span>
-                <span class="nozzle"></span>
-              </div>
-              <div class="nozzle-row">
-                <span class="nozzle"></span>
-                <span class="nozzle"></span>
-                <span class="nozzle"></span>
-              </div>
-            </div>
-          </div>
-          <!-- 水流 -->
-          <div class="water-streams">
-            <span class="stream s-1"></span>
-            <span class="stream s-2"></span>
-            <span class="stream s-3"></span>
-            <span class="stream s-4"></span>
-            <span class="stream s-5"></span>
-            <span class="stream s-6"></span>
-            <span class="stream s-7"></span>
-            <span class="stream s-8"></span>
-            <span class="stream s-9"></span>
-          </div>
-        </div>
-
-        <!-- 水雾效果 -->
-        <div class="water-mist"></div>
-
-        <!-- 泡泡群 -->
-        <div class="bubble-cluster">
-          <span class="bubble b-1"></span>
-          <span class="bubble b-2"></span>
-          <span class="bubble b-3"></span>
-          <span class="bubble b-4"></span>
-          <span class="bubble b-5"></span>
-          <span class="bubble b-6"></span>
-        </div>
-
-        <!-- 水花溅起 -->
-        <div class="splash-effect">
-          <span class="water-splash ws-1"></span>
-          <span class="water-splash ws-2"></span>
-          <span class="water-splash ws-3"></span>
-        </div>
-
-        <!-- 干净闪光星星 -->
-        <div class="clean-stars">
-          <span class="star star-1">✦</span>
-          <span class="star star-2">✧</span>
-          <span class="star star-3">✦</span>
-          <span class="star star-4">✧</span>
-          <span class="star star-5">✦</span>
-          <span class="star star-6">✧</span>
-        </div>
-
-        <!-- 彩虹光环 -->
-        <div class="rainbow-aura"></div>
-
-        <!-- 快乐音符 -->
-        <div class="happy-notes">
-          <span class="note nt-1">♪</span>
-          <span class="note nt-2">♫</span>
-        </div>
-      </div>
+      <BathingEffects v-if="petState === 'bathing'" />
 
       <!-- 吃东西效果 -->
       <EatingEffects v-if="petState === 'eating'" />
