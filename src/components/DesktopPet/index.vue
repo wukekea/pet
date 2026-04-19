@@ -46,7 +46,7 @@ import EatingEffects from "./EatingEffects.vue";
 import "./styles.css";
 
 // 食物类型列表
-const foodTypes: FoodType[] = ["apple", "fish", "cake", "meat"];
+const foodTypes: FoodType[] = ["apple", "fish", "cake", "lollipop"];
 
 // 当进入 eating 状态时随机选择食物（调试面板打开时不随机，保留用户选择）
 watch(petState, (newState) => {

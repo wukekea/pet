@@ -73,6 +73,7 @@ import FoodItem from "./foods/FoodItem.vue";
   font-size: 14px;
   animation: heart-eye-beat 0.4s ease-in-out infinite;
   filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.6));
+  color: #ef4444;
 }
 
 .h-eye.left {

@@ -42,5 +42,5 @@ export const dreamTalkTimerId = ref<number | null>(null); // 梦话定时器
 export const scheduleEndTime = ref<number | null>(null); // 当前作息结束时间（毫秒时间戳）
 
 // 食物类型
-export type FoodType = "apple" | "fish" | "cake" | "meat";
+export type FoodType = "apple" | "fish" | "cake" | "lollipop";
 export const currentFood = ref<FoodType>("apple");

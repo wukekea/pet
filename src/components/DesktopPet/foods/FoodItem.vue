@@ -3,7 +3,7 @@ import { type FoodType } from "../composables/sharedState";
 import FoodApple from "./FoodApple.vue";
 import FoodFish from "./FoodFish.vue";
 import FoodCake from "./FoodCake.vue";
-import FoodMeat from "./FoodMeat.vue";
+import FoodLollipop from "./FoodLollipop.vue";
 
 defineProps<{
   foodType: FoodType;
@@ -15,7 +15,7 @@ defineProps<{
     <FoodApple v-if="foodType === 'apple'" />
     <FoodFish v-else-if="foodType === 'fish'" />
     <FoodCake v-else-if="foodType === 'cake'" />
-    <FoodMeat v-else-if="foodType === 'meat'" />
+    <FoodLollipop v-else-if="foodType === 'lollipop'" />
   </div>
 </template>
 
@@ -26,6 +26,11 @@ defineProps<{
   left: 47%;
   transform: translateX(-50%) scale(0.67);
   animation: food-wobble 0.5s ease-in-out infinite;
+}
+
+/* 棒棒糖位置调整 */
+.food-lollipop {
+  bottom: 8px;
 }
 
 @keyframes food-wobble {

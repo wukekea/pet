@@ -36,7 +36,7 @@ const foodOptions: { value: FoodType; label: string; icon: string }[] = [
   { value: "apple", label: "苹果", icon: "🍎" },
   { value: "fish", label: "鱼", icon: "🐟" },
   { value: "cake", label: "蛋糕", icon: "🎂" },
-  { value: "meat", label: "肉", icon: "🍖" },
+  { value: "lollipop", label: "棒棒糖", icon: "🍭" },
 ];
 
 // 选择食物
