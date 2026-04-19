@@ -807,18 +807,81 @@
     opacity: 1;
     transform: translate(-50%, -50%) rotate(0deg) scale(1);
   }
+  20% {
+    opacity: 1;
+    transform: translate(var(--x1), var(--y1)) rotate(180deg) scale(1.1);
+  }
+  40% {
+    opacity: 1;
+    transform: translate(var(--x2), var(--y2)) rotate(360deg) scale(1);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translate(var(--x3), var(--y3)) rotate(540deg) scale(0.9);
+  }
+  80% {
+    opacity: 0.5;
+    transform: translate(var(--x4), var(--y4)) rotate(660deg) scale(0.7);
+  }
   100% {
     opacity: 0;
-    transform: var(--burst-end) rotate(720deg) scale(0.5);
+    transform: translate(var(--x5), var(--y5)) rotate(720deg) scale(0.5);
   }
 }
 
-.cr-1 { --burst-end: translate(-60px, -70px); }
-.cr-2 { --burst-end: translate(55px, -65px); }
-.cr-3 { --burst-end: translate(-50px, 50px); }
-.cr-4 { --burst-end: translate(60px, 40px); }
-.cr-5 { --burst-end: translate(-70px, -20px); }
-.cr-6 { --burst-end: translate(65px, -30px); }
+/* 彩带1 - 左上抛出 */
+.cr-1 {
+  --x1: -25px;  --y1: -35px;
+  --x2: -40px;  --y2: -25px;
+  --x3: -50px;  --y3: 0px;
+  --x4: -55px;  --y4: 25px;
+  --x5: -60px;  --y5: 50px;
+}
+
+/* 彩带2 - 右上抛出 */
+.cr-2 {
+  --x1: 25px;   --y1: -40px;
+  --x2: 40px;   --y2: -30px;
+  --x3: 50px;   --y3: -5px;
+  --x4: 55px;   --y4: 20px;
+  --x5: 60px;   --y5: 50px;
+}
+
+/* 彩带3 - 左侧抛出 */
+.cr-3 {
+  --x1: -20px;  --y1: -25px;
+  --x2: -35px;  --y2: -15px;
+  --x3: -45px;  --y3: 10px;
+  --x4: -50px;  --y4: 35px;
+  --x5: -55px;  --y5: 60px;
+}
+
+/* 彩带4 - 右侧抛出 */
+.cr-4 {
+  --x1: 20px;   --y1: -30px;
+  --x2: 35px;   --y2: -20px;
+  --x3: 48px;   --y3: 5px;
+  --x4: 55px;   --y4: 30px;
+  --x5: 60px;   --y5: 55px;
+}
+
+/* 彩带5 - 左上高抛 */
+.cr-5 {
+  --x1: -30px;  --y1: -45px;
+  --x2: -50px;  --y2: -35px;
+  --x3: -60px;  --y3: -10px;
+  --x4: -65px;  --y4: 15px;
+  --x5: -70px;  --y5: 45px;
+}
+
+/* 彩带6 - 右上高抛 */
+.cr-6 {
+  --x1: 30px;   --y1: -35px;
+  --x2: 48px;   --y2: -25px;
+  --x3: 58px;   --y3: 0px;
+  --x4: 65px;   --y4: 25px;
+  --x5: 70px;   --y5: 50px;
+}
 
 /* 庆祝星星 */
 .celebrate-star {
