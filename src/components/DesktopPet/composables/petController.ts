@@ -94,9 +94,11 @@ export function moveToRandomPosition() {
 }
 // 改变宠物状态
 export function changeState(newState: PetState, skipDialogue = false) {
+  // 记录状态触发（状态变化时才记录）
+  if (petState.value !== newState) {
+    recordState(newState);
+  }
   petState.value = newState;
-  // 记录状态触发
-  recordState(newState);
   if (!skipDialogue) {
     showDialogue();
   }
