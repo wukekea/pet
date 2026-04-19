@@ -29,6 +29,7 @@ export const weatherStatus = ref<QWeatherStatus>({
   weatherText: null,
   weatherTemp: null,
   error: null,
+  lastIpLocationDate: null,
 });
 
 // 定时器 ID
@@ -141,25 +142,38 @@ async function performUpdate(): Promise<boolean> {
   weatherStatus.value.error = null;
 
   try {
-    // 1. 如果没有城市 ID，先通过 IP 定位获取
+    // 1. 检查是否需要 IP 定位（启动时或每天一次）
     let cityId = weatherStatus.value.cityId;
-    if (!cityId) {
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    const needIpLocation =
+      !weatherStatus.value.lastIpLocationDate ||
+      weatherStatus.value.lastIpLocationDate !== today;
+
+    if (needIpLocation) {
       const position = await getIpLocation();
-      if (!position) {
+      if (position) {
+        // IP 定位成功，更新城市 ID
+        cityId = await fetchCityByLocation(
+          position.lat,
+          position.lon,
+          apiKey,
+          apiHost,
+        );
+        if (cityId) {
+          // 记录今天的 IP 定位日期
+          weatherStatus.value.lastIpLocationDate = today;
+        }
+      } else if (!cityId) {
+        // IP 定位失败且没有缓存的城市 ID
         weatherStatus.value.error = "IP 定位失败";
         return false;
       }
+      // IP 定位失败但有缓存的城市 ID，继续使用缓存
+    }
 
-      cityId = await fetchCityByLocation(
-        position.lat,
-        position.lon,
-        apiKey,
-        apiHost,
-      );
-      if (!cityId) {
-        weatherStatus.value.error = "城市查询失败";
-        return false;
-      }
+    if (!cityId) {
+      weatherStatus.value.error = "城市查询失败";
+      return false;
     }
 
     // 2. 获取天气
@@ -179,6 +193,7 @@ async function performUpdate(): Promise<boolean> {
       cityId: weatherStatus.value.cityId!,
       cityName: weatherStatus.value.cityName!,
       lastUpdate: weatherStatus.value.lastUpdate,
+      lastIpLocationDate: weatherStatus.value.lastIpLocationDate,
     });
 
     return true;
@@ -207,6 +222,7 @@ export function startWeatherService(): void {
     weatherStatus.value.cityId = savedStatus.cityId;
     weatherStatus.value.cityName = savedStatus.cityName;
     weatherStatus.value.lastUpdate = savedStatus.lastUpdate;
+    weatherStatus.value.lastIpLocationDate = savedStatus.lastIpLocationDate;
   }
 
   weatherStatus.value.enabled = true;

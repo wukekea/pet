@@ -73,6 +73,7 @@ export function saveWeatherStatus(status: {
   cityId: string;
   cityName: string;
   lastUpdate: number;
+  lastIpLocationDate: string | null;
 }): void {
   try {
     localStorage.setItem(WEATHER_STATUS_KEY, JSON.stringify(status));
@@ -88,6 +89,7 @@ export function loadWeatherStatus(): {
   cityId: string | null;
   cityName: string | null;
   lastUpdate: number | null;
+  lastIpLocationDate: string | null;
 } | null {
   try {
     const saved = localStorage.getItem(WEATHER_STATUS_KEY);

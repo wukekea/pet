@@ -42,4 +42,5 @@ export interface QWeatherStatus {
   weatherText: string | null; // 真实天气描述（如"霾"）
   weatherTemp: string | null; // 真实温度（如"21"）
   error: string | null; // 错误信息
+  lastIpLocationDate: string | null; // 上次 IP 定位日期（格式：YYYY-MM-DD）
 }
