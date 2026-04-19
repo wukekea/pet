@@ -92,8 +92,70 @@ export function moveToRandomPosition() {
   updateDirection(dx, dy);
   petState.value = "walking";
 }
+// 平滑结束跳跃类动画（如庆祝、跳跃等）
+// 等待动画回到地面位置后再切换状态
+function smoothExitJumpAnimation(): Promise<void> {
+  return new Promise((resolve) => {
+    const petBody = document.querySelector(".pet-body") as HTMLElement;
+    if (!petBody) {
+      resolve();
+      return;
+    }
+
+    // 获取动画当前时间（0-1 表示进度）
+    const animations = petBody.getAnimations();
+    const animation = animations.find((a) => {
+      // CSSAnimation 是 Animation 的子类，有 animationName 属性
+      if ("animationName" in a) {
+        const name = (a as CSSAnimation).animationName;
+        return (
+          name.includes("celebrate-jump") ||
+          name.includes("jump") ||
+          name.includes("dance-body")
+        );
+      }
+      return false;
+    });
+
+    if (animation) {
+      // 获取当前进度
+      const progress = animation.currentTime as number;
+      const duration = (animation.effect as KeyframeEffect).getTiming()
+        .duration as number;
+
+      if (duration > 0) {
+        // 计算当前是上升还是下降阶段
+        // celebrate-jump: 0% 在地面，50% 在最高点，100% 在地面
+        const normalizedProgress = (progress % duration) / duration;
+
+        // 如果在 0-0.5（上升阶段）或 0.5-1（下降阶段但未到地面）
+        // 需要等待回到地面
+        if (normalizedProgress > 0.1 && normalizedProgress < 0.9) {
+          // 计算等待时间：等待动画回到地面
+          // 如果在上升阶段（0-0.5），需要等待到 1.0
+          // 如果在下降阶段（0.5-1），需要等待到 1.0
+          const waitTime = duration * (1 - normalizedProgress);
+          setTimeout(resolve, waitTime);
+          return;
+        }
+      }
+    }
+
+    resolve();
+  });
+}
+
 // 改变宠物状态
-export function changeState(newState: PetState, skipDialogue = false) {
+export async function changeState(newState: PetState, skipDialogue = false) {
+  // 对于从跳跃类状态切换到其他状态，先平滑过渡
+  const jumpStates: PetState[] = ["celebrate", "jumping", "dancing"];
+  const isExitingJumpState =
+    jumpStates.includes(petState.value) && !jumpStates.includes(newState);
+
+  if (isExitingJumpState) {
+    await smoothExitJumpAnimation();
+  }
+
   // 记录状态触发（状态变化时才记录）
   if (petState.value !== newState) {
     recordState(newState);
