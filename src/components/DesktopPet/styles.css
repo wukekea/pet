@@ -2603,7 +2603,7 @@
    ======================================== */
 .shower-head-unit {
   position: absolute;
-  top: -30px;
+  top: -50px;
   left: -20px;
   transform: rotate(-45deg);
   z-index: 10;
@@ -2762,7 +2762,7 @@
     transparent 100%
   );
   border-radius: 2px;
-  animation: stream-fall 0.5s linear infinite;
+  animation: stream-fall 0.3s linear infinite;
   opacity: 0;
   box-shadow: 0 0 4px rgba(139, 92, 246, 0.5);
 }
@@ -2779,15 +2779,60 @@
 }
 
 /* 水流位置 - 从喷头出水孔位置，按 left 排序 */
-.s-1 { left: 2px; top: 0px; height: 32px; animation-delay: 0s; }
-.s-2 { left: 7px; top: -3px; height: 38px; animation-delay: 0.12s; }
-.s-3 { left: 12px; top: -5px; height: 34px; animation-delay: 0.05s; }
-.s-8 { left: 15px; top: -7px; height: 35px; animation-delay: 0.03s; }
-.s-4 { left: 17px; top: -12px; height: 40px; animation-delay: 0.18s; }
-.s-5 { left: 22px; top: -14px; height: 36px; animation-delay: 0.08s; }
-.s-9 { left: 25px; top: -18px; height: 33px; animation-delay: 0.2s; }
-.s-6 { left: 27px; top: -25px; height: 38px; animation-delay: 0.15s; }
-.s-7 { left: 32px; top: -29px; height: 30px; animation-delay: 0.22s; }
+.s-1 {
+  left: 2px;
+  top: 0px;
+  height: 32px;
+  animation-delay: 0s;
+}
+.s-2 {
+  left: 7px;
+  top: -3px;
+  height: 38px;
+  animation-delay: 0.12s;
+}
+.s-3 {
+  left: 12px;
+  top: -5px;
+  height: 34px;
+  animation-delay: 0.05s;
+}
+.s-8 {
+  left: 15px;
+  top: -7px;
+  height: 35px;
+  animation-delay: 0.03s;
+}
+.s-4 {
+  left: 17px;
+  top: -12px;
+  height: 40px;
+  animation-delay: 0.18s;
+}
+.s-5 {
+  left: 22px;
+  top: -14px;
+  height: 36px;
+  animation-delay: 0.08s;
+}
+.s-9 {
+  left: 25px;
+  top: -18px;
+  height: 33px;
+  animation-delay: 0.2s;
+}
+.s-6 {
+  left: 27px;
+  top: -25px;
+  height: 38px;
+  animation-delay: 0.15s;
+}
+.s-7 {
+  left: 32px;
+  top: -27px;
+  height: 30px;
+  animation-delay: 0.22s;
+}
 
 @keyframes stream-fall {
   0% {

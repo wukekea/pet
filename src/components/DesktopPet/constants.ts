@@ -46,7 +46,7 @@ export const STATE_DURATIONS: Partial<Record<PetState, number>> = {
   yawn: YAWN_DURATION,
   sleepy: SLEEPY_DURATION,
   stretch: STRETCH_DURATION,
-  bathing: 5000,
+  bathing: 30000,
 };
 
 // 状态名称中文映射
