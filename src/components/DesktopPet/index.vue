@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, ref } from "vue";
+import { computed, onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { getFootprintOpacity } from "./composables/footprints";
 // 状态变量从 sharedState 导入
 import {
@@ -11,6 +11,9 @@ import {
   isContextMenuOpen,
   isScheduleModalOpen,
   isStatsModalOpen,
+  isDebugPanelOpen,
+  currentFood,
+  type FoodType,
 } from "./composables/sharedState";
 // 函数从 usePetState 导入
 import {
@@ -39,7 +42,19 @@ import { setPassthrough } from "./composables/passthrough";
 import { STATE_NAMES } from "./constants";
 import type { ScheduleConfig } from "./types";
 import WeatherBackground from "./WeatherBackground.vue";
+import EatingEffects from "./EatingEffects.vue";
 import "./styles.css";
+
+// 食物类型列表
+const foodTypes: FoodType[] = ["apple", "fish", "cake", "meat"];
+
+// 当进入 eating 状态时随机选择食物（调试面板打开时不随机，保留用户选择）
+watch(petState, (newState) => {
+  if (newState === "eating" && !isDebugPanelOpen.value) {
+    const randomIndex = Math.floor(Math.random() * foodTypes.length);
+    currentFood.value = foodTypes[randomIndex];
+  }
+});
 
 // 宠物颜色 - 根据主题变化
 const petColors = computed(() => {
@@ -611,6 +626,9 @@ onBeforeUnmount(() => {
           <span class="note nt-2">♫</span>
         </div>
       </div>
+
+      <!-- 吃东西效果 -->
+      <EatingEffects v-if="petState === 'eating'" />
     </div>
 
     <!-- 对话气泡（放在 pet-container 外部，不受翻滚影响） -->

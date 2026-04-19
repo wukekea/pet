@@ -4,6 +4,8 @@ import { changeState } from "../DesktopPet/composables/petController";
 import {
   petState,
   isDebugPanelOpen,
+  currentFood,
+  type FoodType,
 } from "../DesktopPet/composables/sharedState";
 import { isDark } from "../DesktopPet/composables/theme";
 import {
@@ -25,6 +27,22 @@ const dragOffset = ref({ x: 0, y: 0 });
 
 // 当前选中的状态
 const activeState = computed(() => petState.value);
+
+// 当前选中的食物
+const activeFood = computed(() => currentFood.value);
+
+// 食物选项
+const foodOptions: { value: FoodType; label: string; icon: string }[] = [
+  { value: "apple", label: "苹果", icon: "🍎" },
+  { value: "fish", label: "鱼", icon: "🐟" },
+  { value: "cake", label: "蛋糕", icon: "🎂" },
+  { value: "meat", label: "肉", icon: "🍖" },
+];
+
+// 选择食物
+const selectFood = (food: FoodType) => {
+  currentFood.value = food;
+};
 
 // 动作配置 - 带中文标签和分组
 const actionGroups = [
@@ -81,7 +99,10 @@ const actionGroups = [
   },
   {
     name: "日常状态",
-    actions: [{ state: "bathing" as PetState, label: "洗澡", icon: "🛁" }],
+    actions: [
+      { state: "bathing" as PetState, label: "洗澡", icon: "🛁" },
+      { state: "eating" as PetState, label: "吃东西", icon: "🍚" },
+    ],
   },
 ];
 
@@ -292,6 +313,24 @@ defineExpose({
             >
               <span class="btn-icon">{{ weather.icon }}</span>
               <span class="btn-label">{{ weather.label }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 食物选择 -->
+        <div class="action-group">
+          <div class="group-title">食物选择</div>
+          <div class="action-buttons">
+            <button
+              v-for="food in foodOptions"
+              :key="food.value"
+              class="action-btn"
+              :class="{ active: activeFood === food.value }"
+              @click="selectFood(food.value)"
+              :title="food.label"
+            >
+              <span class="btn-icon">{{ food.icon }}</span>
+              <span class="btn-label">{{ food.label }}</span>
             </button>
           </div>
         </div>

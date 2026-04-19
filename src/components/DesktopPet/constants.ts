@@ -47,6 +47,7 @@ export const STATE_DURATIONS: Partial<Record<PetState, number>> = {
   sleepy: SLEEPY_DURATION,
   stretch: STRETCH_DURATION,
   bathing: 30000,
+  eating: 4000,
 };
 
 // 状态名称中文映射
@@ -79,6 +80,7 @@ export const STATE_NAMES: Record<string, string> = {
   stretch: "伸懒腰",
   sleepwalking: "梦游",
   bathing: "洗澡",
+  eating: "吃东西",
 };
 
 // 不允许移动的状态
@@ -107,4 +109,5 @@ export const NON_MOVING_STATES: readonly PetState[] = [
   "sleepy",
   "stretch",
   "bathing",
+  "eating",
 ] as const;

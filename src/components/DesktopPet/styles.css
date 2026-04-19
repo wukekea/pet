@@ -3292,3 +3292,115 @@
 .pet-bathing .arm-right {
   animation: scrub-right 0.5s ease-in-out infinite;
 }
+
+/* ========================================
+   吃东西时的身体动画
+   ======================================== */
+.pet-eating .pet-body {
+  animation: eating-chew 0.4s ease-in-out infinite;
+}
+
+@keyframes eating-chew {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  25% {
+    transform: translateY(2px) scaleY(0.95);
+  }
+  50% {
+    transform: translateY(0) scaleY(1);
+  }
+  75% {
+    transform: translateY(1px) scaleY(0.97);
+  }
+}
+
+/* 吃东西时眯眼幸福表情 */
+.pet-eating .eye {
+  height: 6px;
+  border-radius: 0 0 50% 50%;
+  animation: happy-squint 0.8s ease-in-out infinite;
+}
+
+@keyframes happy-squint {
+  0%,
+  100% {
+    height: 6px;
+  }
+  50% {
+    height: 3px;
+  }
+}
+
+/* 吃东西时嘴巴咀嚼 */
+.pet-eating .mouth-smile {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: mouth-chew 0.4s ease-in-out infinite;
+}
+
+@keyframes mouth-chew {
+  0%,
+  100% {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  50% {
+    width: 8px;
+    height: 6px;
+    border-radius: 50%;
+  }
+}
+
+/* 吃东西时腮红加深 */
+.pet-eating .pet-cheek {
+  opacity: 0.95;
+  width: 14px;
+  height: 10px;
+  background: #f87171;
+  animation: cheek-glow 0.8s ease-in-out infinite;
+}
+
+@keyframes cheek-glow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* 吃东西时手臂捧碗动作 */
+@keyframes hold-bowl-left {
+  0%,
+  100% {
+    transform: rotate(45deg) translateX(8px) translateY(-5px);
+  }
+  50% {
+    transform: rotate(50deg) translateX(10px) translateY(-3px);
+  }
+}
+
+@keyframes hold-bowl-right {
+  0%,
+  100% {
+    transform: rotate(-45deg) translateX(-8px) translateY(-5px);
+  }
+  50% {
+    transform: rotate(-50deg) translateX(-10px) translateY(-3px);
+  }
+}
+
+.pet-eating .arm-left {
+  animation: hold-bowl-left 0.4s ease-in-out infinite;
+}
+
+.pet-eating .arm-right {
+  animation: hold-bowl-right 0.4s ease-in-out infinite;
+}
