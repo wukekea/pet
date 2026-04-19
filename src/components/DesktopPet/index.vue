@@ -508,13 +508,6 @@ onBeforeUnmount(() => {
         <span class="confetti confetti-3">✨</span>
       </div>
 
-      <!-- 嬉戏庆祝效果 -->
-      <div class="celebrate-effects" v-if="petState === 'celebrate'">
-        <span class="confetti">🎉</span>
-        <span class="confetti confetti-2">🎊</span>
-        <span class="confetti confetti-3">✨</span>
-      </div>
-
       <!-- 偷看效果 -->
       <div class="peek-effects" v-if="petState === 'peek'">
         <span class="peek-icon">🤫</span>
