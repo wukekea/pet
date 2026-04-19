@@ -11,35 +11,65 @@ defineProps<{
 </script>
 
 <template>
-  <div class="food-container" :class="`food-${foodType}`">
-    <FoodApple v-if="foodType === 'apple'" />
-    <FoodFish v-else-if="foodType === 'fish'" />
-    <FoodCake v-else-if="foodType === 'cake'" />
-    <FoodLollipop v-else-if="foodType === 'lollipop'" />
+  <div class="food-eating-wrapper">
+    <div class="food-container" :class="`food-${foodType}`">
+      <FoodApple v-if="foodType === 'apple'" />
+      <FoodFish v-else-if="foodType === 'fish'" />
+      <FoodCake v-else-if="foodType === 'cake'" />
+      <FoodLollipop v-else-if="foodType === 'lollipop'" />
+    </div>
   </div>
 </template>
 
 <style scoped>
-.food-container {
+/* 外层包装 - 处理缩放和消失动画 */
+.food-eating-wrapper {
   position: absolute;
   bottom: 18px;
   left: 47%;
-  transform: translateX(-50%) scale(0.67);
-  animation: food-wobble 0.5s ease-in-out infinite;
+  transform: translateX(-50%);
+  animation: food-being-eaten 30s ease-in-out forwards;
 }
 
-/* 棒棒糖位置调整 */
-.food-lollipop {
+/* 棒棒糖位置调整 - 应用到外层包装 */
+.food-eating-wrapper:has(.food-lollipop) {
   bottom: 8px;
 }
 
+/* 内层容器 - 处理晃动动画 */
+.food-container {
+  transform: scale(0.67);
+  animation: food-wobble 0.5s ease-in-out infinite;
+}
+
+/* 晃动动画 */
 @keyframes food-wobble {
   0%,
   100% {
-    transform: translateX(-50%) scale(0.67) rotate(-8deg);
+    transform: scale(0.67) rotate(-8deg);
   }
   50% {
-    transform: translateX(-50%) scale(0.67) rotate(8deg);
+    transform: scale(0.67) rotate(8deg);
+  }
+}
+
+/* 被吃掉的动画 - 30秒内逐渐缩小消失 */
+@keyframes food-being-eaten {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateX(-50%) scale(0.6);
+  }
+  95% {
+    opacity: 0.5;
+    transform: translateX(-50%) scale(0.3);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.15);
   }
 }
 </style>
