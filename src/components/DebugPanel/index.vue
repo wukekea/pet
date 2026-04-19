@@ -28,20 +28,21 @@ const dragOffset = ref({ x: 0, y: 0 });
 // 当前选中的状态
 const activeState = computed(() => petState.value);
 
-// 当前选中的食物
-const activeFood = computed(() => currentFood.value);
-
-// 食物选项
-const foodOptions: { value: FoodType; label: string; icon: string }[] = [
-  { value: "apple", label: "苹果", icon: "🍎" },
-  { value: "fish", label: "鱼", icon: "🐟" },
-  { value: "cake", label: "蛋糕", icon: "🎂" },
-  { value: "lollipop", label: "棒棒糖", icon: "🍭" },
-];
-
-// 选择食物
-const selectFood = (food: FoodType) => {
-  currentFood.value = food;
+// 判断动作按钮是否高亮
+const isActionActive = (action: {
+  state: PetState;
+  label: string;
+  icon: string;
+  food?: FoodType;
+}) => {
+  // 如果是吃东西动作，需要同时匹配状态和食物
+  if (action.food) {
+    return (
+      activeState.value === action.state && currentFood.value === action.food
+    );
+  }
+  // 普通动作只匹配状态
+  return activeState.value === action.state;
 };
 
 // 动作配置 - 带中文标签和分组
@@ -99,9 +100,35 @@ const actionGroups = [
   },
   {
     name: "日常状态",
+    actions: [{ state: "bathing" as PetState, label: "洗澡", icon: "🛁" }],
+  },
+  {
+    name: "吃东西",
     actions: [
-      { state: "bathing" as PetState, label: "洗澡", icon: "🛁" },
-      { state: "eating" as PetState, label: "吃东西", icon: "🍚" },
+      {
+        state: "eating" as PetState,
+        label: "苹果",
+        icon: "🍎",
+        food: "apple" as FoodType,
+      },
+      {
+        state: "eating" as PetState,
+        label: "鱼",
+        icon: "🐟",
+        food: "fish" as FoodType,
+      },
+      {
+        state: "eating" as PetState,
+        label: "蛋糕",
+        icon: "🎂",
+        food: "cake" as FoodType,
+      },
+      {
+        state: "eating" as PetState,
+        label: "棒棒糖",
+        icon: "🍭",
+        food: "lollipop" as FoodType,
+      },
     ],
   },
 ];
@@ -144,7 +171,11 @@ const weatherStatusText = computed(() => {
 });
 
 // 触发状态
-const triggerState = (state: PetState) => {
+const triggerState = (state: PetState, food?: FoodType) => {
+  // 如果指定了食物，先设置食物
+  if (food) {
+    currentFood.value = food;
+  }
   changeState(state);
 };
 
@@ -287,11 +318,11 @@ defineExpose({
           <div class="action-buttons">
             <button
               v-for="action in group.actions"
-              :key="action.state"
+              :key="action.label"
               class="action-btn"
-              :class="{ active: activeState === action.state }"
-              @click="triggerState(action.state)"
-              :title="`${action.label} (${action.state})`"
+              :class="{ active: isActionActive(action) }"
+              @click="triggerState(action.state, (action as any).food)"
+              :title="action.label"
             >
               <span class="btn-icon">{{ action.icon }}</span>
               <span class="btn-label">{{ action.label }}</span>
@@ -313,24 +344,6 @@ defineExpose({
             >
               <span class="btn-icon">{{ weather.icon }}</span>
               <span class="btn-label">{{ weather.label }}</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 食物选择 -->
-        <div class="action-group">
-          <div class="group-title">食物选择</div>
-          <div class="action-buttons">
-            <button
-              v-for="food in foodOptions"
-              :key="food.value"
-              class="action-btn"
-              :class="{ active: activeFood === food.value }"
-              @click="selectFood(food.value)"
-              :title="food.label"
-            >
-              <span class="btn-icon">{{ food.icon }}</span>
-              <span class="btn-label">{{ food.label }}</span>
             </button>
           </div>
         </div>
