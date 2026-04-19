@@ -22,19 +22,19 @@ defineProps<{
 <style scoped>
 .food-container {
   position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 18px;
+  left: 47%;
+  transform: translateX(-50%) scale(0.67);
   animation: food-wobble 0.5s ease-in-out infinite;
 }
 
 @keyframes food-wobble {
   0%,
   100% {
-    transform: translateX(-50%) rotate(-8deg);
+    transform: translateX(-50%) scale(0.67) rotate(-8deg);
   }
   50% {
-    transform: translateX(-50%) rotate(8deg);
+    transform: translateX(-50%) scale(0.67) rotate(8deg);
   }
 }
 </style>
