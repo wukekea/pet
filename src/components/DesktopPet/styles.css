@@ -740,7 +740,215 @@
 
 .celebrate-effects,
 .dizzy-effects {
-  inset: -30px;
+  inset: -40px;
+}
+
+/* ========================================
+   庆祝效果 - 梦幻彩带烟花
+   ======================================== */
+.celebrate-effects {
+  overflow: visible;
+}
+
+/* 彩带 */
+.confetti-ribbon {
+  position: absolute;
+  width: 6px;
+  height: 18px;
+  border-radius: 3px;
+  animation: confetti-burst 1.5s ease-out infinite;
+  opacity: 0;
+}
+
+.cr-1 {
+  background: linear-gradient(180deg, #f472b6 0%, #ec4899 100%);
+  left: 50%;
+  top: 50%;
+  animation-delay: 0s;
+}
+
+.cr-2 {
+  background: linear-gradient(180deg, #a78bfa 0%, #8b5cf6 100%);
+  left: 50%;
+  top: 50%;
+  animation-delay: 0.1s;
+}
+
+.cr-3 {
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  left: 50%;
+  top: 50%;
+  animation-delay: 0.2s;
+}
+
+.cr-4 {
+  background: linear-gradient(180deg, #34d399 0%, #10b981 100%);
+  left: 50%;
+  top: 50%;
+  animation-delay: 0.3s;
+}
+
+.cr-5 {
+  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+  left: 50%;
+  top: 50%;
+  animation-delay: 0.15s;
+}
+
+.cr-6 {
+  background: linear-gradient(180deg, #f87171 0%, #ef4444 100%);
+  left: 50%;
+  top: 50%;
+  animation-delay: 0.25s;
+}
+
+@keyframes confetti-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: var(--burst-end) rotate(720deg) scale(0.5);
+  }
+}
+
+.cr-1 { --burst-end: translate(-60px, -70px); }
+.cr-2 { --burst-end: translate(55px, -65px); }
+.cr-3 { --burst-end: translate(-50px, 50px); }
+.cr-4 { --burst-end: translate(60px, 40px); }
+.cr-5 { --burst-end: translate(-70px, -20px); }
+.cr-6 { --burst-end: translate(65px, -30px); }
+
+/* 庆祝星星 */
+.celebrate-star {
+  position: absolute;
+  font-size: 14px;
+  animation: star-celebrate 1s ease-in-out infinite;
+  opacity: 0;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.cs-1 {
+  top: -35px;
+  left: -25px;
+  color: #fbbf24;
+  animation-delay: 0s;
+}
+
+.cs-2 {
+  top: -40px;
+  right: -20px;
+  color: #a78bfa;
+  animation-delay: 0.3s;
+}
+
+.cs-3 {
+  top: 10px;
+  left: -30px;
+  color: #f472b6;
+  animation-delay: 0.5s;
+}
+
+.cs-4 {
+  top: 5px;
+  right: -25px;
+  color: #34d399;
+  animation-delay: 0.7s;
+}
+
+@keyframes star-celebrate {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.5) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3) rotate(15deg);
+  }
+}
+
+/* 彩色圆点 */
+.celebrate-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: dot-float 2s ease-in-out infinite;
+  opacity: 0;
+}
+
+.cd-1 {
+  background: radial-gradient(circle, #fbbf24 0%, #f59e0b 100%);
+  top: -20px;
+  left: 0;
+  animation-delay: 0s;
+}
+
+.cd-2 {
+  background: radial-gradient(circle, #f472b6 0%, #ec4899 100%);
+  top: -15px;
+  right: 5px;
+  animation-delay: 0.4s;
+}
+
+.cd-3 {
+  background: radial-gradient(circle, #60a5fa 0%, #3b82f6 100%);
+  top: 5px;
+  left: -10px;
+  animation-delay: 0.8s;
+}
+
+.cd-4 {
+  background: radial-gradient(circle, #34d399 0%, #10b981 100%);
+  top: 10px;
+  right: -5px;
+  animation-delay: 1.2s;
+}
+
+@keyframes dot-float {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.5);
+  }
+}
+
+/* 光环效果 */
+.celebrate-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(
+    circle,
+    rgba(167, 139, 250, 0.3) 0%,
+    rgba(167, 139, 250, 0.1) 40%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: glow-pulse 1.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.3);
+  }
 }
 
 .heart,

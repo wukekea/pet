@@ -494,9 +494,25 @@ onBeforeUnmount(() => {
 
       <!-- 跳跃庆祝效果 -->
       <div class="celebrate-effects" v-if="petState === 'celebrate'">
-        <span class="confetti">🎉</span>
-        <span class="confetti confetti-2">🎊</span>
-        <span class="confetti confetti-3">✨</span>
+        <!-- 彩带 -->
+        <div class="confetti-ribbon cr-1"></div>
+        <div class="confetti-ribbon cr-2"></div>
+        <div class="confetti-ribbon cr-3"></div>
+        <div class="confetti-ribbon cr-4"></div>
+        <div class="confetti-ribbon cr-5"></div>
+        <div class="confetti-ribbon cr-6"></div>
+        <!-- 星星 -->
+        <div class="celebrate-star cs-1">✦</div>
+        <div class="celebrate-star cs-2">✧</div>
+        <div class="celebrate-star cs-3">⭐</div>
+        <div class="celebrate-star cs-4">✨</div>
+        <!-- 彩色圆点 -->
+        <div class="celebrate-dot cd-1"></div>
+        <div class="celebrate-dot cd-2"></div>
+        <div class="celebrate-dot cd-3"></div>
+        <div class="celebrate-dot cd-4"></div>
+        <!-- 光环 -->
+        <div class="celebrate-glow"></div>
       </div>
 
       <!-- 偷看效果 -->
