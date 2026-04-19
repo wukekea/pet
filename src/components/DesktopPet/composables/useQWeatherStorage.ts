@@ -3,19 +3,7 @@ const API_HOST_STORAGE_KEY = "qweather-api-host";
 const WEATHER_STATUS_KEY = "qweather-status";
 
 /**
- * 保存 API Key
- */
-export function saveApiKey(key: string): void {
-  try {
-    localStorage.setItem(API_KEY_STORAGE_KEY, key);
-  } catch (e) {
-    console.error("保存 API Key 失败:", e);
-  }
-}
-
-/**
  * 加载 API Key
- * 优先级：localStorage > 环境变量
  */
 export function loadApiKey(): string | null {
   try {
@@ -38,17 +26,6 @@ export function loadApiKey(): string | null {
   } catch (e) {
     console.error("加载 API Key 失败:", e);
     return null;
-  }
-}
-
-/**
- * 清除 API Key
- */
-export function clearApiKey(): void {
-  try {
-    localStorage.removeItem(API_KEY_STORAGE_KEY);
-  } catch (e) {
-    console.error("清除 API Key 失败:", e);
   }
 }
 
