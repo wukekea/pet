@@ -3151,6 +3151,87 @@
 }
 
 /* ========================================
+   快乐音符 - 彩色飘动效果
+   ======================================== */
+.happy-notes {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 30px;
+}
+
+.note {
+  position: absolute;
+  font-size: 14px;
+  animation: note-dance 1.5s ease-in-out infinite;
+  opacity: 0;
+  text-shadow: 0 0 6px currentColor;
+}
+
+.nt-1 {
+  left: 5px;
+  top: 5px;
+  animation-delay: 0s;
+  animation-name: note-dance-1;
+}
+
+.nt-2 {
+  left: 30px;
+  top: 8px;
+  animation-delay: 0.5s;
+  font-size: 16px;
+  animation-name: note-dance-2;
+}
+
+@keyframes note-dance-1 {
+  0% {
+    opacity: 0;
+    transform: translateY(5px) rotate(-10deg);
+    color: #f472b6; /* 粉色 */
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-5px) rotate(5deg);
+    color: #fb923c; /* 橙色 */
+  }
+  60% {
+    opacity: 0.7;
+    transform: translateY(-10px) rotate(8deg);
+    color: #a3e635; /* 绿色 */
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-12px) rotate(12deg);
+    color: #38bdf8; /* 蓝色 */
+  }
+}
+
+@keyframes note-dance-2 {
+  0% {
+    opacity: 0;
+    transform: translateY(5px) rotate(10deg);
+    color: #c084fc; /* 紫色 */
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-5px) rotate(-5deg);
+    color: #facc15; /* 黄色 */
+  }
+  60% {
+    opacity: 0.7;
+    transform: translateY(-10px) rotate(-8deg);
+    color: #2dd4bf; /* 青色 */
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-12px) rotate(-12deg);
+    color: #f472b6; /* 粉色 */
+  }
+}
+
+/* ========================================
    洗澡时的身体动画
    ======================================== */
 .pet-bathing .pet-body {

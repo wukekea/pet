@@ -604,6 +604,12 @@ onBeforeUnmount(() => {
 
         <!-- 彩虹光环 -->
         <div class="rainbow-aura"></div>
+
+        <!-- 快乐音符 -->
+        <div class="happy-notes">
+          <span class="note nt-1">♪</span>
+          <span class="note nt-2">♫</span>
+        </div>
       </div>
     </div>
 
