@@ -1,32 +1,13 @@
 import {
-  ANGRY_DURATION,
-  CELEBRATE_DURATION,
-  CHASE_DURATION,
-  CONFUSED_DURATION,
-  CRYING_DURATION,
-  DANCING_DURATION,
-  FALLEN_DURATION,
-  GRIN_DURATION,
-  HAPPY_DURATION,
-  HELLO_DURATION,
-  HIDE_DURATION,
   IDLE_DURATION,
-  JUMP_DURATION,
-  PEEK_DURATION,
   PET_SIZE,
-  ROLLING_DURATION,
-  SCARED_DURATION,
-  SCRATCH_DURATION,
-  SHY_DURATION,
   SLEEP_DURATION,
-  SLEEPY_DURATION,
-  SMUG_DURATION,
-  SNEEZE_DURATION,
-  STRETCH_DURATION,
-  THINKING_DURATION,
+  STATE_DURATIONS,
   TOP_MARGIN,
   WALK_SPEED,
   YAWN_DURATION,
+  NON_MOVING_STATES,
+  HELLO_DURATION,
 } from "../constants";
 import type { PetState } from "../types";
 import {
@@ -73,33 +54,6 @@ function isMouseOnPet(x: number, y: number): boolean {
   const distance = Math.sqrt((x - petCenterX) ** 2 + (y - petCenterY) ** 2);
   return distance < PET_SIZE / 2 + 15;
 }
-
-// 不允许移动的状态
-const NON_MOVING_STATES: PetState[] = [
-  "sleeping",
-  "happy",
-  "crying",
-  "angry",
-  "fallen",
-  "scared",
-  "thinking",
-  "smug",
-  "shy",
-  "confused",
-  "hello",
-  "sneeze",
-  "grin",
-  "scratch",
-  "celebrate",
-  "peek",
-  "chase",
-  "hide",
-  "dancing",
-  "rolling",
-  "yawn",
-  "sleepy",
-  "stretch",
-];
 
 // 根据移动方向更新宠物朝向
 function updateDirection(dx: number, dy: number) {
@@ -149,6 +103,10 @@ export function changeState(newState: PetState, skipDialogue = false) {
   if (stateTimer.value) {
     clearTimeout(stateTimer.value);
   }
+
+  // 获取状态持续时间
+  const duration = STATE_DURATIONS[newState];
+
   switch (newState) {
     case "idle":
       stateTimer.value = window.setTimeout(() => {
@@ -191,6 +149,7 @@ export function changeState(newState: PetState, skipDialogue = false) {
         }
       }, IDLE_DURATION);
       break;
+
     case "sleeping":
       // 通知作息系统开始睡眠
       onSleepStart();
@@ -213,132 +172,14 @@ export function changeState(newState: PetState, skipDialogue = false) {
         }, SLEEP_DURATION);
       }
       break;
-    case "jumping":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        JUMP_DURATION,
-      );
-      break;
-    case "happy":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        HAPPY_DURATION,
-      );
-      break;
-    case "crying":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        CRYING_DURATION,
-      );
-      break;
-    case "angry":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        ANGRY_DURATION,
-      );
-      break;
-    case "fallen":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        FALLEN_DURATION,
-      );
-      break;
-    case "scared":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        SCARED_DURATION,
-      );
-      break;
-    case "thinking":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        THINKING_DURATION,
-      );
-      break;
-    case "smug":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        SMUG_DURATION,
-      );
-      break;
-    case "shy":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        SHY_DURATION,
-      );
-      break;
-    case "confused":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        CONFUSED_DURATION,
-      );
-      break;
-    case "hello":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        HELLO_DURATION,
-      );
-      break;
-    case "sneeze":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        SNEEZE_DURATION,
-      );
-      break;
-    case "grin":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        GRIN_DURATION,
-      );
-      break;
-    case "scratch":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        SCRATCH_DURATION,
-      );
-      break;
-    case "celebrate":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        CELEBRATE_DURATION,
-      );
-      break;
-    case "peek":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        PEEK_DURATION,
-      );
-      break;
-    case "chase":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        CHASE_DURATION,
-      );
-      break;
-    case "hide":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        HIDE_DURATION,
-      );
-      break;
-    case "dancing":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        DANCING_DURATION,
-      );
-      break;
-    case "rolling":
-      stateTimer.value = window.setTimeout(
-        () => changeState("idle"),
-        ROLLING_DURATION,
-      );
-      break;
+
     case "yawn":
       // 打哈欠后进入睡眠状态
       stateTimer.value = window.setTimeout(() => {
         changeState("sleeping");
       }, YAWN_DURATION);
       break;
+
     case "sleepy":
       // 睡眼朦胧后，检查是否仍在睡眠作息
       stateTimer.value = window.setTimeout(() => {
@@ -347,17 +188,28 @@ export function changeState(newState: PetState, skipDialogue = false) {
         } else {
           changeState("idle");
         }
-      }, SLEEPY_DURATION);
+      }, duration);
       break;
+
     case "stretch":
       // 伸懒腰后进入空闲状态
       stateTimer.value = window.setTimeout(() => {
         onSleepEnd();
         changeState("idle");
-      }, STRETCH_DURATION);
+      }, duration);
       break;
+
     case "sleepwalking":
       // 睡眠行走状态下不需要定时器，保持该状态直到拖拽结束
+      break;
+
+    default:
+      // 大多数状态完成后回到 idle
+      if (duration) {
+        stateTimer.value = window.setTimeout(() => {
+          changeState("idle");
+        }, duration);
+      }
       break;
   }
 }

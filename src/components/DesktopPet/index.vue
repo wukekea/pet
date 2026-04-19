@@ -36,6 +36,7 @@ import {
 } from "./composables/stats";
 import { formatDuration, getStatsDays } from "./composables/statsStorage";
 import { setPassthrough } from "./composables/passthrough";
+import { STATE_NAMES } from "./constants";
 import type { ScheduleConfig } from "./types";
 import WeatherBackground from "./WeatherBackground.vue";
 import "./styles.css";
@@ -105,37 +106,6 @@ const filteredStateCounts = computed(() => {
     .sort((a, b) => b[1] - a[1]);
   return Object.fromEntries(entries);
 });
-
-// 状态名称映射
-const stateNameMap: Record<string, string> = {
-  idle: "发呆",
-  walking: "行走",
-  jumping: "跳跃",
-  sleeping: "睡觉",
-  happy: "开心",
-  crying: "大哭",
-  angry: "生气",
-  fallen: "摔倒",
-  scared: "惊吓",
-  thinking: "思考",
-  smug: "得意",
-  shy: "害羞",
-  confused: "疑惑",
-  hello: "招呼",
-  sneeze: "喷嚏",
-  grin: "坏笑",
-  scratch: "挠头",
-  celebrate: "庆祝",
-  peek: "偷看",
-  chase: "追逐",
-  hide: "躲藏",
-  dancing: "跳舞",
-  rolling: "翻滚",
-  yawn: "哈欠",
-  sleepy: "困倦",
-  stretch: "伸懒腰",
-  sleepwalking: "梦游",
-};
 
 // 打开右键菜单
 const handleContextMenu = (e: MouseEvent) => {
@@ -993,7 +963,7 @@ onBeforeUnmount(() => {
                     class="state-item"
                   >
                     <span class="state-name">{{
-                      stateNameMap[state] || state
+                      STATE_NAMES[state] || state
                     }}</span>
                     <div class="state-bar-bg">
                       <div

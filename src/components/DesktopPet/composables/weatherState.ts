@@ -11,8 +11,3 @@ export const isWeatherChanging = ref(false);
 export function setWeather(weather: WeatherType) {
   currentWeather.value = weather;
 }
-
-// 获取天气
-export function getWeather(): WeatherType {
-  return currentWeather.value;
-}

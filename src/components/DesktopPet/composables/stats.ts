@@ -1,4 +1,4 @@
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref } from "vue";
 import {
   loadStatsData,
   saveStatsData,
@@ -94,25 +94,4 @@ export function useStatsRef() {
 // 重置统计数据
 export function resetStats() {
   statsData.value = resetStatsData();
-}
-
-// 组合式函数
-export function useStats() {
-  onMounted(() => {
-    initStats();
-  });
-
-  onBeforeUnmount(() => {
-    cleanupStats();
-  });
-
-  return {
-    statsData,
-    recordClick,
-    recordDoubleClick,
-    recordDrag,
-    recordState,
-    getStatsData,
-    resetStats,
-  };
 }
