@@ -311,6 +311,8 @@ let initTimer: ReturnType<typeof setTimeout> | null = null;
 let initTimer2: ReturnType<typeof setTimeout> | null = null;
 
 export function handleDragStart(e: MouseEvent) {
+  // 只响应左键，右键点击不触发拖拽
+  if (e.button !== 0) return;
   isDragging.value = true;
   setPassthrough(false);
   // 记录拖拽互动
