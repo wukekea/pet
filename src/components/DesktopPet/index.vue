@@ -69,12 +69,17 @@ onMounted(async () => {
 
   // 初始化统计
   initStats();
+
+  // 添加全局点击事件监听
+  document.addEventListener("click", handleGlobalClick);
 });
 
 // 清理
 onBeforeUnmount(() => {
   cleanupPet();
   cleanupStats();
+  // 移除全局点击事件监听
+  document.removeEventListener("click", handleGlobalClick);
 });
 
 // 暴露方法供外部调用
@@ -300,15 +305,6 @@ const adjustTime = (
 
   slot[field] = newValue;
 };
-
-// 生命周期
-onMounted(() => {
-  document.addEventListener("click", handleGlobalClick);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleGlobalClick);
-});
 </script>
 
 <template>
