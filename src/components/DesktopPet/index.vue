@@ -522,9 +522,28 @@ onBeforeUnmount(() => {
 
       <!-- 跳舞效果 -->
       <div class="dancing-effects" v-if="petState === 'dancing'">
-        <span class="music-note">🎵</span>
-        <span class="music-note note-2">🎶</span>
-        <span class="music-note note-3">💃</span>
+        <!-- 霓虹音符 -->
+        <div class="neon-note nn-1">♪</div>
+        <div class="neon-note nn-2">♫</div>
+        <div class="neon-note nn-3">♬</div>
+        <div class="neon-note nn-4">♩</div>
+        <div class="neon-note nn-5">♪</div>
+        <div class="neon-note nn-6">♫</div>
+        <!-- 脉冲光环 -->
+        <div class="pulse-ring ring-1"></div>
+        <div class="pulse-ring ring-2"></div>
+        <div class="pulse-ring ring-3"></div>
+        <!-- 迪斯科光点 -->
+        <div class="disco-dot dd-1"></div>
+        <div class="disco-dot dd-2"></div>
+        <div class="disco-dot dd-3"></div>
+        <div class="disco-dot dd-4"></div>
+        <div class="disco-dot dd-5"></div>
+        <div class="disco-dot dd-6"></div>
+        <div class="disco-dot dd-7"></div>
+        <div class="disco-dot dd-8"></div>
+        <!-- 节拍闪光 -->
+        <div class="beat-flash"></div>
       </div>
 
       <!-- 翻滚效果 -->
