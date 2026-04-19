@@ -156,21 +156,25 @@ const removeRipple = (id: number) => {
 };
 
 // 定时器
-let rippleTimer: ReturnType<typeof setInterval> | null = null;
+let rippleDelayTimer: ReturnType<typeof setTimeout> | null = null;
+let rippleIntervalTimer: ReturnType<typeof setInterval> | null = null;
 
 watch(
   currentWeather,
   (newWeather) => {
-    if (rippleTimer) {
-      clearTimeout(rippleTimer);
-      clearInterval(rippleTimer);
-      rippleTimer = null;
+    if (rippleDelayTimer) {
+      clearTimeout(rippleDelayTimer);
+      rippleDelayTimer = null;
+    }
+    if (rippleIntervalTimer) {
+      clearInterval(rippleIntervalTimer);
+      rippleIntervalTimer = null;
     }
     ripples.value = [];
     if (newWeather === "lightRain") {
       // 延迟 1s 后开始生成涟漪（等雨水先落地）
-      rippleTimer = setTimeout(() => {
-        rippleTimer = setInterval(addRipple, 500);
+      rippleDelayTimer = setTimeout(() => {
+        rippleIntervalTimer = setInterval(addRipple, 500);
       }, 1000);
     }
   },
@@ -178,8 +182,11 @@ watch(
 );
 
 onUnmounted(() => {
-  if (rippleTimer) {
-    clearInterval(rippleTimer);
+  if (rippleDelayTimer) {
+    clearTimeout(rippleDelayTimer);
+  }
+  if (rippleIntervalTimer) {
+    clearInterval(rippleIntervalTimer);
   }
 });
 

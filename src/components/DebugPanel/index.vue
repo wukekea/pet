@@ -96,12 +96,6 @@ const weatherOptions: { value: WeatherType; label: string; icon: string }[] = [
 // 当前天气
 const activeWeather = computed(() => currentWeather.value);
 
-// 当前天气中文名（宠物背景天气）
-const activeWeatherLabel = computed(() => {
-  const option = weatherOptions.find((w) => w.value === activeWeather.value);
-  return option ? option.label : activeWeather.value;
-});
-
 // 真实天气描述（API 返回）
 const realWeatherText = computed(() => {
   const text = weatherStatus.value.weatherText;

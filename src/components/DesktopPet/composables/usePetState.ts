@@ -24,6 +24,7 @@ import {
   SNEEZE_DURATION,
   STRETCH_DURATION,
   THINKING_DURATION,
+  TOP_MARGIN,
   WALK_SPEED,
   YAWN_DURATION,
 } from "../constants";
@@ -48,7 +49,6 @@ import {
 } from "./sharedState";
 
 import {
-  getDreamTalk,
   getTimeGreeting,
   showCustomDialogue,
   showDialogue,
@@ -499,7 +499,7 @@ function handleDragging(e: MouseEvent) {
   const maxY = screenSize.value.height - PET_SIZE - 20;
   if (position.value.x < 0) position.value.x = 0;
   if (position.value.x > maxX) position.value.x = maxX;
-  if (position.value.y < 60) position.value.y = 60;
+  if (position.value.y < TOP_MARGIN) position.value.y = TOP_MARGIN;
   if (position.value.y > maxY) position.value.y = maxY;
 }
 function handleDragEnd() {
