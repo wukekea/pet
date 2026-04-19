@@ -224,7 +224,10 @@ export function changeState(newState: PetState, skipDialogue = false) {
       }
       break;
     case "jumping":
-      setTimeout(() => changeState("idle"), JUMP_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        JUMP_DURATION,
+      );
       break;
     case "happy":
       stateTimer.value = window.setTimeout(
@@ -245,7 +248,10 @@ export function changeState(newState: PetState, skipDialogue = false) {
       );
       break;
     case "fallen":
-      setTimeout(() => changeState("idle"), FALLEN_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        FALLEN_DURATION,
+      );
       break;
     case "scared":
       stateTimer.value = window.setTimeout(
@@ -284,7 +290,10 @@ export function changeState(newState: PetState, skipDialogue = false) {
       );
       break;
     case "sneeze":
-      setTimeout(() => changeState("idle"), SNEEZE_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        SNEEZE_DURATION,
+      );
       break;
     case "grin":
       stateTimer.value = window.setTimeout(
@@ -329,7 +338,10 @@ export function changeState(newState: PetState, skipDialogue = false) {
       );
       break;
     case "rolling":
-      setTimeout(() => changeState("idle"), ROLLING_DURATION);
+      stateTimer.value = window.setTimeout(
+        () => changeState("idle"),
+        ROLLING_DURATION,
+      );
       break;
     case "yawn":
       // 打哈欠后进入睡眠状态
@@ -452,6 +464,9 @@ export function handlePetDoubleClick() {
 }
 // 拖拽相关
 let dragOffset = { x: 0, y: 0 };
+// 初始化定时器
+let initTimer: ReturnType<typeof setTimeout> | null = null;
+let initTimer2: ReturnType<typeof setTimeout> | null = null;
 
 export function handleDragStart(e: MouseEvent) {
   isDragging.value = true;
@@ -574,7 +589,7 @@ export function initPet(checkSystemThemeFn: () => void) {
   if (isVisible.value) {
     animate();
     // 每次启动都打招呼
-    setTimeout(() => {
+    initTimer = setTimeout(() => {
       // 显示问候语
       const greeting = getTimeGreeting();
       showCustomDialogue(greeting);
@@ -582,7 +597,7 @@ export function initPet(checkSystemThemeFn: () => void) {
       if (isInSleepSchedule.value) {
         // 睡眠作息：打招呼 -> 停顿 -> 打哈欠 -> 睡眠
         changeState("hello", true);
-        setTimeout(() => {
+        initTimer2 = setTimeout(() => {
           changeState("yawn", true);
         }, HELLO_DURATION + 1500);
       } else {
@@ -598,6 +613,8 @@ export function initPet(checkSystemThemeFn: () => void) {
 export function cleanupPet() {
   if (animationFrameId.value) cancelAnimationFrame(animationFrameId.value);
   if (stateTimer.value) clearTimeout(stateTimer.value);
+  if (initTimer) clearTimeout(initTimer);
+  if (initTimer2) clearTimeout(initTimer2);
   // 停止作息监控
   stopScheduleMonitor();
   // 停止天气服务
