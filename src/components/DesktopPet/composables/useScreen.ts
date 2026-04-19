@@ -13,21 +13,10 @@ export const screenSize = ref({
 
 // 设置穿透状态
 export function setPassthrough(ignore: boolean) {
-  console.log(
-    "setPassthrough called:",
-    ignore,
-    "current:",
-    isPassthrough,
-    "electronAPI:",
-    !!window.electronAPI,
-  );
   if (ignore !== isPassthrough) {
     if (window.electronAPI) {
       window.electronAPI.setIgnoreMouseEvents(ignore);
       isPassthrough = ignore;
-      console.log("Passthrough changed to:", ignore);
-    } else {
-      console.log("electronAPI not available!");
     }
   }
 }

@@ -67,13 +67,7 @@ import {
   recordDrag,
   recordState,
 } from "./useStats";
-
-// 内部函数定义
-function setPassthrough(ignore: boolean) {
-  if (window.electronAPI) {
-    window.electronAPI.setIgnoreMouseEvents(ignore);
-  }
-}
+import { setPassthrough } from "./useScreen";
 
 function isMouseOnPet(x: number, y: number): boolean {
   const petX = position.value.x;

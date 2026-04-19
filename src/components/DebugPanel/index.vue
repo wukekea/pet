@@ -13,16 +13,7 @@ import {
 import { weatherStatus } from "../DesktopPet/composables/useQWeather";
 import type { PetState } from "../DesktopPet/types";
 import type { WeatherType } from "../DesktopPet/types";
-
-// 设置鼠标穿透
-// passthrough: true = 启用穿透（点击穿透）
-// passthrough: false = 禁用穿透（可以点击）
-function setPassthrough(passthrough: boolean) {
-  if (window.electronAPI) {
-    // electronAPI 需要的是 ignore 参数：true = 忽略鼠标（穿透），false = 不忽略（可点击）
-    window.electronAPI.setIgnoreMouseEvents(passthrough);
-  }
-}
+import { setPassthrough } from "../DesktopPet/composables/useScreen";
 
 // 面板可见性
 const isVisible = ref(false);

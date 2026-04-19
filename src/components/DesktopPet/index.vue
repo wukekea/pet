@@ -35,6 +35,7 @@ import {
   resetStats as resetStatsData,
 } from "./composables/useStats";
 import { formatDuration, getStatsDays } from "./composables/useStatsStorage";
+import { setPassthrough } from "./composables/useScreen";
 import type { ScheduleConfig } from "./types";
 import WeatherBackground from "./WeatherBackground.vue";
 import "./styles.css";
@@ -80,13 +81,6 @@ onBeforeUnmount(() => {
 defineExpose({
   isVisible,
 });
-
-// 设置鼠标穿透
-function setPassthrough(ignore: boolean) {
-  if (window.electronAPI) {
-    window.electronAPI.setIgnoreMouseEvents(ignore);
-  }
-}
 
 // 右键菜单状态
 const contextMenuVisible = ref(false);
