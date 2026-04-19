@@ -6,7 +6,7 @@ import {
   FOOTPRINT_LIFETIME,
   MAX_FOOTPRINTS,
 } from "../constants";
-import { currentWeather } from "./useWeather";
+import { currentWeather } from "./weatherState";
 
 // 脚印状态
 export const footprints = ref<Footprint[]>([]);

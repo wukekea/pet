@@ -5,7 +5,7 @@ import {
   updateStreak,
   resetStatsData,
   type StatsData,
-} from "./useStatsStorage";
+} from "./statsStorage";
 
 // 全局统计数据状态
 const statsData = ref<StatsData>(loadStatsData());

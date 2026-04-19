@@ -6,9 +6,9 @@ import {
   dreamTalkTimerId,
   petState,
 } from "./sharedState";
-import { loadScheduleConfig, saveScheduleConfig } from "./useScheduleStorage";
-import { changeState } from "./usePetState";
-import { showCustomDialogue, getDreamTalk } from "./useDialogue";
+import { loadScheduleConfig, saveScheduleConfig } from "./scheduleStorage";
+import { changeState } from "./petController";
+import { showCustomDialogue, getDreamTalk } from "./dialogue";
 import { DREAM_TALK_INTERVAL, STRETCH_DURATION } from "../constants";
 
 // 当前配置

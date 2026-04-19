@@ -6,7 +6,7 @@ import {
 } from "../dialogues";
 import { petState } from "./sharedState";
 import { isDragging } from "./sharedState";
-import { currentWeather, isWeatherChanging } from "./useWeather";
+import { currentWeather, isWeatherChanging } from "./weatherState";
 import {
   getTimePeriod,
   TIME_PERIOD_MORNING,

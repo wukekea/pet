@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref } from "vue";
-import { getFootprintOpacity } from "./composables/useFootprints";
+import { getFootprintOpacity } from "./composables/footprints";
 // 状态变量从 sharedState 导入
 import {
   petState,
@@ -20,22 +20,22 @@ import {
   initScreenSize,
   initPet,
   cleanupPet,
-} from "./composables/usePetState";
-import { footprints } from "./composables/useFootprints";
-import { dialogueText, isDialogueVisible } from "./composables/useDialogue";
-import { isDark, checkSystemTheme } from "./composables/useTheme";
+} from "./composables/petController";
+import { footprints } from "./composables/footprints";
+import { dialogueText, isDialogueVisible } from "./composables/dialogue";
+import { isDark, checkSystemTheme } from "./composables/theme";
 import {
   getScheduleConfig,
   updateScheduleConfig,
-} from "./composables/useSchedule";
+} from "./composables/scheduleManager";
 import {
   initStats,
   cleanupStats,
   useStatsRef,
   resetStats as resetStatsData,
-} from "./composables/useStats";
-import { formatDuration, getStatsDays } from "./composables/useStatsStorage";
-import { setPassthrough } from "./composables/useScreen";
+} from "./composables/stats";
+import { formatDuration, getStatsDays } from "./composables/statsStorage";
+import { setPassthrough } from "./composables/passthrough";
 import type { ScheduleConfig } from "./types";
 import WeatherBackground from "./WeatherBackground.vue";
 import "./styles.css";

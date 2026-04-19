@@ -48,26 +48,22 @@ import {
   targetPosition,
 } from "./sharedState";
 
-import {
-  getTimeGreeting,
-  showCustomDialogue,
-  showDialogue,
-} from "./useDialogue";
-import { addFootprint, cleanupFootprints } from "./useFootprints";
+import { getTimeGreeting, showCustomDialogue, showDialogue } from "./dialogue";
+import { addFootprint, cleanupFootprints } from "./footprints";
 import {
   onSleepEnd,
   onSleepStart,
   startScheduleMonitor,
   stopScheduleMonitor,
-} from "./useSchedule";
-import { initWeatherService, cleanupWeatherService } from "./useQWeather";
+} from "./scheduleManager";
+import { initWeatherService, cleanupWeatherService } from "./qweatherService";
 import {
   recordClick,
   recordDoubleClick,
   recordDrag,
   recordState,
-} from "./useStats";
-import { setPassthrough } from "./useScreen";
+} from "./stats";
+import { setPassthrough } from "./passthrough";
 
 function isMouseOnPet(x: number, y: number): boolean {
   const petX = position.value.x;

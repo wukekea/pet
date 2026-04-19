@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { setWeather } from "./useWeather";
+import { setWeather } from "./weatherState";
 import { mapWeatherCode } from "@/config/weatherCodeMapping";
 import {
   loadApiKey,
@@ -8,7 +8,7 @@ import {
   hasApiKey,
   saveWeatherStatus,
   loadWeatherStatus,
-} from "./useQWeatherStorage";
+} from "./qweatherStorage";
 import type {
   QWeatherLocationResponse,
   QWeatherNowResponse,

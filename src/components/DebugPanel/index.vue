@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { changeState } from "../DesktopPet/composables/usePetState";
+import { changeState } from "../DesktopPet/composables/petController";
 import {
   petState,
   isDebugPanelOpen,
 } from "../DesktopPet/composables/sharedState";
-import { isDark } from "../DesktopPet/composables/useTheme";
+import { isDark } from "../DesktopPet/composables/theme";
 import {
   currentWeather,
   setWeather,
-} from "../DesktopPet/composables/useWeather";
-import { weatherStatus } from "../DesktopPet/composables/useQWeather";
+} from "../DesktopPet/composables/weatherState";
+import { weatherStatus } from "../DesktopPet/composables/qweatherService";
 import type { PetState } from "../DesktopPet/types";
 import type { WeatherType } from "../DesktopPet/types";
-import { setPassthrough } from "../DesktopPet/composables/useScreen";
+import { setPassthrough } from "../DesktopPet/composables/passthrough";
 
 // 面板可见性
 const isVisible = ref(false);

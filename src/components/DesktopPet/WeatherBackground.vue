@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted } from "vue";
-import { currentWeather, isWeatherChanging } from "./composables/useWeather";
-import { isDark } from "./composables/useTheme";
+import { currentWeather, isWeatherChanging } from "./composables/weatherState";
+import { isDark } from "./composables/theme";
 import { position } from "./composables/sharedState";
 import "./weather.css";
 
