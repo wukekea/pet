@@ -97,6 +97,11 @@ const petColors = computed(() => {
   };
 });
 
+// 对话气泡样式变体
+const dialogueVariant = computed(() =>
+  ["sleeping", "sleepy", "yawn"].includes(petState.value) ? "cloud" : "default",
+);
+
 // 初始化
 onMounted(async () => {
   // 初始化屏幕尺寸
@@ -491,7 +496,12 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- 对话气泡 -->
-    <DialogueBubble />
+    <DialogueBubble
+      :variant="dialogueVariant"
+      :x="position.x"
+      :y="position.y"
+      :direction="petDirection"
+    />
 
     <!-- 右键菜单 -->
     <Teleport to="body">

@@ -1,22 +1,31 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { dialogueText, isDialogueVisible } from "../composables/dialogue";
-import { petState, petDirection, position } from "../composables/sharedState";
 import { isDark } from "../composables/theme";
 
-// 判断是否为睡眠相关状态
-const isSleepState = computed(() =>
-  ["sleeping", "sleepy", "yawn"].includes(petState.value),
+// 样式变体类型
+export type DialogueVariant = "default" | "cloud";
+
+const props = withDefaults(
+  defineProps<{
+    variant?: DialogueVariant;
+    x: number;
+    y: number;
+    direction?: "left" | "right" | "front" | "back";
+  }>(),
+  {
+    variant: "default",
+    direction: "right",
+  },
 );
+
+// 是否为云朵样式
+const isCloud = computed(() => props.variant === "cloud");
 
 // 计算气泡位置
 const bubbleStyle = computed(() => {
-  const offsetX = isSleepState.value
-    ? position.value.x + 30
-    : position.value.x + 40;
-  const offsetY = isSleepState.value
-    ? position.value.y - 70
-    : position.value.y - 55;
+  const offsetX = isCloud.value ? props.x + 30 : props.x + 40;
+  const offsetY = isCloud.value ? props.y - 70 : props.y - 55;
   return {
     left: `${offsetX}px`,
     top: `${offsetY}px`,
@@ -58,14 +67,14 @@ const cloudTextShadow = computed(() =>
     class="dialogue-bubble"
     :class="{
       'dialogue-visible': isDialogueVisible,
-      'dialogue-left': petDirection === 'left',
-      'dialogue-cloud': isSleepState,
+      'dialogue-left': direction === 'left',
+      'dialogue-cloud': isCloud,
     }"
     :style="bubbleStyle"
   >
-    <!-- 云朵样式气泡（睡眠状态） -->
+    <!-- 云朵样式气泡 -->
     <svg
-      v-if="isSleepState"
+      v-if="isCloud"
       class="cloud-bubble"
       :class="{ 'dark-theme': isDark }"
       viewBox="0 0 120 42"
@@ -85,7 +94,7 @@ const cloudTextShadow = computed(() =>
     </svg>
     <!-- 云朵尾巴（三个小气泡） -->
     <svg
-      v-if="isSleepState"
+      v-if="isCloud"
       class="cloud-tail"
       :class="{ 'dark-theme': isDark }"
       viewBox="0 0 20 25"
@@ -101,7 +110,7 @@ const cloudTextShadow = computed(() =>
     </svg>
     <span class="dialogue-text">{{ dialogueText }}</span>
     <!-- 普通气泡尾巴 -->
-    <div v-if="!isSleepState" class="dialogue-tail"></div>
+    <div v-if="!isCloud" class="dialogue-tail"></div>
   </div>
 </template>
 
@@ -178,7 +187,7 @@ const cloudTextShadow = computed(() =>
 }
 
 /* ========================================
-   云朵对话气泡（睡眠状态专用）
+   云朵对话气泡样式
    ======================================== */
 .dialogue-bubble.dialogue-cloud {
   border: none !important;
