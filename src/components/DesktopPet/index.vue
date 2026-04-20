@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref, watch } from "vue";
-import { getFootprintOpacity } from "./composables/footprints";
 // 状态变量从 sharedState 导入
 import {
   petState,
@@ -65,6 +64,7 @@ import SleepyEffects from "./effects/SleepyEffects.vue";
 import SleepwalkingEffects from "./effects/SleepwalkingEffects.vue";
 import StretchEffects from "./effects/StretchEffects.vue";
 import BathingEffects from "./effects/BathingEffects.vue";
+import Footprints from "./footprints/index.vue";
 import "./styles.css";
 
 // 食物类型列表
@@ -342,34 +342,8 @@ onBeforeUnmount(() => {
     class="desktop-pet"
     :class="[`pet-${petState}`, `pet-${petDirection}`]"
   >
-    <!-- 脚印容器 -->
-    <div class="footprints-container">
-      <div
-        v-for="footprint in footprints"
-        :key="footprint.id"
-        class="footprint"
-        :class="[
-          footprint.isLeft ? 'footprint-left' : 'footprint-right',
-          `footprint-${footprint.direction}`,
-          `footprint-type-${footprint.type}`,
-        ]"
-        :style="{
-          left: `${footprint.x}px`,
-          top: `${footprint.y}px`,
-          opacity: getFootprintOpacity(footprint),
-        }"
-      >
-        <svg viewBox="0 0 24 24" class="footprint-svg">
-          <path
-            d="M12 2C9.5 2 7.5 4.5 7.5 7.5C7.5 10.5 9.5 13 12 13C14.5 13 16.5 10.5 16.5 7.5C16.5 4.5 14.5 2 12 2Z"
-            fill="currentColor"
-          />
-          <ellipse cx="7" cy="17" rx="3" ry="2" fill="currentColor" />
-          <ellipse cx="12" cy="19" rx="3.5" ry="2.5" fill="currentColor" />
-          <ellipse cx="17" cy="17" rx="3" ry="2" fill="currentColor" />
-        </svg>
-      </div>
-    </div>
+    <!-- 脚印 -->
+    <Footprints :footprints="footprints" :color="petColors.footprint" />
 
     <!-- 宠物容器 -->
     <div
@@ -1072,10 +1046,6 @@ onBeforeUnmount(() => {
 
 <style scoped>
 /* 动态颜色绑定 - 需要使用 v-bind */
-.footprint-svg {
-  color: v-bind("petColors.footprint");
-}
-
 .pet-shadow {
   background: v-bind("petColors.shadow");
 }
