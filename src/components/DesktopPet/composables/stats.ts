@@ -13,6 +13,37 @@ const statsData = ref<StatsData>(loadStatsData());
 // 计时器 ID
 let durationTimer: ReturnType<typeof setInterval> | null = null;
 
+// 防抖保存定时器
+let saveTimer: ReturnType<typeof setTimeout> | null = null;
+// 是否有待保存的数据
+let hasPendingSave = false;
+
+// 防抖保存 - 延迟 2 秒后保存，期间有新变化会重置定时器
+function debouncedSave() {
+  hasPendingSave = true;
+  if (saveTimer) {
+    clearTimeout(saveTimer);
+  }
+  saveTimer = setTimeout(() => {
+    if (hasPendingSave) {
+      saveStatsData(statsData.value);
+      hasPendingSave = false;
+    }
+  }, 2000);
+}
+
+// 立即保存（用于关键时机）
+function flushSave() {
+  if (saveTimer) {
+    clearTimeout(saveTimer);
+    saveTimer = null;
+  }
+  if (hasPendingSave) {
+    saveStatsData(statsData.value);
+    hasPendingSave = false;
+  }
+}
+
 // 初始化统计
 export function initStats() {
   // 更新连续使用天数
@@ -28,8 +59,8 @@ export function initStats() {
 // 清理统计
 export function cleanupStats() {
   stopDurationTimer();
-  // 保存最终数据
-  saveStatsData(statsData.value);
+  // 立即保存所有待保存的数据
+  flushSave();
 }
 
 // 开始陪伴时长计时
@@ -57,19 +88,19 @@ function stopDurationTimer() {
 // 记录点击互动
 export function recordClick() {
   statsData.value.interactions.click += 1;
-  saveStatsData(statsData.value);
+  debouncedSave();
 }
 
 // 记录双击互动
 export function recordDoubleClick() {
   statsData.value.interactions.doubleClick += 1;
-  saveStatsData(statsData.value);
+  debouncedSave();
 }
 
 // 记录拖拽互动
 export function recordDrag() {
   statsData.value.interactions.drag += 1;
-  saveStatsData(statsData.value);
+  debouncedSave();
 }
 
 // 记录状态触发
@@ -78,7 +109,7 @@ export function recordState(state: string) {
     statsData.value.stateCounts[state] = 0;
   }
   statsData.value.stateCounts[state] += 1;
-  saveStatsData(statsData.value);
+  debouncedSave();
 }
 
 // 获取统计数据

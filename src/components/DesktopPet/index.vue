@@ -53,6 +53,7 @@ import StretchEffects from "./effects/StretchEffects.vue";
 import BathingEffects from "./effects/BathingEffects.vue";
 import Footprints from "./footprints/index.vue";
 import DialogueBubble from "./dialogue/index.vue";
+import ContextMenu from "./contextMenu/index.vue";
 import ScheduleModal from "./schedule/index.vue";
 import StatsModal from "./stats/index.vue";
 import "./styles.css";
@@ -176,22 +177,6 @@ const openStatsModal = () => {
 const closeStatsModal = () => {
   statsModalVisible.value = false;
 };
-
-// 点击其他地方关闭菜单
-const handleGlobalClick = () => {
-  if (contextMenuVisible.value) {
-    closeContextMenu();
-  }
-};
-
-// 生命周期
-onMounted(() => {
-  document.addEventListener("click", handleGlobalClick);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleGlobalClick);
-});
 </script>
 
 <template>
@@ -360,65 +345,23 @@ onBeforeUnmount(() => {
     />
 
     <!-- 右键菜单 -->
-    <Teleport to="body">
-      <Transition name="menu-pop">
-        <div
-          v-if="contextMenuVisible"
-          class="pet-context-menu"
-          :class="{ 'dark-mode': isDark }"
-          :style="{
-            left: `${contextMenuX}px`,
-            top: `${contextMenuY}px`,
-          }"
-          @click.stop
-        >
-          <!-- 装饰星星 -->
-          <div class="menu-decor-stars">
-            <span class="decor-star-small star-1">✦</span>
-            <span class="decor-star-small star-2">✧</span>
-            <span class="decor-star-small star-3">✦</span>
-          </div>
+    <ContextMenu
+      :visible="contextMenuVisible"
+      :x="contextMenuX"
+      :y="contextMenuY"
+      @close="closeContextMenu"
+      @open-schedule="openScheduleModal"
+      @open-stats="openStatsModal"
+    />
 
-          <div class="menu-bubble">
-            <div class="menu-item" @click="openScheduleModal">
-              <div class="menu-icon-wrapper moon">
-                <span class="menu-icon">🌙</span>
-              </div>
-              <div class="menu-text-group">
-                <span class="menu-text">作息设置</span>
-                <span class="menu-desc">设置睡眠时间</span>
-              </div>
-              <span class="menu-arrow">›</span>
-            </div>
-            <div class="menu-divider">
-              <div class="divider-line"></div>
-            </div>
-            <div class="menu-item" @click="openStatsModal">
-              <div class="menu-icon-wrapper chart">
-                <span class="menu-icon">📊</span>
-              </div>
-              <div class="menu-text-group">
-                <span class="menu-text">数据统计</span>
-                <span class="menu-desc">查看互动记录</span>
-              </div>
-              <span class="menu-arrow">›</span>
-            </div>
-          </div>
+    <!-- 作息配置弹窗 -->
+    <ScheduleModal
+      :visible="scheduleModalVisible"
+      @close="closeScheduleModal"
+    />
 
-          <!-- 小尾巴 -->
-          <div class="menu-tail"></div>
-        </div>
-      </Transition>
-
-      <!-- 作息配置弹窗 -->
-      <ScheduleModal
-        :visible="scheduleModalVisible"
-        @close="closeScheduleModal"
-      />
-
-      <!-- 数据统计弹窗 -->
-      <StatsModal :visible="statsModalVisible" @close="closeStatsModal" />
-    </Teleport>
+    <!-- 数据统计弹窗 -->
+    <StatsModal :visible="statsModalVisible" @close="closeStatsModal" />
   </div>
 </template>
 
@@ -502,314 +445,5 @@ onBeforeUnmount(() => {
 
 .pet-sneeze .mouth-smile {
   border: 3px solid v-bind("petColors.eyes");
-}
-
-/* ========================================
-   右键菜单样式 - 梦幻云朵风格
-   ======================================== */
-.pet-context-menu {
-  position: fixed;
-  z-index: 10000;
-  pointer-events: auto !important;
-  transform-origin: top left;
-}
-
-.menu-decor-stars {
-  position: absolute;
-  inset: -15px;
-  pointer-events: none;
-}
-
-.decor-star-small {
-  position: absolute;
-  font-size: 12px;
-  animation: star-twinkle 2s ease-in-out infinite;
-}
-
-.decor-star-small.star-1 {
-  top: 5px;
-  left: -5px;
-  animation-delay: 0s;
-  color: v-bind("isDark ? '#c4b5fd' : '#a78bfa'");
-}
-
-.decor-star-small.star-2 {
-  top: -8px;
-  right: 10px;
-  animation-delay: 0.5s;
-  color: v-bind("isDark ? '#f9a8d4' : '#f472b6'");
-}
-
-.decor-star-small.star-3 {
-  bottom: 20px;
-  right: -8px;
-  animation-delay: 1s;
-  color: v-bind("isDark ? '#c4b5fd' : '#a78bfa'");
-}
-
-@keyframes star-twinkle {
-  0%,
-  100% {
-    opacity: 0.4;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.2);
-  }
-}
-
-.menu-bubble {
-  min-width: 180px;
-  padding: 10px;
-  background: v-bind(
-    "isDark ? 'rgba(35, 30, 55, 0.97)' : 'rgba(255, 255, 255, 0.97)'"
-  );
-  border-radius: 20px;
-  box-shadow:
-    0 10px 40px
-      v-bind("isDark ? 'rgba(139, 92, 246, 0.25)' : 'rgba(139, 92, 246, 0.15)'"),
-    0 0 0 1px
-      v-bind("isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.1)'"),
-    inset 0 1px 0
-      v-bind(
-        "isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)'"
-      );
-  backdrop-filter: blur(20px);
-  pointer-events: auto !important;
-  position: relative;
-  overflow: hidden;
-}
-
-.menu-bubble::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60%;
-  background: linear-gradient(
-    180deg,
-    v-bind("isDark ? 'rgba(139, 92, 246, 0.08)' : 'rgba(139, 92, 246, 0.04)'")
-      0%,
-    transparent 100%
-  );
-  pointer-events: none;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-}
-
-.menu-item:hover {
-  background: v-bind(
-    "isDark ? 'rgba(139, 92, 246, 0.15)' : 'rgba(139, 92, 246, 0.08)'"
-  );
-  transform: translateX(4px) scale(1.02);
-}
-
-.menu-item:active {
-  transform: translateX(2px) scale(0.98);
-}
-
-.menu-icon-wrapper {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  flex-shrink: 0;
-  transition: all 0.25s ease;
-}
-
-.menu-icon-wrapper.moon {
-  background: linear-gradient(
-    135deg,
-    rgba(139, 92, 246, 0.15),
-    rgba(168, 85, 247, 0.1)
-  );
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
-}
-
-.menu-icon-wrapper.chart {
-  background: linear-gradient(
-    135deg,
-    rgba(16, 185, 129, 0.15),
-    rgba(6, 182, 212, 0.1)
-  );
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
-}
-
-.menu-item:hover .menu-icon-wrapper {
-  transform: scale(1.1) rotate(-5deg);
-}
-
-.menu-item:hover .menu-icon-wrapper.moon {
-  background: linear-gradient(
-    135deg,
-    rgba(139, 92, 246, 0.25),
-    rgba(168, 85, 247, 0.2)
-  );
-}
-
-.menu-item:hover .menu-icon-wrapper.chart {
-  background: linear-gradient(
-    135deg,
-    rgba(16, 185, 129, 0.25),
-    rgba(6, 182, 212, 0.2)
-  );
-}
-
-.menu-icon {
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.menu-text-group {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-  min-width: 0;
-}
-
-.menu-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: v-bind("isDark ? '#e2e8f0' : '#374151'");
-  letter-spacing: 0.2px;
-}
-
-.menu-desc {
-  font-size: 11px;
-  color: v-bind(
-    "isDark ? 'rgba(167, 139, 250, 0.7)' : 'rgba(139, 92, 246, 0.7)'"
-  );
-  font-weight: 400;
-}
-
-.menu-arrow {
-  font-size: 18px;
-  color: v-bind(
-    "isDark ? 'rgba(167, 139, 250, 0.5)' : 'rgba(139, 92, 246, 0.4)'"
-  );
-  transition: all 0.25s ease;
-  opacity: 0;
-  transform: translateX(-5px);
-}
-
-.menu-item:hover .menu-arrow {
-  opacity: 1;
-  transform: translateX(0);
-  color: v-bind("isDark ? '#a78bfa' : '#8b5cf6'");
-}
-
-.menu-divider {
-  padding: 4px 8px;
-  position: relative;
-}
-
-.divider-line {
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    v-bind("isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.15)'")
-      20%,
-    v-bind("isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.15)'")
-      80%,
-    transparent 100%
-  );
-}
-
-.menu-tail {
-  position: absolute;
-  bottom: -8px;
-  left: 24px;
-  width: 20px;
-  height: 12px;
-  background: v-bind(
-    "isDark ? 'rgba(35, 30, 55, 0.97)' : 'rgba(255, 255, 255, 0.97)'"
-  );
-  clip-path: polygon(30% 0%, 70% 0%, 50% 100%);
-  filter: drop-shadow(0 2px 4px rgba(139, 92, 246, 0.1));
-}
-
-/* ========================================
-   动画过渡
-   ======================================== */
-.menu-pop-enter-active {
-  animation: menu-pop-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.menu-pop-leave-active {
-  animation: menu-pop-out 0.15s ease-in;
-}
-
-@keyframes menu-pop-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.8) translateY(-10px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes menu-pop-out {
-  0% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-}
-
-.modal-pop-enter-active {
-  animation: modal-pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.modal-pop-leave-active {
-  animation: modal-pop-out 0.2s ease-in;
-}
-
-@keyframes modal-pop-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes modal-pop-in .schedule-modal {
-  0% {
-    transform: scale(0.9) translateY(20px);
-  }
-  100% {
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes modal-pop-out {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
 }
 </style>
