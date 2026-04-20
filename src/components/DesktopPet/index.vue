@@ -26,10 +26,6 @@ import {
 import { footprints } from "./composables/footprints";
 import { isDark, initTheme } from "./composables/theme";
 import {
-  getScheduleConfig,
-  updateScheduleConfig,
-} from "./composables/scheduleManager";
-import {
   initStats,
   cleanupStats,
   useStatsRef,
@@ -38,7 +34,6 @@ import {
 import { formatDuration, getStatsDays } from "./composables/statsStorage";
 import { setPassthrough } from "./composables/passthrough";
 import { STATE_NAMES } from "./constants";
-import type { ScheduleConfig } from "./types";
 import WeatherBackground from "./WeatherBackground.vue";
 import EatingEffects from "./EatingEffects.vue";
 // 效果组件
@@ -65,6 +60,7 @@ import StretchEffects from "./effects/StretchEffects.vue";
 import BathingEffects from "./effects/BathingEffects.vue";
 import Footprints from "./footprints/index.vue";
 import DialogueBubble from "./dialogue/index.vue";
+import ScheduleModal from "./schedule/index.vue";
 import "./styles.css";
 
 // 食物类型列表
@@ -135,10 +131,6 @@ const contextMenuY = ref(0);
 
 // 作息配置弹窗状态
 const scheduleModalVisible = ref(false);
-const scheduleConfig = ref<ScheduleConfig>({
-  enabled: false,
-  slots: [],
-});
 
 // 数据统计弹窗状态
 const statsModalVisible = ref(false);
@@ -159,9 +151,7 @@ const filteredStateCounts = computed(() => {
 const handleContextMenu = (e: MouseEvent) => {
   e.preventDefault();
   e.stopPropagation();
-  // 先禁用穿透
   setPassthrough(false);
-  // 设置全局状态
   isContextMenuOpen.value = true;
   contextMenuX.value = e.clientX;
   contextMenuY.value = e.clientY;
@@ -172,7 +162,6 @@ const handleContextMenu = (e: MouseEvent) => {
 const closeContextMenu = () => {
   contextMenuVisible.value = false;
   isContextMenuOpen.value = false;
-  // 只有没有其他弹窗时才恢复穿透
   if (!scheduleModalVisible.value && !statsModalVisible.value) {
     setPassthrough(true);
   }
@@ -180,28 +169,16 @@ const closeContextMenu = () => {
 
 // 打开作息配置弹窗
 const openScheduleModal = () => {
-  // 先禁用穿透（确保穿透被禁用）
   setPassthrough(false);
-  // 设置全局状态
   isScheduleModalOpen.value = true;
-  // 关闭菜单但不恢复穿透
   contextMenuVisible.value = false;
   isContextMenuOpen.value = false;
-  // 创建深拷贝，避免直接修改原始配置
-  const config = getScheduleConfig();
-  scheduleConfig.value = {
-    enabled: config.enabled,
-    slots: config.slots.map((slot) => ({ ...slot })),
-  };
   scheduleModalVisible.value = true;
 };
 
 // 关闭作息配置弹窗
 const closeScheduleModal = () => {
   scheduleModalVisible.value = false;
-  isScheduleModalOpen.value = false;
-  // 恢复穿透
-  setPassthrough(true);
 };
 
 // 打开数据统计弹窗
@@ -240,92 +217,11 @@ const cancelResetStats = () => {
   resetConfirmVisible.value = false;
 };
 
-// 保存作息配置
-const saveSchedule = () => {
-  updateScheduleConfig(scheduleConfig.value);
-  closeScheduleModal();
-};
-
-// 切换作息启用状态
-const toggleSchedule = () => {
-  scheduleConfig.value.enabled = !scheduleConfig.value.enabled;
-};
-
 // 点击其他地方关闭菜单
 const handleGlobalClick = () => {
   if (contextMenuVisible.value) {
     closeContextMenu();
   }
-};
-
-// 添加时间槽
-const addTimeSlot = () => {
-  scheduleConfig.value.slots.push({
-    startHour: 22,
-    startMinute: 0,
-    endHour: 7,
-    endMinute: 0,
-    state: "sleep",
-  });
-};
-
-// 删除时间槽
-const removeTimeSlot = (index: number) => {
-  scheduleConfig.value.slots.splice(index, 1);
-};
-
-// 处理时间输入（循环）
-const handleTimeChange = (type: "hour" | "minute", e: Event) => {
-  const target = e.target as HTMLInputElement;
-  const max = type === "hour" ? 23 : 59;
-
-  // 获取用户输入的值
-  let newValue = parseInt(target.value);
-
-  if (isNaN(newValue)) {
-    newValue = 0;
-  }
-
-  // 超出范围时循环
-  if (newValue > max) {
-    newValue = 0;
-  } else if (newValue < 0) {
-    newValue = max;
-  }
-
-  // 更新输入框的显示值（补零到两位）
-  target.value = newValue.toString().padStart(2, "0");
-
-  return newValue;
-};
-
-// 格式化时间显示为两位数字
-const formatTime = (value: number) => {
-  return value.toString().padStart(2, "0");
-};
-
-// 增减时间值
-const adjustTime = (
-  slot: {
-    startHour: number;
-    startMinute: number;
-    endHour: number;
-    endMinute: number;
-    state: string;
-  },
-  field: "startHour" | "startMinute" | "endHour" | "endMinute",
-  delta: number,
-) => {
-  const max = field.includes("Hour") ? 23 : 59;
-  let newValue = slot[field] + delta;
-
-  if (newValue > max) {
-    newValue = 0;
-  } else if (newValue < 0) {
-    newValue = max;
-  }
-
-  slot[field] = newValue;
 };
 
 // 生命周期
@@ -555,208 +451,10 @@ onBeforeUnmount(() => {
       </Transition>
 
       <!-- 作息配置弹窗 -->
-      <Transition name="modal-pop">
-        <div
-          v-if="scheduleModalVisible"
-          class="schedule-modal-overlay"
-          @click="closeScheduleModal"
-        >
-          <div
-            class="schedule-modal"
-            :class="{ 'dark-mode': isDark }"
-            @click.stop
-          >
-            <!-- 装饰元素 -->
-            <div class="modal-decor">
-              <span class="decor-star star-1">⭐</span>
-              <span class="decor-star star-2">✨</span>
-              <span class="decor-star star-3">🌙</span>
-            </div>
-
-            <div class="modal-header">
-              <div class="header-title">
-                <span class="title-icon">🌙</span>
-                <span class="title-text">作息时间表</span>
-              </div>
-              <button class="modal-close" @click="closeScheduleModal">
-                <span>✕</span>
-              </button>
-            </div>
-
-            <div class="modal-body">
-              <!-- 启用开关 -->
-              <div class="toggle-card">
-                <div class="toggle-info">
-                  <span class="toggle-title">自动作息</span>
-                  <span class="toggle-desc">到时间自动睡觉和起床</span>
-                </div>
-                <button
-                  class="toggle-switch"
-                  :class="{ active: scheduleConfig.enabled }"
-                  @click="toggleSchedule"
-                >
-                  <span class="toggle-knob"></span>
-                </button>
-              </div>
-
-              <!-- 时间段列表 -->
-              <div class="slots-section">
-                <div class="slots-header">
-                  <span class="slots-title">时间段设置</span>
-                  <button class="add-btn" @click="addTimeSlot">
-                    <span>+</span>
-                  </button>
-                </div>
-
-                <div class="slots-list">
-                  <div
-                    v-for="(slot, index) in scheduleConfig.slots"
-                    :key="index"
-                    class="slot-card"
-                    :class="{ 'is-sleep': slot.state === 'sleep' }"
-                  >
-                    <div class="slot-icon">
-                      {{ slot.state === "sleep" ? "😴" : "🎈" }}
-                    </div>
-                    <div class="slot-time-inputs">
-                      <div class="time-group">
-                        <div class="time-input-wrapper">
-                          <input
-                            type="text"
-                            inputmode="numeric"
-                            :value="formatTime(slot.startHour)"
-                            @input="
-                              (e) =>
-                                (slot.startHour = handleTimeChange('hour', e))
-                            "
-                            class="time-input"
-                          />
-                          <div class="time-controls">
-                            <button
-                              class="time-btn time-btn-up"
-                              @click.stop="adjustTime(slot, 'startHour', 1)"
-                            >
-                              ▲
-                            </button>
-                            <button
-                              class="time-btn time-btn-down"
-                              @click.stop="adjustTime(slot, 'startHour', -1)"
-                            >
-                              ▼
-                            </button>
-                          </div>
-                        </div>
-                        <span class="time-colon">:</span>
-                        <div class="time-input-wrapper">
-                          <input
-                            type="text"
-                            inputmode="numeric"
-                            :value="formatTime(slot.startMinute)"
-                            @input="
-                              (e) =>
-                                (slot.startMinute = handleTimeChange(
-                                  'minute',
-                                  e,
-                                ))
-                            "
-                            class="time-input"
-                          />
-                          <div class="time-controls">
-                            <button
-                              class="time-btn time-btn-up"
-                              @click.stop="adjustTime(slot, 'startMinute', 1)"
-                            >
-                              ▲
-                            </button>
-                            <button
-                              class="time-btn time-btn-down"
-                              @click.stop="adjustTime(slot, 'startMinute', -1)"
-                            >
-                              ▼
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <span class="time-arrow">→</span>
-                      <div class="time-group">
-                        <div class="time-input-wrapper">
-                          <input
-                            type="text"
-                            inputmode="numeric"
-                            :value="formatTime(slot.endHour)"
-                            @input="
-                              (e) =>
-                                (slot.endHour = handleTimeChange('hour', e))
-                            "
-                            class="time-input"
-                          />
-                          <div class="time-controls">
-                            <button
-                              class="time-btn time-btn-up"
-                              @click.stop="adjustTime(slot, 'endHour', 1)"
-                            >
-                              ▲
-                            </button>
-                            <button
-                              class="time-btn time-btn-down"
-                              @click.stop="adjustTime(slot, 'endHour', -1)"
-                            >
-                              ▼
-                            </button>
-                          </div>
-                        </div>
-                        <span class="time-colon">:</span>
-                        <div class="time-input-wrapper">
-                          <input
-                            type="text"
-                            inputmode="numeric"
-                            :value="formatTime(slot.endMinute)"
-                            @input="
-                              (e) =>
-                                (slot.endMinute = handleTimeChange('minute', e))
-                            "
-                            class="time-input"
-                          />
-                          <div class="time-controls">
-                            <button
-                              class="time-btn time-btn-up"
-                              @click.stop="adjustTime(slot, 'endMinute', 1)"
-                            >
-                              ▲
-                            </button>
-                            <button
-                              class="time-btn time-btn-down"
-                              @click.stop="adjustTime(slot, 'endMinute', -1)"
-                            >
-                              ▼
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <select v-model="slot.state" class="state-select">
-                      <option value="sleep">睡眠</option>
-                      <option value="free">闲暇</option>
-                    </select>
-                    <button class="remove-btn" @click="removeTimeSlot(index)">
-                      <span>×</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <button class="btn btn-cancel" @click="closeScheduleModal">
-                取消
-              </button>
-              <button class="btn btn-save" @click="saveSchedule">
-                <span>✓</span> 保存
-              </button>
-            </div>
-          </div>
-        </div>
-      </Transition>
+      <ScheduleModal
+        :visible="scheduleModalVisible"
+        @close="closeScheduleModal"
+      />
 
       <!-- 数据统计弹窗 -->
       <Transition name="modal-pop">
@@ -1294,475 +992,6 @@ onBeforeUnmount(() => {
 }
 
 /* ========================================
-   作息配置弹窗样式
-   ======================================== */
-.schedule-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: v-bind(
-    "isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(139, 92, 246, 0.15)'"
-  );
-  backdrop-filter: blur(8px);
-  pointer-events: auto !important;
-}
-
-.schedule-modal {
-  width: 480px;
-  max-width: 90vw;
-  height: 70vh;
-  border-radius: 24px;
-  background: v-bind(
-    "isDark ? 'rgba(35, 30, 55, 0.98)' : 'rgba(255, 255, 255, 0.98)'"
-  );
-  box-shadow:
-    0 20px 60px
-      v-bind("isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(139, 92, 246, 0.25)'"),
-    0 0 0 1px
-      v-bind("isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.1)'");
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  pointer-events: auto !important;
-}
-
-.modal-decor {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.decor-star {
-  position: absolute;
-  font-size: 16px;
-  opacity: 0.4;
-  animation: twinkle 2s ease-in-out infinite;
-}
-
-.star-1 {
-  top: 20px;
-  right: 60px;
-  animation-delay: 0s;
-}
-.star-2 {
-  top: 40px;
-  right: 20px;
-  animation-delay: 0.5s;
-}
-.star-3 {
-  top: 60px;
-  right: 80px;
-  animation-delay: 1s;
-}
-
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.2);
-  }
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px 16px;
-  position: relative;
-}
-
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.title-icon {
-  font-size: 24px;
-}
-
-.title-text {
-  font-size: 18px;
-  font-weight: 700;
-  background: linear-gradient(135deg, #8b5cf6, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.modal-close {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: v-bind(
-    "isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)'"
-  );
-  color: v-bind("isDark ? '#9ca3af' : '#9ca3af'");
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.modal-close:hover {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  transform: rotate(90deg);
-}
-
-.modal-body {
-  padding: 0 24px 20px;
-  overflow-y: auto;
-  flex: 1;
-}
-
-.toggle-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 18px;
-  background: v-bind(
-    "isDark ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.05)'"
-  );
-  border-radius: 16px;
-  border: 1px solid
-    v-bind("isDark ? 'rgba(167, 139, 250, 0.15)' : 'rgba(139, 92, 246, 0.1)'");
-  margin-bottom: 20px;
-}
-
-.toggle-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.toggle-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: v-bind("isDark ? '#e2e8f0' : '#374151'");
-}
-
-.toggle-desc {
-  font-size: 12px;
-  color: v-bind("isDark ? '#9ca3af' : '#9ca3af'");
-}
-
-.toggle-switch {
-  width: 52px;
-  height: 28px;
-  border: none;
-  border-radius: 14px;
-  background: v-bind(
-    "isDark ? 'rgba(107, 114, 128, 0.3)' : 'rgba(156, 163, 175, 0.3)'"
-  );
-  cursor: pointer;
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.toggle-switch.active {
-  background: linear-gradient(135deg, #8b5cf6, #a855f7);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-}
-
-.toggle-knob {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 22px;
-  height: 22px;
-  background: white;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.toggle-switch.active .toggle-knob {
-  transform: translateX(24px);
-}
-
-.slots-section {
-  margin-top: 4px;
-}
-
-.slots-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.slots-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: v-bind("isDark ? '#9ca3af' : '#6b7280'");
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.add-btn {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px dashed
-    v-bind("isDark ? 'rgba(167, 139, 250, 0.4)' : 'rgba(139, 92, 246, 0.4)'");
-  background: transparent;
-  border-radius: 8px;
-  color: v-bind("isDark ? '#a78bfa' : '#8b5cf6'");
-  font-size: 18px;
-  font-weight: 300;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.add-btn:hover {
-  background: v-bind(
-    "isDark ? 'rgba(167, 139, 250, 0.15)' : 'rgba(139, 92, 246, 0.1)'"
-  );
-  border-style: solid;
-  transform: scale(1.1);
-}
-
-.slots-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.slot-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  background: v-bind(
-    "isDark ? 'rgba(55, 48, 85, 0.4)' : 'rgba(250, 245, 255, 0.7)'"
-  );
-  border-radius: 14px;
-  border: 1px solid
-    v-bind("isDark ? 'rgba(167, 139, 250, 0.15)' : 'rgba(139, 92, 246, 0.1)'");
-  transition: all 0.2s ease;
-}
-
-.slot-card:hover {
-  border-color: v-bind(
-    "isDark ? 'rgba(167, 139, 250, 0.3)' : 'rgba(139, 92, 246, 0.25)'"
-  );
-}
-
-.slot-card.is-sleep {
-  background: v-bind(
-    "isDark ? 'rgba(99, 102, 241, 0.15)' : 'rgba(165, 180, 252, 0.2)'"
-  );
-}
-
-.slot-icon {
-  font-size: 22px;
-  flex-shrink: 0;
-}
-
-.slot-time-inputs {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 1;
-}
-
-.time-group {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.time-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.time-input {
-  width: 50px;
-  padding: 6px 18px 6px 4px;
-  border: 1px solid
-    v-bind("isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.15)'");
-  border-radius: 8px;
-  background: v-bind(
-    "isDark ? 'rgba(30, 27, 45, 0.8)' : 'rgba(255, 255, 255, 0.9)'"
-  );
-  color: v-bind("isDark ? '#e2e8f0' : '#374151'");
-  font-size: 14px;
-  font-weight: 500;
-  text-align: center;
-  transition: all 0.2s ease;
-}
-
-.time-input:focus {
-  outline: none;
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
-}
-
-.time-controls {
-  position: absolute;
-  right: 2px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-}
-
-.time-btn {
-  width: 14px;
-  height: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  color: v-bind("isDark ? '#a78bfa' : '#8b5cf6'");
-  font-size: 8px;
-  line-height: 1;
-  cursor: pointer;
-  opacity: 0.6;
-  transition: all 0.15s ease;
-  padding: 0;
-}
-
-.time-btn:hover {
-  opacity: 1;
-  background: v-bind(
-    "isDark ? 'rgba(167, 139, 250, 0.15)' : 'rgba(139, 92, 246, 0.1)'"
-  );
-  border-radius: 2px;
-}
-
-.time-btn:active {
-  transform: scale(0.9);
-}
-
-.time-colon {
-  color: v-bind("isDark ? '#9ca3af' : '#9ca3af'");
-  font-weight: 600;
-}
-
-.time-arrow {
-  color: v-bind("isDark ? '#a78bfa' : '#8b5cf6'");
-  font-size: 12px;
-  margin: 0 4px;
-}
-
-.state-select {
-  padding: 8px 12px;
-  border: 1px solid
-    v-bind("isDark ? 'rgba(167, 139, 250, 0.2)' : 'rgba(139, 92, 246, 0.15)'");
-  border-radius: 10px;
-  background: v-bind(
-    "isDark ? 'rgba(30, 27, 45, 0.8)' : 'rgba(255, 255, 255, 0.9)'"
-  );
-  color: v-bind("isDark ? '#e2e8f0' : '#374151'");
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.state-select:focus {
-  outline: none;
-  border-color: #8b5cf6;
-}
-
-.remove-btn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid
-    v-bind("isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.2)'");
-  background: transparent;
-  color: #ef4444;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: 500;
-  opacity: 0.7;
-  transition: all 0.2s ease;
-}
-
-.remove-btn:hover {
-  opacity: 1;
-  background: rgba(239, 68, 68, 0.1);
-  border-color: #ef4444;
-  transform: scale(1.05);
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 16px 24px 20px;
-}
-
-.btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.btn-cancel {
-  background: v-bind(
-    "isDark ? 'rgba(107, 114, 128, 0.2)' : 'rgba(156, 163, 175, 0.15)'"
-  );
-  color: v-bind("isDark ? '#9ca3af' : '#6b7280'");
-}
-
-.btn-cancel:hover {
-  background: v-bind(
-    "isDark ? 'rgba(107, 114, 128, 0.3)' : 'rgba(156, 163, 175, 0.25)'"
-  );
-}
-
-.btn-save {
-  background: linear-gradient(135deg, #8b5cf6, #a855f7);
-  color: white;
-  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
-}
-
-.btn-save:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45);
-}
-
-.btn-save:active {
-  transform: translateY(0);
-}
-
-/* ========================================
    动画过渡
    ======================================== */
 .menu-pop-enter-active {
@@ -1865,6 +1094,136 @@ onBeforeUnmount(() => {
   flex-direction: column;
   position: relative;
   pointer-events: auto !important;
+}
+
+.modal-decor {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.decor-star {
+  position: absolute;
+  font-size: 16px;
+  opacity: 0.4;
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+.star-1 {
+  top: 20px;
+  right: 60px;
+  animation-delay: 0s;
+}
+
+.star-2 {
+  top: 40px;
+  right: 20px;
+  animation-delay: 0.5s;
+}
+
+.star-3 {
+  top: 60px;
+  right: 80px;
+  animation-delay: 1s;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  position: relative;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title-icon {
+  font-size: 24px;
+}
+
+.title-text {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: v-bind(
+    "isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)'"
+  );
+  color: v-bind("isDark ? '#9ca3af' : '#9ca3af'");
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 0 24px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  color: white;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
 }
 
 .stats-title {

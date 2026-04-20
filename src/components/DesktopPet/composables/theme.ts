@@ -6,8 +6,12 @@ export type ThemeMode = "system" | "light" | "dark";
 // 当前主题模式（默认跟随系统）
 export const themeMode = ref<ThemeMode>("system");
 
-// 当前是否为深色模式
-export const isDark = ref(false);
+// 当前是否为深色模式 - 初始化时立即检测系统主题
+export const isDark = ref(
+  typeof window !== "undefined"
+    ? window.matchMedia("(prefers-color-scheme: dark)").matches
+    : false,
+);
 
 // 检测系统主题
 export function checkSystemTheme() {
