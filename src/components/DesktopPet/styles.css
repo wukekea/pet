@@ -757,19 +757,24 @@
   animation: sleep 2s ease-in-out infinite;
 }
 
-/* 开心动画 */
+/* ========================================
+   HAPPY - 开心动画（萌系动漫风格）
+   ======================================== */
 @keyframes happy {
   0% {
     transform: scale(1);
   }
-  25% {
+  20% {
+    transform: scale(1.08) rotate(-8deg);
+  }
+  40% {
+    transform: scale(1.15) rotate(8deg);
+  }
+  60% {
     transform: scale(1.1) rotate(-5deg);
   }
-  50% {
-    transform: scale(1.15) rotate(5deg);
-  }
-  75% {
-    transform: scale(1.1) rotate(-3deg);
+  80% {
+    transform: scale(1.05) rotate(3deg);
   }
   100% {
     transform: scale(1) rotate(0deg);
@@ -777,51 +782,110 @@
 }
 
 .pet-happy .pet-body {
-  animation: happy 1.5s ease-in-out;
+  animation: happy 1.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
+/* 弯弯的眯眯眼 */
 .pet-happy .eye {
   height: 8px;
   border-radius: 0 0 50% 50%;
 }
 
+/* 嘴巴 */
 .pet-happy .mouth-smile {
   width: 16px;
   height: 8px;
 }
 
+/* 腮红呼吸发光 */
 .pet-happy .pet-cheek {
   opacity: 0.9;
   width: 12px;
   height: 8px;
+  animation: cheek-glow-happy 0.5s ease-in-out infinite alternate;
 }
 
-@keyframes arm-happy-left {
-  0%,
+@keyframes cheek-glow-happy {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
   100% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* 开心时手臂高举挥舞 */
+@keyframes arm-happy-left {
+  0% {
     transform: rotate(20deg);
   }
+  25% {
+    transform: rotate(-60deg) translateY(-10px);
+  }
   50% {
-    transform: rotate(-30deg);
+    transform: rotate(-45deg) translateY(-5px);
+  }
+  75% {
+    transform: rotate(-55deg) translateY(-8px);
+  }
+  100% {
+    transform: rotate(20deg);
   }
 }
 
 @keyframes arm-happy-right {
-  0%,
-  100% {
+  0% {
     transform: rotate(-20deg);
   }
+  25% {
+    transform: rotate(60deg) translateY(-10px);
+  }
   50% {
-    transform: rotate(30deg);
+    transform: rotate(45deg) translateY(-5px);
+  }
+  75% {
+    transform: rotate(55deg) translateY(-8px);
+  }
+  100% {
+    transform: rotate(-20deg);
   }
 }
 
 .pet-happy .arm-left {
-  animation: arm-happy-left 1.5s ease-in-out;
+  animation: arm-happy-left 1.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .pet-happy .arm-right {
-  animation: arm-happy-right 1.5s ease-in-out;
+  animation: arm-happy-right 1.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* 开心时耳朵微动 */
+@keyframes ear-happy-left {
+  0%, 100% {
+    transform: rotate(-15deg);
+  }
+  50% {
+    transform: rotate(-25deg) translateY(-3px);
+  }
+}
+
+@keyframes ear-happy-right {
+  0%, 100% {
+    transform: rotate(15deg);
+  }
+  50% {
+    transform: rotate(25deg) translateY(-3px);
+  }
+}
+
+.pet-happy .ear-left {
+  animation: ear-happy-left 0.4s ease-in-out infinite;
+}
+
+.pet-happy .ear-right {
+  animation: ear-happy-right 0.4s ease-in-out infinite;
 }
 
 /* 大哭动画 */
