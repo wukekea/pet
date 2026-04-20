@@ -482,12 +482,7 @@ export function handleMouseMove(e: MouseEvent) {
   setPassthrough(!onPet);
 }
 // 初始化宠物
-export function initPet(checkSystemThemeFn: () => void) {
-  checkSystemThemeFn();
-  window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", checkSystemThemeFn);
-
+export function initPet() {
   // 启动作息监控
   startScheduleMonitor();
 

@@ -7,7 +7,12 @@ import {
   currentFood,
   type FoodType,
 } from "../DesktopPet/composables/sharedState";
-import { isDark } from "../DesktopPet/composables/theme";
+import {
+  isDark,
+  themeMode,
+  setThemeMode,
+  type ThemeMode,
+} from "../DesktopPet/composables/theme";
 import {
   currentWeather,
   setWeather,
@@ -143,6 +148,13 @@ const weatherOptions: { value: WeatherType; label: string; icon: string }[] = [
   { value: "thunderstorm", label: "雷阵雨", icon: "🌩️" },
   { value: "lightSnow", label: "小雪", icon: "🌨️" },
   { value: "heavySnow", label: "大雪", icon: "❄️" },
+];
+
+// 主题选项
+const themeOptions: { value: ThemeMode; label: string; icon: string }[] = [
+  { value: "system", label: "系统", icon: "💻" },
+  { value: "light", label: "浅色", icon: "☀️" },
+  { value: "dark", label: "深色", icon: "🌙" },
 ];
 
 // 当前天气
@@ -304,6 +316,24 @@ defineExpose({
           >
             {{ weatherStatusText }}
           </span>
+        </div>
+      </div>
+
+      <!-- 主题切换 -->
+      <div class="theme-section">
+        <div class="theme-title">🎨 主题模式</div>
+        <div class="theme-buttons">
+          <button
+            v-for="theme in themeOptions"
+            :key="theme.value"
+            class="theme-btn"
+            :class="{ active: themeMode === theme.value }"
+            @click="setThemeMode(theme.value)"
+            :title="theme.label"
+          >
+            <span class="theme-icon">{{ theme.icon }}</span>
+            <span class="theme-label">{{ theme.label }}</span>
+          </button>
         </div>
       </div>
 
@@ -582,6 +612,131 @@ defineExpose({
 
 .dark-mode .weather-value {
   color: #34d399;
+}
+
+/* ========================================
+   主题切换
+   ======================================== */
+.theme-section {
+  padding: 10px 16px;
+  background: linear-gradient(
+    90deg,
+    rgba(249, 115, 22, 0.08) 0%,
+    transparent 100%
+  );
+  border-bottom: 1px solid rgba(249, 115, 22, 0.1);
+}
+
+.dark-mode .theme-section {
+  background: linear-gradient(
+    90deg,
+    rgba(249, 115, 22, 0.12) 0%,
+    transparent 100%
+  );
+  border-bottom-color: rgba(249, 115, 22, 0.15);
+}
+
+.theme-title {
+  font-size: 11px;
+  color: #6b7280;
+  letter-spacing: 0.3px;
+  margin-bottom: 8px;
+}
+
+.dark-mode .theme-title {
+  color: #9ca3af;
+}
+
+.theme-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.theme-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(250, 245, 255, 0.9) 100%
+  );
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(249, 115, 22, 0.1);
+}
+
+.dark-mode .theme-btn {
+  background: linear-gradient(
+    145deg,
+    rgba(55, 48, 85, 0.9) 0%,
+    rgba(45, 40, 70, 0.9) 100%
+  );
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: rgba(249, 115, 22, 0.15);
+}
+
+.theme-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 8px rgba(249, 115, 22, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.dark-mode .theme-btn:hover {
+  box-shadow:
+    0 4px 8px rgba(249, 115, 22, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.theme-btn:active {
+  transform: translateY(1px);
+}
+
+/* 激活状态 */
+.theme-btn.active {
+  background: linear-gradient(145deg, #f97316 0%, #ea580c 100%);
+  box-shadow:
+    0 4px 12px rgba(249, 115, 22, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: transparent;
+}
+
+.theme-btn.active .theme-icon,
+.theme-btn.active .theme-label {
+  color: white;
+}
+
+.theme-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.theme-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #ea580c;
+  letter-spacing: 0.3px;
+}
+
+.dark-mode .theme-label {
+  color: #fb923c;
 }
 
 /* ========================================

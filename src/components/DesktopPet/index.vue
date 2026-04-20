@@ -26,7 +26,7 @@ import {
 } from "./composables/petController";
 import { footprints } from "./composables/footprints";
 import { dialogueText, isDialogueVisible } from "./composables/dialogue";
-import { isDark, checkSystemTheme } from "./composables/theme";
+import { isDark, initTheme } from "./composables/theme";
 import {
   getScheduleConfig,
   updateScheduleConfig,
@@ -102,8 +102,11 @@ onMounted(async () => {
   // 初始化屏幕尺寸
   await initScreenSize();
 
+  // 初始化主题
+  initTheme();
+
   // 初始化宠物
-  initPet(checkSystemTheme);
+  initPet();
 
   // 初始化统计
   initStats();
