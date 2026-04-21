@@ -69,6 +69,12 @@
   transform: rotate(10deg);
 }
 
+/* 背面时隐藏耳朵内部（耳廓和高光） */
+.pet-shape-cat.pet-back .pet-ear::before,
+.pet-shape-cat.pet-back .pet-ear::after {
+  opacity: 0;
+}
+
 /* 猫咪眼睛 - 椭圆形 */
 .pet-shape-cat .eye {
   width: 12px;
