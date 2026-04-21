@@ -151,7 +151,7 @@
 .pet-shape-cat .whisker-left-1 {
   top: 5px;
   left: 0;
-  transform: rotate(-15deg);
+  transform: rotate(15deg);
 }
 
 .pet-shape-cat .whisker-left-2 {
@@ -162,13 +162,13 @@
 .pet-shape-cat .whisker-left-3 {
   top: 11px;
   left: 0;
-  transform: rotate(15deg);
+  transform: rotate(-15deg);
 }
 
 .pet-shape-cat .whisker-right-1 {
   top: 5px;
   right: 0;
-  transform: rotate(15deg);
+  transform: rotate(-15deg);
 }
 
 .pet-shape-cat .whisker-right-2 {
@@ -179,7 +179,7 @@
 .pet-shape-cat .whisker-right-3 {
   top: 11px;
   right: 0;
-  transform: rotate(-15deg);
+  transform: rotate(15deg);
 }
 
 /* 猫咪尾巴 */

@@ -550,59 +550,6 @@ const closeStatsModal = () => {
   }
 }
 
-/* 猫咪胡须 */
-.pet-whiskers {
-  position: absolute;
-  top: 48px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 50px;
-  height: 20px;
-  pointer-events: none;
-}
-
-.whisker {
-  position: absolute;
-  width: 12px;
-  height: 2px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 2px;
-}
-
-.whisker-left-1 {
-  top: 5px;
-  left: 0;
-  transform: rotate(-15deg);
-}
-
-.whisker-left-2 {
-  top: 8px;
-  left: 0;
-}
-
-.whisker-left-3 {
-  top: 11px;
-  left: 0;
-  transform: rotate(15deg);
-}
-
-.whisker-right-1 {
-  top: 5px;
-  right: 0;
-  transform: rotate(15deg);
-}
-
-.whisker-right-2 {
-  top: 8px;
-  right: 0;
-}
-
-.whisker-right-3 {
-  top: 11px;
-  right: 0;
-  transform: rotate(-15deg);
-}
-
 .pet-scared .brow-left {
   transform: translateY(-2px) rotate(-10deg);
 }
