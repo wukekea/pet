@@ -863,7 +863,8 @@
 
 /* 开心时耳朵微动 */
 @keyframes ear-happy-left {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-15deg);
   }
   50% {
@@ -872,7 +873,8 @@
 }
 
 @keyframes ear-happy-right {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(15deg);
   }
   50% {

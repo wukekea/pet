@@ -32,6 +32,7 @@ import EatingEffects from "./EatingEffects.vue";
 // 效果组件
 import SleepBubble from "./effects/SleepBubble.vue";
 import HappyEffects from "./effects/HappyEffects.vue";
+import AngryEffects from "./effects/AngryEffects.vue";
 import DizzyEffects from "./effects/DizzyEffects.vue";
 import ScaredEffects from "./effects/ScaredEffects.vue";
 import ThinkingEffects from "./effects/ThinkingEffects.vue";
@@ -274,6 +275,9 @@ const closeStatsModal = () => {
 
       <!-- 开心效果 -->
       <HappyEffects v-if="petState === 'happy'" />
+
+      <!-- 生气效果 -->
+      <AngryEffects v-if="petState === 'angry'" />
 
       <!-- 晕眩效果（摔倒时显示） -->
       <DizzyEffects v-if="petState === 'fallen'" />
