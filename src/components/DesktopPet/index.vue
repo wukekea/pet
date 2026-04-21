@@ -442,6 +442,16 @@ const closeStatsModal = () => {
   background: v-bind("petColors.bodyGradient");
 }
 
+/* 猫咪耳朵颜色 */
+.pet-shape-cat .pet-ear {
+  background: linear-gradient(
+    135deg,
+    v-bind("petColors.body") 0%,
+    v-bind("petColors.bodyGradient") 50%,
+    v-bind("petColors.body") 100%
+  );
+}
+
 .brow {
   background: v-bind("petColors.eyes");
 }
