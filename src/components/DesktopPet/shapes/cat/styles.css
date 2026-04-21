@@ -83,35 +83,44 @@
   height: 4px;
 }
 
-/* 猫咪嘴巴 - W 形 */
+/* 猫咪嘴巴 - 倒 Y 形（ω 形） */
 .pet-shape-cat .mouth-smile {
-  width: 14px;
-  height: 6px;
+  width: 2px;
+  height: 5px;
   border: none;
   border-radius: 0;
-  border-bottom: 3px solid;
-  border-left: 3px solid;
-  transform: translateX(50%);
+  background: currentColor;
+  transform: translateX(50%) translateY(2px);
 }
 
-.pet-shape-cat .mouth-smile::before,
+/* 左侧嘴弧 */
+.pet-shape-cat .mouth-smile::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: -6px;
+  width: 8px;
+  height: 6px;
+  border: none;
+  border-radius: 0 0 0 70%;
+  border-bottom: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  background: transparent;
+}
+
+/* 右侧嘴弧 */
 .pet-shape-cat .mouth-smile::after {
   content: "";
   position: absolute;
-  bottom: 0;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-}
-
-.pet-shape-cat .mouth-smile::before {
-  left: 0;
-  background: inherit;
-}
-
-.pet-shape-cat .mouth-smile::after {
-  right: 0;
-  background: inherit;
+  top: 3px;
+  right: -6px;
+  width: 8px;
+  height: 6px;
+  border: none;
+  border-radius: 0 0 70% 0;
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  background: transparent;
 }
 
 /* 猫咪胡须 */
@@ -318,8 +327,21 @@
 }
 
 /* 嘴巴 */
+/* 开心时嘴巴 - 更大的 ω 形 */
 .pet-shape-cat.pet-happy .mouth-smile {
-  width: 16px;
+  width: 2px;
+  height: 6px;
+}
+
+.pet-shape-cat.pet-happy .mouth-smile::before {
+  left: -8px;
+  width: 10px;
+  height: 8px;
+}
+
+.pet-shape-cat.pet-happy .mouth-smile::after {
+  right: -8px;
+  width: 10px;
   height: 8px;
 }
 
@@ -644,10 +666,14 @@
 }
 
 .pet-shape-cat.pet-scared .mouth-smile {
+  display: none;
+}
+
+.pet-shape-cat.pet-scared .mouth-o {
+  display: block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  border-bottom: none;
 }
 
 @keyframes cat-arm-scared-left {
@@ -736,8 +762,20 @@
 }
 
 .pet-shape-cat.pet-smug .mouth-smile {
-  width: 14px;
-  height: 7px;
+  width: 2px;
+  height: 5px;
+}
+
+.pet-shape-cat.pet-smug .mouth-smile::before {
+  left: -7px;
+  width: 9px;
+  height: 5px;
+}
+
+.pet-shape-cat.pet-smug .mouth-smile::after {
+  right: -7px;
+  width: 9px;
+  height: 5px;
 }
 
 @keyframes cat-shy-tremble {
@@ -808,8 +846,20 @@
 }
 
 .pet-shape-cat.pet-hello .mouth-smile {
-  width: 14px;
-  height: 7px;
+  width: 2px;
+  height: 5px;
+}
+
+.pet-shape-cat.pet-hello .mouth-smile::before {
+  left: -7px;
+  width: 9px;
+  height: 6px;
+}
+
+.pet-shape-cat.pet-hello .mouth-smile::after {
+  right: -7px;
+  width: 9px;
+  height: 6px;
 }
 
 @keyframes cat-wave-hand {
@@ -845,6 +895,11 @@
 }
 
 .pet-shape-cat.pet-sneeze .mouth-smile {
+  display: none;
+}
+
+.pet-shape-cat.pet-sneeze .mouth-o {
+  display: block;
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -869,6 +924,11 @@
 }
 
 .pet-shape-cat.pet-grin .mouth-smile {
+  display: none;
+}
+
+.pet-shape-cat.pet-grin .mouth-o {
+  display: block;
   width: 14px;
   height: 14px;
   border-radius: 50%;
@@ -924,8 +984,20 @@
 }
 
 .pet-shape-cat.pet-celebrate .mouth-smile {
-  width: 16px;
-  height: 8px;
+  width: 2px;
+  height: 6px;
+}
+
+.pet-shape-cat.pet-celebrate .mouth-smile::before {
+  left: -9px;
+  width: 11px;
+  height: 9px;
+}
+
+.pet-shape-cat.pet-celebrate .mouth-smile::after {
+  right: -9px;
+  width: 11px;
+  height: 9px;
 }
 
 @keyframes cat-celebrate-arm-left {
@@ -1152,9 +1224,20 @@
 }
 
 .pet-shape-cat.pet-sleepy .mouth-smile {
-  width: 8px;
+  width: 2px;
   height: 4px;
-  border-radius: 0 0 50% 50%;
+}
+
+.pet-shape-cat.pet-sleepy .mouth-smile::before {
+  left: -5px;
+  width: 7px;
+  height: 4px;
+}
+
+.pet-shape-cat.pet-sleepy .mouth-smile::after {
+  right: -5px;
+  width: 7px;
+  height: 4px;
 }
 
 /* ========================================
@@ -1173,9 +1256,20 @@
 }
 
 .pet-shape-cat.pet-sleepwalking .mouth-smile {
-  width: 8px;
+  width: 2px;
   height: 4px;
-  border-radius: 0 0 50% 50%;
+}
+
+.pet-shape-cat.pet-sleepwalking .mouth-smile::before {
+  left: -5px;
+  width: 7px;
+  height: 4px;
+}
+
+.pet-shape-cat.pet-sleepwalking .mouth-smile::after {
+  right: -5px;
+  width: 7px;
+  height: 4px;
 }
 
 .pet-shape-cat.pet-sleepwalking .arm-left {
@@ -1217,6 +1311,11 @@
 }
 
 .pet-shape-cat.pet-stretch .mouth-smile {
+  display: none;
+}
+
+.pet-shape-cat.pet-stretch .mouth-o {
+  display: block;
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -1280,9 +1379,20 @@
 }
 
 .pet-shape-cat.pet-bathing .mouth-smile {
-  width: 14px;
-  height: 10px;
-  border-radius: 0 0 50% 50%;
+  width: 2px;
+  height: 5px;
+}
+
+.pet-shape-cat.pet-bathing .mouth-smile::before {
+  left: -7px;
+  width: 9px;
+  height: 7px;
+}
+
+.pet-shape-cat.pet-bathing .mouth-smile::after {
+  right: -7px;
+  width: 9px;
+  height: 7px;
 }
 
 /* 洗澡时搓澡动作 */
@@ -1356,6 +1466,11 @@
 
 /* 吃东西时嘴巴咀嚼 */
 .pet-shape-cat.pet-eating .mouth-smile {
+  display: none;
+}
+
+.pet-shape-cat.pet-eating .mouth-o {
+  display: block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
