@@ -44,3 +44,6 @@ export const scheduleEndTime = ref<number | null>(null); // 当前作息结束�
 // 食物类型
 export type FoodType = "apple" | "fish" | "cake" | "lollipop";
 export const currentFood = ref<FoodType>("apple");
+
+// 宠物形态（从 petShapeStorage 导入）
+export { currentPetShape } from "./petShapeStorage";

@@ -1,0 +1,1393 @@
+/* ========================================
+   猫咪形态专属样式
+   ======================================== */
+
+/* 猫咪耳朵 - 三角形 */
+.pet-shape-cat .pet-ear {
+  position: absolute;
+  top: -18px;
+  width: 20px;
+  height: 28px;
+  border-radius: 0;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.pet-shape-cat .pet-ear::after {
+  content: "";
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 12px;
+  background: #fce7f3;
+  border-radius: 0;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.pet-shape-cat .ear-left {
+  left: 8px;
+  transform: rotate(-25deg);
+}
+
+.pet-shape-cat .ear-right {
+  right: 8px;
+  transform: rotate(25deg);
+}
+
+/* 猫咪眼睛 - 椭圆形 */
+.pet-shape-cat .eye {
+  width: 12px;
+  height: 16px;
+  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+}
+
+.pet-shape-cat .eye-shine {
+  top: 3px;
+  right: 3px;
+  width: 4px;
+  height: 4px;
+}
+
+/* 猫咪嘴巴 - W 形 */
+.pet-shape-cat .mouth-smile {
+  width: 14px;
+  height: 6px;
+  border: none;
+  border-radius: 0;
+  border-bottom: 3px solid;
+  border-left: 3px solid;
+  transform: translateX(50%);
+}
+
+.pet-shape-cat .mouth-smile::before,
+.pet-shape-cat .mouth-smile::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+}
+
+.pet-shape-cat .mouth-smile::before {
+  left: 0;
+  background: inherit;
+}
+
+.pet-shape-cat .mouth-smile::after {
+  right: 0;
+  background: inherit;
+}
+
+/* 猫咪胡须 */
+.pet-shape-cat .pet-whiskers {
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.pet-shape-cat .whisker {
+  position: absolute;
+  width: 12px;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+}
+
+.pet-shape-cat .whisker-left-1 {
+  top: 5px;
+  left: 0;
+  transform: rotate(-15deg);
+}
+
+.pet-shape-cat .whisker-left-2 {
+  top: 8px;
+  left: 0;
+}
+
+.pet-shape-cat .whisker-left-3 {
+  top: 11px;
+  left: 0;
+  transform: rotate(15deg);
+}
+
+.pet-shape-cat .whisker-right-1 {
+  top: 5px;
+  right: 0;
+  transform: rotate(15deg);
+}
+
+.pet-shape-cat .whisker-right-2 {
+  top: 8px;
+  right: 0;
+}
+
+.pet-shape-cat .whisker-right-3 {
+  top: 11px;
+  right: 0;
+  transform: rotate(-15deg);
+}
+
+/* 猫咪尾巴 */
+.pet-shape-cat .pet-tail {
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  width: 12px;
+  height: 25px;
+  border-radius: 12px 12px 0 0;
+  transform-origin: top center;
+  animation: cat-tail-sway 1.5s ease-in-out infinite;
+}
+
+@keyframes cat-tail-sway {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(-15deg);
+  }
+  50% {
+    transform: translateX(-50%) rotate(15deg);
+  }
+}
+
+/* 猫咪生气时眼睛 */
+.pet-shape-cat.pet-angry .eye {
+  height: 10px;
+  border-radius: 50%;
+}
+
+.pet-shape-cat.pet-angry .eye::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 10px;
+  background: var(--pet-face);
+  border-radius: 2px;
+}
+
+/* 猫咪睡觉时尾巴 */
+.pet-shape-cat.pet-sleeping .pet-tail {
+  animation: cat-tail-sleep 2s ease-in-out infinite;
+}
+
+@keyframes cat-tail-sleep {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(-5deg);
+  }
+  50% {
+    transform: translateX(-50%) rotate(5deg);
+  }
+}
+
+/* 猫咪开心时尾巴 */
+.pet-shape-cat.pet-happy .pet-tail {
+  animation: cat-tail-happy 0.4s ease-in-out infinite;
+}
+
+@keyframes cat-tail-happy {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(-20deg) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) rotate(20deg) translateY(-3px);
+  }
+}
+
+/* ========================================
+   猫咪形态各状态动画
+   ======================================== */
+
+/* 睡觉动画 */
+@keyframes cat-sleep {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.01);
+  }
+}
+
+.pet-shape-cat.pet-sleeping .pet-body {
+  animation: cat-sleep 2s ease-in-out infinite;
+}
+
+/* 耳朵摆动动画 */
+@keyframes cat-ear-wiggle {
+  0%,
+  100% {
+    transform: rotate(-25deg);
+  }
+  50% {
+    transform: rotate(-15deg);
+  }
+}
+
+@keyframes cat-ear-wiggle-right {
+  0%,
+  100% {
+    transform: rotate(25deg);
+  }
+  50% {
+    transform: rotate(15deg);
+  }
+}
+
+.pet-shape-cat.pet-idle .ear-left {
+  animation: cat-ear-wiggle 3s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-idle .ear-right {
+  animation: cat-ear-wiggle-right 3s ease-in-out infinite;
+}
+
+/* 开心动画 */
+@keyframes cat-happy {
+  0% {
+    transform: scale(1);
+  }
+  20% {
+    transform: scale(1.08) rotate(-8deg);
+  }
+  40% {
+    transform: scale(1.15) rotate(8deg);
+  }
+  60% {
+    transform: scale(1.1) rotate(-5deg);
+  }
+  80% {
+    transform: scale(1.05) rotate(3deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.pet-shape-cat.pet-happy .pet-body {
+  animation: cat-happy 1.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* 弯弯的眯眯眼 */
+.pet-shape-cat.pet-happy .eye {
+  height: 8px;
+  border-radius: 0 0 50% 50%;
+}
+
+/* 嘴巴 */
+.pet-shape-cat.pet-happy .mouth-smile {
+  width: 16px;
+  height: 8px;
+}
+
+/* 腮红呼吸发光 */
+.pet-shape-cat.pet-happy .pet-cheek {
+  opacity: 0.9;
+  width: 12px;
+  height: 8px;
+  animation: cat-cheek-glow-happy 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes cat-cheek-glow-happy {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* 开心时手臂高举挥舞 */
+@keyframes cat-arm-happy-left {
+  0% {
+    transform: rotate(20deg);
+  }
+  25% {
+    transform: rotate(-60deg) translateY(-10px);
+  }
+  50% {
+    transform: rotate(-45deg) translateY(-5px);
+  }
+  75% {
+    transform: rotate(-55deg) translateY(-8px);
+  }
+  100% {
+    transform: rotate(20deg);
+  }
+}
+
+@keyframes cat-arm-happy-right {
+  0% {
+    transform: rotate(-20deg);
+  }
+  25% {
+    transform: rotate(60deg) translateY(-10px);
+  }
+  50% {
+    transform: rotate(45deg) translateY(-5px);
+  }
+  75% {
+    transform: rotate(55deg) translateY(-8px);
+  }
+  100% {
+    transform: rotate(-20deg);
+  }
+}
+
+.pet-shape-cat.pet-happy .arm-left {
+  animation: cat-arm-happy-left 1.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.pet-shape-cat.pet-happy .arm-right {
+  animation: cat-arm-happy-right 1.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* 开心时耳朵微动 */
+@keyframes cat-ear-happy-left {
+  0%,
+  100% {
+    transform: rotate(-25deg);
+  }
+  50% {
+    transform: rotate(-35deg) translateY(-3px);
+  }
+}
+
+@keyframes cat-ear-happy-right {
+  0%,
+  100% {
+    transform: rotate(25deg);
+  }
+  50% {
+    transform: rotate(35deg) translateY(-3px);
+  }
+}
+
+.pet-shape-cat.pet-happy .ear-left {
+  animation: cat-ear-happy-left 0.4s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-happy .ear-right {
+  animation: cat-ear-happy-right 0.4s ease-in-out infinite;
+}
+
+/* 大哭动画 */
+@keyframes cat-crying {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+}
+
+.pet-shape-cat.pet-crying .pet-body {
+  animation: cat-crying 0.5s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-crying .eye {
+  height: 10px;
+  width: 12px;
+  border-radius: 50% 50% 0 0;
+}
+
+.pet-shape-cat.pet-crying .mouth-smile {
+  display: none;
+}
+
+.pet-shape-cat.pet-crying .mouth-sad {
+  display: block;
+  width: 14px;
+  height: 8px;
+  animation: cat-mouth-cry 0.5s ease-in-out infinite;
+}
+
+@keyframes cat-mouth-cry {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+}
+
+.pet-shape-cat.pet-crying .pet-cheek {
+  opacity: 0.8;
+  width: 14px;
+  height: 10px;
+  animation: cat-cheek-tremble 0.5s ease-in-out infinite;
+}
+
+@keyframes cat-cheek-tremble {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes cat-arm-cry-left {
+  0%,
+  100% {
+    transform: rotate(-60deg) translateX(10px);
+  }
+  50% {
+    transform: rotate(-70deg) translateX(12px);
+  }
+}
+
+@keyframes cat-arm-cry-right {
+  0%,
+  100% {
+    transform: rotate(60deg) translateX(-10px);
+  }
+  50% {
+    transform: rotate(70deg) translateX(-12px);
+  }
+}
+
+.pet-shape-cat.pet-crying .arm-left {
+  animation: cat-arm-cry-left 0.5s ease-in-out infinite;
+  transform: rotate(-60deg) translateX(10px);
+}
+
+.pet-shape-cat.pet-crying .arm-right {
+  animation: cat-arm-cry-right 0.5s ease-in-out infinite;
+  transform: rotate(60deg) translateX(-10px);
+}
+
+/* 生气动画 */
+@keyframes cat-angry {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.05) rotate(-2deg);
+  }
+  75% {
+    transform: scale(1.05) rotate(2deg);
+  }
+}
+
+.pet-shape-cat.pet-angry .pet-body {
+  animation: cat-angry 0.3s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-angry .eye {
+  height: 10px;
+  width: 16px;
+  border-radius: 50%;
+  transform: scaleY(0.8);
+}
+
+.pet-shape-cat.pet-angry .mouth-smile {
+  display: none;
+}
+
+.pet-shape-cat.pet-angry .mouth-angry {
+  display: block;
+}
+
+.pet-shape-cat.pet-angry .pet-cheek {
+  background: #ef4444;
+  opacity: 0.7;
+}
+
+.pet-shape-cat.pet-angry .arm-left {
+  transform: rotate(-45deg) translateX(5px);
+}
+
+.pet-shape-cat.pet-angry .arm-right {
+  transform: rotate(45deg) translateX(-5px);
+}
+
+/* 摔倒动画 */
+@keyframes cat-fallen {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  20% {
+    transform: scale(1.1) rotate(15deg);
+  }
+  40% {
+    transform: scale(0.9) rotate(-10deg);
+  }
+  60% {
+    transform: scale(1.05) rotate(8deg);
+  }
+  80% {
+    transform: scale(0.95) rotate(-5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.pet-shape-cat.pet-fallen .pet-body {
+  animation: cat-fallen 2s ease-in-out;
+}
+
+@keyframes cat-fallen-eye-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.pet-shape-cat.pet-fallen .eye {
+  animation: cat-fallen-eye-spin 1s linear infinite;
+}
+
+.pet-shape-cat.pet-fallen .eye-left {
+  transform: rotate(0deg);
+}
+
+.pet-shape-cat.pet-fallen .eye-right {
+  transform: rotate(180deg);
+  animation-delay: -0.5s;
+}
+
+.pet-shape-cat.pet-fallen .mouth-smile {
+  display: none;
+}
+
+.pet-shape-cat.pet-fallen .mouth-o {
+  display: none;
+}
+
+.pet-shape-cat.pet-fallen .mouth-sad {
+  display: block;
+  width: 14px;
+  height: 8px;
+}
+
+.pet-shape-cat.pet-fallen .arm-left {
+  transform: rotate(-80deg) translateY(-10px);
+}
+
+.pet-shape-cat.pet-fallen .arm-right {
+  transform: rotate(80deg) translateY(-10px);
+}
+
+/* 惊吓动画 */
+@keyframes cat-scared {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+}
+
+.pet-shape-cat.pet-scared .pet-body {
+  animation: cat-scared 0.1s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-scared .eye {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  transform: scale(1.2);
+}
+
+.pet-shape-cat.pet-scared .mouth-smile {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border-bottom: none;
+}
+
+@keyframes cat-arm-scared-left {
+  0%,
+  100% {
+    transform: rotate(-60deg);
+  }
+  50% {
+    transform: rotate(-50deg);
+  }
+}
+
+@keyframes cat-arm-scared-right {
+  0%,
+  100% {
+    transform: rotate(60deg);
+  }
+  50% {
+    transform: rotate(50deg);
+  }
+}
+
+.pet-shape-cat.pet-scared .arm-left {
+  animation: cat-arm-scared-left 0.1s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-scared .arm-right {
+  animation: cat-arm-scared-right 0.1s ease-in-out infinite;
+}
+
+/* 其他状态动画 */
+@keyframes cat-thinking-sway {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+.pet-shape-cat.pet-thinking .pet-body {
+  animation: cat-thinking-sway 2s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-thinking .arm-left {
+  transform: rotate(30deg) translateX(5px) translateY(-8px);
+  animation: cat-thinking-chin 2s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-thinking .arm-right {
+}
+
+@keyframes cat-thinking-chin {
+  0%,
+  100% {
+    transform: rotate(30deg) translateX(5px) translateY(-8px);
+  }
+  50% {
+    transform: rotate(50deg) translateX(5px) translateY(-8px);
+  }
+}
+
+/* 思考时眼睛眯起 */
+.pet-shape-cat.pet-thinking .eye {
+  transform: scaleY(0.6);
+}
+
+@keyframes cat-smug-sway {
+  0%,
+  100% {
+    transform: rotate(-2deg) scale(1.02);
+  }
+  50% {
+    transform: rotate(2deg) scale(1.02);
+  }
+}
+
+.pet-shape-cat.pet-smug .pet-body {
+  animation: cat-smug-sway 1.5s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-smug .eye {
+  height: 6px;
+  border-radius: 0 0 50% 50%;
+}
+
+.pet-shape-cat.pet-smug .mouth-smile {
+  width: 14px;
+  height: 7px;
+}
+
+@keyframes cat-shy-tremble {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.pet-shape-cat.pet-shy .pet-body {
+  animation: cat-shy-tremble 0.3s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-shy .eye {
+  height: 8px;
+  border-radius: 0 0 50% 50%;
+}
+
+.pet-shape-cat.pet-shy .pet-cheek {
+  opacity: 0.9;
+  background: #f87171;
+  width: 14px;
+  height: 10px;
+}
+
+.pet-shape-cat.pet-shy .arm-left {
+  transform: rotate(-45deg) translateX(5px);
+}
+
+.pet-shape-cat.pet-shy .arm-right {
+  transform: rotate(45deg) translateX(-5px);
+}
+
+@keyframes cat-confused-tilt {
+  0%,
+  100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(-5deg);
+  }
+}
+
+.pet-shape-cat.pet-confused .pet-body {
+  animation: cat-confused-tilt 1s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-confused .eye {
+  width: 16px;
+  height: 12px;
+}
+
+@keyframes cat-hello-sway {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+.pet-shape-cat.pet-hello .pet-body {
+  animation: cat-hello-sway 0.5s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-hello .mouth-smile {
+  width: 14px;
+  height: 7px;
+}
+
+@keyframes cat-wave-hand {
+  0%,
+  100% {
+    transform: rotate(120deg) translateY(12px) translateX(-2px);
+  }
+  50% {
+    transform: rotate(180deg) translateY(12px) translateX(-2px);
+  }
+}
+
+.pet-shape-cat.pet-hello .arm-left {
+  animation: cat-wave-hand 0.3s ease-in-out infinite;
+}
+
+@keyframes cat-sneeze-forward {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+.pet-shape-cat.pet-sneeze .pet-body {
+  animation: cat-sneeze-forward 0.2s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-sneeze .eye {
+  transform: scaleY(0.1);
+}
+
+.pet-shape-cat.pet-sneeze .mouth-smile {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+@keyframes cat-grin-stretch {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.pet-shape-cat.pet-grin .pet-body {
+  animation: cat-grin-stretch 2s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-grin .eye {
+  transform: scaleY(0.3);
+}
+
+.pet-shape-cat.pet-grin .mouth-smile {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.pet-shape-cat.pet-grin .arm-left {
+  transform: rotate(-60deg) translateY(-5px);
+}
+
+.pet-shape-cat.pet-grin .arm-right {
+  transform: rotate(60deg) translateY(-5px);
+}
+
+@keyframes cat-scratch-tilt {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(-8deg);
+  }
+}
+
+.pet-shape-cat.pet-scratch .pet-body {
+  animation: cat-scratch-tilt 0.3s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-scratch .eye {
+  transform: scaleY(0.5);
+}
+
+.pet-shape-cat.pet-scratch .arm-left {
+  transform: rotate(190deg) translateX(-5px) translateY(10px);
+}
+
+@keyframes cat-celebrate-jump {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(0.95);
+  }
+}
+
+.pet-shape-cat.pet-celebrate .pet-body {
+  animation: cat-celebrate-jump 0.4s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-celebrate .eye {
+  height: 8px;
+  border-radius: 0 0 50% 50%;
+}
+
+.pet-shape-cat.pet-celebrate .mouth-smile {
+  width: 16px;
+  height: 8px;
+}
+
+@keyframes cat-celebrate-arm-left {
+  0%,
+  100% {
+    transform: rotate(20deg);
+  }
+  50% {
+    transform: rotate(-60deg);
+  }
+}
+
+@keyframes cat-celebrate-arm-right {
+  0%,
+  100% {
+    transform: rotate(-20deg);
+  }
+  50% {
+    transform: rotate(60deg);
+  }
+}
+
+.pet-shape-cat.pet-celebrate .arm-left {
+  animation: cat-celebrate-arm-left 0.4s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-celebrate .arm-right {
+  animation: cat-celebrate-arm-right 0.4s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-peek .pet-body {
+  transform: translateX(5px);
+}
+
+@keyframes cat-peek-look {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+
+.pet-shape-cat.pet-peek .eye {
+  animation: cat-peek-look 1s ease-in-out infinite;
+}
+
+/* ========================================
+   DANCING - 跳舞动画
+   ======================================== */
+.pet-shape-cat.pet-dancing .pet-body {
+  animation: cat-dance-body 0.4s ease-in-out infinite;
+}
+
+@keyframes cat-dance-body {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(-10deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(10deg);
+  }
+  75% {
+    transform: translateY(-8px) rotate(-5deg);
+  }
+}
+
+.pet-shape-cat.pet-dancing .pet-arm {
+  animation: cat-dance-arm 0.3s ease-in-out infinite;
+}
+
+@keyframes cat-dance-arm {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(45deg);
+  }
+}
+
+.pet-shape-cat.pet-dancing .pet-leg {
+  animation: cat-dance-leg 0.2s ease-in-out infinite;
+}
+
+@keyframes cat-dance-leg {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* ========================================
+   ROLLING - 翻滚动画
+   ======================================== */
+.pet-shape-cat.pet-rolling .pet-container {
+  animation: cat-roll-container 0.6s ease-in-out;
+}
+
+@keyframes cat-roll-container {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.pet-shape-cat.pet-rolling .pet-body {
+  animation: cat-roll-body 0.6s ease-in-out;
+}
+
+@keyframes cat-roll-body {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  75% {
+    transform: scale(0.95);
+  }
+}
+
+/* ========================================
+   YAWN - 打哈欠动画
+   ======================================== */
+.pet-shape-cat.pet-yawn .pet-body {
+  animation: cat-yawn-body 2s ease-in-out;
+}
+
+@keyframes cat-yawn-body {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(-5px) scale(1.02);
+  }
+  60% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pet-shape-cat.pet-yawn .eye {
+  transform: scaleY(0.3);
+}
+
+.pet-shape-cat.pet-yawn .mouth-smile {
+  display: none;
+}
+
+.pet-shape-cat.pet-yawn .mouth-o {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  animation: cat-yawn-mouth 2s ease-in-out;
+}
+
+@keyframes cat-yawn-mouth {
+  0% {
+    width: 10px;
+    height: 10px;
+  }
+  30%,
+  70% {
+    width: 16px;
+    height: 16px;
+  }
+  100% {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+.pet-shape-cat.pet-yawn .arm-left {
+  transform: rotate(30deg) translateX(5px) translateY(-10px);
+}
+
+.pet-shape-cat.pet-yawn .arm-right {
+  transform: rotate(-20deg);
+}
+
+/* ========================================
+   SLEEPY - 睡眼朦胧动画
+   ======================================== */
+.pet-shape-cat.pet-sleepy .pet-body {
+  animation: cat-sleepy-sway 0.8s ease-in-out infinite;
+}
+
+@keyframes cat-sleepy-sway {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+.pet-shape-cat.pet-sleepy .eye {
+  transform: scaleY(0.2);
+}
+
+.pet-shape-cat.pet-sleepy .mouth-smile {
+  width: 8px;
+  height: 4px;
+  border-radius: 0 0 50% 50%;
+}
+
+/* ========================================
+   SLEEPWALKING - 睡眠行走状态
+   ======================================== */
+.pet-shape-cat.pet-sleepwalking .pet-body {
+  animation: walk 0.4s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-sleepwalking .pet-eyes {
+  display: flex;
+}
+
+.pet-shape-cat.pet-sleepwalking .eye {
+  transform: scaleY(0.2);
+}
+
+.pet-shape-cat.pet-sleepwalking .mouth-smile {
+  width: 8px;
+  height: 4px;
+  border-radius: 0 0 50% 50%;
+}
+
+.pet-shape-cat.pet-sleepwalking .arm-left {
+  animation: arm-swing-left 0.4s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-sleepwalking .arm-right {
+  animation: arm-swing-right 0.4s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-sleepwalking .leg-left {
+  animation: leg-move-left 0.4s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-sleepwalking .leg-right {
+  animation: leg-move-right 0.4s ease-in-out infinite;
+}
+
+/* ========================================
+   STRETCH - 伸懒腰动画
+   ======================================== */
+.pet-shape-cat.pet-stretch .pet-body {
+  animation: cat-stretch-body 2.5s ease-in-out;
+}
+
+@keyframes cat-stretch-body {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  30%,
+  70% {
+    transform: scaleY(1.1);
+  }
+}
+
+.pet-shape-cat.pet-stretch .eye {
+  transform: scaleY(0.5);
+}
+
+.pet-shape-cat.pet-stretch .mouth-smile {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+@keyframes cat-stretch-arm-up {
+  0%,
+  100% {
+    transform: rotate(20deg);
+  }
+  30%,
+  70% {
+    transform: rotate(-80deg) translateY(-15px);
+  }
+}
+
+@keyframes cat-stretch-arm-up-right {
+  0%,
+  100% {
+    transform: rotate(-20deg);
+  }
+  30%,
+  70% {
+    transform: rotate(80deg) translateY(-15px);
+  }
+}
+
+.pet-shape-cat.pet-stretch .arm-left {
+  animation: cat-stretch-arm-up 2.5s ease-in-out;
+}
+
+.pet-shape-cat.pet-stretch .arm-right {
+  animation: cat-stretch-arm-up-right 2.5s ease-in-out;
+}
+
+/* ========================================
+   BATHING - 洗澡动画
+   ======================================== */
+.pet-shape-cat.pet-bathing .pet-body {
+  animation: cat-bathing-body 0.8s ease-in-out infinite;
+}
+
+@keyframes cat-bathing-body {
+  0%,
+  100% {
+    transform: rotate(-5deg) translateY(0);
+  }
+  25% {
+    transform: rotate(0deg) translateY(-3px);
+  }
+  50% {
+    transform: rotate(5deg) translateY(0);
+  }
+  75% {
+    transform: rotate(0deg) translateY(-2px);
+  }
+}
+
+.pet-shape-cat.pet-bathing .eye {
+  transform: scaleY(0.5);
+}
+
+.pet-shape-cat.pet-bathing .mouth-smile {
+  width: 14px;
+  height: 10px;
+  border-radius: 0 0 50% 50%;
+}
+
+/* 洗澡时搓澡动作 */
+@keyframes cat-scrub-left {
+  0%,
+  100% {
+    transform: rotate(30deg) translateX(5px);
+  }
+  50% {
+    transform: rotate(50deg) translateX(10px) translateY(-8px);
+  }
+}
+
+@keyframes cat-scrub-right {
+  0%,
+  100% {
+    transform: rotate(-30deg) translateX(-5px);
+  }
+  50% {
+    transform: rotate(-50deg) translateX(-10px) translateY(-8px);
+  }
+}
+
+.pet-shape-cat.pet-bathing .arm-left {
+  animation: cat-scrub-left 0.5s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-bathing .arm-right {
+  animation: cat-scrub-right 0.5s ease-in-out infinite;
+}
+
+/* ========================================
+   吃东西时的身体动画
+   ======================================== */
+.pet-shape-cat.pet-eating .pet-body {
+  animation: cat-eating-chew 0.4s ease-in-out infinite;
+}
+
+@keyframes cat-eating-chew {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  25% {
+    transform: translateY(2px) scaleY(0.95);
+  }
+  50% {
+    transform: translateY(0) scaleY(1);
+  }
+  75% {
+    transform: translateY(1px) scaleY(0.97);
+  }
+}
+
+/* 吃东西时眯眼幸福表情 */
+.pet-shape-cat.pet-eating .eye {
+  height: 6px;
+  border-radius: 0 0 50% 50%;
+  animation: cat-happy-squint 0.8s ease-in-out infinite;
+}
+
+@keyframes cat-happy-squint {
+  0%,
+  100% {
+    height: 6px;
+  }
+  50% {
+    height: 3px;
+  }
+}
+
+/* 吃东西时嘴巴咀嚼 */
+.pet-shape-cat.pet-eating .mouth-smile {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: cat-mouth-chew 0.4s ease-in-out infinite;
+}
+
+@keyframes cat-mouth-chew {
+  0%,
+  100% {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  50% {
+    width: 8px;
+    height: 6px;
+    border-radius: 50%;
+  }
+}
+
+/* 吃东西时腮红加深 */
+.pet-shape-cat.pet-eating .pet-cheek {
+  opacity: 0.95;
+  width: 14px;
+  height: 10px;
+  background: #f87171;
+  animation: cat-cheek-glow 0.8s ease-in-out infinite;
+}
+
+@keyframes cat-cheek-glow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* 吃东西时手臂捧碗动作 */
+@keyframes cat-hold-bowl-left {
+  0%,
+  100% {
+    transform: rotate(45deg) translateX(8px) translateY(-5px);
+  }
+  50% {
+    transform: rotate(50deg) translateX(10px) translateY(-3px);
+  }
+}
+
+@keyframes cat-hold-bowl-right {
+  0%,
+  100% {
+    transform: rotate(-45deg) translateX(-8px) translateY(-5px);
+  }
+  50% {
+    transform: rotate(-50deg) translateX(-10px) translateY(-3px);
+  }
+}
+
+.pet-shape-cat.pet-eating .arm-left {
+  animation: cat-hold-bowl-left 0.4s ease-in-out infinite;
+}
+
+.pet-shape-cat.pet-eating .arm-right {
+  animation: cat-hold-bowl-right 0.4s ease-in-out infinite;
+}

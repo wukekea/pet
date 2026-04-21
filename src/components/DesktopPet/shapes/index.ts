@@ -1,0 +1,34 @@
+// 宠物形态导出入口
+import type { PetShape, PetShapeConfig } from "./types";
+import { cloudConfig } from "./cloud";
+import { catConfig } from "./cat";
+
+// 所有形态配置
+export const PET_SHAPES: Record<PetShape, PetShapeConfig> = {
+  cloud: cloudConfig,
+  cat: catConfig,
+};
+
+// 默认形态
+export const DEFAULT_SHAPE: PetShape = "cloud";
+
+// 获取形态配置
+export function getShapeConfig(shape: PetShape): PetShapeConfig {
+  return PET_SHAPES[shape];
+}
+
+// 获取所有形态选项（用于 UI）
+export function getShapeOptions(): Array<{
+  value: PetShape;
+  label: string;
+  icon: string;
+}> {
+  return Object.values(PET_SHAPES).map((config) => ({
+    value: config.name,
+    label: config.label,
+    icon: config.icon,
+  }));
+}
+
+// 导出类型
+export type { PetShape, PetShapeConfig };

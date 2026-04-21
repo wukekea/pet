@@ -5,6 +5,7 @@ import {
   petState,
   isDebugPanelOpen,
   currentFood,
+  currentPetShape,
   type FoodType,
 } from "../DesktopPet/composables/sharedState";
 import {
@@ -21,6 +22,8 @@ import { weatherStatus } from "../DesktopPet/composables/qweatherService";
 import type { PetState } from "../DesktopPet/types";
 import type { WeatherType } from "../DesktopPet/types";
 import { setPassthrough } from "../DesktopPet/composables/passthrough";
+import { savePetShape } from "../DesktopPet/composables/petShapeStorage";
+import { getShapeOptions } from "../DesktopPet/shapes";
 
 // 面板可见性
 const isVisible = ref(false);
@@ -48,6 +51,14 @@ const isActionActive = (action: {
   }
   // 普通动作只匹配状态
   return activeState.value === action.state;
+};
+
+// 宠物形态选项
+const shapeOptions = getShapeOptions();
+
+// 切换形态
+const setPetShape = (shape: string) => {
+  savePetShape(shape as any);
 };
 
 // 动作配置 - 带中文标签和分组
@@ -373,6 +384,24 @@ defineExpose({
             >
               <span class="btn-icon">{{ weather.icon }}</span>
               <span class="btn-label">{{ weather.label }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 宠物形态切换 -->
+        <div class="action-group">
+          <div class="group-title">宠物形态</div>
+          <div class="action-buttons">
+            <button
+              v-for="shape in shapeOptions"
+              :key="shape.value"
+              class="action-btn"
+              :class="{ active: currentPetShape === shape.value }"
+              @click="setPetShape(shape.value)"
+              :title="shape.label"
+            >
+              <span class="btn-icon">{{ shape.icon }}</span>
+              <span class="btn-label">{{ shape.label }}</span>
             </button>
           </div>
         </div>

@@ -12,6 +12,7 @@ import {
   isStatsModalOpen,
   isDebugPanelOpen,
   currentFood,
+  currentPetShape,
   type FoodType,
 } from "./composables/sharedState";
 // 函数从 usePetState 导入
@@ -27,6 +28,8 @@ import { footprints } from "./composables/footprints";
 import { isDark, initTheme } from "./composables/theme";
 import { initStats, cleanupStats } from "./composables/stats";
 import { setPassthrough } from "./composables/passthrough";
+import { initPetShape } from "./composables/petShapeStorage";
+import { getShapeConfig } from "./shapes";
 import WeatherBackground from "./WeatherBackground.vue";
 import EatingEffects from "./EatingEffects.vue";
 // 效果组件
@@ -57,7 +60,9 @@ import DialogueBubble from "./dialogue/index.vue";
 import ContextMenu from "./contextMenu/index.vue";
 import ScheduleModal from "./schedule/index.vue";
 import StatsModal from "./stats/index.vue";
-import "./styles.css";
+import "./shapes/base.css";
+import "./shapes/cloud/styles.css";
+import "./shapes/cat/styles.css";
 
 // 食物类型列表
 const foodTypes: FoodType[] = ["apple", "fish", "cake", "lollipop"];
@@ -70,24 +75,45 @@ watch(petState, (newState) => {
   }
 });
 
-// 宠物颜色 - 根据主题变化
+// 宠物颜色 - 根据主题和形态变化
 const petColors = computed(() => {
   const isAngry = petState.value === "angry";
+  const shapeConfig = getShapeConfig(currentPetShape.value);
+
   return {
-    body: isAngry ? "#ef4444" : isDark.value ? "#a78bfa" : "#8b5cf6",
-    bodyGradient: isAngry ? "#f87171" : isDark.value ? "#c4b5fd" : "#a78bfa",
-    face: isDark.value ? "#1f2937" : "#ffffff",
-    eyes: isDark.value ? "#fbbf24" : "#1f2937",
-    cheeks: isDark.value ? "#f472b6" : "#fda4af",
+    body: isAngry
+      ? "#ef4444"
+      : isDark.value
+        ? shapeConfig.colors.body.dark
+        : shapeConfig.colors.body.light,
+    bodyGradient: isAngry
+      ? "#f87171"
+      : isDark.value
+        ? shapeConfig.colors.bodyGradient.dark
+        : shapeConfig.colors.bodyGradient.light,
+    face: isDark.value
+      ? shapeConfig.colors.face.dark
+      : shapeConfig.colors.face.light,
+    eyes: isDark.value
+      ? shapeConfig.colors.eyes.dark
+      : shapeConfig.colors.eyes.light,
+    cheeks: isDark.value
+      ? shapeConfig.colors.cheeks.dark
+      : shapeConfig.colors.cheeks.light,
     shadow: isDark.value
-      ? "rgba(167, 139, 250, 0.3)"
-      : "rgba(139, 92, 246, 0.2)",
+      ? shapeConfig.colors.shadow.dark
+      : shapeConfig.colors.shadow.light,
     footprint: isDark.value
-      ? "rgba(167, 139, 250, 0.4)"
-      : "rgba(139, 92, 246, 0.3)",
-    angryFace: "#7f1d1d",
+      ? shapeConfig.colors.footprint.dark
+      : shapeConfig.colors.footprint.light,
+    angryFace: shapeConfig.colors.angryFace || "#7f1d1d",
   };
 });
+
+// 当前形态配置
+const currentShapeConfig = computed(() =>
+  getShapeConfig(currentPetShape.value),
+);
 
 // 对话气泡样式变体
 const dialogueVariant = computed(() =>
@@ -101,6 +127,9 @@ onMounted(async () => {
 
   // 初始化主题
   initTheme();
+
+  // 初始化宠物形态
+  initPetShape();
 
   // 初始化宠物
   initPet();
@@ -187,7 +216,11 @@ const closeStatsModal = () => {
   <div
     v-if="isVisible"
     class="desktop-pet"
-    :class="[`pet-${petState}`, `pet-${petDirection}`]"
+    :class="[
+      `pet-${petState}`,
+      `pet-${petDirection}`,
+      `pet-shape-${currentPetShape}`,
+    ]"
   >
     <!-- 脚印 -->
     <Footprints :footprints="footprints" :color="petColors.footprint" />
@@ -217,6 +250,16 @@ const closeStatsModal = () => {
         <!-- 耳朵 -->
         <div class="pet-ear ear-left"></div>
         <div class="pet-ear ear-right"></div>
+
+        <!-- 猫咪胡须 -->
+        <div v-if="currentShapeConfig.hasWhiskers" class="pet-whiskers">
+          <div class="whisker whisker-left-1"></div>
+          <div class="whisker whisker-left-2"></div>
+          <div class="whisker whisker-left-3"></div>
+          <div class="whisker whisker-right-1"></div>
+          <div class="whisker whisker-right-2"></div>
+          <div class="whisker whisker-right-3"></div>
+        </div>
 
         <!-- 脸部 -->
         <div class="pet-face">
@@ -260,6 +303,9 @@ const closeStatsModal = () => {
             <div class="tear tear-right"></div>
           </div>
         </div>
+
+        <!-- 猫咪尾巴 -->
+        <div v-if="currentShapeConfig.hasTail" class="pet-tail"></div>
 
         <!-- 手臂 -->
         <div class="pet-arm arm-left"></div>
@@ -387,11 +433,12 @@ const closeStatsModal = () => {
   );
 }
 
-.pet-ear {
+/* 云朵耳朵颜色 */
+.pet-shape-cloud .pet-ear {
   background: v-bind("petColors.body");
 }
 
-.pet-ear::after {
+.pet-shape-cloud .pet-ear::after {
   background: v-bind("petColors.bodyGradient");
 }
 
@@ -433,6 +480,117 @@ const closeStatsModal = () => {
 
 .pet-leg {
   background: v-bind("petColors.body");
+}
+
+/* 猫咪尾巴 */
+.pet-tail {
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 25px;
+  background: linear-gradient(
+    to bottom,
+    v-bind("petColors.body"),
+    v-bind("petColors.bodyGradient")
+  );
+  border-radius: 12px 12px 0 0;
+  transform-origin: top center;
+  animation: tail-sway 1.5s ease-in-out infinite;
+}
+
+@keyframes tail-sway {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(-15deg);
+  }
+  50% {
+    transform: translateX(-50%) rotate(15deg);
+  }
+}
+
+/* 猫咪睡觉时尾巴 */
+.pet-sleeping .pet-tail {
+  animation: tail-sleep 2s ease-in-out infinite;
+}
+
+@keyframes tail-sleep {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(-5deg);
+  }
+  50% {
+    transform: translateX(-50%) rotate(5deg);
+  }
+}
+
+/* 猫咪开心时尾巴 */
+.pet-happy .pet-tail {
+  animation: tail-happy 0.4s ease-in-out infinite;
+}
+
+@keyframes tail-happy {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(-20deg) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) rotate(20deg) translateY(-3px);
+  }
+}
+
+/* 猫咪胡须 */
+.pet-whiskers {
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.whisker {
+  position: absolute;
+  width: 12px;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+}
+
+.whisker-left-1 {
+  top: 5px;
+  left: 0;
+  transform: rotate(-15deg);
+}
+
+.whisker-left-2 {
+  top: 8px;
+  left: 0;
+}
+
+.whisker-left-3 {
+  top: 11px;
+  left: 0;
+  transform: rotate(15deg);
+}
+
+.whisker-right-1 {
+  top: 5px;
+  right: 0;
+  transform: rotate(15deg);
+}
+
+.whisker-right-2 {
+  top: 8px;
+  right: 0;
+}
+
+.whisker-right-3 {
+  top: 11px;
+  right: 0;
+  transform: rotate(-15deg);
 }
 
 .pet-scared .brow-left {
