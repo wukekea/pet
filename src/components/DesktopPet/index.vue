@@ -29,7 +29,7 @@ import { isDark, initTheme } from "./composables/theme";
 import { initStats, cleanupStats } from "./composables/stats";
 import { setPassthrough } from "./composables/passthrough";
 import { initPetShape } from "./composables/petShapeStorage";
-import { getShapeConfig } from "./shapes";
+import { getShapeConfig, getShapeComponent } from "./shapes";
 import WeatherBackground from "./WeatherBackground.vue";
 import EatingEffects from "./EatingEffects.vue";
 // 效果组件
@@ -110,9 +110,9 @@ const petColors = computed(() => {
   };
 });
 
-// 当前形态配置
-const currentShapeConfig = computed(() =>
-  getShapeConfig(currentPetShape.value),
+// 当前形态组件
+const currentShapeComponent = computed(() =>
+  getShapeComponent(currentPetShape.value),
 );
 
 // 对话气泡样式变体
@@ -242,79 +242,12 @@ const closeStatsModal = () => {
       <!-- 阴影 -->
       <div class="pet-shadow"></div>
 
-      <!-- 宠物主体 -->
-      <div class="pet-body">
-        <!-- 身体渐变 -->
-        <div class="pet-body-gradient"></div>
-
-        <!-- 耳朵 -->
-        <div class="pet-ear ear-left"></div>
-        <div class="pet-ear ear-right"></div>
-
-        <!-- 猫咪胡须 -->
-        <div v-if="currentShapeConfig.hasWhiskers" class="pet-whiskers">
-          <div class="whisker whisker-left-1"></div>
-          <div class="whisker whisker-left-2"></div>
-          <div class="whisker whisker-left-3"></div>
-          <div class="whisker whisker-right-1"></div>
-          <div class="whisker whisker-right-2"></div>
-          <div class="whisker whisker-right-3"></div>
-        </div>
-
-        <!-- 脸部 -->
-        <div class="pet-face">
-          <!-- 眉毛（生气时显示） -->
-          <div class="pet-brows">
-            <div class="brow brow-left"></div>
-            <div class="brow brow-right"></div>
-          </div>
-
-          <!-- 眼睛 -->
-          <div class="pet-eyes">
-            <div class="eye eye-left">
-              <div class="eye-shine"></div>
-            </div>
-            <div class="eye eye-right">
-              <div class="eye-shine"></div>
-            </div>
-          </div>
-
-          <!-- 眨眼效果 -->
-          <div class="pet-eyes blink">
-            <div class="eye eye-left eye-closed"></div>
-            <div class="eye eye-right eye-closed"></div>
-          </div>
-
-          <!-- 嘴巴 -->
-          <div class="pet-mouth">
-            <div class="mouth-smile"></div>
-            <div class="mouth-o"></div>
-            <div class="mouth-sad"></div>
-            <div class="mouth-angry"></div>
-          </div>
-
-          <!-- 腮红 -->
-          <div class="pet-cheek cheek-left"></div>
-          <div class="pet-cheek cheek-right"></div>
-
-          <!-- 眼泪（大哭时显示） -->
-          <div class="tears" v-if="petState === 'crying'">
-            <div class="tear tear-left"></div>
-            <div class="tear tear-right"></div>
-          </div>
-        </div>
-
-        <!-- 猫咪尾巴 -->
-        <div v-if="currentShapeConfig.hasTail" class="pet-tail"></div>
-
-        <!-- 手臂 -->
-        <div class="pet-arm arm-left"></div>
-        <div class="pet-arm arm-right"></div>
-
-        <!-- 腿 -->
-        <div class="pet-leg leg-left"></div>
-        <div class="pet-leg leg-right"></div>
-      </div>
+      <!-- 形态组件 -->
+      <component
+        :is="currentShapeComponent"
+        :pet-state="petState"
+        :pet-direction="petDirection"
+      />
 
       <!-- 睡眠气泡 -->
       <SleepBubble v-if="petState === 'sleeping'" />
@@ -415,154 +348,15 @@ const closeStatsModal = () => {
   </div>
 </template>
 
-<style scoped>
-/* 动态颜色绑定 - 需要使用 v-bind */
-.pet-shadow {
-  background: v-bind("petColors.shadow");
-}
-
-.pet-body {
-  background: v-bind("petColors.body");
-}
-
-.pet-body-gradient {
-  background: radial-gradient(
-    circle at 30% 30%,
-    v-bind("petColors.bodyGradient"),
-    transparent 60%
-  );
-}
-
-/* 云朵耳朵颜色 */
-.pet-shape-cloud .pet-ear {
-  background: v-bind("petColors.body");
-}
-
-.pet-shape-cloud .pet-ear::after {
-  background: v-bind("petColors.bodyGradient");
-}
-
-/* 猫咪耳朵颜色 */
-.pet-shape-cat .pet-ear {
-  background: linear-gradient(
-    135deg,
-    v-bind("petColors.body") 0%,
-    v-bind("petColors.bodyGradient") 50%,
-    v-bind("petColors.body") 100%
-  );
-}
-
-.brow {
-  background: v-bind("petColors.eyes");
-}
-
-.eye {
-  background: v-bind("petColors.eyes");
-}
-
-.eye-closed {
-  background: v-bind("petColors.eyes");
-}
-
-.mouth-smile {
-  border-bottom: 3px solid v-bind("petColors.eyes");
-}
-
-.mouth-o {
-  border: 3px solid v-bind("petColors.eyes");
-}
-
-.mouth-sad {
-  border-top: 3px solid v-bind("petColors.eyes");
-}
-
-.mouth-angry {
-  border: 3px solid v-bind("petColors.eyes");
-}
-
-.pet-cheek {
-  background: v-bind("petColors.cheeks");
-}
-
-.pet-arm {
-  background: v-bind("petColors.body");
-}
-
-.pet-leg {
-  background: v-bind("petColors.body");
-}
-
-/* 猫咪尾巴 */
-.pet-tail {
-  position: absolute;
-  bottom: -15px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 12px;
-  height: 25px;
-  background: linear-gradient(
-    to bottom,
-    v-bind("petColors.body"),
-    v-bind("petColors.bodyGradient")
-  );
-  border-radius: 12px 12px 0 0;
-  transform-origin: top center;
-  animation: tail-sway 1.5s ease-in-out infinite;
-}
-
-@keyframes tail-sway {
-  0%,
-  100% {
-    transform: translateX(-50%) rotate(-15deg);
-  }
-  50% {
-    transform: translateX(-50%) rotate(15deg);
-  }
-}
-
-/* 猫咪睡觉时尾巴 */
-.pet-sleeping .pet-tail {
-  animation: tail-sleep 2s ease-in-out infinite;
-}
-
-@keyframes tail-sleep {
-  0%,
-  100% {
-    transform: translateX(-50%) rotate(-5deg);
-  }
-  50% {
-    transform: translateX(-50%) rotate(5deg);
-  }
-}
-
-/* 猫咪开心时尾巴 */
-.pet-happy .pet-tail {
-  animation: tail-happy 0.4s ease-in-out infinite;
-}
-
-@keyframes tail-happy {
-  0%,
-  100% {
-    transform: translateX(-50%) rotate(-20deg) translateY(0);
-  }
-  50% {
-    transform: translateX(-50%) rotate(20deg) translateY(-3px);
-  }
-}
-
-.pet-scared .brow-left {
-  transform: translateY(-2px) rotate(-10deg);
-}
-
-.pet-scared .brow-right {
-  transform: translateY(-2px) rotate(10deg);
-}
-
-.pet-scared .mouth-smile {
-  border: 3px solid v-bind("petColors.eyes");
-}
-
-.pet-sneeze .mouth-smile {
-  border: 3px solid v-bind("petColors.eyes");
+<style>
+/* CSS 变量定义 - 供形态组件使用 */
+.desktop-pet {
+  --pet-body: v-bind("petColors.body");
+  --pet-body-gradient: v-bind("petColors.bodyGradient");
+  --pet-face: v-bind("petColors.face");
+  --pet-eyes: v-bind("petColors.eyes");
+  --pet-cheeks: v-bind("petColors.cheeks");
+  --pet-shadow: v-bind("petColors.shadow");
+  --pet-footprint: v-bind("petColors.footprint");
 }
 </style>

@@ -1,7 +1,10 @@
 // 宠物形态导出入口
+import type { Component } from "vue";
 import type { PetShape, PetShapeConfig } from "./types";
 import { cloudConfig } from "./cloud";
 import { catConfig } from "./cat";
+import CatShape from "./cat/CatShape.vue";
+import CloudShape from "./cloud/CloudShape.vue";
 
 // 所有形态配置
 export const PET_SHAPES: Record<PetShape, PetShapeConfig> = {
@@ -15,6 +18,15 @@ export const DEFAULT_SHAPE: PetShape = "cloud";
 // 获取形态配置
 export function getShapeConfig(shape: PetShape): PetShapeConfig {
   return PET_SHAPES[shape];
+}
+
+// 获取形态组件
+export function getShapeComponent(shape: PetShape): Component {
+  const components: Record<PetShape, Component> = {
+    cloud: CloudShape,
+    cat: CatShape,
+  };
+  return components[shape];
 }
 
 // 获取所有形态选项（用于 UI）
