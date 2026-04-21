@@ -20,7 +20,6 @@ export type PetState =
   | "celebrate"
   | "peek"
   | "chase"
-  | "hide"
   | "dancing"
   | "rolling"
   | "yawn"
