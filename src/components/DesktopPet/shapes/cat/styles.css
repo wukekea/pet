@@ -187,33 +187,6 @@
   transform: rotate(15deg);
 }
 
-/* 猫咪尾巴 */
-.pet-shape-cat .pet-tail {
-  position: absolute;
-  bottom: -15px;
-  left: 50%;
-  width: 12px;
-  height: 25px;
-  background: linear-gradient(
-    to bottom,
-    var(--pet-body),
-    var(--pet-body-gradient)
-  );
-  border-radius: 12px 12px 0 0;
-  transform-origin: top center;
-  animation: cat-tail-sway 1.5s ease-in-out infinite;
-}
-
-@keyframes cat-tail-sway {
-  0%,
-  100% {
-    transform: translateX(-50%) rotate(-15deg);
-  }
-  50% {
-    transform: translateX(-50%) rotate(15deg);
-  }
-}
-
 /* 猫咪生气时眼睛 */
 .pet-shape-cat.pet-angry .eye {
   height: 10px;
@@ -232,22 +205,22 @@
   border-radius: 2px;
 }
 
-/* 猫咪睡觉时尾巴 */
+/* 猫咪睡觉时尾巴 - 缓慢摆动 */
 .pet-shape-cat.pet-sleeping .pet-tail {
-  animation: cat-tail-sleep 2s ease-in-out infinite;
+  animation: cat-tail-sleep 3s ease-in-out infinite;
 }
 
 @keyframes cat-tail-sleep {
   0%,
   100% {
-    transform: translateX(-50%) rotate(-5deg);
+    transform: rotate(-25deg);
   }
   50% {
-    transform: translateX(-50%) rotate(5deg);
+    transform: rotate(-35deg);
   }
 }
 
-/* 猫咪开心时尾巴 */
+/* 猫咪开心时尾巴 - 活跃摆动 */
 .pet-shape-cat.pet-happy .pet-tail {
   animation: cat-tail-happy 0.4s ease-in-out infinite;
 }
@@ -255,10 +228,10 @@
 @keyframes cat-tail-happy {
   0%,
   100% {
-    transform: translateX(-50%) rotate(-20deg) translateY(0);
+    transform: rotate(-20deg) translateY(-3px);
   }
   50% {
-    transform: translateX(-50%) rotate(20deg) translateY(-3px);
+    transform: rotate(-40deg) translateY(-8px);
   }
 }
 
