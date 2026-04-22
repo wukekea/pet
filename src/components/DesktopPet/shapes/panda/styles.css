@@ -246,3 +246,50 @@
   width: 14px;
   height: 7px;
 }
+
+/* ========================================
+   熊猫生气状态覆盖 - 倒 W 形嘴巴
+   ======================================== */
+
+.pet-shape-panda.pet-angry .mouth-smile {
+  display: none;
+}
+
+.pet-shape-panda.pet-angry .mouth-angry {
+  display: block;
+  position: relative;
+  width: 10px;
+  height: 5px;
+  background: transparent;
+  border: none;
+  border-top: 2px solid #1f2937;
+  border-radius: 50% 50% 0 0;
+}
+
+/* 左侧嘴弧 - 向上撇 */
+.pet-shape-panda.pet-angry .mouth-angry::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -5px;
+  width: 6px;
+  height: 4px;
+  border-top: 2px solid #1f2937;
+  border-left: 2px solid #1f2937;
+  border-radius: 50% 0 0 0;
+  background: transparent;
+}
+
+/* 右侧嘴弧 - 向上撇 */
+.pet-shape-panda.pet-angry .mouth-angry::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -5px;
+  width: 6px;
+  height: 4px;
+  border-top: 2px solid #1f2937;
+  border-right: 2px solid #1f2937;
+  border-radius: 0 50% 0 0;
+  background: transparent;
+}
