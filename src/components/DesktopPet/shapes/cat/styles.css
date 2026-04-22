@@ -387,18 +387,24 @@
 }
 
 /* ========================================
-   猫咪坏笑状态覆盖
+   猫咪坏笑状态覆盖 - 调皮的 ω 形笑
    ======================================== */
 
 .pet-shape-cat.pet-grin .mouth-smile {
-  display: none;
+  width: 2px;
+  height: 7px;
 }
 
-.pet-shape-cat.pet-grin .mouth-o {
-  display: block;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
+.pet-shape-cat.pet-grin .mouth-smile::before {
+  left: -9px;
+  width: 11px;
+  height: 8px;
+}
+
+.pet-shape-cat.pet-grin .mouth-smile::after {
+  right: -9px;
+  width: 11px;
+  height: 8px;
 }
 
 /* ========================================
