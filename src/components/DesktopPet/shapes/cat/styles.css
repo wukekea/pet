@@ -80,6 +80,11 @@
   opacity: 0;
 }
 
+/* 背面时隐藏胡须 */
+.pet-shape-cat.pet-back .pet-whiskers {
+  opacity: 0;
+}
+
 /* 猫咪眼睛 - 椭圆形 */
 .pet-shape-cat .eye {
   width: 12px;
