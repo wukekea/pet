@@ -12,9 +12,14 @@
   width: 24px;
   height: 20px;
   border-radius: 50% 50% 0 0;
-  background: #1f2937;
+  background: #4b5563;
   box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.15);
   z-index: 0;
+}
+
+/* 身体层在耳朵之上，完全遮挡耳朵被遮住的部分 */
+.pet-shape-panda .pet-body {
+  z-index: 1;
 }
 
 /* 耳朵内圈 - 小半圆，全黑 */
@@ -42,11 +47,16 @@
 
 /* 头部图层在耳朵之上 */
 .pet-shape-panda .pet-body-gradient {
-  z-index: 1;
+  z-index: 2;
+  background: radial-gradient(
+    circle at 30% 30%,
+    var(--pet-body-gradient),
+    var(--pet-body) 60%
+  );
 }
 
 .pet-shape-panda .pet-face {
-  z-index: 2;
+  z-index: 3;
 }
 
 /* 背面时耳朵变暗 */
