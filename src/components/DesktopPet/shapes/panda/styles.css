@@ -196,19 +196,21 @@
 }
 
 /* ========================================
-   熊猫手脚 - 全黑色
+   熊猫手脚 - 全黑色带白色边框
    ======================================== */
 
 /* 手臂 - 全黑色 */
 .pet-shape-panda .pet-arm {
   background: #1f2937;
   box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* 腿 - 全黑色 */
 .pet-shape-panda .pet-leg {
   background: #1f2937;
   box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* ========================================
