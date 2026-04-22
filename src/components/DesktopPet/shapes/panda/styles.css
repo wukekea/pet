@@ -17,11 +17,6 @@
   z-index: 0;
 }
 
-/* 身体层在耳朵之上，完全遮挡耳朵被遮住的部分 */
-.pet-shape-panda .pet-body {
-  z-index: 1;
-}
-
 /* 耳朵内圈 - 小半圆，全黑 */
 .pet-shape-panda .pet-ear::before {
   content: "";
@@ -204,6 +199,7 @@
   background: #1f2937;
   box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 10;
 }
 
 /* 腿 - 全黑色 */
@@ -211,6 +207,7 @@
   background: #1f2937;
   box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 10;
 }
 
 /* ========================================
