@@ -63,6 +63,7 @@ import StatsModal from "./stats/index.vue";
 import "./shapes/base.css";
 import "./shapes/cloud/styles.css";
 import "./shapes/cat/styles.css";
+import "./shapes/panda/styles.css";
 
 // 食物类型列表
 const foodTypes: FoodType[] = ["apple", "fish", "cake", "lollipop"];
