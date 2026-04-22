@@ -64,16 +64,16 @@
 }
 
 /* ========================================
-   熊猫眼圈 - 标志性黑色眼圈
+   熊猫眼圈 - 标志性黑色眼圈（八字形鞋印状）
    ======================================== */
 
 .pet-shape-panda .eye-patch {
   position: absolute;
-  top: 24px;
-  width: 22px;
-  height: 22px;
+  top: 22px;
+  width: 24px;
+  height: 20px;
   background: #1f2937;
-  border-radius: 50%;
+  border-radius: 50% 50% 40% 40%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
@@ -81,11 +81,13 @@
 }
 
 .pet-shape-panda .eye-patch-left {
-  left: 10px;
+  left: 8px;
+  transform: rotate(-15deg);
 }
 
 .pet-shape-panda .eye-patch-right {
-  right: 10px;
+  right: 8px;
+  transform: rotate(15deg);
 }
 
 /* 熊猫眼睛 - 圆形大眼睛，居中于眼圈 */
