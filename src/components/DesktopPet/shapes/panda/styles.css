@@ -63,6 +63,13 @@
   background: #0f172a;
 }
 
+/* 背面时隐藏脸部元素 */
+.pet-shape-panda.pet-back .eye-patches,
+.pet-shape-panda.pet-back .pet-nose,
+.pet-shape-panda.pet-back .pet-mouth {
+  opacity: 0;
+}
+
 /* ========================================
    熊猫眼圈 - 标志性黑色眼圈（八字形鞋印状）
    ======================================== */
