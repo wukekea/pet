@@ -293,3 +293,24 @@
   border-radius: 0 50% 0 0;
   background: transparent;
 }
+
+/* ========================================
+   熊猫坏笑状态覆盖 - 中间弯曲更深的 W 形嘴巴
+   ======================================== */
+
+.pet-shape-panda.pet-grin .mouth-smile {
+  width: 12px;
+  height: 8px;
+}
+
+.pet-shape-panda.pet-grin .mouth-smile::before {
+  left: -5px;
+  width: 6px;
+  height: 4px;
+}
+
+.pet-shape-panda.pet-grin .mouth-smile::after {
+  right: -5px;
+  width: 6px;
+  height: 4px;
+}
