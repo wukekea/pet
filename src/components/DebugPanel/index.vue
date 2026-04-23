@@ -118,6 +118,14 @@ const actionGroups = [
     actions: [{ state: "bathing" as PetState, label: "洗澡", icon: "🛁" }],
   },
   {
+    name: "打工状态",
+    actions: [
+      { state: "brickCarrying" as PetState, label: "搬砖", icon: "🧱" },
+      { state: "flyerDistributing" as PetState, label: "发传单", icon: "📄" },
+      { state: "programmer" as PetState, label: "程序员", icon: "💻" },
+    ],
+  },
+  {
     name: "吃东西",
     actions: [
       {

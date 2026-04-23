@@ -197,6 +197,9 @@ export async function changeState(newState: PetState, skipDialogue = false) {
             "scratch",
             "celebrate",
             "peek",
+            "brickCarrying",
+            "flyerDistributing",
+            "programmer",
           ];
           const random = Math.random();
           if (random < 0.1 && !scheduleEnabled.value) {
@@ -347,6 +350,9 @@ export function handlePetClick() {
       "smug",
       "shy",
       "celebrate",
+      "brickCarrying",
+      "flyerDistributing",
+      "programmer",
     ];
     changeState(reactions[Math.floor(Math.random() * reactions.length)]);
   }

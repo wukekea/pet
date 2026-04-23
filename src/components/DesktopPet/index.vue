@@ -55,6 +55,9 @@ import SleepyEffects from "./effects/SleepyEffects.vue";
 import SleepwalkingEffects from "./effects/SleepwalkingEffects.vue";
 import StretchEffects from "./effects/StretchEffects.vue";
 import BathingEffects from "./effects/BathingEffects.vue";
+import BrickCarryingEffects from "./effects/BrickCarryingEffects.vue";
+import FlyerDistributingEffects from "./effects/FlyerDistributingEffects.vue";
+import ProgrammerEffects from "./effects/ProgrammerEffects.vue";
 import Footprints from "./footprints/index.vue";
 import DialogueBubble from "./dialogue/index.vue";
 import ContextMenu from "./contextMenu/index.vue";
@@ -318,6 +321,15 @@ const closeStatsModal = () => {
 
       <!-- 吃东西效果 -->
       <EatingEffects v-if="petState === 'eating'" />
+
+      <!-- 搬砖效果 -->
+      <BrickCarryingEffects v-if="petState === 'brickCarrying'" />
+
+      <!-- 发传单效果 -->
+      <FlyerDistributingEffects v-if="petState === 'flyerDistributing'" />
+
+      <!-- 程序员效果 -->
+      <ProgrammerEffects v-if="petState === 'programmer'" />
     </div>
 
     <!-- 对话气泡 -->
