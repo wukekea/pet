@@ -337,22 +337,6 @@
       </svg>
     </div>
 
-    <!-- 黑眼圈 -->
-    <div class="dark-circles">
-      <div class="dark-circle left">
-        <svg viewBox="0 0 16 10" class="circle-svg">
-          <ellipse cx="8" cy="5" rx="6" ry="4" fill="#1A1A2E" opacity="0.7" />
-          <ellipse cx="8" cy="5" rx="4" ry="2.5" fill="#2D2D44" opacity="0.5" />
-        </svg>
-      </div>
-      <div class="dark-circle right">
-        <svg viewBox="0 0 16 10" class="circle-svg">
-          <ellipse cx="8" cy="5" rx="6" ry="4" fill="#1A1A2E" opacity="0.7" />
-          <ellipse cx="8" cy="5" rx="4" ry="2.5" fill="#2D2D44" opacity="0.5" />
-        </svg>
-      </div>
-    </div>
-
     <!-- Bug 图标 -->
     <div class="bug-icon bug-1">
       <svg viewBox="0 0 24 24" class="bug-svg">
@@ -1068,26 +1052,6 @@
     opacity: 0;
     transform: translateY(-20px) scale(0.95);
   }
-}
-
-/* ==================== 黑眼圈 ==================== */
-.dark-circles {
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 25px;
-  z-index: 10;
-}
-
-.dark-circle {
-  opacity: 0.8;
-}
-
-.circle-svg {
-  width: 14px;
-  height: 9px;
 }
 
 /* ==================== Bug 图标 ==================== */
