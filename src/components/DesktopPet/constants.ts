@@ -47,9 +47,9 @@ export const STATE_DURATIONS: Partial<Record<PetState, number>> = {
   stretch: STRETCH_DURATION,
   bathing: 30000,
   eating: 30000,
-  brickCarrying: 8000,
-  flyerDistributing: 8000,
-  programmer: 10000,
+  brickCarrying: 1800000, // 30分钟
+  flyerDistributing: 1800000, // 30分钟
+  programmer: 2700000, // 45分钟
 };
 
 // 状态名称中文映射

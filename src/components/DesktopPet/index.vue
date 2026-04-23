@@ -58,6 +58,7 @@ import BathingEffects from "./effects/BathingEffects.vue";
 import BrickCarryingEffects from "./effects/BrickCarryingEffects.vue";
 import FlyerDistributingEffects from "./effects/FlyerDistributingEffects.vue";
 import ProgrammerEffects from "./effects/ProgrammerEffects.vue";
+import WorkProgressBar from "./effects/WorkProgressBar.vue";
 import Footprints from "./footprints/index.vue";
 import DialogueBubble from "./dialogue/index.vue";
 import ContextMenu from "./contextMenu/index.vue";
@@ -330,6 +331,15 @@ const closeStatsModal = () => {
 
       <!-- 程序员效果 -->
       <ProgrammerEffects v-if="petState === 'programmer'" />
+
+      <!-- 工作进度条 -->
+      <WorkProgressBar
+        v-if="
+          ['brickCarrying', 'flyerDistributing', 'programmer'].includes(
+            petState,
+          )
+        "
+      />
     </div>
 
     <!-- 对话气泡 -->
