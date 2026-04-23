@@ -153,18 +153,18 @@ defineExpose({
   bottom: -80px;
   left: 50%;
   transform: translateX(-50%);
+  will-change: transform;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
   padding: 8px 14px;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.85);
   border-radius: 12px;
-  backdrop-filter: blur(8px);
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  min-width: 120px;
+  width: 120px;
 }
 
 /* 工作名称 */
