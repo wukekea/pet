@@ -12,13 +12,6 @@ const workStates = [
 ] as const;
 type WorkState = (typeof workStates)[number];
 
-// 状态名称映射
-const workNames: Record<WorkState, string> = {
-  brickCarrying: "搬砖中",
-  flyerDistributing: "发传单中",
-  programmer: "写代码中",
-};
-
 // 计算当前工作状态
 const currentWorkState = computed(() => {
   const state = petState.value;
@@ -117,12 +110,6 @@ defineExpose({
 
 <template>
   <div v-if="currentWorkState" class="work-progress-bar">
-    <!-- 工作名称 -->
-    <div class="work-title">
-      <span class="work-icon">💼</span>
-      <span class="work-name">{{ workNames[currentWorkState] }}</span>
-    </div>
-
     <!-- 进度条 -->
     <div class="progress-container">
       <div class="progress-track">
@@ -141,16 +128,13 @@ defineExpose({
       <span class="separator">/</span>
       <span class="remaining">{{ formatTime(remainingSeconds) }}</span>
     </div>
-
-    <!-- 完成百分比 -->
-    <div class="percentage">{{ Math.floor(progress) }}%</div>
   </div>
 </template>
 
 <style scoped>
 .work-progress-bar {
   position: absolute;
-  bottom: -80px;
+  bottom: -50px;
   left: 50%;
   transform: translateX(-50%);
   will-change: transform;
@@ -161,28 +145,11 @@ defineExpose({
   padding: 8px 14px;
   background: rgba(0, 0, 0, 0.85);
   border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   width: 120px;
-}
-
-/* 工作名称 */
-.work-title {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.work-icon {
-  font-size: 10px;
-}
-
-.work-name {
-  font-size: 10px;
-  font-weight: 600;
-  color: #fbbf24;
-  letter-spacing: 0.5px;
 }
 
 /* 进度条容器 */
@@ -253,13 +220,5 @@ defineExpose({
 .remaining {
   color: #f87171;
   font-weight: 600;
-}
-
-/* 百分比 */
-.percentage {
-  font-size: 9px;
-  font-weight: 700;
-  color: #fbbf24;
-  letter-spacing: 0.5px;
 }
 </style>
