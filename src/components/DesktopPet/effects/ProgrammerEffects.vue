@@ -4,6 +4,213 @@
 
 <template>
   <div class="programmer-effects">
+    <!-- 巨大透明显示屏 -->
+    <div class="holographic-display">
+      <!-- 显示屏外框 - 发光边框 -->
+      <div class="display-frame">
+        <!-- 显示屏内屏 -->
+        <div class="display-screen">
+          <!-- 扫描线效果 -->
+          <div class="scanlines"></div>
+
+          <!-- 代码滚动区域 -->
+          <div class="code-scroll-container">
+            <div class="code-scroll">
+              <!-- 代码行 1 -->
+              <div class="code-line">
+                <span class="keyword">const</span>
+                <span class="variable">data</span>
+                <span class="operator">=</span>
+                <span class="function">fetch</span>
+                <span class="bracket">(</span>
+                <span class="string">'/api'</span>
+                <span class="bracket">)</span>
+                <span class="punctuation">;</span>
+              </div>
+              <!-- 代码行 2 -->
+              <div class="code-line">
+                <span class="keyword">async</span>
+                <span class="keyword">function</span>
+                <span class="function">process</span>
+                <span class="bracket">(</span>
+                <span class="variable">items</span>
+                <span class="bracket">)</span>
+                <span class="bracket">{</span>
+              </div>
+              <!-- 代码行 3 -->
+              <div class="code-line indent">
+                <span class="keyword">return</span>
+                <span class="variable">items</span>
+                <span class="operator">.</span>
+                <span class="function">map</span>
+                <span class="bracket">(</span>
+                <span class="variable">x</span>
+                <span class="operator">=></span>
+                <span class="variable">x</span>
+                <span class="operator">*</span>
+                <span class="number">2</span>
+                <span class="bracket">)</span>
+                <span class="punctuation">;</span>
+              </div>
+              <!-- 代码行 4 -->
+              <div class="code-line">
+                <span class="bracket">}</span>
+              </div>
+              <!-- 代码行 5 -->
+              <div class="code-line">
+                <span class="keyword">import</span>
+                <span class="bracket">{</span>
+                <span class="variable">ref</span>
+                <span class="punctuation">,</span>
+                <span class="variable">computed</span>
+                <span class="bracket">}</span>
+                <span class="keyword">from</span>
+                <span class="string">'vue'</span>
+                <span class="punctuation">;</span>
+              </div>
+              <!-- 代码行 6 -->
+              <div class="code-line">
+                <span class="keyword">interface</span>
+                <span class="type">PetState</span>
+                <span class="bracket">{</span>
+              </div>
+              <!-- 代码行 7 -->
+              <div class="code-line indent">
+                <span class="property">name</span>
+                <span class="punctuation">:</span>
+                <span class="type">string</span>
+                <span class="punctuation">;</span>
+              </div>
+              <!-- 代码行 8 -->
+              <div class="code-line indent">
+                <span class="property">duration</span>
+                <span class="punctuation">:</span>
+                <span class="type">number</span>
+                <span class="punctuation">;</span>
+              </div>
+              <!-- 代码行 9 -->
+              <div class="code-line">
+                <span class="bracket">}</span>
+              </div>
+              <!-- 代码行 10 -->
+              <div class="code-line">
+                <span class="comment">// Initialize pet controller</span>
+              </div>
+              <!-- 代码行 11 -->
+              <div class="code-line">
+                <span class="keyword">export</span>
+                <span class="keyword">function</span>
+                <span class="function">initPet</span>
+                <span class="bracket">(</span>
+                <span class="bracket">)</span>
+                <span class="bracket">{</span>
+              </div>
+              <!-- 代码行 12 -->
+              <div class="code-line indent">
+                <span class="keyword">const</span>
+                <span class="variable">pet</span>
+                <span class="operator">=</span>
+                <span class="function">createPet</span>
+                <span class="bracket">(</span>
+                <span class="bracket">)</span>
+                <span class="punctuation">;</span>
+              </div>
+              <!-- 代码行 13 -->
+              <div class="code-line indent">
+                <span class="variable">pet</span>
+                <span class="operator">.</span>
+                <span class="function">startAnimation</span>
+                <span class="bracket">(</span>
+                <span class="bracket">)</span>
+                <span class="punctuation">;</span>
+              </div>
+              <!-- 代码行 14 -->
+              <div class="code-line">
+                <span class="bracket">}</span>
+              </div>
+              <!-- 代码行 15 -->
+              <div class="code-line">
+                <span class="keyword">class</span>
+                <span class="type">AnimationEngine</span>
+                <span class="bracket">{</span>
+              </div>
+              <!-- 代码行 16 -->
+              <div class="code-line indent">
+                <span class="keyword">private</span>
+                <span class="variable">frames</span>
+                <span class="operator">=</span>
+                <span class="number">0</span>
+                <span class="punctuation">;</span>
+              </div>
+              <!-- 代码行 17 -->
+              <div class="code-line indent">
+                <span class="function">render</span>
+                <span class="bracket">(</span>
+                <span class="bracket">)</span>
+                <span class="bracket">{</span>
+                <span class="bracket">}</span>
+              </div>
+              <!-- 代码行 18 -->
+              <div class="code-line">
+                <span class="bracket">}</span>
+              </div>
+              <!-- 重复代码行用于无缝滚动 -->
+              <div class="code-line">
+                <span class="keyword">const</span>
+                <span class="variable">data</span>
+                <span class="operator">=</span>
+                <span class="function">fetch</span>
+                <span class="bracket">(</span>
+                <span class="string">'/api'</span>
+                <span class="bracket">)</span>
+                <span class="punctuation">;</span>
+              </div>
+              <div class="code-line">
+                <span class="keyword">async</span>
+                <span class="keyword">function</span>
+                <span class="function">process</span>
+                <span class="bracket">(</span>
+                <span class="variable">items</span>
+                <span class="bracket">)</span>
+                <span class="bracket">{</span>
+              </div>
+              <div class="code-line indent">
+                <span class="keyword">return</span>
+                <span class="variable">items</span>
+                <span class="operator">.</span>
+                <span class="function">map</span>
+                <span class="bracket">(</span>
+                <span class="variable">x</span>
+                <span class="operator">=></span>
+                <span class="variable">x</span>
+                <span class="operator">*</span>
+                <span class="number">2</span>
+                <span class="bracket">)</span>
+                <span class="punctuation">;</span>
+              </div>
+              <div class="code-line">
+                <span class="bracket">}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 光标闪烁 -->
+          <div class="cursor-blink">_</div>
+
+          <!-- 屏幕底部反光 -->
+          <div class="screen-reflection"></div>
+        </div>
+      </div>
+
+      <!-- 发光粒子 -->
+      <div class="glow-particles">
+        <div class="particle particle-1"></div>
+        <div class="particle particle-2"></div>
+        <div class="particle particle-3"></div>
+        <div class="particle particle-4"></div>
+      </div>
+    </div>
+
     <!-- 代码雨效果 -->
     <div class="code-rain">
       <div class="code-column column-1">
@@ -363,14 +570,329 @@
   overflow: visible;
 }
 
-/* 代码雨 */
+/* ==================== 全息显示屏 ==================== */
+.holographic-display {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -80%);
+  z-index: 5;
+}
+
+.display-frame {
+  position: relative;
+  width: 180px;
+  height: 110px;
+  border-radius: 12px;
+  background: transparent;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* 发光边框 */
+.display-frame::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 14px;
+  padding: 2px;
+  background: linear-gradient(
+    45deg,
+    #00ffc8,
+    #0096ff,
+    #6400ff,
+    #ff00c8,
+    #00ffc8
+  );
+  background-size: 300% 300%;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: border-gradient 4s linear infinite;
+}
+
+.display-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: transparent;
+}
+
+@keyframes frame-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(0, 255, 200, 0.3),
+      0 0 40px rgba(0, 150, 255, 0.2),
+      0 0 60px rgba(100, 0, 255, 0.1),
+      inset 0 0 30px rgba(0, 255, 200, 0.05);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(0, 255, 200, 0.5),
+      0 0 60px rgba(0, 150, 255, 0.3),
+      0 0 90px rgba(100, 0, 255, 0.2),
+      inset 0 0 40px rgba(0, 255, 200, 0.1);
+  }
+}
+
+@keyframes border-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 显示屏内屏 */
+.display-screen {
+  position: absolute;
+  inset: 8px;
+  border-radius: 6px;
+  background: transparent;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* 扫描线效果 */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 255, 200, 0.03) 2px,
+    rgba(0, 255, 200, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 10;
+  animation: scanline-move 8s linear infinite;
+}
+
+@keyframes scanline-move {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(20px);
+  }
+}
+
+/* 代码滚动容器 */
+.code-scroll-container {
+  position: absolute;
+  inset: 6px;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+}
+
+.code-scroll {
+  animation: code-scroll-up 12s linear infinite;
+  font-family: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+  font-size: 7px;
+  line-height: 1.4;
+}
+
+@keyframes code-scroll-up {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+/* 代码行样式 */
+.code-line {
+  white-space: nowrap;
+  padding: 1px 4px;
+  letter-spacing: 0.3px;
+}
+
+.code-line.indent {
+  padding-left: 10px;
+}
+
+/* 语法高亮 */
+.keyword {
+  color: #c792ea;
+  font-weight: 500;
+}
+
+.variable {
+  color: #82aaff;
+}
+
+.function {
+  color: #82e0aa;
+}
+
+.operator {
+  color: #89ddff;
+  margin: 0 1px;
+}
+
+.bracket {
+  color: #ffcb6b;
+}
+
+.punctuation {
+  color: #676e95;
+}
+
+.string {
+  color: #c3e88d;
+}
+
+.number {
+  color: #f78c6c;
+}
+
+.type {
+  color: #ffcb6b;
+}
+
+.property {
+  color: #f07178;
+}
+
+.comment {
+  color: #546e7a;
+  font-style: italic;
+}
+
+/* 光标闪烁 */
+.cursor-blink {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: #00ffc8;
+  animation: cursor-blink-anim 1s step-end infinite;
+  text-shadow: 0 0 8px #00ffc8;
+  z-index: 5;
+}
+
+@keyframes cursor-blink-anim {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* 屏幕反光 */
+.screen-reflection {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+  border-radius: 6px 6px 0 0;
+}
+
+/* 发光粒子 */
+.glow-particles {
+  position: absolute;
+  inset: -20px;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  animation: particle-float 4s ease-in-out infinite;
+}
+
+.particle-1 {
+  top: 10%;
+  left: 5%;
+  background: #00ffc8;
+  box-shadow: 0 0 10px #00ffc8;
+  animation-delay: 0s;
+}
+
+.particle-2 {
+  top: 20%;
+  right: 5%;
+  background: #0096ff;
+  box-shadow: 0 0 10px #0096ff;
+  animation-delay: 1s;
+}
+
+.particle-3 {
+  bottom: 30%;
+  left: 8%;
+  background: #6400ff;
+  box-shadow: 0 0 10px #6400ff;
+  animation-delay: 2s;
+}
+
+.particle-4 {
+  bottom: 20%;
+  right: 8%;
+  background: #ff00c8;
+  box-shadow: 0 0 10px #ff00c8;
+  animation-delay: 3s;
+}
+
+@keyframes particle-float {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.5);
+  }
+}
+
+/* ==================== 代码雨 ==================== */
 .code-rain {
   position: absolute;
-  top: -40px;
+  top: -60px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: 8px;
+  z-index: 5;
 }
 
 .code-column {
@@ -490,12 +1012,13 @@
   }
 }
 
-/* 咖啡杯 */
+/* ==================== 咖啡杯 ==================== */
 .coffee-cup {
   position: absolute;
   bottom: -35px;
   right: -15px;
   animation: coffee-wobble 2s ease-in-out infinite;
+  z-index: 10;
 }
 
 .coffee-svg {
@@ -514,13 +1037,14 @@
   }
 }
 
-/* 代码窗口 */
+/* ==================== 代码窗口 ==================== */
 .code-window {
   position: absolute;
   top: -30px;
   right: -25px;
   opacity: 0;
   animation: window-float 4s ease-in-out infinite;
+  z-index: 10;
 }
 
 .window-svg {
@@ -546,7 +1070,7 @@
   }
 }
 
-/* 黑眼圈 */
+/* ==================== 黑眼圈 ==================== */
 .dark-circles {
   position: absolute;
   top: 20px;
@@ -554,6 +1078,7 @@
   transform: translateX(-50%);
   display: flex;
   gap: 25px;
+  z-index: 10;
 }
 
 .dark-circle {
@@ -565,11 +1090,12 @@
   height: 9px;
 }
 
-/* Bug 图标 */
+/* ==================== Bug 图标 ==================== */
 .bug-icon {
   position: absolute;
   opacity: 0;
   animation: bug-crawl 3s ease-in-out infinite;
+  z-index: 10;
 }
 
 .bug-1 {
@@ -607,11 +1133,12 @@
   }
 }
 
-/* 终端光标 */
+/* ==================== 终端光标 ==================== */
 .terminal-cursor {
   position: absolute;
   top: -25px;
   left: -10px;
+  z-index: 10;
 }
 
 .cursor-svg {
@@ -619,11 +1146,12 @@
   height: 15px;
 }
 
-/* 电池 */
+/* ==================== 电池 ==================== */
 .battery {
   position: absolute;
   bottom: -30px;
   left: -20px;
+  z-index: 10;
 }
 
 .battery-svg {
@@ -631,7 +1159,7 @@
   height: 10px;
 }
 
-/* 头脑风暴 */
+/* ==================== 头脑风暴 ==================== */
 .brainstorm {
   position: absolute;
   top: -40px;
@@ -639,6 +1167,7 @@
   transform: translateX(-50%);
   opacity: 0;
   animation: brainstorm-pulse 3s ease-in-out infinite;
+  z-index: 10;
 }
 
 .brainstorm-svg {
@@ -664,13 +1193,14 @@
   }
 }
 
-/* 代码符号 */
+/* ==================== 代码符号 ==================== */
 .code-symbol {
   position: absolute;
   opacity: 0;
   font-family: "Courier New", monospace;
   font-weight: bold;
   animation: symbol-float 2.5s ease-in-out infinite;
+  z-index: 10;
 }
 
 .symbol-1 {
