@@ -150,7 +150,7 @@ defineExpose({
 <style scoped>
 .work-progress-bar {
   position: absolute;
-  bottom: -45px;
+  bottom: -80px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
