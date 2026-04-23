@@ -10,9 +10,6 @@
       <div class="display-frame">
         <!-- 显示屏内屏 -->
         <div class="display-screen">
-          <!-- 扫描线效果 -->
-          <div class="scanlines"></div>
-
           <!-- 代码滚动区域 -->
           <div class="code-scroll-container">
             <div class="code-scroll">
@@ -648,50 +645,11 @@
   z-index: 1;
 }
 
-/* 扫描线效果 */
-.scanlines {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0px,
-    transparent 2px,
-    rgba(0, 255, 200, 0.03) 2px,
-    rgba(0, 255, 200, 0.03) 4px
-  );
-  pointer-events: none;
-  z-index: 10;
-  animation: scanline-move 8s linear infinite;
-}
-
-@keyframes scanline-move {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(20px);
-  }
-}
-
 /* 代码滚动容器 */
 .code-scroll-container {
   position: absolute;
   inset: 6px;
   overflow: hidden;
-  mask-image: linear-gradient(
-    180deg,
-    transparent 0%,
-    black 15%,
-    black 85%,
-    transparent 100%
-  );
-  -webkit-mask-image: linear-gradient(
-    180deg,
-    transparent 0%,
-    black 15%,
-    black 85%,
-    transparent 100%
-  );
 }
 
 .code-scroll {
