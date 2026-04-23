@@ -161,6 +161,20 @@ export const dialogueMessages: Record<string, string[]> = {
   ],
 };
 
+// 打工忙碌时的台词（玩家交互时显示）
+export const workBusyMessages: string[] = [
+  "正在忙呢...",
+  "等会好吗？",
+  "先别打扰我~",
+  "手头有活儿！",
+  "忙完找你~",
+  "稍等一下！",
+  "干活中请勿打扰~",
+  "马上就好！",
+  "再坚持一会儿...",
+  "工作ing~",
+];
+
 // 梦话列表（仅在睡眠期间使用）
 export const dreamTalkMessages: string[] = [
   "呼噜呼噜~",

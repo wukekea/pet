@@ -46,6 +46,36 @@ import {
 } from "./stats";
 import { setPassthrough } from "./passthrough";
 
+// 打工状态列表
+const WORK_STATES: PetState[] = [
+  "brickCarrying",
+  "flyerDistributing",
+  "programmer",
+];
+
+// 判断是否是打工状态
+function isWorkState(state: PetState): boolean {
+  return WORK_STATES.includes(state);
+}
+
+// 显示打工忙碌台词
+function showWorkBusyDialogue() {
+  const messages = [
+    "正在忙呢...",
+    "等会好吗？",
+    "先别打扰我~",
+    "手头有活儿！",
+    "忙完找你~",
+    "稍等一下！",
+    "干活中请勿打扰~",
+    "马上就好！",
+    "再坚持一会儿...",
+    "工作ing~",
+  ];
+  const message = messages[Math.floor(Math.random() * messages.length)];
+  showCustomDialogue(message);
+}
+
 function isMouseOnPet(x: number, y: number): boolean {
   const petX = position.value.x;
   const petY = position.value.y;
@@ -342,6 +372,9 @@ export function handlePetClick() {
   if (petState.value === "sleeping" || petState.value === "sleepy") {
     // 睡眠或睡眼朦胧期间点击，显示睡眼朦胧状态和专有对话
     changeState("sleepy");
+  } else if (isWorkState(petState.value)) {
+    // 打工状态下，显示忙碌台词，不改变状态
+    showWorkBusyDialogue();
   } else {
     const reactions: PetState[] = [
       "happy",
@@ -368,6 +401,11 @@ export function handlePetDoubleClick() {
     changeState("sleepy");
     return;
   }
+  // 打工状态下，显示忙碌台词，不改变状态
+  if (isWorkState(petState.value)) {
+    showWorkBusyDialogue();
+    return;
+  }
   // 双击触发跳舞或翻滚
   const specialActions: PetState[] = ["dancing", "rolling"];
   changeState(
@@ -376,6 +414,8 @@ export function handlePetDoubleClick() {
 }
 // 拖拽相关
 let dragOffset = { x: 0, y: 0 };
+// 拖拽前的状态（用于打工状态拖拽后恢复）
+let stateBeforeDrag: PetState | null = null;
 // 初始化定时器
 let initTimer: ReturnType<typeof setTimeout> | null = null;
 let initTimer2: ReturnType<typeof setTimeout> | null = null;
@@ -392,10 +432,15 @@ export function handleDragStart(e: MouseEvent) {
     y: e.clientY - position.value.y,
   };
   if (stateTimer.value) clearTimeout(stateTimer.value);
+  // 保存当前状态
+  stateBeforeDrag = petState.value;
   // 睡眠状态下拖拽时进入睡眠行走状态（手脚会动，眼睛像睡眼朦胧）
   if (petState.value === "sleeping" || petState.value === "sleepy") {
     petState.value = "sleepwalking";
-  } else {
+  }
+  // 打工状态下拖拽时保持当前状态，不改变
+  // 其他状态下拖拽时进入行走状态
+  if (!isWorkState(petState.value) && petState.value !== "sleepwalking") {
     petState.value = "walking";
   }
   window.addEventListener("mousemove", handleDragging);
@@ -430,6 +475,10 @@ function handleDragEnd() {
   window.removeEventListener("mouseup", handleDragEnd);
   // 恢复正面朝向
   petDirection.value = "front";
+
+  // 判断拖拽前是否是打工状态
+  const wasWorking = stateBeforeDrag && isWorkState(stateBeforeDrag);
+
   // 睡眠行走状态下拖拽结束后恢复睡眠状态
   if (
     petState.value === "sleepwalking" ||
@@ -437,9 +486,14 @@ function handleDragEnd() {
     petState.value === "sleepy"
   ) {
     changeState("sleeping");
+  } else if (wasWorking && stateBeforeDrag) {
+    // 打工状态下拖拽结束后恢复原来的打工状态
+    changeState(stateBeforeDrag);
   } else {
     changeState("idle");
   }
+
+  stateBeforeDrag = null;
 }
 // 切换宠物显示
 export function togglePet() {
