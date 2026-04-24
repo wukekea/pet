@@ -132,36 +132,64 @@
 
     <!-- 宣传喇叭 -->
     <div class="megaphone">
-      <svg viewBox="0 0 40 32" class="megaphone-svg">
+      <svg viewBox="0 0 40 40" class="megaphone-svg">
+        <!-- 竖直把手 -->
+        <rect x="0" y="12" width="5" height="16" rx="2" fill="#1A1A1A" />
+        <rect x="1" y="14" width="3" height="12" rx="1" fill="#2A2A2A" />
+
         <!-- 喇叭主体 -->
-        <path d="M4 12 L12 8 L12 24 L4 20 Z" fill="#4A4A4A" />
-        <path d="M12 8 L28 4 L28 28 L12 24 Z" fill="#6A6A6A" />
-        <ellipse cx="28" cy="16" rx="4" ry="12" fill="#8A8A8A" />
+        <path d="M6 14 L12 10 L12 22 L6 18 Z" fill="#2A2A2A" />
+        <path d="M12 10 L24 6 L24 26 L12 22 Z" fill="#3A3A3A" />
+        <ellipse cx="24" cy="16" rx="3" ry="10" fill="#4A4A4A" />
         <!-- 喇叭口 -->
         <ellipse
-          cx="32"
+          cx="28"
           cy="16"
-          rx="6"
-          ry="14"
+          rx="5"
+          ry="12"
           fill="none"
-          stroke="#4A4A4A"
+          stroke="#1A1A1A"
           stroke-width="2"
         />
-        <!-- 声波 -->
+        <!-- 喇叭口内部渐变感 -->
+        <ellipse cx="28" cy="16" rx="4" ry="10" fill="#2A2A2A" />
+        <ellipse cx="28" cy="16" rx="2" ry="6" fill="#1A1A1A" />
+        <!-- 金属光泽 -->
         <path
-          d="M38 10 Q42 16 38 22"
+          d="M14 12 L22 8"
+          stroke="#5A5A5A"
+          stroke-width="1"
+          opacity="0.5"
+        />
+        <path
+          d="M14 20 L22 24"
+          stroke="#5A5A5A"
+          stroke-width="1"
+          opacity="0.3"
+        />
+        <!-- 声波（竖着的曲线，依次变长） -->
+        <path
+          d="M33 13 Q35 16 33 19"
           stroke="#FF6B6B"
           stroke-width="2"
           fill="none"
           stroke-linecap="round"
         />
         <path
-          d="M40 6 Q46 16 40 26"
+          d="M36 10 Q39 16 36 22"
           stroke="#FF6B6B"
           stroke-width="2"
           fill="none"
           stroke-linecap="round"
-          opacity="0.6"
+          opacity="0.7"
+        />
+        <path
+          d="M39 7 Q43 16 39 25"
+          stroke="#FF6B6B"
+          stroke-width="2"
+          fill="none"
+          stroke-linecap="round"
+          opacity="0.4"
         />
       </svg>
     </div>
@@ -391,7 +419,7 @@
 
 .megaphone-svg {
   width: 30px;
-  height: 24px;
+  height: 30px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
