@@ -9,6 +9,7 @@ import {
   NON_MOVING_STATES,
   HELLO_DURATION,
   WORK_STATES,
+  WORK_REST_DURATION,
 } from "../constants";
 import { workBusyMessages } from "../dialogues";
 import type { PetState } from "../types";
@@ -45,9 +46,18 @@ import {
 } from "./stats";
 import { setPassthrough } from "./passthrough";
 
+// 是否刚从工作状态退出（用于增加休息间隔）
+let justFinishedWork = false;
+
 // 判断是否是打工状态
 export function isWorkState(state: PetState): boolean {
   return WORK_STATES.includes(state);
+}
+
+// 停止工作状态（供强制终止调用）
+export function stopWork(): void {
+  justFinishedWork = true;
+  changeState("idle");
 }
 
 // 显示打工忙碌台词
@@ -183,7 +193,13 @@ export async function changeState(newState: PetState, skipDialogue = false) {
   const duration = STATE_DURATIONS[newState];
 
   switch (newState) {
-    case "idle":
+    case "idle": {
+      // 如果刚从工作状态退出，使用更长的休息间隔
+      const idleDuration = justFinishedWork
+        ? WORK_REST_DURATION
+        : IDLE_DURATION;
+      justFinishedWork = false; // 重置标记
+
       stateTimer.value = window.setTimeout(() => {
         if (!isDragging.value) {
           if (isInSleepSchedule.value) {
@@ -225,8 +241,9 @@ export async function changeState(newState: PetState, skipDialogue = false) {
             moveToRandomPosition();
           }
         }
-      }, IDLE_DURATION);
+      }, idleDuration);
       break;
+    }
 
     case "sleeping":
       // 通知作息系统开始睡眠
@@ -289,9 +306,10 @@ export async function changeState(newState: PetState, skipDialogue = false) {
           workEndTime = Date.now() + duration;
         }
         stateTimer.value = window.setTimeout(() => {
-          // 打工状态结束时清除结束时间
+          // 打工状态结束时清除结束时间，并设置休息间隔标记
           if (isWorkState(petState.value)) {
             workEndTime = null;
+            justFinishedWork = true;
           }
           changeState("idle");
         }, duration);

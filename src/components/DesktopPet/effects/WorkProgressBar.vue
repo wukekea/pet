@@ -3,7 +3,7 @@
 import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
 import { STATE_DURATIONS, WORK_STATES } from "../constants";
 import { petState } from "../composables/sharedState";
-import { changeState, isWorkState } from "../composables/petController";
+import { isWorkState, stopWork } from "../composables/petController";
 
 // 工作状态类型
 type WorkState = (typeof WORK_STATES)[number];
@@ -89,7 +89,7 @@ const stopTracking = () => {
 // 强制终止工作
 const forceStop = () => {
   stopTracking();
-  changeState("idle");
+  stopWork();
 };
 
 // 监听打工状态变化，自动开始/停止追踪
@@ -137,7 +137,7 @@ defineExpose({
       <span class="separator">/</span>
       <span class="remaining">{{ formatTime(remainingSeconds) }}</span>
       <!-- 强制终止按钮 -->
-      <button class="stop-btn" @click="forceStop" title="终止工作">
+      <button class="stop-btn" @click.stop="forceStop" title="终止工作">
         <svg viewBox="0 0 12 12" class="stop-icon">
           <path
             d="M2 2 L10 10 M10 2 L2 10"
