@@ -92,6 +92,8 @@ export interface AttributeData {
   money: number; // 金币
   level: number; // 等级
   experience: number; // 当前经验值
+  dailyInteractionExp: number; // 今日交互经验累计
+  dailyInteractionExpDate: string; // 今日交互经验日期（YYYY-MM-DD）
   lastUpdateTimestamp: number; // 上次更新时间戳（毫秒）
 }
 

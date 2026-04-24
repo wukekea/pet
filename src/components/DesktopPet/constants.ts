@@ -150,7 +150,8 @@ export const HEALTH_SICK_THRESHOLD = 30; // 健康生病阈值
 export const MAX_LEVEL = 40; // 等级上限
 export const INTERACTION_EXPERIENCE = 1; // 互动经验
 export const COMPANIONSHIP_EXPERIENCE = 1; // 陪伴经验
-export const COMPANIONSHIP_INTERVAL = 120; // 陪伴经验间隔（秒）
+export const COMPANIONSHIP_INTERVAL = 600; // 陪伴经验间隔（秒）
+export const DAILY_INTERACTION_EXPERIENCE_CAP = 10; // 每日交互经验上限
 
 // 健康值上限（固定）
 export const HEALTH_CAP = 100;

@@ -66,6 +66,8 @@ export const DEFAULT_ATTRIBUTE_DATA: AttributeData = {
   money: STARTING_MONEY,
   level: 1,
   experience: 0,
+  dailyInteractionExp: 0,
+  dailyInteractionExpDate: "",
   lastUpdateTimestamp: Date.now(),
 };
 
@@ -94,6 +96,13 @@ export function loadAttributeData(): AttributeData {
         typeof data.level === "number" &&
         typeof data.experience === "number"
       ) {
+        // 兼容旧数据：补全新增字段
+        if (typeof data.dailyInteractionExp !== "number") {
+          data.dailyInteractionExp = 0;
+        }
+        if (typeof data.dailyInteractionExpDate !== "string") {
+          data.dailyInteractionExpDate = "";
+        }
         return data;
       }
     }

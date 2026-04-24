@@ -22,6 +22,7 @@ import {
   COMPANIONSHIP_EXPERIENCE,
   COMPANIONSHIP_INTERVAL,
   HEALTH_CAP,
+  DAILY_INTERACTION_EXPERIENCE_CAP,
 } from "../constants";
 import {
   loadAttributeData,
@@ -94,6 +95,22 @@ export function getCurrentAttributeCap(): number {
 export function getExpProgress(): number {
   const required = getExpRequiredForLevel(attributeData.value.level);
   return Math.min((attributeData.value.experience / required) * 100, 100);
+}
+
+// 获取今日交互经验进度（已获得/上限）
+export function getDailyInteractionProgress(): {
+  earned: number;
+  cap: number;
+} {
+  const data = attributeData.value;
+  const today = getTodayDate();
+  if (data.dailyInteractionExpDate !== today) {
+    return { earned: 0, cap: DAILY_INTERACTION_EXPERIENCE_CAP };
+  }
+  return {
+    earned: data.dailyInteractionExp,
+    cap: DAILY_INTERACTION_EXPERIENCE_CAP,
+  };
 }
 
 // 每秒 tick 逻辑
@@ -233,7 +250,7 @@ export function feedPet(foodType: FoodType, isAuto = false): boolean {
 
   // 互动经验（仅手动时）
   if (!isAuto) {
-    addExperience(INTERACTION_EXPERIENCE);
+    addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
   }
 
   debouncedSave();
@@ -255,7 +272,7 @@ export function bathePet(isAuto = false): boolean {
   }
 
   if (!isAuto) {
-    addExperience(INTERACTION_EXPERIENCE);
+    addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
   }
 
   debouncedSave();
@@ -291,9 +308,35 @@ export function onWorkComplete(workState: PetState): void {
   debouncedSave();
 }
 
+// 获取今日日期字符串
+function getTodayDate(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+}
+
+// 带每日上限的交互经验
+function addInteractionExpWithLimit(amount: number): void {
+  const data = attributeData.value;
+  const today = getTodayDate();
+
+  // 日期变更，重置计数
+  if (data.dailyInteractionExpDate !== today) {
+    data.dailyInteractionExpDate = today;
+    data.dailyInteractionExp = 0;
+  }
+
+  // 检查每日上限
+  const remaining = DAILY_INTERACTION_EXPERIENCE_CAP - data.dailyInteractionExp;
+  if (remaining <= 0) return;
+
+  const actual = Math.min(amount, remaining);
+  data.dailyInteractionExp += actual;
+  addExperience(actual);
+}
+
 // 互动经验（点击/双击时调用）
 export function addInteractionExperience(): void {
-  addExperience(INTERACTION_EXPERIENCE);
+  addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
 }
 
 // 增加经验并检查升级

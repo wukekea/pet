@@ -7,6 +7,7 @@ import {
   useAttributeRef,
   getCurrentAttributeCap,
   getExpProgress,
+  getDailyInteractionProgress,
   feedPet,
   bathePet,
   startWork,
@@ -39,6 +40,9 @@ const attrCap = computed(() => getCurrentAttributeCap());
 
 // 经验进度
 const expPercent = computed(() => getExpProgress());
+
+// 每日交互经验进度
+const dailyInteraction = computed(() => getDailyInteractionProgress());
 
 // 升级所需经验
 const expRequired = computed(() =>
@@ -245,6 +249,11 @@ const close = () => {
                 </span>
               </div>
               <div class="max-level-hint" v-else>✦ 满级 ✦</div>
+              <div class="daily-exp-hint">
+                今日互动经验 {{ dailyInteraction.earned }}/{{
+                  dailyInteraction.cap
+                }}
+              </div>
             </div>
 
             <!-- 属性条 -->
@@ -593,6 +602,13 @@ const close = () => {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.daily-exp-hint {
+  text-align: center;
+  font-size: 11px;
+  color: var(--cap-text-color);
+  margin-top: 6px;
 }
 
 /* 属性条 */
