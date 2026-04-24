@@ -30,34 +30,8 @@ import { initStats, cleanupStats } from "./composables/stats";
 import { setPassthrough } from "./composables/passthrough";
 import { initPetShape } from "./composables/petShapeStorage";
 import { getShapeConfig, getShapeComponent } from "./shapes";
+import { STATE_EFFECTS, WORK_STATE_WITH_PROGRESS } from "./effectsMap";
 import WeatherBackground from "./WeatherBackground.vue";
-import EatingEffects from "./EatingEffects.vue";
-// 效果组件
-import SleepBubble from "./effects/SleepBubble.vue";
-import HappyEffects from "./effects/HappyEffects.vue";
-import AngryEffects from "./effects/AngryEffects.vue";
-import DizzyEffects from "./effects/DizzyEffects.vue";
-import ScaredEffects from "./effects/ScaredEffects.vue";
-import ThinkingEffects from "./effects/ThinkingEffects.vue";
-import SmugEffects from "./effects/SmugEffects.vue";
-import ShyEffects from "./effects/ShyEffects.vue";
-import ConfusedEffects from "./effects/ConfusedEffects.vue";
-import HelloEffects from "./effects/HelloEffects.vue";
-import SneezeEffects from "./effects/SneezeEffects.vue";
-import GrinEffects from "./effects/GrinEffects.vue";
-import ScratchEffects from "./effects/ScratchEffects.vue";
-import CelebrateEffects from "./effects/CelebrateEffects.vue";
-import PeekEffects from "./effects/PeekEffects.vue";
-import DancingEffects from "./effects/DancingEffects.vue";
-import RollingEffects from "./effects/RollingEffects.vue";
-import YawnEffects from "./effects/YawnEffects.vue";
-import SleepyEffects from "./effects/SleepyEffects.vue";
-import SleepwalkingEffects from "./effects/SleepwalkingEffects.vue";
-import StretchEffects from "./effects/StretchEffects.vue";
-import BathingEffects from "./effects/BathingEffects.vue";
-import BrickCarryingEffects from "./effects/BrickCarryingEffects.vue";
-import FlyerDistributingEffects from "./effects/FlyerDistributingEffects.vue";
-import ProgrammerEffects from "./effects/ProgrammerEffects.vue";
 import WorkProgressBar from "./effects/WorkProgressBar.vue";
 import Footprints from "./footprints/index.vue";
 import DialogueBubble from "./dialogue/index.vue";
@@ -124,6 +98,17 @@ const currentShapeComponent = computed(() =>
 const dialogueVariant = computed(() =>
   ["sleeping", "sleepy", "yawn"].includes(petState.value) ? "cloud" : "default",
 );
+
+// 当前效果组件
+const currentEffectComponent = computed(() => {
+  const state = petState.value;
+  return STATE_EFFECTS[state] || null;
+});
+
+// 是否显示工作进度条
+const showWorkProgressBar = computed(() => {
+  return WORK_STATE_WITH_PROGRESS.includes(petState.value);
+});
 
 // 初始化
 onMounted(async () => {
@@ -254,92 +239,11 @@ const closeStatsModal = () => {
         :pet-direction="petDirection"
       />
 
-      <!-- 睡眠气泡 -->
-      <SleepBubble v-if="petState === 'sleeping'" />
-
-      <!-- 开心效果 -->
-      <HappyEffects v-if="petState === 'happy'" />
-
-      <!-- 生气效果 -->
-      <AngryEffects v-if="petState === 'angry'" />
-
-      <!-- 晕眩效果（摔倒时显示） -->
-      <DizzyEffects v-if="petState === 'fallen'" />
-
-      <!-- 惊吓效果 -->
-      <ScaredEffects v-if="petState === 'scared'" />
-
-      <!-- 思考效果 -->
-      <ThinkingEffects v-if="petState === 'thinking'" />
-
-      <!-- 得意效果 -->
-      <SmugEffects v-if="petState === 'smug'" />
-
-      <!-- 害羞效果 -->
-      <ShyEffects v-if="petState === 'shy'" />
-
-      <!-- 疑惑效果 -->
-      <ConfusedEffects v-if="petState === 'confused'" />
-
-      <!-- 打招呼效果 -->
-      <HelloEffects v-if="petState === 'hello'" />
-
-      <!-- 打喷嚏效果 -->
-      <SneezeEffects v-if="petState === 'sneeze'" />
-
-      <!-- 坏笑效果 -->
-      <GrinEffects v-if="petState === 'grin'" />
-
-      <!-- 挠头效果 -->
-      <ScratchEffects v-if="petState === 'scratch'" />
-
-      <!-- 跳跃庆祝效果 -->
-      <CelebrateEffects v-if="petState === 'celebrate'" />
-
-      <!-- 偷看效果 -->
-      <PeekEffects v-if="petState === 'peek'" />
-
-      <!-- 跳舞效果 -->
-      <DancingEffects v-if="petState === 'dancing'" />
-
-      <!-- 翻滚效果 -->
-      <RollingEffects v-if="petState === 'rolling'" />
-
-      <!-- 打哈欠效果 -->
-      <YawnEffects v-if="petState === 'yawn'" />
-
-      <!-- 睡眼朦胧效果 -->
-      <SleepyEffects v-if="petState === 'sleepy'" />
-
-      <!-- 睡眠行走效果 -->
-      <SleepwalkingEffects v-if="petState === 'sleepwalking'" />
-
-      <!-- 伸懒腰效果 -->
-      <StretchEffects v-if="petState === 'stretch'" />
-
-      <!-- 洗澡效果 -->
-      <BathingEffects v-if="petState === 'bathing'" />
-
-      <!-- 吃东西效果 -->
-      <EatingEffects v-if="petState === 'eating'" />
-
-      <!-- 搬砖效果 -->
-      <BrickCarryingEffects v-if="petState === 'brickCarrying'" />
-
-      <!-- 发传单效果 -->
-      <FlyerDistributingEffects v-if="petState === 'flyerDistributing'" />
-
-      <!-- 程序员效果 -->
-      <ProgrammerEffects v-if="petState === 'programmer'" />
+      <!-- 状态效果组件 -->
+      <component v-if="currentEffectComponent" :is="currentEffectComponent" />
 
       <!-- 工作进度条 -->
-      <WorkProgressBar
-        v-if="
-          ['brickCarrying', 'flyerDistributing', 'programmer'].includes(
-            petState,
-          )
-        "
-      />
+      <WorkProgressBar v-if="showWorkProgressBar" />
     </div>
 
     <!-- 对话气泡 -->
