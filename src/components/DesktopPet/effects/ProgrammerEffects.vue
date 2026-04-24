@@ -540,6 +540,54 @@
     <div class="code-symbol symbol-3">
       <span class="symbol-text">==</span>
     </div>
+
+    <!-- Wi-Fi 信号 -->
+    <div class="wifi-signal">
+      <svg viewBox="0 0 24 24" class="wifi-svg">
+        <!-- 信号波纹 -->
+        <path
+          d="M12 18 L12 18"
+          stroke="#4CAF50"
+          stroke-width="3"
+          stroke-linecap="round"
+        >
+          <animate
+            attributeName="opacity"
+            values="1;0.5;1"
+            dur="1.5s"
+            repeatCount="indefinite"
+          />
+        </path>
+        <path
+          d="M8 14 Q12 10 16 14"
+          stroke="#4CAF50"
+          stroke-width="2"
+          fill="none"
+          stroke-linecap="round"
+        >
+          <animate
+            attributeName="opacity"
+            values="0.5;1;0.5"
+            dur="1.5s"
+            repeatCount="indefinite"
+          />
+        </path>
+        <path
+          d="M4 10 Q12 4 20 10"
+          stroke="#4CAF50"
+          stroke-width="2"
+          fill="none"
+          stroke-linecap="round"
+        >
+          <animate
+            attributeName="opacity"
+            values="0.3;0.8;0.3"
+            dur="1.5s"
+            repeatCount="indefinite"
+          />
+        </path>
+      </svg>
+    </div>
   </div>
 </template>
 
@@ -1071,8 +1119,8 @@
 /* ==================== 电池 ==================== */
 .battery {
   position: absolute;
-  bottom: -30px;
-  left: -20px;
+  top: 8px;
+  right: 8px;
   z-index: 10;
 }
 
@@ -1126,20 +1174,20 @@
 }
 
 .symbol-1 {
-  top: -15px;
-  left: -15px;
+  bottom: -20px;
+  left: -20px;
   animation-delay: 0s;
 }
 
 .symbol-2 {
-  top: 0px;
-  right: -12px;
+  bottom: -10px;
+  left: -25px;
   animation-delay: 0.8s;
 }
 
 .symbol-3 {
-  top: -25px;
-  right: -5px;
+  bottom: -25px;
+  left: -15px;
   animation-delay: 1.6s;
 }
 
@@ -1164,5 +1212,19 @@
     opacity: 0;
     transform: translateY(-24px) rotate(20deg) scale(0.9);
   }
+}
+
+/* ==================== Wi-Fi 信号 ==================== */
+.wifi-signal {
+  position: absolute;
+  bottom: -25px;
+  left: -20px;
+  z-index: 10;
+}
+
+.wifi-svg {
+  width: 18px;
+  height: 18px;
+  filter: drop-shadow(0 0 4px rgba(76, 175, 80, 0.6));
 }
 </style>
