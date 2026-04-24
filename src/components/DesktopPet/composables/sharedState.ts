@@ -1,5 +1,5 @@
 // 共享状态 - 避免循环依赖
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import type { PetDirection, PetPosition, PetState } from "../types";
 
 // 宠物核心状态
@@ -23,17 +23,20 @@ export const stateTimer = ref<number | null>(null);
 export const animationFrameId = ref<number | null>(null);
 export const mousePosition = ref<PetPosition>({ x: 0, y: 0 });
 
-// 调试面板是否打开 - 打开时禁用自动穿透控制
+// UI 弹窗状态 - 打开时禁用自动穿透控制
 export const isDebugPanelOpen = ref(false);
-
-// 作息设置弹窗是否打开 - 打开时禁用自动穿透控制
 export const isScheduleModalOpen = ref(false);
-
-// 数据统计弹窗是否打开 - 打开时禁用自动穿透控制
 export const isStatsModalOpen = ref(false);
-
-// 右键菜单是否打开 - 打开时禁用自动穿透控制
 export const isContextMenuOpen = ref(false);
+
+// 统一的 UI 打开状态 - 用于穿透控制
+export const isAnyUiOpen = computed(
+  () =>
+    isDebugPanelOpen.value ||
+    isScheduleModalOpen.value ||
+    isStatsModalOpen.value ||
+    isContextMenuOpen.value,
+);
 
 // 作息相关状态
 export const isInSleepSchedule = ref(false); // 当前是否处于睡眠作息时间段

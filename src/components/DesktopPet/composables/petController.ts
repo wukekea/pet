@@ -14,12 +14,9 @@ import { workBusyMessages } from "../dialogues";
 import type { PetState } from "../types";
 import {
   animationFrameId,
-  isContextMenuOpen,
-  isDebugPanelOpen,
   isDragging,
   isInSleepSchedule,
-  isScheduleModalOpen,
-  isStatsModalOpen,
+  isAnyUiOpen,
   isVisible,
   mousePosition,
   petDirection,
@@ -49,7 +46,7 @@ import {
 import { setPassthrough } from "./passthrough";
 
 // 判断是否是打工状态
-function isWorkState(state: PetState): boolean {
+export function isWorkState(state: PetState): boolean {
   return WORK_STATES.includes(state);
 }
 
@@ -541,14 +538,8 @@ export async function initScreenSize() {
 // 处理鼠标移动
 export function handleMouseMove(e: MouseEvent) {
   mousePosition.value = { x: e.clientX, y: e.clientY };
-  // 调试面板、作息弹窗、统计弹窗或右键菜单打开时，不自动控制穿透
-  if (
-    isDebugPanelOpen.value ||
-    isScheduleModalOpen.value ||
-    isStatsModalOpen.value ||
-    isContextMenuOpen.value
-  )
-    return;
+  // 任意 UI 弹窗打开时，不自动控制穿透
+  if (isAnyUiOpen.value) return;
   // 检查是否在进度条区域内（进度条在宠物下方）
   const progressElement = document.querySelector(
     ".work-progress-bar",
