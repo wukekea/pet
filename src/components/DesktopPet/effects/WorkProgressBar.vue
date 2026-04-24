@@ -1,22 +1,17 @@
 <script setup lang="ts">
 // 工作进度条组件 - 显示打工状态的完成进度
-import { ref, onMounted, onBeforeUnmount, computed } from "vue";
-import { STATE_DURATIONS } from "../constants";
+import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
+import { STATE_DURATIONS, WORK_STATES } from "../constants";
 import { petState } from "../composables/sharedState";
-import { changeState } from "../composables/petController";
+import { changeState, isWorkState } from "../composables/petController";
 
-// 工作状态列表
-const workStates = [
-  "brickCarrying",
-  "flyerDistributing",
-  "programmer",
-] as const;
-type WorkState = (typeof workStates)[number];
+// 工作状态类型
+type WorkState = (typeof WORK_STATES)[number];
 
 // 计算当前工作状态
 const currentWorkState = computed(() => {
   const state = petState.value;
-  if (workStates.includes(state as WorkState)) {
+  if (isWorkState(state)) {
     return state as WorkState;
   }
   return null;
@@ -97,7 +92,15 @@ const forceStop = () => {
   changeState("idle");
 };
 
-// 监听状态变化
+// 监听打工状态变化，自动开始/停止追踪
+watch(petState, (newState) => {
+  if (isWorkState(newState)) {
+    startTracking();
+  } else {
+    stopTracking();
+  }
+});
+
 onMounted(() => {
   if (currentWorkState.value) {
     startTracking();
@@ -110,8 +113,6 @@ onBeforeUnmount(() => {
 
 // 暴露方法供外部调用
 defineExpose({
-  startTracking,
-  stopTracking,
   forceStop,
 });
 </script>

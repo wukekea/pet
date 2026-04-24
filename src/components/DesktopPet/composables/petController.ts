@@ -8,7 +8,9 @@ import {
   YAWN_DURATION,
   NON_MOVING_STATES,
   HELLO_DURATION,
+  WORK_STATES,
 } from "../constants";
+import { workBusyMessages } from "../dialogues";
 import type { PetState } from "../types";
 import {
   animationFrameId,
@@ -46,13 +48,6 @@ import {
 } from "./stats";
 import { setPassthrough } from "./passthrough";
 
-// 打工状态列表
-const WORK_STATES: PetState[] = [
-  "brickCarrying",
-  "flyerDistributing",
-  "programmer",
-];
-
 // 判断是否是打工状态
 function isWorkState(state: PetState): boolean {
   return WORK_STATES.includes(state);
@@ -60,19 +55,8 @@ function isWorkState(state: PetState): boolean {
 
 // 显示打工忙碌台词
 function showWorkBusyDialogue() {
-  const messages = [
-    "正在忙呢...",
-    "等会好吗？",
-    "先别打扰我~",
-    "手头有活儿！",
-    "忙完找你~",
-    "稍等一下！",
-    "干活中请勿打扰~",
-    "马上就好！",
-    "再坚持一会儿...",
-    "工作ing~",
-  ];
-  const message = messages[Math.floor(Math.random() * messages.length)];
+  const message =
+    workBusyMessages[Math.floor(Math.random() * workBusyMessages.length)];
   showCustomDialogue(message);
 }
 

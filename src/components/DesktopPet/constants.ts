@@ -117,3 +117,10 @@ export const NON_MOVING_STATES: readonly PetState[] = [
   "flyerDistributing",
   "programmer",
 ] as const;
+
+// 打工状态列表
+export const WORK_STATES: readonly PetState[] = [
+  "brickCarrying",
+  "flyerDistributing",
+  "programmer",
+] as const;
