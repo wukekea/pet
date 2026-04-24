@@ -303,7 +303,15 @@ export async function changeState(newState: PetState, skipDialogue = false) {
     default:
       // 大多数状态完成后回到 idle
       if (duration) {
+        // 打工状态特殊处理：记录结束时间，支持拖拽后恢复计时
+        if (isWorkState(newState)) {
+          workEndTime = Date.now() + duration;
+        }
         stateTimer.value = window.setTimeout(() => {
+          // 打工状态结束时清除结束时间
+          if (isWorkState(petState.value)) {
+            workEndTime = null;
+          }
           changeState("idle");
         }, duration);
       }
@@ -416,6 +424,8 @@ export function handlePetDoubleClick() {
 let dragOffset = { x: 0, y: 0 };
 // 拖拽前的状态（用于打工状态拖拽后恢复）
 let stateBeforeDrag: PetState | null = null;
+// 打工状态的结束时间戳
+let workEndTime: number | null = null;
 // 初始化定时器
 let initTimer: ReturnType<typeof setTimeout> | null = null;
 let initTimer2: ReturnType<typeof setTimeout> | null = null;
@@ -488,7 +498,24 @@ function handleDragEnd() {
     changeState("sleeping");
   } else if (wasWorking && stateBeforeDrag) {
     // 打工状态下拖拽结束后恢复原来的打工状态
-    changeState(stateBeforeDrag);
+    // 计算剩余时间
+    petState.value = stateBeforeDrag;
+    if (workEndTime) {
+      const remainingTime = workEndTime - Date.now();
+      if (remainingTime > 0) {
+        // 还有剩余时间，继续打工
+        stateTimer.value = window.setTimeout(() => {
+          workEndTime = null;
+          changeState("idle");
+        }, remainingTime);
+      } else {
+        // 时间已到，结束打工
+        workEndTime = null;
+        changeState("idle");
+      }
+    } else {
+      changeState("idle");
+    }
   } else {
     changeState("idle");
   }
