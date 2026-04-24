@@ -1,7 +1,7 @@
 // 宠物形态存储模块
 import { ref } from "vue";
 import type { PetShape } from "../shapes/types";
-import { DEFAULT_SHAPE } from "../shapes";
+import { DEFAULT_SHAPE, PET_SHAPES } from "../shapes";
 
 const STORAGE_KEY = "pet-shape";
 
@@ -22,7 +22,7 @@ export function savePetShape(shape: PetShape): void {
 export function loadPetShape(): PetShape {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved && ["cloud", "cat"].includes(saved)) {
+    if (saved && saved in PET_SHAPES) {
       currentPetShape.value = saved as PetShape;
       return currentPetShape.value;
     }
