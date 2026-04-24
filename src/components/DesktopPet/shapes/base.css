@@ -2063,3 +2063,274 @@
     height: 60px;
   }
 }
+
+/* ========================================
+   BRICK CARRYING - 搬砖动画
+   ======================================== */
+.pet-brickCarrying .pet-body {
+  animation: brick-carry-body 1.5s ease-in-out infinite;
+}
+
+@keyframes brick-carry-body {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3px) rotate(-2deg);
+  }
+  75% {
+    transform: translateY(-3px) rotate(2deg);
+  }
+}
+
+/* 搬砖时专注表情 */
+.pet-brickCarrying .eye {
+  transform: scaleY(0.7);
+}
+
+.pet-brickCarrying .mouth-smile {
+  width: 8px;
+  height: 4px;
+}
+
+/* 搬砖时手臂用力 */
+@keyframes brick-carry-arm-left {
+  0%,
+  100% {
+    transform: rotate(60deg) translateX(5px) translateY(-10px);
+  }
+  50% {
+    transform: rotate(70deg) translateX(8px) translateY(-12px);
+  }
+}
+
+@keyframes brick-carry-arm-right {
+  0%,
+  100% {
+    transform: rotate(-60deg) translateX(-5px) translateY(-10px);
+  }
+  50% {
+    transform: rotate(-70deg) translateX(-8px) translateY(-12px);
+  }
+}
+
+.pet-brickCarrying .arm-left {
+  animation: brick-carry-arm-left 1s ease-in-out infinite;
+}
+
+.pet-brickCarrying .arm-right {
+  animation: brick-carry-arm-right 1s ease-in-out infinite;
+}
+
+/* 搬砖时腿部支撑 */
+@keyframes brick-carry-leg {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.pet-brickCarrying .leg-left,
+.pet-brickCarrying .leg-right {
+  animation: brick-carry-leg 1.5s ease-in-out infinite;
+}
+
+/* ========================================
+   FLYER DISTRIBUTING - 发传单动画
+   ======================================== */
+.pet-flyerDistributing .pet-body {
+  animation: flyer-body 0.8s ease-in-out infinite;
+}
+
+@keyframes flyer-body {
+  0%,
+  100% {
+    transform: rotate(-3deg) translateY(0);
+  }
+  50% {
+    transform: rotate(3deg) translateY(-5px);
+  }
+}
+
+/* 发传单时热情表情 */
+.pet-flyerDistributing .eye {
+  height: 10px;
+  animation: flyer-blink 2s ease-in-out infinite;
+}
+
+@keyframes flyer-blink {
+  0%,
+  45%,
+  55%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.1);
+  }
+}
+
+.pet-flyerDistributing .mouth-smile {
+  width: 16px;
+  height: 8px;
+  animation: flyer-smile 0.8s ease-in-out infinite;
+}
+
+@keyframes flyer-smile {
+  0%,
+  100% {
+    width: 16px;
+  }
+  50% {
+    width: 18px;
+  }
+}
+
+/* 发传单时招手动作 */
+@keyframes flyer-wave-left {
+  0%,
+  100% {
+    transform: rotate(-30deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-60deg) translateY(-15px);
+  }
+}
+
+@keyframes flyer-wave-right {
+  0%,
+  100% {
+    transform: rotate(30deg) translateY(0);
+  }
+  50% {
+    transform: rotate(60deg) translateY(-15px);
+  }
+}
+
+.pet-flyerDistributing .arm-left {
+  animation: flyer-wave-left 0.6s ease-in-out infinite;
+}
+
+.pet-flyerDistributing .arm-right {
+  animation: flyer-wave-right 0.6s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+/* 发传单时腿部分开站立 */
+.pet-flyerDistributing .leg-left {
+  transform: translateX(-5px);
+}
+
+.pet-flyerDistributing .leg-right {
+  transform: translateX(5px);
+}
+
+/* ========================================
+   PROGRAMMER - 写代码动画
+   ======================================== */
+.pet-programmer .pet-body {
+  animation: programmer-body 2s ease-in-out infinite;
+}
+
+@keyframes programmer-body {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-2px) rotate(1deg);
+  }
+}
+
+/* 程序员专注眯眼 */
+.pet-programmer .eye {
+  height: 10px;
+  animation: programmer-focus 3s ease-in-out infinite;
+}
+
+@keyframes programmer-focus {
+  0%,
+  40%,
+  60%,
+  100% {
+    transform: scaleY(0.6);
+  }
+  45%,
+  55% {
+    transform: scaleY(0.1);
+  }
+}
+
+/* 程序员思考时嘴巴 */
+.pet-programmer .mouth-smile {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: programmer-think 4s ease-in-out infinite;
+}
+
+@keyframes programmer-think {
+  0%,
+  90%,
+  100% {
+    width: 6px;
+    height: 6px;
+  }
+  95% {
+    width: 10px;
+    height: 6px;
+    border-radius: 0 0 50% 50%;
+  }
+}
+
+/* 程序员敲键盘动作 */
+@keyframes programmer-type-left {
+  0%,
+  100% {
+    transform: rotate(45deg) translateX(8px) translateY(5px);
+  }
+  25% {
+    transform: rotate(50deg) translateX(8px) translateY(3px);
+  }
+  50% {
+    transform: rotate(45deg) translateX(8px) translateY(5px);
+  }
+  75% {
+    transform: rotate(40deg) translateX(8px) translateY(7px);
+  }
+}
+
+@keyframes programmer-type-right {
+  0%,
+  100% {
+    transform: rotate(-45deg) translateX(-8px) translateY(5px);
+  }
+  25% {
+    transform: rotate(-40deg) translateX(-8px) translateY(7px);
+  }
+  50% {
+    transform: rotate(-45deg) translateX(-8px) translateY(5px);
+  }
+  75% {
+    transform: rotate(-50deg) translateX(-8px) translateY(3px);
+  }
+}
+
+.pet-programmer .arm-left {
+  animation: programmer-type-left 0.3s ease-in-out infinite;
+}
+
+.pet-programmer .arm-right {
+  animation: programmer-type-right 0.3s ease-in-out infinite;
+  animation-delay: 0.15s;
+}
+
+/* 程序员坐着不动腿 */
+.pet-programmer .leg-left,
+.pet-programmer .leg-right {
+  transform: translateY(2px);
+}
