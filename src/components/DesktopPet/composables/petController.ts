@@ -552,7 +552,8 @@ export function handleMouseMove(e: MouseEvent) {
       e.clientY >= rect.top &&
       e.clientY <= rect.bottom
     ) {
-      // 在进度条区域内，不控制穿透
+      // 在进度条区域内，禁用穿透以允许交互
+      setPassthrough(false);
       return;
     }
   }
