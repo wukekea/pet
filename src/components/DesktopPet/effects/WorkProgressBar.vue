@@ -3,6 +3,7 @@
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { STATE_DURATIONS } from "../constants";
 import { petState } from "../composables/sharedState";
+import { changeState } from "../composables/petController";
 
 // 工作状态列表
 const workStates = [
@@ -90,6 +91,12 @@ const stopTracking = () => {
   startTime = 0;
 };
 
+// 强制终止工作
+const forceStop = () => {
+  stopTracking();
+  changeState("idle");
+};
+
 // 监听状态变化
 onMounted(() => {
   if (currentWorkState.value) {
@@ -105,6 +112,7 @@ onBeforeUnmount(() => {
 defineExpose({
   startTracking,
   stopTracking,
+  forceStop,
 });
 </script>
 
@@ -127,6 +135,17 @@ defineExpose({
       <span class="elapsed">{{ formatTime(elapsedSeconds) }}</span>
       <span class="separator">/</span>
       <span class="remaining">{{ formatTime(remainingSeconds) }}</span>
+      <!-- 强制终止按钮 -->
+      <button class="stop-btn" @click="forceStop" title="终止工作">
+        <svg viewBox="0 0 12 12" class="stop-icon">
+          <path
+            d="M2 2 L10 10 M10 2 L2 10"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
     </div>
   </div>
 </template>
@@ -150,6 +169,7 @@ defineExpose({
     0 4px 12px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   width: 120px;
+  pointer-events: auto;
 }
 
 /* 进度条容器 */
@@ -203,7 +223,7 @@ defineExpose({
 .time-info {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   font-family: "SF Mono", "Consolas", monospace;
   font-size: 9px;
 }
@@ -220,5 +240,39 @@ defineExpose({
 .remaining {
   color: #f87171;
   font-weight: 600;
+}
+
+/* 强制终止按钮 */
+.stop-btn {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 107, 107, 0.7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.stop-btn:hover {
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border-color: #ef4444;
+  transform: scale(1.15);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+.stop-btn:active {
+  transform: scale(0.95);
+}
+
+.stop-icon {
+  width: 8px;
+  height: 8px;
 }
 </style>

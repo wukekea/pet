@@ -565,6 +565,22 @@ export function handleMouseMove(e: MouseEvent) {
     isContextMenuOpen.value
   )
     return;
+  // 检查是否在进度条区域内（进度条在宠物下方）
+  const progressElement = document.querySelector(
+    ".work-progress-bar",
+  ) as HTMLElement;
+  if (progressElement) {
+    const rect = progressElement.getBoundingClientRect();
+    if (
+      e.clientX >= rect.left &&
+      e.clientX <= rect.right &&
+      e.clientY >= rect.top &&
+      e.clientY <= rect.bottom
+    ) {
+      // 在进度条区域内，不控制穿透
+      return;
+    }
+  }
   const onPet = isMouseOnPet(e.clientX, e.clientY);
   setPassthrough(!onPet);
 }
