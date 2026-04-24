@@ -218,6 +218,74 @@
         <circle cx="14" cy="16" r="3" fill="#FF8E8E" />
       </svg>
     </div>
+
+    <!-- 左边杂乱的砖堆 -->
+    <div class="messy-bricks-left">
+      <div class="messy-brick mb-1">
+        <svg viewBox="0 0 36 16" class="small-brick-svg">
+          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
+          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
+        </svg>
+      </div>
+      <div class="messy-brick mb-2">
+        <svg viewBox="0 0 36 16" class="small-brick-svg">
+          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
+          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
+        </svg>
+      </div>
+      <div class="messy-brick mb-3">
+        <svg viewBox="0 0 36 16" class="small-brick-svg">
+          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
+          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
+        </svg>
+      </div>
+      <div class="messy-brick mb-4">
+        <svg viewBox="0 0 36 16" class="small-brick-svg">
+          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
+          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
+        </svg>
+      </div>
+      <div class="messy-brick mb-5">
+        <svg viewBox="0 0 36 16" class="small-brick-svg">
+          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
+          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- 右边整齐的砖堆 -->
+    <div class="neat-bricks-right">
+      <div class="neat-brick nb-1">
+        <svg viewBox="0 0 36 16" class="small-brick-svg">
+          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
+          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
+        </svg>
+      </div>
+      <div class="neat-brick nb-2">
+        <svg viewBox="0 0 36 16" class="small-brick-svg">
+          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
+          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
+        </svg>
+      </div>
+      <div class="neat-brick nb-3">
+        <svg viewBox="0 0 36 16" class="small-brick-svg">
+          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
+          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
+        </svg>
+      </div>
+      <div class="neat-brick nb-4">
+        <svg viewBox="0 0 36 16" class="small-brick-svg">
+          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
+          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
+        </svg>
+      </div>
+      <div class="neat-brick nb-5">
+        <svg viewBox="0 0 36 16" class="small-brick-svg">
+          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
+          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
+        </svg>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -532,6 +600,103 @@
   100% {
     opacity: 0;
     transform: translateY(-20px) rotate(15deg) scale(0.9);
+  }
+}
+
+/* 左边杂乱的砖堆 */
+.messy-bricks-left {
+  position: absolute;
+  top: 40px;
+  left: -35px;
+  display: flex;
+  flex-direction: column;
+  gap: -6px;
+  animation: bricks-appear-left 2s ease-out forwards;
+}
+
+.messy-brick {
+  position: relative;
+}
+
+.mb-1 {
+  transform: rotate(-15deg) translateX(-5px);
+}
+
+.mb-2 {
+  transform: rotate(8deg) translateX(3px);
+}
+
+.mb-3 {
+  transform: rotate(-5deg) translateX(-2px);
+}
+
+.mb-4 {
+  transform: rotate(12deg) translateX(4px);
+}
+
+.mb-5 {
+  transform: rotate(-8deg) translateX(-3px);
+}
+
+.small-brick-svg {
+  width: 28px;
+  height: 12px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+}
+
+/* 右边整齐的砖堆 */
+.neat-bricks-right {
+  position: absolute;
+  top: 40px;
+  right: -35px;
+  display: flex;
+  flex-direction: column;
+  animation: bricks-appear-right 2s ease-out forwards;
+}
+
+.neat-brick {
+  position: relative;
+}
+
+.nb-1 {
+  animation-delay: 0.1s;
+}
+
+.nb-2 {
+  animation-delay: 0.2s;
+}
+
+.nb-3 {
+  animation-delay: 0.3s;
+}
+
+.nb-4 {
+  animation-delay: 0.4s;
+}
+
+.nb-5 {
+  animation-delay: 0.5s;
+}
+
+@keyframes bricks-appear-left {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bricks-appear-right {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>
