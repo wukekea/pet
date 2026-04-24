@@ -63,7 +63,7 @@ const cloudTextShadow = computed(() =>
 
 <template>
   <div
-    v-if="dialogueText"
+    v-show="dialogueText"
     class="dialogue-bubble"
     :class="{
       'dialogue-visible': isDialogueVisible,
