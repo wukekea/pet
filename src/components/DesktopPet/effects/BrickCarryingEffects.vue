@@ -232,12 +232,11 @@
 /* 砖头堆 */
 .brick-stack {
   position: absolute;
-  top: -25px;
-  left: 50%;
+  top: 65px;
+  left: 47%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
-  gap: -5px;
   animation: carry-bounce 1s ease-in-out infinite;
 }
 
@@ -248,14 +247,19 @@
 
 .brick-1 {
   animation-delay: 0s;
+  z-index: 3;
 }
 
 .brick-2 {
   animation-delay: 0.2s;
+  margin-top: -8px;
+  z-index: 2;
 }
 
 .brick-3 {
   animation-delay: 0.4s;
+  margin-top: -8px;
+  z-index: 1;
 }
 
 .brick-svg {
