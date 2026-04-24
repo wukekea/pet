@@ -45,6 +45,14 @@ import {
   recordState,
 } from "./stats";
 import { setPassthrough } from "./passthrough";
+import {
+  initAttributes,
+  cleanupAttributes,
+  registerAttributeCallbacks,
+  onWorkComplete,
+  addInteractionExperience,
+  getHealthStatus,
+} from "./attributes";
 
 // 是否刚从工作状态退出（用于增加休息间隔）
 let justFinishedWork = false;
@@ -207,7 +215,7 @@ export async function changeState(newState: PetState, skipDialogue = false) {
             changeState("sleeping");
             return;
           }
-          // 闲暇期间的可用状态（排除睡眠相关状态）
+          // 闲暇期间的可用状态（排除打工和睡眠相关状态）
           const freeStates: PetState[] = [
             "jumping",
             "crying",
@@ -224,14 +232,29 @@ export async function changeState(newState: PetState, skipDialogue = false) {
             "scratch",
             "celebrate",
             "peek",
-            "brickCarrying",
-            "flyerDistributing",
-            "programmer",
           ];
+
+          // 健康状态影响 idle 行为
+          const healthStatus = getHealthStatus();
           const random = Math.random();
+
           if (random < 0.1 && !scheduleEnabled.value) {
             // 只有未启用作息时才允许随机睡眠
             changeState("sleeping");
+          } else if (healthStatus === "happy" && random < 0.3) {
+            // 高健康时倾向开心表情
+            const happyStates: PetState[] = [
+              "happy",
+              "celebrate",
+              "hello",
+              "dancing",
+            ];
+            changeState(
+              happyStates[Math.floor(Math.random() * happyStates.length)],
+            );
+          } else if (healthStatus === "sick" && random < 0.4) {
+            // 低健康时频繁打喷嚏
+            changeState("sneeze");
           } else if (random < 0.85) {
             // 从可用状态中随机选择
             const state =
@@ -306,10 +329,11 @@ export async function changeState(newState: PetState, skipDialogue = false) {
           workEndTime = Date.now() + duration;
         }
         stateTimer.value = window.setTimeout(() => {
-          // 打工状态结束时清除结束时间，并设置休息间隔标记
+          // 打工状态结束时清除结束时间，设置休息间隔标记，发放工资
           if (isWorkState(petState.value)) {
             workEndTime = null;
             justFinishedWork = true;
+            onWorkComplete(petState.value);
           }
           changeState("idle");
         }, duration);
@@ -375,6 +399,8 @@ export function handlePetClick() {
   if (isDragging.value) return;
   // 记录点击互动
   recordClick();
+  // 互动经验
+  addInteractionExperience();
   // 睡眠作息期间，只响应睡眼朦胧表情
   if (petState.value === "sleeping" || petState.value === "sleepy") {
     // 睡眠或睡眼朦胧期间点击，显示睡眼朦胧状态和专有对话
@@ -383,6 +409,7 @@ export function handlePetClick() {
     // 打工状态下，显示忙碌台词，不改变状态
     showWorkBusyDialogue();
   } else {
+    // 点击反应（移除工作状态，工作需通过属性面板触发）
     const reactions: PetState[] = [
       "happy",
       "scared",
@@ -390,9 +417,6 @@ export function handlePetClick() {
       "smug",
       "shy",
       "celebrate",
-      "brickCarrying",
-      "flyerDistributing",
-      "programmer",
     ];
     changeState(reactions[Math.floor(Math.random() * reactions.length)]);
   }
@@ -403,6 +427,8 @@ export function handlePetDoubleClick() {
   if (isDragging.value) return;
   // 记录双击互动
   recordDoubleClick();
+  // 互动经验
+  addInteractionExperience();
   // 睡眠作息期间，只响应睡眼朦胧表情
   if (petState.value === "sleeping" || petState.value === "sleepy") {
     changeState("sleepy");
@@ -580,6 +606,14 @@ export function handleMouseMove(e: MouseEvent) {
 }
 // 初始化宠物
 export function initPet() {
+  // 初始化属性系统
+  initAttributes();
+  // 注册属性系统回调
+  registerAttributeCallbacks({
+    requestStateChange: (state) => changeState(state),
+    requestStopWork: () => stopWork(),
+  });
+
   // 启动作息监控
   startScheduleMonitor();
 
@@ -615,6 +649,8 @@ export function cleanupPet() {
   if (stateTimer.value) clearTimeout(stateTimer.value);
   if (initTimer) clearTimeout(initTimer);
   if (initTimer2) clearTimeout(initTimer2);
+  // 停止属性系统
+  cleanupAttributes();
   // 停止作息监控
   stopScheduleMonitor();
   // 停止天气服务

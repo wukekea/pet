@@ -10,6 +10,7 @@ import {
   isContextMenuOpen,
   isScheduleModalOpen,
   isStatsModalOpen,
+  isAttributeModalOpen,
   isDebugPanelOpen,
   currentFood,
   currentPetShape,
@@ -38,17 +39,18 @@ import DialogueBubble from "./dialogue/index.vue";
 import ContextMenu from "./contextMenu/index.vue";
 import ScheduleModal from "./schedule/index.vue";
 import StatsModal from "./stats/index.vue";
+import AttributeModal from "./attributes/index.vue";
 import "./shapes/base.css";
 import "./shapes/cloud/styles.css";
 import "./shapes/cat/styles.css";
 import "./shapes/panda/styles.css";
 
-// 食物类型列表
+// 食物类型列表（调试面板使用）
 const foodTypes: FoodType[] = ["apple", "fish", "cake", "lollipop"];
 
-// 当进入 eating 状态时随机选择食物（调试面板打开时不随机，保留用户选择）
+// 调试面板打开时，进入 eating 状态随机选择食物
 watch(petState, (newState) => {
-  if (newState === "eating" && !isDebugPanelOpen.value) {
+  if (newState === "eating" && isDebugPanelOpen.value) {
     const randomIndex = Math.floor(Math.random() * foodTypes.length);
     currentFood.value = foodTypes[randomIndex];
   }
@@ -150,6 +152,9 @@ const scheduleModalVisible = ref(false);
 // 数据统计弹窗状态
 const statsModalVisible = ref(false);
 
+// 属性面板弹窗状态
+const attributeModalVisible = ref(false);
+
 // 打开右键菜单
 const handleContextMenu = (e: MouseEvent) => {
   e.preventDefault();
@@ -165,7 +170,11 @@ const handleContextMenu = (e: MouseEvent) => {
 const closeContextMenu = () => {
   contextMenuVisible.value = false;
   isContextMenuOpen.value = false;
-  if (!scheduleModalVisible.value && !statsModalVisible.value) {
+  if (
+    !scheduleModalVisible.value &&
+    !statsModalVisible.value &&
+    !attributeModalVisible.value
+  ) {
     setPassthrough(true);
   }
 };
@@ -196,6 +205,20 @@ const openStatsModal = () => {
 // 关闭数据统计弹窗
 const closeStatsModal = () => {
   statsModalVisible.value = false;
+};
+
+// 打开属性面板弹窗
+const openAttributeModal = () => {
+  setPassthrough(false);
+  isAttributeModalOpen.value = true;
+  contextMenuVisible.value = false;
+  isContextMenuOpen.value = false;
+  attributeModalVisible.value = true;
+};
+
+// 关闭属性面板弹窗
+const closeAttributeModal = () => {
+  attributeModalVisible.value = false;
 };
 </script>
 
@@ -261,6 +284,7 @@ const closeStatsModal = () => {
       :y="contextMenuY"
       @close="closeContextMenu"
       @open-schedule="openScheduleModal"
+      @open-attributes="openAttributeModal"
       @open-stats="openStatsModal"
     />
 
@@ -268,6 +292,12 @@ const closeStatsModal = () => {
     <ScheduleModal
       :visible="scheduleModalVisible"
       @close="closeScheduleModal"
+    />
+
+    <!-- 属性面板弹窗 -->
+    <AttributeModal
+      :visible="attributeModalVisible"
+      @close="closeAttributeModal"
     />
 
     <!-- 数据统计弹窗 -->

@@ -83,6 +83,18 @@ export type WeatherType =
   | "lightSnow" // 小雪
   | "heavySnow"; // 大雪
 
+// 属性数据接口
+export interface AttributeData {
+  satiety: number; // 饱腹值
+  cleanliness: number; // 清洁值
+  stamina: number; // 体力值
+  health: number; // 健康值
+  money: number; // 金币
+  level: number; // 等级
+  experience: number; // 当前经验值
+  lastUpdateTimestamp: number; // 上次更新时间戳（毫秒）
+}
+
 // 统计数据接口
 export interface StatsData {
   // 统计开始日期（ISO 格式）

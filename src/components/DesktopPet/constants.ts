@@ -125,3 +125,32 @@ export const WORK_STATES: readonly PetState[] = [
   "flyerDistributing",
   "programmer",
 ] as const;
+
+// ========== 属性系统常量 ==========
+
+// 属性衰减/恢复速率（秒）
+export const SATIETY_DECAY_INTERVAL = 300; // 饱腹值每 5 分钟 -1
+export const CLEANLINESS_DECAY_INTERVAL = 480; // 清洁值每 8 分钟 -1
+export const STAMINA_WORK_DRAIN_INTERVAL = 60; // 体力打工每 1 分钟 -1
+export const STAMINA_NORMAL_RECOVER_INTERVAL = 30; // 体力正常每 30 秒 +1
+export const STAMINA_SLEEP_RECOVER_INTERVAL = 10; // 体力睡眠每 10 秒 +1
+export const HEALTH_DECAY_HUNGRY_INTERVAL = 180; // 饥饿时健康每 3 分钟 -1
+export const HEALTH_DECAY_DIRTY_INTERVAL = 300; // 变脏时健康每 5 分钟 -1
+export const HEALTH_RECOVER_INTERVAL = 180; // 正常时健康每 3 分钟 +1
+
+// 属性阈值
+export const HUNGRY_THRESHOLD = 30; // 饥饿阈值（饱腹低于此值健康下降）
+export const DIRTY_THRESHOLD = 30; // 变脏阈值（清洁低于此值健康下降）
+export const AUTO_EAT_SATIETY_TARGET = 50; // 自动吃东西后目标饱腹值
+export const WORK_STAMINA_MIN = 30; // 打工最低体力要求（通用）
+export const HEALTH_HAPPY_THRESHOLD = 70; // 健康开心阈值
+export const HEALTH_SICK_THRESHOLD = 30; // 健康生病阈值
+
+// 等级系统
+export const MAX_LEVEL = 40; // 等级上限
+export const INTERACTION_EXPERIENCE = 1; // 互动经验
+export const COMPANIONSHIP_EXPERIENCE = 1; // 陪伴经验
+export const COMPANIONSHIP_INTERVAL = 120; // 陪伴经验间隔（秒）
+
+// 健康值上限（固定）
+export const HEALTH_CAP = 100;

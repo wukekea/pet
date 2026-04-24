@@ -12,6 +12,7 @@ const emit = defineEmits<{
   close: [];
   openSchedule: [];
   openStats: [];
+  openAttributes: [];
 }>();
 
 // CSS 变量 - 用于主题切换
@@ -90,6 +91,19 @@ onBeforeUnmount(() => {
             <div class="menu-text-group">
               <span class="menu-text">作息设置</span>
               <span class="menu-desc">设置睡眠时间</span>
+            </div>
+            <span class="menu-arrow">›</span>
+          </div>
+          <div class="menu-divider">
+            <div class="divider-line"></div>
+          </div>
+          <div class="menu-item" @click="emit('openAttributes')">
+            <div class="menu-icon-wrapper heart">
+              <span class="menu-icon">💖</span>
+            </div>
+            <div class="menu-text-group">
+              <span class="menu-text">宠物属性</span>
+              <span class="menu-desc">查看成长状态</span>
             </div>
             <span class="menu-arrow">›</span>
           </div>
@@ -247,6 +261,15 @@ onBeforeUnmount(() => {
   box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
 }
 
+.menu-icon-wrapper.heart {
+  background: linear-gradient(
+    135deg,
+    rgba(244, 114, 182, 0.15),
+    rgba(251, 146, 60, 0.1)
+  );
+  box-shadow: 0 2px 8px rgba(244, 114, 182, 0.15);
+}
+
 .menu-item:hover .menu-icon-wrapper {
   transform: scale(1.1) rotate(-5deg);
 }
@@ -264,6 +287,14 @@ onBeforeUnmount(() => {
     135deg,
     rgba(16, 185, 129, 0.25),
     rgba(6, 182, 212, 0.2)
+  );
+}
+
+.menu-item:hover .menu-icon-wrapper.heart {
+  background: linear-gradient(
+    135deg,
+    rgba(244, 114, 182, 0.25),
+    rgba(251, 146, 60, 0.2)
   );
 }
 
