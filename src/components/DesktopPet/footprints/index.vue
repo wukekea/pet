@@ -22,8 +22,8 @@ const getOpacity = (footprint: Footprint): number => {
       :key="footprint.id"
       class="footprint"
       :class="[
-        footprint.isLeft ? 'footprint-left' : 'footprint-right',
-        `footprint-${footprint.direction}`,
+        footprint.isLeft ? 'foot-side-left' : 'foot-side-right',
+        `dir-${footprint.direction}`,
         `footprint-type-${footprint.type}`,
       ]"
       :style="{
@@ -33,13 +33,12 @@ const getOpacity = (footprint: Footprint): number => {
       }"
     >
       <svg viewBox="0 0 24 24" class="footprint-svg" :style="{ color }">
-        <path
-          d="M12 2C9.5 2 7.5 4.5 7.5 7.5C7.5 10.5 9.5 13 12 13C14.5 13 16.5 10.5 16.5 7.5C16.5 4.5 14.5 2 12 2Z"
-          fill="currentColor"
-        />
-        <ellipse cx="7" cy="17" rx="3" ry="2" fill="currentColor" />
-        <ellipse cx="12" cy="19" rx="3.5" ry="2.5" fill="currentColor" />
-        <ellipse cx="17" cy="17" rx="3" ry="2" fill="currentColor" />
+        <!-- 主脚掌 -->
+        <ellipse cx="12" cy="15" rx="5.5" ry="4.5" fill="currentColor" />
+        <!-- 脚趾：上方三个，略偏前 -->
+        <ellipse cx="6.5" cy="8.5" rx="2.5" ry="3" fill="currentColor" />
+        <ellipse cx="12" cy="6.5" rx="2.5" ry="3.5" fill="currentColor" />
+        <ellipse cx="17.5" cy="8.5" rx="2.5" ry="3" fill="currentColor" />
       </svg>
     </div>
   </div>
@@ -66,20 +65,34 @@ const getOpacity = (footprint: Footprint): number => {
   height: 100%;
 }
 
-.footprint-left.footprint-right {
-  transform: translate(-50%, -100%) rotate(-15deg);
+/* 脚印旋转：根据脚侧（左/右脚）和朝向组合 */
+/* 朝左走：左脚外撇，右脚内收 */
+.foot-side-left.dir-left {
+  transform: translate(-50%, -100%) rotate(25deg);
 }
-
-.footprint-left.footprint-left {
-  transform: translate(-50%, -100%) rotate(15deg);
+.foot-side-right.dir-left {
+  transform: translate(-50%, -100%) rotate(-10deg);
 }
-
-.footprint-right.footprint-right {
-  transform: translate(-50%, -100%) rotate(15deg);
+/* 朝右走：右脚外撇，左脚内收 */
+.foot-side-left.dir-right {
+  transform: translate(-50%, -100%) rotate(10deg);
 }
-
-.footprint-right.footprint-left {
-  transform: translate(-50%, -100%) rotate(-15deg);
+.foot-side-right.dir-right {
+  transform: translate(-50%, -100%) rotate(-25deg);
+}
+/* 朝正面：左脚微左偏，右脚微右偏 */
+.foot-side-left.dir-front {
+  transform: translate(-50%, -100%) rotate(10deg);
+}
+.foot-side-right.dir-front {
+  transform: translate(-50%, -100%) rotate(-10deg);
+}
+/* 朝背面：轻微外撇 */
+.foot-side-left.dir-back {
+  transform: translate(-50%, -100%) rotate(12deg);
+}
+.foot-side-right.dir-back {
+  transform: translate(-50%, -100%) rotate(-12deg);
 }
 
 /* 雪脚印样式 */
