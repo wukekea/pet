@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
 import { setPassthrough } from "../composables/passthrough";
 import { isAttributeModalOpen } from "../composables/sharedState";
@@ -58,6 +58,12 @@ const attributeBars = computed(() => [
     value: attrData.value.satiety,
     cap: attrCap.value,
     color: "orange",
+    rules: [
+      { icon: "📉", text: "每 5 分钟 -1" },
+      { icon: "🧱", text: "搬砖时衰减加速 3 倍" },
+      { icon: "⚠️", text: "低于 30 时健康下降" },
+      { icon: "🍽️", text: "低于 30 时自动吃饭" },
+    ],
   },
   {
     key: "cleanliness" as const,
@@ -66,6 +72,12 @@ const attributeBars = computed(() => [
     value: attrData.value.cleanliness,
     cap: attrCap.value,
     color: "blue",
+    rules: [
+      { icon: "📉", text: "每 8 分钟 -1" },
+      { icon: "🧱", text: "搬砖时衰减加速 3 倍" },
+      { icon: "⚠️", text: "低于 30 时健康下降" },
+      { icon: "🚿", text: "低于 30 时自动洗澡" },
+    ],
   },
   {
     key: "stamina" as const,
@@ -74,6 +86,13 @@ const attributeBars = computed(() => [
     value: attrData.value.stamina,
     cap: attrCap.value,
     color: "green",
+    rules: [
+      { icon: "📉", text: "打工时每 1 分钟 -1" },
+      { icon: "📈", text: "平时每 30 秒 +1" },
+      { icon: "😴", text: "睡眠时每 10 秒 +1" },
+      { icon: "💤", text: "为 0 时强制睡觉" },
+      { icon: "💼", text: "打工需最低体力 15~45" },
+    ],
   },
   {
     key: "health" as const,
@@ -82,8 +101,18 @@ const attributeBars = computed(() => [
     value: attrData.value.health,
     cap: HEALTH_CAP,
     color: "red",
+    rules: [
+      { icon: "📉", text: "饥饿时每 3 分钟 -1" },
+      { icon: "📉", text: "脏时每 5 分钟 -1" },
+      { icon: "📈", text: "正常时每 3 分钟 +1" },
+      { icon: "🔒", text: "上限固定 100" },
+      { icon: "🐾", text: "影响宠物行为表现" },
+    ],
   },
 ]);
+
+// 悬浮提示状态
+const hoveredAttr = ref<string | null>(null);
 
 // 食物列表
 const foods = computed(() =>
@@ -269,6 +298,8 @@ const close = () => {
                 :key="bar.key"
                 class="attr-item"
                 :class="{ 'attr-warning': bar.value < 30 }"
+                @mouseenter="hoveredAttr = bar.key"
+                @mouseleave="hoveredAttr = null"
               >
                 <div class="attr-header">
                   <span class="attr-icon">{{ bar.icon }}</span>
@@ -276,6 +307,7 @@ const close = () => {
                   <span class="attr-value">
                     {{ bar.value }}<span class="attr-cap">/{{ bar.cap }}</span>
                   </span>
+                  <span class="attr-info-icon">ⓘ</span>
                 </div>
                 <div class="attr-bar-bg">
                   <div
@@ -286,6 +318,26 @@ const close = () => {
                     }"
                   ></div>
                 </div>
+                <!-- 悬浮提示 -->
+                <Transition name="tooltip-fade">
+                  <div
+                    v-if="hoveredAttr === bar.key"
+                    class="attr-tooltip"
+                    :class="`tooltip-${bar.color}`"
+                  >
+                    <div class="tooltip-title">
+                      {{ bar.icon }} {{ bar.name }}规则
+                    </div>
+                    <div
+                      v-for="(rule, i) in bar.rules"
+                      :key="i"
+                      class="tooltip-rule"
+                    >
+                      <span class="rule-icon">{{ rule.icon }}</span>
+                      <span class="rule-text">{{ rule.text }}</span>
+                    </div>
+                  </div>
+                </Transition>
               </div>
             </div>
 
@@ -630,6 +682,7 @@ const close = () => {
   background: var(--action-btn-bg);
   border-radius: 14px;
   transition: all 0.2s ease;
+  position: relative;
 }
 
 .attr-item.attr-warning {
@@ -707,6 +760,139 @@ const close = () => {
 .bar-red {
   background: linear-gradient(90deg, #ef4444, #f87171);
   box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+}
+
+/* 属性信息图标 */
+.attr-info-icon {
+  font-size: 12px;
+  color: var(--cap-text-color);
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  cursor: help;
+}
+
+.attr-item:hover .attr-info-icon {
+  opacity: 1;
+}
+
+/* 属性悬浮提示 */
+.attr-tooltip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 10;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  line-height: 1.5;
+  pointer-events: none;
+  border: 1px solid;
+}
+
+.dark-mode .attr-tooltip {
+  background: rgba(20, 16, 30, 0.96);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+:not(.dark-mode) .attr-tooltip {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* 提示框主题色 */
+.tooltip-orange {
+  border-color: rgba(249, 115, 22, 0.25);
+}
+.tooltip-blue {
+  border-color: rgba(59, 130, 246, 0.25);
+}
+.tooltip-green {
+  border-color: rgba(16, 185, 129, 0.25);
+}
+.tooltip-red {
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.tooltip-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.tooltip-orange .tooltip-title {
+  color: #f97316;
+}
+.tooltip-blue .tooltip-title {
+  color: #3b82f6;
+}
+.tooltip-green .tooltip-title {
+  color: #10b981;
+}
+.tooltip-red .tooltip-title {
+  color: #ef4444;
+}
+
+.dark-mode .tooltip-orange .tooltip-title {
+  color: #fb923c;
+}
+.dark-mode .tooltip-blue .tooltip-title {
+  color: #60a5fa;
+}
+.dark-mode .tooltip-green .tooltip-title {
+  color: #34d399;
+}
+.dark-mode .tooltip-red .tooltip-title {
+  color: #f87171;
+}
+
+.tooltip-rule {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.rule-icon {
+  font-size: 11px;
+  flex-shrink: 0;
+  width: 16px;
+  text-align: center;
+}
+
+.rule-text {
+  color: var(--attr-label-color);
+}
+
+/* 提示框动画 */
+.tooltip-fade-enter-active {
+  animation: tooltip-in 0.2s ease-out;
+}
+.tooltip-fade-leave-active {
+  animation: tooltip-out 0.15s ease-in;
+}
+
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tooltip-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
 }
 
 /* 金币 */
