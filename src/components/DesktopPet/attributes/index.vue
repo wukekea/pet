@@ -128,17 +128,23 @@ const workList = computed(() => {
 
 // 处理喂食
 const handleFeed = (foodType: FoodType) => {
-  feedPet(foodType);
+  if (feedPet(foodType)) {
+    close();
+  }
 };
 
 // 处理洗澡
 const handleBathe = () => {
-  bathePet();
+  if (bathePet()) {
+    close();
+  }
 };
 
 // 处理打工
 const handleWork = (workState: PetState) => {
-  startWork(workState);
+  if (startWork(workState)) {
+    close();
+  }
 };
 
 // CSS 变量
