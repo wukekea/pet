@@ -2,7 +2,7 @@
 // 工作进度条组件 - 显示打工状态的完成进度
 import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
 import { STATE_DURATIONS, WORK_STATES } from "../constants";
-import { petState } from "../composables/sharedState";
+import { petState, workEndTime, isDragging } from "../composables/sharedState";
 import { isWorkState, stopWork } from "../composables/petController";
 
 // 工作状态类型
@@ -39,23 +39,28 @@ const formatTime = (seconds: number): string => {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 };
 
-// 开始时间
-let startTime = 0;
 let animationFrame: number | null = null;
 
 // 更新进度
 const updateProgress = () => {
-  if (!currentWorkState.value || startTime === 0) return;
+  if (!currentWorkState.value || !workEndTime.value) return;
+
+  // 拖拽期间暂停进度更新
+  if (isDragging.value) {
+    animationFrame = requestAnimationFrame(updateProgress);
+    return;
+  }
 
   const now = Date.now();
-  const elapsed = now - startTime;
   const duration = STATE_DURATIONS[currentWorkState.value] || 0;
+  const startTime = workEndTime.value - duration;
 
   if (duration > 0) {
-    elapsedSeconds.value = Math.floor(elapsed / 1000);
+    const elapsed = now - startTime;
+    elapsedSeconds.value = Math.max(0, Math.floor(elapsed / 1000));
     remainingSeconds.value = Math.max(
       0,
-      Math.ceil((duration - elapsed) / 1000),
+      Math.ceil((workEndTime.value - now) / 1000),
     );
     progress.value = Math.min(100, (elapsed / duration) * 100);
   }
@@ -66,10 +71,9 @@ const updateProgress = () => {
   }
 };
 
-// 监听状态变化
+// 开始追踪
 const startTracking = () => {
-  if (currentWorkState.value) {
-    startTime = Date.now();
+  if (currentWorkState.value && workEndTime.value) {
     progress.value = 0;
     elapsedSeconds.value = 0;
     remainingSeconds.value = totalSeconds.value;
@@ -83,7 +87,6 @@ const stopTracking = () => {
     cancelAnimationFrame(animationFrame);
     animationFrame = null;
   }
-  startTime = 0;
 };
 
 // 强制终止工作

@@ -122,6 +122,13 @@ function tick(): void {
   const state = petState.value;
   const cap = getAttributeCap(data.level);
 
+  // 跨午夜检查：重置每日交互经验
+  const today = getTodayDate();
+  if (data.dailyInteractionExpDate !== today) {
+    data.dailyInteractionExpDate = today;
+    data.dailyInteractionExp = 0;
+  }
+
   // 饱腹值衰减
   if (tickCount % SATIETY_DECAY_INTERVAL === 0) {
     data.satiety = Math.max(0, data.satiety - 1);

@@ -46,6 +46,9 @@ export const scheduleEnabled = ref(false); // 作息功能是否启用
 export const dreamTalkTimerId = ref<number | null>(null); // 梦话定时器
 export const scheduleEndTime = ref<number | null>(null); // 当前作息结束时间（毫秒时间戳）
 
+// 打工相关状态
+export const workEndTime = ref<number | null>(null); // 打工结束时间（毫秒时间戳），拖拽后更新
+
 // 食物类型
 export type FoodType = "apple" | "fish" | "cake" | "lollipop";
 export const currentFood = ref<FoodType>("apple");

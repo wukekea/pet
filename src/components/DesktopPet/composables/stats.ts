@@ -18,6 +18,23 @@ let saveTimer: ReturnType<typeof setTimeout> | null = null;
 // 是否有待保存的数据
 let hasPendingSave = false;
 
+// 当前日期（用于跨午夜检测）
+let currentDate = getTodayDateString();
+
+function getTodayDateString(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+}
+
+// 跨午夜检查：重置今日数据
+function checkDateRollover(): void {
+  const today = getTodayDateString();
+  if (today !== currentDate) {
+    currentDate = today;
+    statsData.value = updateStreak(statsData.value);
+  }
+}
+
 // 防抖保存 - 延迟 2 秒后保存，期间有新变化会重置定时器
 function debouncedSave() {
   hasPendingSave = true;
@@ -68,6 +85,8 @@ function startDurationTimer() {
   if (durationTimer) return;
 
   durationTimer = setInterval(() => {
+    // 跨午夜检查
+    checkDateRollover();
     statsData.value.totalDuration += 1;
     statsData.value.todayDuration += 1;
     // 每 60 秒保存一次

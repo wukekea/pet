@@ -27,6 +27,7 @@ import {
   screenSize,
   stateTimer,
   targetPosition,
+  workEndTime,
 } from "./sharedState";
 
 import { getTimeGreeting, showCustomDialogue, showDialogue } from "./dialogue";
@@ -326,12 +327,12 @@ export async function changeState(newState: PetState, skipDialogue = false) {
       if (duration) {
         // 打工状态特殊处理：记录结束时间，支持拖拽后恢复计时
         if (isWorkState(newState)) {
-          workEndTime = Date.now() + duration;
+          workEndTime.value = Date.now() + duration;
         }
         stateTimer.value = window.setTimeout(() => {
           // 打工状态结束时清除结束时间，设置休息间隔标记，发放工资
           if (isWorkState(petState.value)) {
-            workEndTime = null;
+            workEndTime.value = null;
             justFinishedWork = true;
             onWorkComplete(petState.value);
           }
@@ -449,8 +450,8 @@ export function handlePetDoubleClick() {
 let dragOffset = { x: 0, y: 0 };
 // 拖拽前的状态（用于打工状态拖拽后恢复）
 let stateBeforeDrag: PetState | null = null;
-// 打工状态的结束时间戳
-let workEndTime: number | null = null;
+// 拖拽开始时的打工剩余时间
+let workRemainingBeforeDrag: number | null = null;
 // 初始化定时器
 let initTimer: ReturnType<typeof setTimeout> | null = null;
 let initTimer2: ReturnType<typeof setTimeout> | null = null;
@@ -469,6 +470,10 @@ export function handleDragStart(e: MouseEvent) {
   if (stateTimer.value) clearTimeout(stateTimer.value);
   // 保存当前状态
   stateBeforeDrag = petState.value;
+  // 打工状态下，保存剩余时间用于拖拽结束后恢复
+  if (isWorkState(petState.value) && workEndTime.value) {
+    workRemainingBeforeDrag = workEndTime.value - Date.now();
+  }
   // 睡眠状态下拖拽时进入睡眠行走状态（手脚会动，眼睛像睡眼朦胧）
   if (petState.value === "sleeping" || petState.value === "sleepy") {
     petState.value = "sleepwalking";
@@ -523,22 +528,19 @@ function handleDragEnd() {
     changeState("sleeping");
   } else if (wasWorking && stateBeforeDrag) {
     // 打工状态下拖拽结束后恢复原来的打工状态
-    // 计算剩余时间
+    // 使用拖拽前保存的剩余时间，确保进度条同步
     petState.value = stateBeforeDrag;
-    if (workEndTime) {
-      const remainingTime = workEndTime - Date.now();
-      if (remainingTime > 0) {
-        // 还有剩余时间，继续打工
-        stateTimer.value = window.setTimeout(() => {
-          workEndTime = null;
-          changeState("idle");
-        }, remainingTime);
-      } else {
-        // 时间已到，结束打工
-        workEndTime = null;
+    const remainingTime = workRemainingBeforeDrag;
+    workRemainingBeforeDrag = null;
+    if (remainingTime !== null && remainingTime > 0) {
+      // 更新 workEndTime，使进度条正确同步
+      workEndTime.value = Date.now() + remainingTime;
+      stateTimer.value = window.setTimeout(() => {
+        workEndTime.value = null;
         changeState("idle");
-      }
+      }, remainingTime);
     } else {
+      workEndTime.value = null;
       changeState("idle");
     }
   } else {
