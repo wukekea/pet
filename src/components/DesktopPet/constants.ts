@@ -126,6 +126,13 @@ export const WORK_STATES: readonly PetState[] = [
   "programmer",
 ] as const;
 
+// 不可打断的状态（点击/双击不改变状态，拖拽后恢复）
+export const UNINTERRUPTIBLE_STATES: readonly PetState[] = [
+  ...WORK_STATES,
+  "eating",
+  "bathing",
+] as const;
+
 // ========== 属性系统常量 ==========
 
 // 属性衰减/恢复速率（秒）

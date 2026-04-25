@@ -175,6 +175,26 @@ export const workBusyMessages: string[] = [
   "工作ing~",
 ];
 
+// 吃东西忙碌时的台词
+export const eatingBusyMessages: string[] = [
+  "吃东西中，别打扰~",
+  "还没吃完呢！",
+  "等我吃完再说~",
+  "嘴巴满了没法说话~",
+  "吃饭不聊天~",
+  "好吃好吃，别催~",
+];
+
+// 洗澡忙碌时的台词
+export const bathingBusyMessages: string[] = [
+  "洗澡中，别看~",
+  "还没洗完呢！",
+  "等我洗完再说~",
+  "洗澡不接客~",
+  "搓澡中请勿打扰~",
+  "再等一会儿~",
+];
+
 // 梦话列表（仅在睡眠期间使用）
 export const dreamTalkMessages: string[] = [
   "呼噜呼噜~",

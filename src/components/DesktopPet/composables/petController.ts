@@ -10,8 +10,13 @@ import {
   HELLO_DURATION,
   WORK_STATES,
   WORK_REST_DURATION,
+  UNINTERRUPTIBLE_STATES,
 } from "../constants";
-import { workBusyMessages } from "../dialogues";
+import {
+  workBusyMessages,
+  eatingBusyMessages,
+  bathingBusyMessages,
+} from "../dialogues";
 import type { PetState } from "../types";
 import {
   animationFrameId,
@@ -63,17 +68,28 @@ export function isWorkState(state: PetState): boolean {
   return WORK_STATES.includes(state);
 }
 
+// 判断是否是不可打断状态
+function isUninterruptibleState(state: PetState): boolean {
+  return UNINTERRUPTIBLE_STATES.includes(state);
+}
+
 // 停止工作状态（供强制终止调用）
 export function stopWork(): void {
   justFinishedWork = true;
   changeState("idle");
 }
 
-// 显示打工忙碌台词
-function showWorkBusyDialogue() {
-  const message =
-    workBusyMessages[Math.floor(Math.random() * workBusyMessages.length)];
-  showCustomDialogue(message);
+// 显示不可打断状态的忙碌台词
+function showBusyDialogue(state: PetState) {
+  let messages: string[];
+  if (state === "eating") {
+    messages = eatingBusyMessages;
+  } else if (state === "bathing") {
+    messages = bathingBusyMessages;
+  } else {
+    messages = workBusyMessages;
+  }
+  showCustomDialogue(messages[Math.floor(Math.random() * messages.length)]);
 }
 
 function isMouseOnPet(x: number, y: number): boolean {
@@ -325,8 +341,8 @@ export async function changeState(newState: PetState, skipDialogue = false) {
     default:
       // 大多数状态完成后回到 idle
       if (duration) {
-        // 打工状态特殊处理：记录结束时间，支持拖拽后恢复计时
-        if (isWorkState(newState)) {
+        // 不可打断状态：记录结束时间，支持拖拽后恢复计时
+        if (isUninterruptibleState(newState)) {
           workEndTime.value = Date.now() + duration;
         }
         stateTimer.value = window.setTimeout(() => {
@@ -335,6 +351,8 @@ export async function changeState(newState: PetState, skipDialogue = false) {
             workEndTime.value = null;
             justFinishedWork = true;
             onWorkComplete(petState.value);
+          } else if (isUninterruptibleState(petState.value)) {
+            workEndTime.value = null;
           }
           changeState("idle");
         }, duration);
@@ -406,9 +424,9 @@ export function handlePetClick() {
   if (petState.value === "sleeping" || petState.value === "sleepy") {
     // 睡眠或睡眼朦胧期间点击，显示睡眼朦胧状态和专有对话
     changeState("sleepy");
-  } else if (isWorkState(petState.value)) {
-    // 打工状态下，显示忙碌台词，不改变状态
-    showWorkBusyDialogue();
+  } else if (isUninterruptibleState(petState.value)) {
+    // 不可打断状态下，显示忙碌台词，不改变状态
+    showBusyDialogue(petState.value);
   } else {
     // 点击反应（移除工作状态，工作需通过属性面板触发）
     const reactions: PetState[] = [
@@ -435,9 +453,9 @@ export function handlePetDoubleClick() {
     changeState("sleepy");
     return;
   }
-  // 打工状态下，显示忙碌台词，不改变状态
-  if (isWorkState(petState.value)) {
-    showWorkBusyDialogue();
+  // 不可打断状态下，显示忙碌台词，不改变状态
+  if (isUninterruptibleState(petState.value)) {
+    showBusyDialogue(petState.value);
     return;
   }
   // 双击触发跳舞或翻滚
@@ -470,17 +488,20 @@ export function handleDragStart(e: MouseEvent) {
   if (stateTimer.value) clearTimeout(stateTimer.value);
   // 保存当前状态
   stateBeforeDrag = petState.value;
-  // 打工状态下，保存剩余时间用于拖拽结束后恢复
-  if (isWorkState(petState.value) && workEndTime.value) {
+  // 不可打断状态下，保存剩余时间用于拖拽结束后恢复
+  if (isUninterruptibleState(petState.value) && workEndTime.value) {
     workRemainingBeforeDrag = workEndTime.value - Date.now();
   }
   // 睡眠状态下拖拽时进入睡眠行走状态（手脚会动，眼睛像睡眼朦胧）
   if (petState.value === "sleeping" || petState.value === "sleepy") {
     petState.value = "sleepwalking";
   }
-  // 打工状态下拖拽时保持当前状态，不改变
+  // 不可打断状态下拖拽时保持当前状态，不改变
   // 其他状态下拖拽时进入行走状态
-  if (!isWorkState(petState.value) && petState.value !== "sleepwalking") {
+  if (
+    !isUninterruptibleState(petState.value) &&
+    petState.value !== "sleepwalking"
+  ) {
     petState.value = "walking";
   }
   window.addEventListener("mousemove", handleDragging);
@@ -516,8 +537,9 @@ function handleDragEnd() {
   // 恢复正面朝向
   petDirection.value = "front";
 
-  // 判断拖拽前是否是打工状态
-  const wasWorking = stateBeforeDrag && isWorkState(stateBeforeDrag);
+  // 判断拖拽前是否是不可打断状态
+  const wasUninterruptible =
+    stateBeforeDrag && isUninterruptibleState(stateBeforeDrag);
 
   // 睡眠行走状态下拖拽结束后恢复睡眠状态
   if (
@@ -526,8 +548,8 @@ function handleDragEnd() {
     petState.value === "sleepy"
   ) {
     changeState("sleeping");
-  } else if (wasWorking && stateBeforeDrag) {
-    // 打工状态下拖拽结束后恢复原来的打工状态
+  } else if (wasUninterruptible && stateBeforeDrag) {
+    // 不可打断状态下拖拽结束后恢复原来的状态
     // 使用拖拽前保存的剩余时间，确保进度条同步
     petState.value = stateBeforeDrag;
     const remainingTime = workRemainingBeforeDrag;
@@ -536,6 +558,11 @@ function handleDragEnd() {
       // 更新 workEndTime，使进度条正确同步
       workEndTime.value = Date.now() + remainingTime;
       stateTimer.value = window.setTimeout(() => {
+        // 打工状态结束时发放工资
+        if (isWorkState(petState.value)) {
+          justFinishedWork = true;
+          onWorkComplete(petState.value);
+        }
         workEndTime.value = null;
         changeState("idle");
       }, remainingTime);
