@@ -152,6 +152,8 @@ export const INTERACTION_EXPERIENCE = 1; // 互动经验
 export const COMPANIONSHIP_EXPERIENCE = 1; // 陪伴经验
 export const COMPANIONSHIP_INTERVAL = 600; // 陪伴经验间隔（秒）
 export const DAILY_INTERACTION_EXPERIENCE_CAP = 10; // 每日交互经验上限
+export const DAILY_ALLOWANCE = 10; // 每日救济金金额
+export const DAILY_ALLOWANCE_THRESHOLD = 50; // 每日救济金触发阈值（金币低于此值才发放）
 
 // 健康值上限（固定）
 export const HEALTH_CAP = 100;

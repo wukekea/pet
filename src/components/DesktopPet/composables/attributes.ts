@@ -22,6 +22,8 @@ import {
   COMPANIONSHIP_EXPERIENCE,
   COMPANIONSHIP_INTERVAL,
   HEALTH_CAP,
+  DAILY_ALLOWANCE,
+  DAILY_ALLOWANCE_THRESHOLD,
   DAILY_INTERACTION_EXPERIENCE_CAP,
 } from "../constants";
 import {
@@ -122,11 +124,19 @@ function tick(): void {
   const state = petState.value;
   const cap = getAttributeCap(data.level);
 
-  // 跨午夜检查：重置每日交互经验
+  // 跨午夜检查：重置每日交互经验，发放每日救济金
   const today = getTodayDate();
   if (data.dailyInteractionExpDate !== today) {
     data.dailyInteractionExpDate = today;
     data.dailyInteractionExp = 0;
+  }
+  // 每日救济金：金币低于阈值时自动发放
+  if (
+    data.dailyAllowanceClaimed !== today &&
+    data.money < DAILY_ALLOWANCE_THRESHOLD
+  ) {
+    data.money += DAILY_ALLOWANCE;
+    data.dailyAllowanceClaimed = today;
   }
 
   // 饱腹值衰减（搬砖时加速 3 倍）
@@ -480,11 +490,27 @@ export function initAttributes(): void {
   // 加载数据
   attributeData.value = loadAttributeData();
 
+  // 启动时检查救济金（首次打开或跨天重启时）
+  checkDailyAllowance();
+
   // 启动计时器
   startTimers();
 
   // 监听可见性变化
   document.addEventListener("visibilitychange", handleVisibilityChange);
+}
+
+// 检查并发放每日救济金
+function checkDailyAllowance(): void {
+  const data = attributeData.value;
+  const today = getTodayDate();
+  if (
+    data.dailyAllowanceClaimed !== today &&
+    data.money < DAILY_ALLOWANCE_THRESHOLD
+  ) {
+    data.money += DAILY_ALLOWANCE;
+    data.dailyAllowanceClaimed = today;
+  }
 }
 
 // 清理属性系统

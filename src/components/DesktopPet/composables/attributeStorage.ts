@@ -68,6 +68,7 @@ export const DEFAULT_ATTRIBUTE_DATA: AttributeData = {
   experience: 0,
   dailyInteractionExp: 0,
   dailyInteractionExpDate: "",
+  dailyAllowanceClaimed: "",
   lastUpdateTimestamp: Date.now(),
 };
 
@@ -102,6 +103,9 @@ export function loadAttributeData(): AttributeData {
         }
         if (typeof data.dailyInteractionExpDate !== "string") {
           data.dailyInteractionExpDate = "";
+        }
+        if (typeof data.dailyAllowanceClaimed !== "string") {
+          data.dailyAllowanceClaimed = "";
         }
         return data;
       }
