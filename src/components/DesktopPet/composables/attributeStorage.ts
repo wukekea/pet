@@ -1,5 +1,5 @@
 import type { AttributeData } from "../types";
-import type { FoodType } from "./sharedState";
+import type { FoodType, BathType } from "./sharedState";
 
 // localStorage 存储键
 const STORAGE_KEY = "pet-attributes";
@@ -24,14 +24,43 @@ export interface FoodConfig {
 
 export const FOOD_CONFIGS: Record<FoodType, FoodConfig> = {
   apple: { type: "apple", name: "苹果", cost: 5, satietyRestore: 25 },
-  fish: { type: "fish", name: "小鱼", cost: 8, satietyRestore: 35 },
-  cake: { type: "cake", name: "蛋糕", cost: 12, satietyRestore: 50 },
   lollipop: { type: "lollipop", name: "棒棒糖", cost: 3, satietyRestore: 15 },
+  riceBall: { type: "riceBall", name: "饭团", cost: 6, satietyRestore: 30 },
+  fish: { type: "fish", name: "小鱼", cost: 8, satietyRestore: 35 },
+  milk: { type: "milk", name: "牛奶", cost: 10, satietyRestore: 40 },
+  cake: { type: "cake", name: "蛋糕", cost: 12, satietyRestore: 50 },
+  steak: { type: "steak", name: "牛排", cost: 18, satietyRestore: 65 },
 };
 
-// 洗澡配置
-export const BATH_COST = 10;
-export const BATH_CLEANLINESS_RESTORE = 50;
+// 沐浴配置
+export interface BathConfig {
+  type: BathType;
+  name: string;
+  cost: number;
+  cleanlinessRestore: number;
+}
+
+export const BATH_CONFIGS: Record<BathType, BathConfig> = {
+  soap: { type: "soap", name: "香皂", cost: 5, cleanlinessRestore: 25 },
+  showerGel: {
+    type: "showerGel",
+    name: "沐浴露",
+    cost: 10,
+    cleanlinessRestore: 45,
+  },
+  bathBall: {
+    type: "bathBall",
+    name: "浴球",
+    cost: 15,
+    cleanlinessRestore: 65,
+  },
+  petShampoo: {
+    type: "petShampoo",
+    name: "宠物香波",
+    cost: 20,
+    cleanlinessRestore: 85,
+  },
+};
 
 // 打工收入
 export const WORK_INCOME: Record<string, number> = {

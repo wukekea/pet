@@ -29,6 +29,7 @@ export const isScheduleModalOpen = ref(false);
 export const isStatsModalOpen = ref(false);
 export const isContextMenuOpen = ref(false);
 export const isAttributeModalOpen = ref(false);
+export const isShopModalOpen = ref(false);
 
 // 统一的 UI 打开状态 - 用于穿透控制
 export const isAnyUiOpen = computed(
@@ -37,22 +38,53 @@ export const isAnyUiOpen = computed(
     isScheduleModalOpen.value ||
     isStatsModalOpen.value ||
     isContextMenuOpen.value ||
-    isAttributeModalOpen.value,
+    isAttributeModalOpen.value ||
+    isShopModalOpen.value,
 );
 
 // 作息相关状态
-export const isInSleepSchedule = ref(false); // 当前是否处于睡眠作息时间段
-export const isInWorkSchedule = ref(false); // 当前是否处于工作作息时间段
-export const scheduleEnabled = ref(false); // 作息功能是否启用
-export const dreamTalkTimerId = ref<number | null>(null); // 梦话定时器
-export const scheduleEndTime = ref<number | null>(null); // 当前作息结束时间（毫秒时间戳）
+export const isInSleepSchedule = ref(false);
+export const isInWorkSchedule = ref(false);
+export const scheduleEnabled = ref(false);
+export const dreamTalkTimerId = ref<number | null>(null);
+export const scheduleEndTime = ref<number | null>(null);
 
 // 打工相关状态
-export const workEndTime = ref<number | null>(null); // 打工结束时间（毫秒时间戳），拖拽后更新
+export const workEndTime = ref<number | null>(null);
 
 // 食物类型
-export type FoodType = "apple" | "fish" | "cake" | "lollipop";
+export type FoodType =
+  | "apple"
+  | "fish"
+  | "cake"
+  | "lollipop"
+  | "riceBall"
+  | "milk"
+  | "steak";
 export const currentFood = ref<FoodType>("apple");
+
+// 沐浴露类型
+export type BathType = "soap" | "showerGel" | "bathBall" | "petShampoo";
+export const currentBathType = ref<BathType>("showerGel");
+
+// 食物图标映射
+export const FOOD_ICONS: Record<FoodType, string> = {
+  apple: "🍎",
+  fish: "🐟",
+  cake: "🎂",
+  lollipop: "🍭",
+  riceBall: "🍙",
+  milk: "🥛",
+  steak: "🥩",
+};
+
+// 沐浴露图标映射
+export const BATH_ICONS: Record<BathType, string> = {
+  soap: "🧼",
+  showerGel: "🧴",
+  bathBall: "🫧",
+  petShampoo: "🧽",
+};
 
 // 宠物形态（从 petShapeStorage 导入）
 export { currentPetShape } from "./petShapeStorage";

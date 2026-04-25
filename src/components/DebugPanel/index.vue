@@ -12,6 +12,7 @@ import {
   currentFood,
   currentPetShape,
   type FoodType,
+  FOOD_ICONS,
 } from "../DesktopPet/composables/sharedState";
 import {
   isDark,
@@ -28,6 +29,7 @@ import type { PetState } from "../DesktopPet/types";
 import type { WeatherType } from "../DesktopPet/types";
 import { setPassthrough } from "../DesktopPet/composables/passthrough";
 import { savePetShape } from "../DesktopPet/composables/petShapeStorage";
+import { FOOD_CONFIGS } from "../DesktopPet/composables/attributeStorage";
 import { getShapeOptions } from "../DesktopPet/shapes";
 
 // 面板可见性
@@ -132,32 +134,12 @@ const actionGroups = [
   },
   {
     name: "吃东西",
-    actions: [
-      {
-        state: "eating" as PetState,
-        label: "苹果",
-        icon: "🍎",
-        food: "apple" as FoodType,
-      },
-      {
-        state: "eating" as PetState,
-        label: "鱼",
-        icon: "🐟",
-        food: "fish" as FoodType,
-      },
-      {
-        state: "eating" as PetState,
-        label: "蛋糕",
-        icon: "🎂",
-        food: "cake" as FoodType,
-      },
-      {
-        state: "eating" as PetState,
-        label: "棒棒糖",
-        icon: "🍭",
-        food: "lollipop" as FoodType,
-      },
-    ],
+    actions: Object.values(FOOD_CONFIGS).map((f) => ({
+      state: "eating" as PetState,
+      label: f.name,
+      icon: FOOD_ICONS[f.type],
+      food: f.type as FoodType,
+    })),
   },
 ];
 

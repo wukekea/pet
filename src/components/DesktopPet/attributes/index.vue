@@ -8,20 +8,15 @@ import {
   getCurrentAttributeCap,
   getExpProgress,
   getDailyInteractionProgress,
-  feedPet,
-  bathePet,
   startWork,
   canWork,
 } from "../composables/attributes";
 import {
-  FOOD_CONFIGS,
-  BATH_COST,
   WORK_INCOME,
   WORK_STAMINA_REQUIRED,
   getExpRequiredForLevel,
 } from "../composables/attributeStorage";
 import { HEALTH_CAP, MAX_LEVEL } from "../constants";
-import type { FoodType } from "../composables/sharedState";
 import type { PetState } from "../types";
 
 defineProps<{
@@ -30,6 +25,7 @@ defineProps<{
 
 const emit = defineEmits<{
   close: [];
+  openShop: [];
 }>();
 
 // 属性数据
@@ -134,14 +130,6 @@ const workRules: Record<string, { icon: string; text: string }[]> = {
   ],
 };
 
-// 食物列表
-const foods = computed(() =>
-  Object.values(FOOD_CONFIGS).map((f) => ({
-    ...f,
-    canAfford: attrData.value.money >= f.cost,
-  })),
-);
-
 // 工作列表
 const workList = computed(() => {
   const states: {
@@ -175,18 +163,10 @@ const workList = computed(() => {
   }));
 });
 
-// 处理喂食
-const handleFeed = (foodType: FoodType) => {
-  if (feedPet(foodType)) {
-    close();
-  }
-};
-
-// 处理洗澡
-const handleBathe = () => {
-  if (bathePet()) {
-    close();
-  }
+// 打开商店
+const handleOpenShop = () => {
+  close();
+  emit("openShop");
 };
 
 // 处理打工
@@ -371,55 +351,12 @@ const close = () => {
 
             <!-- 操作区域 -->
             <div class="actions-section">
-              <!-- 喂食 -->
-              <div class="action-group">
-                <div class="action-label">
-                  <span>🍽️ 喂食</span>
-                </div>
-                <div class="food-grid">
-                  <button
-                    v-for="food in foods"
-                    :key="food.type"
-                    class="action-btn food-btn"
-                    :class="{ disabled: !food.canAfford }"
-                    :disabled="!food.canAfford"
-                    @click="handleFeed(food.type)"
-                  >
-                    <span class="btn-emoji">
-                      {{
-                        food.type === "apple"
-                          ? "🍎"
-                          : food.type === "fish"
-                            ? "🐟"
-                            : food.type === "cake"
-                              ? "🎂"
-                              : "🍭"
-                      }}
-                    </span>
-                    <span class="btn-cost">💰{{ food.cost }}</span>
-                    <span class="btn-restore">+{{ food.satietyRestore }}</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- 洗澡 -->
-              <div class="action-group">
-                <div class="action-label">
-                  <span>🛁 洗澡</span>
-                </div>
-                <button
-                  class="action-btn bath-btn"
-                  :class="{ disabled: attrData.money < BATH_COST }"
-                  :disabled="attrData.money < BATH_COST"
-                  @click="handleBathe"
-                >
-                  <span class="btn-emoji">🚿</span>
-                  <span class="btn-info">
-                    <span class="btn-cost">💰{{ BATH_COST }}</span>
-                    <span class="btn-restore">+50清洁</span>
-                  </span>
-                </button>
-              </div>
+              <!-- 去商店 -->
+              <button class="shop-btn" @click="handleOpenShop">
+                <span class="shop-btn-icon">🛒</span>
+                <span class="shop-btn-text">去商店</span>
+                <span class="shop-btn-desc">购买食物和沐浴露</span>
+              </button>
 
               <!-- 打工 -->
               <div class="action-group">
@@ -1025,6 +962,75 @@ const close = () => {
   gap: 14px;
 }
 
+/* 去商店按钮 */
+.shop-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(251, 191, 36, 0.08),
+    rgba(245, 158, 11, 0.04)
+  );
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.shop-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(251, 191, 36, 0.06) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.shop-btn:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(251, 191, 36, 0.15),
+    rgba(245, 158, 11, 0.08)
+  );
+  border-color: rgba(251, 191, 36, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.15);
+}
+
+.shop-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.shop-btn-icon {
+  font-size: 20px;
+}
+
+.shop-btn-text {
+  font-size: 14px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.shop-btn-desc {
+  font-size: 11px;
+  color: var(--attr-label-color);
+  flex: 1;
+  text-align: right;
+}
+
 .action-group {
   display: flex;
   flex-direction: column;
@@ -1035,12 +1041,6 @@ const close = () => {
   font-size: 13px;
   font-weight: 600;
   color: var(--section-title-color);
-}
-
-.food-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
 }
 
 .work-grid {
@@ -1101,20 +1101,6 @@ const close = () => {
 .action-btn.disabled .btn-cost,
 .action-btn.disabled .btn-restore {
   color: var(--action-btn-disabled-color);
-}
-
-/* 洗澡按钮 */
-.bath-btn {
-  flex-direction: row;
-  padding: 10px 14px;
-  gap: 10px;
-}
-
-.bath-btn .btn-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
 }
 
 /* 打工按钮 */

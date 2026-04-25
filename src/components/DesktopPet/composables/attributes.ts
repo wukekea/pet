@@ -1,8 +1,13 @@
 import { ref } from "vue";
 import type { AttributeData } from "../types";
 import type { PetState } from "../types";
-import type { FoodType } from "./sharedState";
-import { petState, currentFood, isDragging } from "./sharedState";
+import type { FoodType, BathType } from "./sharedState";
+import {
+  petState,
+  currentFood,
+  currentBathType,
+  isDragging,
+} from "./sharedState";
 import {
   SATIETY_DECAY_INTERVAL,
   CLEANLINESS_DECAY_INTERVAL,
@@ -15,6 +20,7 @@ import {
   HUNGRY_THRESHOLD,
   DIRTY_THRESHOLD,
   AUTO_EAT_SATIETY_TARGET,
+  AUTO_BATH_CLEANLINESS_TARGET,
   HEALTH_HAPPY_THRESHOLD,
   HEALTH_SICK_THRESHOLD,
   MAX_LEVEL,
@@ -32,8 +38,7 @@ import {
   getAttributeCap,
   getExpRequiredForLevel,
   FOOD_CONFIGS,
-  BATH_COST,
-  BATH_CLEANLINESS_RESTORE,
+  BATH_CONFIGS,
   WORK_INCOME,
   WORK_EXPERIENCE,
   WORK_STAMINA_REQUIRED,
@@ -252,9 +257,20 @@ function checkAutoEat(): void {
 // 自动洗澡逻辑
 function checkAutoBath(): void {
   const data = attributeData.value;
-  if (data.money >= BATH_COST) {
-    bathePet(true);
-  }
+  const affordableBaths = Object.values(BATH_CONFIGS)
+    .filter((b) => b.cost <= data.money)
+    .sort((a, b) => a.cost - b.cost);
+
+  if (affordableBaths.length === 0) return;
+
+  // 优先选择能让清洁达到目标的
+  const bestBath =
+    affordableBaths.find(
+      (b) =>
+        data.cleanliness + b.cleanlinessRestore >= AUTO_BATH_CLEANLINESS_TARGET,
+    ) || affordableBaths[0];
+
+  bathePet(bestBath.type, true);
 }
 
 // 手动喂食
@@ -283,14 +299,19 @@ export function feedPet(foodType: FoodType, isAuto = false): boolean {
 }
 
 // 手动洗澡
-export function bathePet(isAuto = false): boolean {
+export function bathePet(bathType: BathType, isAuto = false): boolean {
   const data = attributeData.value;
+  const config = BATH_CONFIGS[bathType];
 
-  if (data.money < BATH_COST) return false;
+  if (data.money < config.cost) return false;
 
   const cap = getAttributeCap(data.level);
-  data.money -= BATH_COST;
-  data.cleanliness = Math.min(cap, data.cleanliness + BATH_CLEANLINESS_RESTORE);
+  data.money -= config.cost;
+  data.cleanliness = Math.min(
+    cap,
+    data.cleanliness + config.cleanlinessRestore,
+  );
+  currentBathType.value = bathType;
 
   if (requestStateChange) {
     requestStateChange("bathing");

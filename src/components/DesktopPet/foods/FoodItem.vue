@@ -1,9 +1,23 @@
 <script setup lang="ts">
 import { type FoodType } from "../composables/sharedState";
+import type { Component } from "vue";
 import FoodApple from "./FoodApple.vue";
 import FoodFish from "./FoodFish.vue";
 import FoodCake from "./FoodCake.vue";
 import FoodLollipop from "./FoodLollipop.vue";
+import FoodRiceBall from "./FoodRiceBall.vue";
+import FoodMilk from "./FoodMilk.vue";
+import FoodSteak from "./FoodSteak.vue";
+
+const FOOD_COMPONENT_MAP: Record<FoodType, Component> = {
+  apple: FoodApple,
+  fish: FoodFish,
+  cake: FoodCake,
+  lollipop: FoodLollipop,
+  riceBall: FoodRiceBall,
+  milk: FoodMilk,
+  steak: FoodSteak,
+};
 
 defineProps<{
   foodType: FoodType;
@@ -13,10 +27,7 @@ defineProps<{
 <template>
   <div class="food-eating-wrapper">
     <div class="food-container" :class="`food-${foodType}`">
-      <FoodApple v-if="foodType === 'apple'" />
-      <FoodFish v-else-if="foodType === 'fish'" />
-      <FoodCake v-else-if="foodType === 'cake'" />
-      <FoodLollipop v-else-if="foodType === 'lollipop'" />
+      <component :is="FOOD_COMPONENT_MAP[foodType]" />
     </div>
   </div>
 </template>

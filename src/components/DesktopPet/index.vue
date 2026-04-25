@@ -11,6 +11,7 @@ import {
   isScheduleModalOpen,
   isStatsModalOpen,
   isAttributeModalOpen,
+  isShopModalOpen,
   isDebugPanelOpen,
   currentFood,
   currentPetShape,
@@ -40,13 +41,15 @@ import ContextMenu from "./contextMenu/index.vue";
 import ScheduleModal from "./schedule/index.vue";
 import StatsModal from "./stats/index.vue";
 import AttributeModal from "./attributes/index.vue";
+import ShopModal from "./shop/index.vue";
+import { FOOD_CONFIGS } from "./composables/attributeStorage";
 import "./shapes/base.css";
 import "./shapes/cloud/styles.css";
 import "./shapes/cat/styles.css";
 import "./shapes/panda/styles.css";
 
 // 食物类型列表（调试面板使用）
-const foodTypes: FoodType[] = ["apple", "fish", "cake", "lollipop"];
+const foodTypes = Object.keys(FOOD_CONFIGS) as FoodType[];
 
 // 调试面板打开时，进入 eating 状态随机选择食物
 watch(petState, (newState) => {
@@ -155,6 +158,9 @@ const statsModalVisible = ref(false);
 // 属性面板弹窗状态
 const attributeModalVisible = ref(false);
 
+// 商店弹窗状态
+const shopModalVisible = ref(false);
+
 // 打开右键菜单
 const handleContextMenu = (e: MouseEvent) => {
   e.preventDefault();
@@ -173,7 +179,8 @@ const closeContextMenu = () => {
   if (
     !scheduleModalVisible.value &&
     !statsModalVisible.value &&
-    !attributeModalVisible.value
+    !attributeModalVisible.value &&
+    !shopModalVisible.value
   ) {
     setPassthrough(true);
   }
@@ -219,6 +226,26 @@ const openAttributeModal = () => {
 // 关闭属性面板弹窗
 const closeAttributeModal = () => {
   attributeModalVisible.value = false;
+};
+
+// 打开商店弹窗
+const openShopModal = () => {
+  setPassthrough(false);
+  isShopModalOpen.value = true;
+  contextMenuVisible.value = false;
+  isContextMenuOpen.value = false;
+  shopModalVisible.value = true;
+};
+
+// 关闭商店弹窗
+const closeShopModal = () => {
+  shopModalVisible.value = false;
+};
+
+// 从属性面板打开商店
+const openShopFromAttributes = () => {
+  attributeModalVisible.value = false;
+  openShopModal();
 };
 </script>
 
@@ -284,6 +311,7 @@ const closeAttributeModal = () => {
       :y="contextMenuY"
       @close="closeContextMenu"
       @open-schedule="openScheduleModal"
+      @open-shop="openShopModal"
       @open-attributes="openAttributeModal"
       @open-stats="openStatsModal"
     />
@@ -298,7 +326,11 @@ const closeAttributeModal = () => {
     <AttributeModal
       :visible="attributeModalVisible"
       @close="closeAttributeModal"
+      @open-shop="openShopFromAttributes"
     />
+
+    <!-- 商店弹窗 -->
+    <ShopModal :visible="shopModalVisible" @close="closeShopModal" />
 
     <!-- 数据统计弹窗 -->
     <StatsModal :visible="statsModalVisible" @close="closeStatsModal" />
