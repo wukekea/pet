@@ -325,7 +325,7 @@ export function startWork(workState: PetState): boolean {
 // 打工完成回调
 export function onWorkComplete(workState: PetState): void {
   const data = attributeData.value;
-  const income = WORK_INCOME[workState] ?? 0;
+  const income = (WORK_INCOME[workState] ?? 0) + (data.level - 1);
   const exp = WORK_EXPERIENCE[workState] ?? 0;
 
   data.money += income;
