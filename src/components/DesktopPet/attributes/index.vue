@@ -60,7 +60,6 @@ const attributeBars = computed(() => [
     color: "orange",
     rules: [
       { icon: "📉", text: "每 5 分钟 -1" },
-      { icon: "🧱", text: "搬砖时衰减加速 3 倍" },
       { icon: "⚠️", text: "低于 30 时健康下降" },
       { icon: "🍽️", text: "低于 30 时自动吃饭" },
     ],
@@ -74,7 +73,6 @@ const attributeBars = computed(() => [
     color: "blue",
     rules: [
       { icon: "📉", text: "每 8 分钟 -1" },
-      { icon: "🧱", text: "搬砖时衰减加速 3 倍" },
       { icon: "⚠️", text: "低于 30 时健康下降" },
       { icon: "🚿", text: "低于 30 时自动洗澡" },
     ],
@@ -113,6 +111,28 @@ const attributeBars = computed(() => [
 
 // 悬浮提示状态
 const hoveredAttr = ref<string | null>(null);
+const hoveredWork = ref<string | null>(null);
+
+// 打工提示规则
+const workRules: Record<string, { icon: string; text: string }[]> = {
+  brickCarrying: [
+    { icon: "⏱️", text: "持续 30 分钟" },
+    { icon: "⚡", text: "每 1 分钟消耗 1 体力" },
+    { icon: "📉", text: "饱腹衰减加速 3 倍" },
+    { icon: "📉", text: "清洁衰减加速 3 倍" },
+    { icon: "💰", text: "完成后获得 35 金币 + 35 经验" },
+  ],
+  flyerDistributing: [
+    { icon: "⏱️", text: "持续 15 分钟" },
+    { icon: "⚡", text: "每 1 分钟消耗 1 体力" },
+    { icon: "💰", text: "完成后获得 10 金币 + 25 经验" },
+  ],
+  programmer: [
+    { icon: "⏱️", text: "持续 45 分钟" },
+    { icon: "⚡", text: "每 1 分钟消耗 1 体力" },
+    { icon: "💰", text: "完成后获得 50 金币 + 50 经验" },
+  ],
+};
 
 // 食物列表
 const foods = computed(() =>
@@ -407,29 +427,64 @@ const close = () => {
                   <span>💼 打工</span>
                 </div>
                 <div class="work-grid">
-                  <button
+                  <div
                     v-for="work in workList"
                     :key="work.state"
-                    class="action-btn work-btn"
-                    :class="{ disabled: !work.canStart }"
-                    :disabled="!work.canStart"
-                    @click="handleWork(work.state)"
+                    class="work-btn-wrapper"
+                    @mouseenter="hoveredWork = work.state"
+                    @mouseleave="hoveredWork = null"
                   >
-                    <span class="btn-emoji">
-                      {{
-                        work.state === "brickCarrying"
-                          ? "🧱"
-                          : work.state === "flyerDistributing"
-                            ? "📢"
-                            : "💻"
-                      }}
-                    </span>
-                    <span class="btn-info">
-                      <span class="work-name">{{ work.name }}</span>
-                      <span class="btn-cost">+💰{{ work.income }}</span>
-                      <span class="btn-restore">需⚡{{ work.staminaReq }}</span>
-                    </span>
-                  </button>
+                    <button
+                      class="action-btn work-btn"
+                      :class="{ disabled: !work.canStart }"
+                      :disabled="!work.canStart"
+                      @click="handleWork(work.state)"
+                    >
+                      <span class="btn-emoji">
+                        {{
+                          work.state === "brickCarrying"
+                            ? "🧱"
+                            : work.state === "flyerDistributing"
+                              ? "📢"
+                              : "💻"
+                        }}
+                      </span>
+                      <span class="btn-info">
+                        <span class="work-name">{{ work.name }}</span>
+                        <span class="btn-cost">+💰{{ work.income }}</span>
+                        <span class="btn-restore"
+                          >需⚡{{ work.staminaReq }}</span
+                        >
+                      </span>
+                    </button>
+                    <Transition name="tooltip-fade">
+                      <div
+                        v-if="
+                          hoveredWork === work.state && workRules[work.state]
+                        "
+                        class="work-tooltip"
+                      >
+                        <div class="tooltip-title tooltip-title-purple">
+                          {{
+                            work.state === "brickCarrying"
+                              ? "🧱"
+                              : work.state === "flyerDistributing"
+                                ? "📢"
+                                : "💻"
+                          }}
+                          {{ work.name }}规则
+                        </div>
+                        <div
+                          v-for="(rule, i) in workRules[work.state]"
+                          :key="i"
+                          class="tooltip-rule"
+                        >
+                          <span class="rule-icon">{{ rule.icon }}</span>
+                          <span class="rule-text">{{ rule.text }}</span>
+                        </div>
+                      </div>
+                    </Transition>
+                  </div>
                 </div>
               </div>
             </div>
@@ -893,6 +948,48 @@ const close = () => {
     opacity: 0;
     transform: translateY(-4px);
   }
+}
+
+/* 打工按钮提示 */
+.work-btn-wrapper {
+  position: relative;
+}
+
+.work-btn-wrapper .work-btn {
+  width: 100%;
+}
+
+.work-tooltip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 10;
+  margin-top: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  line-height: 1.5;
+  pointer-events: none;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+}
+
+.dark-mode .work-tooltip {
+  background: rgba(20, 16, 30, 0.96);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+:not(.dark-mode) .work-tooltip {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.tooltip-title-purple {
+  color: #8b5cf6;
+}
+
+.dark-mode .tooltip-title-purple {
+  color: #a78bfa;
 }
 
 /* 金币 */
