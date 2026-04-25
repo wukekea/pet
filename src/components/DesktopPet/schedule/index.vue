@@ -59,6 +59,9 @@ const cssVars = computed(() => ({
   "--sleep-slot-bg": isDark.value
     ? "rgba(99, 102, 241, 0.15)"
     : "rgba(165, 180, 252, 0.2)",
+  "--work-slot-bg": isDark.value
+    ? "rgba(251, 146, 60, 0.15)"
+    : "rgba(254, 215, 170, 0.2)",
   "--time-input-bg": isDark.value
     ? "rgba(30, 27, 45, 0.8)"
     : "rgba(255, 255, 255, 0.9)",
@@ -229,7 +232,7 @@ const saveSchedule = () => {
             <div class="toggle-card">
               <div class="toggle-info">
                 <span class="toggle-title">自动作息</span>
-                <span class="toggle-desc">到时间自动睡觉和起床</span>
+                <span class="toggle-desc">到时间自动睡觉、起床和工作</span>
               </div>
               <button
                 class="toggle-switch"
@@ -254,10 +257,19 @@ const saveSchedule = () => {
                   v-for="(slot, index) in scheduleConfig.slots"
                   :key="index"
                   class="slot-card"
-                  :class="{ 'is-sleep': slot.state === 'sleep' }"
+                  :class="{
+                    'is-sleep': slot.state === 'sleep',
+                    'is-work': slot.state === 'work',
+                  }"
                 >
                   <div class="slot-icon">
-                    {{ slot.state === "sleep" ? "😴" : "🎈" }}
+                    {{
+                      slot.state === "sleep"
+                        ? "😴"
+                        : slot.state === "work"
+                          ? "💼"
+                          : "🎈"
+                    }}
                   </div>
                   <div class="slot-time-inputs">
                     <div class="time-group">
@@ -373,6 +385,7 @@ const saveSchedule = () => {
                   </div>
                   <select v-model="slot.state" class="state-select">
                     <option value="sleep">睡眠</option>
+                    <option value="work">工作</option>
                     <option value="free">闲暇</option>
                   </select>
                   <button class="remove-btn" @click="removeTimeSlot(index)">
@@ -647,6 +660,10 @@ const saveSchedule = () => {
 
 .slot-card.is-sleep {
   background: var(--sleep-slot-bg);
+}
+
+.slot-card.is-work {
+  background: var(--work-slot-bg);
 }
 
 .slot-icon {

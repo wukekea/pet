@@ -1,6 +1,7 @@
 import type { ScheduleConfig, ScheduleState, TimeSlot } from "../types";
 import {
   isInSleepSchedule,
+  isInWorkSchedule,
   scheduleEnabled,
   scheduleEndTime,
   dreamTalkTimerId,
@@ -9,6 +10,10 @@ import {
 import { loadScheduleConfig, saveScheduleConfig } from "./scheduleStorage";
 import { changeState } from "./petController";
 import { showCustomDialogue, getDreamTalk } from "./dialogue";
+import {
+  workScheduleEnterMessages,
+  workScheduleExitMessages,
+} from "../dialogues";
 import { DREAM_TALK_INTERVAL, STRETCH_DURATION } from "../constants";
 
 // 当前配置
@@ -140,6 +145,11 @@ function stopDreamTalkTimer(): void {
 export function enterSleepSchedule(): void {
   if (isInSleepSchedule.value) return;
 
+  // 退出工作作息（互斥）
+  if (isInWorkSchedule.value) {
+    exitWorkSchedule();
+  }
+
   isInSleepSchedule.value = true;
   scheduleEndTime.value = getScheduleEndTime();
 
@@ -166,6 +176,47 @@ export function exitSleepSchedule(): void {
   scheduleEndTime.value = null;
 }
 
+// 进入工作作息
+export function enterWorkSchedule(): void {
+  if (isInWorkSchedule.value) return;
+
+  // 退出睡眠作息（互斥）
+  if (isInSleepSchedule.value) {
+    exitSleepSchedule();
+  }
+
+  isInWorkSchedule.value = true;
+  scheduleEndTime.value = getScheduleEndTime();
+
+  // 显示开工台词
+  const msg =
+    workScheduleEnterMessages[
+      Math.floor(Math.random() * workScheduleEnterMessages.length)
+    ];
+  showCustomDialogue(msg);
+
+  // 切换到 idle，idle 处理中会自动选工作
+  changeState("idle");
+}
+
+// 退出工作作息
+export function exitWorkSchedule(): void {
+  if (!isInWorkSchedule.value) return;
+
+  isInWorkSchedule.value = false;
+  scheduleEndTime.value = null;
+
+  // 显示下班台词
+  const msg =
+    workScheduleExitMessages[
+      Math.floor(Math.random() * workScheduleExitMessages.length)
+    ];
+  showCustomDialogue(msg);
+
+  // 切换到 idle，恢复正常行为
+  changeState("idle");
+}
+
 // 根据时间获取睡眠唤醒问候语
 function getTimeGreetingForSleep(): string {
   const hour = new Date().getHours();
@@ -186,17 +237,30 @@ export function updateScheduleState(): void {
 
   const currentState = getCurrentScheduleState();
   const wasInSleep = isInSleepSchedule.value;
+  const wasInWork = isInWorkSchedule.value;
 
   if (currentState === "sleep" && !wasInSleep) {
     // 进入睡眠作息
     enterSleepSchedule();
-  } else if (currentState === "free" && wasInSleep) {
-    // 退出睡眠作息
+  } else if (currentState === "work" && !wasInWork) {
+    // 进入工作作息
+    enterWorkSchedule();
+  } else if (currentState === "free") {
+    // 退出睡眠或工作作息
+    if (wasInSleep) exitSleepSchedule();
+    if (wasInWork) exitWorkSchedule();
+  } else if (currentState === "sleep" && wasInWork) {
+    // 从工作切换到睡眠
+    exitWorkSchedule();
+    enterSleepSchedule();
+  } else if (currentState === "work" && wasInSleep) {
+    // 从睡眠切换到工作
     exitSleepSchedule();
+    enterWorkSchedule();
   }
 
   // 更新结束时间
-  if (isInSleepSchedule.value) {
+  if (isInSleepSchedule.value || isInWorkSchedule.value) {
     scheduleEndTime.value = getScheduleEndTime();
   }
 }

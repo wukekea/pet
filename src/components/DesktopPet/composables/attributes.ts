@@ -409,6 +409,17 @@ export function canWork(): boolean {
   return data.health > 0;
 }
 
+// 获取当前体力能够胜任的工作列表（不触发状态变更）
+export function getAffordableWorkStates(
+  workStates: readonly PetState[],
+): PetState[] {
+  const data = attributeData.value;
+  if (data.health <= 0) return [];
+  return workStates.filter(
+    (w) => data.stamina >= (WORK_STAMINA_REQUIRED[w] ?? 30),
+  );
+}
+
 // 调试面板：直接设置属性值（绕过检查）
 export function debugSetAttribute(
   key: keyof AttributeData,

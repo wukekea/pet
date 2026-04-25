@@ -55,7 +55,7 @@ export interface Footprint {
 }
 
 // 作息状态类型
-export type ScheduleState = "free" | "sleep";
+export type ScheduleState = "free" | "sleep" | "work";
 
 // 时间段配置
 export interface TimeSlot {
@@ -63,7 +63,7 @@ export interface TimeSlot {
   startMinute: number; // 开始分钟（0-59）
   endHour: number; // 结束小时（0-23）
   endMinute: number; // 结束分钟（0-59）
-  state: ScheduleState; // 状态：free（闲暇）或 sleep（睡觉）
+  state: ScheduleState; // 状态：free（闲暇）、sleep（睡觉）或 work（工作）
 }
 
 // 作息配置

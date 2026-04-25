@@ -16,12 +16,14 @@ import {
   workBusyMessages,
   eatingBusyMessages,
   bathingBusyMessages,
+  workScheduleTooTiredMessages,
 } from "../dialogues";
 import type { PetState } from "../types";
 import {
   animationFrameId,
   isDragging,
   isInSleepSchedule,
+  isInWorkSchedule,
   isAnyUiOpen,
   isVisible,
   mousePosition,
@@ -58,6 +60,7 @@ import {
   onWorkComplete,
   addInteractionExperience,
   getHealthStatus,
+  getAffordableWorkStates,
 } from "./attributes";
 
 // 是否刚从工作状态退出（用于增加休息间隔）
@@ -232,7 +235,23 @@ export async function changeState(newState: PetState, skipDialogue = false) {
             changeState("sleeping");
             return;
           }
-          // 闲暇期间的可用状态（排除打工和睡眠相关状态）
+          // 工作作息期间，自动选择能够胜任的工作
+          if (isInWorkSchedule.value) {
+            const affordable = getAffordableWorkStates(WORK_STATES);
+            if (affordable.length > 0) {
+              const chosen =
+                affordable[Math.floor(Math.random() * affordable.length)];
+              changeState(chosen);
+              return;
+            }
+            // 体力不够任何工作，显示太累台词，保持 idle
+            const msg =
+              workScheduleTooTiredMessages[
+                Math.floor(Math.random() * workScheduleTooTiredMessages.length)
+              ];
+            showCustomDialogue(msg);
+          }
+          // 闲暇期间或工作作息中体力不足时的可用状态（排除打工和睡眠相关状态）
           const freeStates: PetState[] = [
             "jumping",
             "crying",
@@ -663,6 +682,9 @@ export function initPet() {
         initTimer2 = setTimeout(() => {
           changeState("yawn", true);
         }, HELLO_DURATION + 1500);
+      } else if (isInWorkSchedule.value) {
+        // 工作作息：打招呼 -> idle（idle 中会自动选工作）
+        changeState("hello", true);
       } else {
         changeState("hello", true);
       }

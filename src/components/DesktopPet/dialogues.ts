@@ -209,6 +209,30 @@ export const dreamTalkMessages: string[] = [
   "继续睡...",
 ];
 
+// 工作作息相关台词
+export const workScheduleEnterMessages: string[] = [
+  "开工啦！",
+  "该干活了~",
+  "上班时间到！",
+  "努力工作！",
+  "打工魂燃烧！",
+];
+
+export const workScheduleTooTiredMessages: string[] = [
+  "太累了，先歇会儿...",
+  "没力气了...",
+  "体力不够，等一下再干~",
+  "先休息一下...",
+];
+
+export const workScheduleExitMessages: string[] = [
+  "下班啦！",
+  "收工~",
+  "终于下班了！",
+  "自由了！",
+  "辛苦一天~",
+];
+
 // 天气专属台词
 export const weatherDialogues: Record<string, string[]> = {
   sunny: [

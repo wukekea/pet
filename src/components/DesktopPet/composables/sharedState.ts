@@ -42,6 +42,7 @@ export const isAnyUiOpen = computed(
 
 // 作息相关状态
 export const isInSleepSchedule = ref(false); // 当前是否处于睡眠作息时间段
+export const isInWorkSchedule = ref(false); // 当前是否处于工作作息时间段
 export const scheduleEnabled = ref(false); // 作息功能是否启用
 export const dreamTalkTimerId = ref<number | null>(null); // 梦话定时器
 export const scheduleEndTime = ref<number | null>(null); // 当前作息结束时间（毫秒时间戳）
