@@ -931,7 +931,7 @@ const close = () => {
 @keyframes tooltip-in {
   from {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -963,9 +963,9 @@ const close = () => {
   position: absolute;
   left: 0;
   right: 0;
-  top: 100%;
+  bottom: 100%;
   z-index: 10;
-  margin-top: 4px;
+  margin-bottom: 4px;
   padding: 10px 12px;
   border-radius: 12px;
   font-size: 11px;
