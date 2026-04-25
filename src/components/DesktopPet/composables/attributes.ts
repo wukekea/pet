@@ -129,13 +129,21 @@ function tick(): void {
     data.dailyInteractionExp = 0;
   }
 
-  // 饱腹值衰减
-  if (tickCount % SATIETY_DECAY_INTERVAL === 0) {
+  // 饱腹值衰减（搬砖时加速 3 倍）
+  const satietyInterval =
+    state === "brickCarrying"
+      ? Math.floor(SATIETY_DECAY_INTERVAL / 3)
+      : SATIETY_DECAY_INTERVAL;
+  if (tickCount % satietyInterval === 0) {
     data.satiety = Math.max(0, data.satiety - 1);
   }
 
-  // 清洁值衰减
-  if (tickCount % CLEANLINESS_DECAY_INTERVAL === 0) {
+  // 清洁值衰减（搬砖时加速 3 倍）
+  const cleanlinessInterval =
+    state === "brickCarrying"
+      ? Math.floor(CLEANLINESS_DECAY_INTERVAL / 3)
+      : CLEANLINESS_DECAY_INTERVAL;
+  if (tickCount % cleanlinessInterval === 0) {
     data.cleanliness = Math.max(0, data.cleanliness - 1);
   }
 

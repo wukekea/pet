@@ -49,7 +49,7 @@ export const STATE_DURATIONS: Partial<Record<PetState, number>> = {
   bathing: 30000,
   eating: 30000,
   brickCarrying: 1800000, // 30分钟
-  flyerDistributing: 1800000, // 30分钟
+  flyerDistributing: 900000, // 15分钟
   programmer: 2700000, // 45分钟
 };
 

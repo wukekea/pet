@@ -35,22 +35,22 @@ export const BATH_CLEANLINESS_RESTORE = 50;
 
 // 打工收入
 export const WORK_INCOME: Record<string, number> = {
-  brickCarrying: 30,
-  flyerDistributing: 25,
+  brickCarrying: 35,
+  flyerDistributing: 10,
   programmer: 50,
 };
 
 // 打工经验
 export const WORK_EXPERIENCE: Record<string, number> = {
-  brickCarrying: 30,
+  brickCarrying: 35,
   flyerDistributing: 25,
   programmer: 50,
 };
 
 // 打工所需体力（等于持续分钟数）
 export const WORK_STAMINA_REQUIRED: Record<string, number> = {
-  brickCarrying: 30,
-  flyerDistributing: 30,
+  brickCarrying: 35,
+  flyerDistributing: 15,
   programmer: 45,
 };
 

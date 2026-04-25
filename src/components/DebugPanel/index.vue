@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { changeState } from "../DesktopPet/composables/petController";
+import {
+  changeState,
+  isWorkState,
+  stopWork,
+} from "../DesktopPet/composables/petController";
+import { startWork } from "../DesktopPet/composables/attributes";
 import {
   petState,
   isDebugPanelOpen,
@@ -206,7 +211,16 @@ const triggerState = (state: PetState, food?: FoodType) => {
   if (food) {
     currentFood.value = food;
   }
-  changeState(state);
+  // 打工状态需要通过 startWork 启动完整流程（计时器+工资）
+  // 其他打工状态如果已经在打工中，先停止
+  if (isWorkState(petState.value)) {
+    stopWork();
+  }
+  if (isWorkState(state)) {
+    startWork(state);
+  } else {
+    changeState(state);
+  }
 };
 
 // 切换面板显示
