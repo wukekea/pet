@@ -608,27 +608,36 @@ export async function initScreenSize() {
     }
   }
 }
+// 缓存进度条元素引用，避免频繁 DOM 查询
+let cachedProgressBar: HTMLElement | null = null;
+
 // 处理鼠标移动
 export function handleMouseMove(e: MouseEvent) {
   mousePosition.value = { x: e.clientX, y: e.clientY };
   // 任意 UI 弹窗打开时，不自动控制穿透
   if (isAnyUiOpen.value) return;
-  // 检查是否在进度条区域内（进度条在宠物下方）
-  const progressElement = document.querySelector(
-    ".work-progress-bar",
-  ) as HTMLElement;
-  if (progressElement) {
-    const rect = progressElement.getBoundingClientRect();
-    if (
-      e.clientX >= rect.left &&
-      e.clientX <= rect.right &&
-      e.clientY >= rect.top &&
-      e.clientY <= rect.bottom
-    ) {
-      // 在进度条区域内，禁用穿透以允许交互
-      setPassthrough(false);
-      return;
+  // 只在打工状态下检查进度条区域
+  if (WORK_STATES.includes(petState.value)) {
+    if (!cachedProgressBar || !cachedProgressBar.isConnected) {
+      cachedProgressBar = document.querySelector(
+        ".work-progress-bar",
+      ) as HTMLElement;
     }
+    if (cachedProgressBar) {
+      const rect = cachedProgressBar.getBoundingClientRect();
+      if (
+        e.clientX >= rect.left &&
+        e.clientX <= rect.right &&
+        e.clientY >= rect.top &&
+        e.clientY <= rect.bottom
+      ) {
+        // 在进度条区域内，禁用穿透以允许交互
+        setPassthrough(false);
+        return;
+      }
+    }
+  } else {
+    cachedProgressBar = null;
   }
   const onPet = isMouseOnPet(e.clientX, e.clientY);
   setPassthrough(!onPet);
