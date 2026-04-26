@@ -155,36 +155,6 @@
 }
 
 /* ========================================
-   兔子尾巴 - 圆球毛球
-   ======================================== */
-
-.pet-shape-rabbit .pet-tail {
-  position: absolute;
-  bottom: 8px;
-  right: -8px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 35% 35%,
-    #ffffff,
-    var(--pet-body-gradient) 60%,
-    var(--pet-body) 100%
-  );
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.1),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.05);
-  z-index: 0;
-  transition: transform 0.2s ease;
-}
-
-/* 背面时尾巴移到中间可见 */
-.pet-shape-rabbit.pet-back .pet-tail {
-  right: -6px;
-  z-index: 5;
-}
-
-/* ========================================
    兔子耳朵动画
    ======================================== */
 
@@ -290,43 +260,6 @@
 .pet-shape-rabbit.pet-scared .ear-right {
   transform: rotate(3deg) translateY(-6px);
   transition: transform 0.1s ease;
-}
-
-/* ========================================
-   兔子尾巴动画
-   ======================================== */
-
-/* 空闲时尾巴微摇 */
-@keyframes rabbit-tail-wiggle {
-  0%,
-  100% {
-    transform: translateX(0) scale(1);
-  }
-  25% {
-    transform: translateX(1px) scale(1.05);
-  }
-  75% {
-    transform: translateX(-1px) scale(0.98);
-  }
-}
-
-.pet-shape-rabbit.pet-idle .pet-tail {
-  animation: rabbit-tail-wiggle 2s ease-in-out infinite;
-}
-
-/* 开心时尾巴快速弹跳 */
-@keyframes rabbit-tail-happy {
-  0%,
-  100% {
-    transform: scale(1) translateY(0);
-  }
-  50% {
-    transform: scale(1.2) translateY(-4px);
-  }
-}
-
-.pet-shape-rabbit.pet-happy .pet-tail {
-  animation: rabbit-tail-happy 0.3s ease-in-out infinite;
 }
 
 /* ========================================
@@ -626,20 +559,3 @@
   height: 9px;
 }
 
-/* ========================================
-   兔子睡觉时尾巴 - 缓慢摆动
-   ======================================== */
-
-.pet-shape-rabbit.pet-sleeping .pet-tail {
-  animation: rabbit-tail-sleep 3s ease-in-out infinite;
-}
-
-@keyframes rabbit-tail-sleep {
-  0%,
-  100% {
-    transform: translateX(0) scale(1);
-  }
-  50% {
-    transform: translateX(2px) scale(0.95);
-  }
-}

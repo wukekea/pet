@@ -21,6 +21,6 @@ export const rabbitConfig: PetShapeConfig = {
     },
     angryFace: "#7f1d1d",
   },
-  hasTail: true,
+  hasTail: false,
   hasWhiskers: false,
 };

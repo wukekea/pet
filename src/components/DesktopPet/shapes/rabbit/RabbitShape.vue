@@ -72,9 +72,6 @@ defineProps<{
       </div>
     </div>
 
-    <!-- 尾巴 -->
-    <div class="pet-tail"></div>
-
     <!-- 手臂 -->
     <div class="pet-arm arm-left"></div>
     <div class="pet-arm arm-right"></div>
