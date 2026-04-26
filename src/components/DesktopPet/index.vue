@@ -12,6 +12,7 @@ import {
   isStatsModalOpen,
   isAttributeModalOpen,
   isShopModalOpen,
+  isWarehouseModalOpen,
   isDebugPanelOpen,
   currentFood,
   currentPetShape,
@@ -43,6 +44,7 @@ import ScheduleModal from "./schedule/index.vue";
 import StatsModal from "./stats/index.vue";
 import AttributeModal from "./attributes/index.vue";
 import ShopModal from "./shop/index.vue";
+import WarehouseModal from "./warehouse/index.vue";
 import { FOOD_CONFIGS } from "./composables/attributeStorage";
 import "./shapes/base.css";
 import "./shapes/decorations.css";
@@ -170,6 +172,9 @@ const attributeModalVisible = ref(false);
 // 商店弹窗状态
 const shopModalVisible = ref(false);
 
+// 仓库弹窗状态
+const warehouseModalVisible = ref(false);
+
 // 打开右键菜单
 const handleContextMenu = (e: MouseEvent) => {
   e.preventDefault();
@@ -189,7 +194,8 @@ const closeContextMenu = () => {
     !scheduleModalVisible.value &&
     !statsModalVisible.value &&
     !attributeModalVisible.value &&
-    !shopModalVisible.value
+    !shopModalVisible.value &&
+    !warehouseModalVisible.value
   ) {
     setPassthrough(true);
   }
@@ -249,6 +255,20 @@ const openShopModal = () => {
 // 关闭商店弹窗
 const closeShopModal = () => {
   shopModalVisible.value = false;
+};
+
+// 打开仓库弹窗
+const openWarehouseModal = () => {
+  setPassthrough(false);
+  isWarehouseModalOpen.value = true;
+  contextMenuVisible.value = false;
+  isContextMenuOpen.value = false;
+  warehouseModalVisible.value = true;
+};
+
+// 关闭仓库弹窗
+const closeWarehouseModal = () => {
+  warehouseModalVisible.value = false;
 };
 
 // 从属性面板打开商店
@@ -322,6 +342,7 @@ const openShopFromAttributes = () => {
       @close="closeContextMenu"
       @open-schedule="openScheduleModal"
       @open-shop="openShopModal"
+      @open-warehouse="openWarehouseModal"
       @open-attributes="openAttributeModal"
       @open-stats="openStatsModal"
     />
@@ -341,6 +362,12 @@ const openShopFromAttributes = () => {
 
     <!-- 商店弹窗 -->
     <ShopModal :visible="shopModalVisible" @close="closeShopModal" />
+
+    <!-- 仓库弹窗 -->
+    <WarehouseModal
+      :visible="warehouseModalVisible"
+      @close="closeWarehouseModal"
+    />
 
     <!-- 数据统计弹窗 -->
     <StatsModal :visible="statsModalVisible" @close="closeStatsModal" />

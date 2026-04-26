@@ -14,6 +14,7 @@ const emit = defineEmits<{
   openStats: [];
   openAttributes: [];
   openShop: [];
+  openWarehouse: [];
 }>();
 
 // CSS 变量 - 用于主题切换
@@ -105,6 +106,19 @@ onBeforeUnmount(() => {
             <div class="menu-text-group">
               <span class="menu-text">商店</span>
               <span class="menu-desc">购买食物和沐浴露</span>
+            </div>
+            <span class="menu-arrow">›</span>
+          </div>
+          <div class="menu-divider">
+            <div class="divider-line"></div>
+          </div>
+          <div class="menu-item" @click="emit('openWarehouse')">
+            <div class="menu-icon-wrapper warehouse">
+              <span class="menu-icon">📦</span>
+            </div>
+            <div class="menu-text-group">
+              <span class="menu-text">仓库</span>
+              <span class="menu-desc">查看和使用库存</span>
             </div>
             <span class="menu-arrow">›</span>
           </div>
@@ -293,6 +307,15 @@ onBeforeUnmount(() => {
   box-shadow: 0 2px 8px rgba(251, 191, 36, 0.15);
 }
 
+.menu-icon-wrapper.warehouse {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.15),
+    rgba(217, 119, 6, 0.1)
+  );
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+}
+
 .menu-item:hover .menu-icon-wrapper {
   transform: scale(1.1) rotate(-5deg);
 }
@@ -326,6 +349,14 @@ onBeforeUnmount(() => {
     135deg,
     rgba(251, 191, 36, 0.25),
     rgba(245, 158, 11, 0.2)
+  );
+}
+
+.menu-item:hover .menu-icon-wrapper.warehouse {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.25),
+    rgba(217, 119, 6, 0.2)
   );
 }
 

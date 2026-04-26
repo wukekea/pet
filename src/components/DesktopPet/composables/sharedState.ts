@@ -30,6 +30,7 @@ export const isStatsModalOpen = ref(false);
 export const isContextMenuOpen = ref(false);
 export const isAttributeModalOpen = ref(false);
 export const isShopModalOpen = ref(false);
+export const isWarehouseModalOpen = ref(false);
 
 // 统一的 UI 打开状态 - 用于穿透控制
 export const isAnyUiOpen = computed(
@@ -39,7 +40,8 @@ export const isAnyUiOpen = computed(
     isStatsModalOpen.value ||
     isContextMenuOpen.value ||
     isAttributeModalOpen.value ||
-    isShopModalOpen.value,
+    isShopModalOpen.value ||
+    isWarehouseModalOpen.value,
 );
 
 // 作息相关状态

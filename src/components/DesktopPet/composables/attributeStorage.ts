@@ -179,6 +179,9 @@ export const DEFAULT_ATTRIBUTE_DATA: AttributeData = {
   lastUpdateTimestamp: Date.now(),
   ownedDecorations: [],
   equippedDecorations: [],
+  foodInventory: {},
+  bathInventory: {},
+  decorationInventory: {},
 };
 
 // 保存属性数据
@@ -229,6 +232,19 @@ export function loadAttributeData(): AttributeData {
               Array.isArray(data.ownedDecorations) &&
               data.ownedDecorations.includes(d),
           );
+        }
+        // 兼容库存字段
+        if (typeof data.foodInventory !== "object" || !data.foodInventory) {
+          data.foodInventory = {};
+        }
+        if (typeof data.bathInventory !== "object" || !data.bathInventory) {
+          data.bathInventory = {};
+        }
+        if (
+          typeof data.decorationInventory !== "object" ||
+          !data.decorationInventory
+        ) {
+          data.decorationInventory = {};
         }
         return data;
       }

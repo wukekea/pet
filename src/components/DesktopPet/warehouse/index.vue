@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
 import { setPassthrough } from "../composables/passthrough";
 import {
-  isShopModalOpen,
+  isWarehouseModalOpen,
   FOOD_ICONS,
   BATH_ICONS,
   DECORATION_ICONS,
@@ -13,9 +13,11 @@ import {
 } from "../composables/sharedState";
 import {
   useAttributeRef,
-  buyFoodItem,
-  buyBathItem,
-  buyDecoration,
+  useFood,
+  useBathItem,
+  useDecoration,
+  equipDecoration,
+  unequipDecoration,
 } from "../composables/attributes";
 import {
   FOOD_CONFIGS,
@@ -37,7 +39,7 @@ const attrData = useAttributeRef();
 // 当前分类 Tab
 const activeTab = ref<"food" | "bath" | "decoration">("food");
 
-// 购买提示
+// 使用提示
 const toastMessage = ref("");
 const toastVisible = ref(false);
 let toastTimer: ReturnType<typeof setTimeout> | null = null;
@@ -51,25 +53,22 @@ function showToast(msg: string) {
   }, 2000);
 }
 
-// 当前展示的物品列表
+// 当前展示的库存列表
 const currentItems = computed(() => {
-  const money = attrData.value.money;
+  const foodInv = attrData.value.foodInventory || {};
+  const bathInv = attrData.value.bathInventory || {};
+  const decoInv = attrData.value.decorationInventory || {};
   const owned = attrData.value.ownedDecorations || [];
   const equipped = attrData.value.equippedDecorations || [];
-  const decoInv = attrData.value.decorationInventory || {};
 
   if (activeTab.value === "food") {
     return Object.values(FOOD_CONFIGS).map((f) => ({
       type: f.type as string,
       name: f.name,
-      cost: f.cost,
       icon: FOOD_ICONS[f.type],
-      canAfford: money >= f.cost,
+      count: foodInv[f.type] || 0,
       effectLabel: `+${f.satietyRestore}饱腹`,
       category: "food" as const,
-      owned: false,
-      equipped: false,
-      inInventory: false,
     }));
   }
 
@@ -77,47 +76,76 @@ const currentItems = computed(() => {
     return Object.values(BATH_CONFIGS).map((b) => ({
       type: b.type as string,
       name: b.name,
-      cost: b.cost,
       icon: BATH_ICONS[b.type],
-      canAfford: money >= b.cost,
+      count: bathInv[b.type] || 0,
       effectLabel: `+${b.cleanlinessRestore}清洁`,
       category: "bath" as const,
-      owned: false,
-      equipped: false,
-      inInventory: false,
     }));
   }
 
   return Object.values(DECORATION_CONFIGS).map((d) => ({
     type: d.type as string,
     name: d.name,
-    cost: d.cost,
     icon: DECORATION_ICONS[d.type],
-    canAfford:
-      money >= d.cost && !owned.includes(d.type) && !(decoInv[d.type] > 0),
+    count: decoInv[d.type] || 0,
     effectLabel: d.description,
     category: "decoration" as const,
-    owned: owned.includes(d.type) || decoInv[d.type] > 0,
-    inInventory: decoInv[d.type] > 0,
-    equipped: equipped.includes(d.type),
+    alreadyOwned: owned.includes(d.type),
+    isEquipped: equipped.includes(d.type),
   }));
 });
 
-const handleBuy = (item: (typeof currentItems.value)[number]) => {
-  if (item.owned) return;
+// 是否有库存（含已拥有装饰）
+const hasAnyInventory = computed(() => {
+  const foodInv = attrData.value.foodInventory || {};
+  const bathInv = attrData.value.bathInventory || {};
+  const decoInv = attrData.value.decorationInventory || {};
+  const owned = attrData.value.ownedDecorations || [];
+  const foodCount = Object.values(foodInv).reduce((s, c) => s + c, 0);
+  const bathCount = Object.values(bathInv).reduce((s, c) => s + c, 0);
+  const decoCount = Object.values(decoInv).reduce((s, c) => s + c, 0);
+  return foodCount + bathCount + decoCount > 0 || owned.length > 0;
+});
 
+// 当前 Tab 是否有库存或已拥有
+const currentTabHasItems = computed(() => {
+  return currentItems.value.some(
+    (item) => item.count > 0 || ("alreadyOwned" in item && item.alreadyOwned),
+  );
+});
+
+// 点击物品
+const handleItemClick = (item: (typeof currentItems.value)[number]) => {
   if (item.category === "food") {
-    if (buyFoodItem(item.type as FoodType)) {
-      showToast(`成功购买 ${item.name}！已放入仓库`);
+    if (item.count <= 0) return;
+    if (useFood(item.type as FoodType)) {
+      showToast(`使用了 ${item.name}！`);
     }
   } else if (item.category === "bath") {
-    if (buyBathItem(item.type as BathType)) {
-      showToast(`成功购买 ${item.name}！已放入仓库`);
+    if (item.count <= 0) return;
+    if (useBathItem(item.type as BathType)) {
+      close();
     }
   } else if (item.category === "decoration") {
-    const success = buyDecoration(item.type as DecorationType);
-    if (success) {
-      showToast(`成功购买 ${item.name}！已放入仓库`);
+    // 已拥有的装饰品：装备/卸下
+    if ("alreadyOwned" in item && item.alreadyOwned) {
+      if ("isEquipped" in item && item.isEquipped) {
+        if (unequipDecoration(item.type as DecorationType)) {
+          showToast(`卸下了 ${item.name}`);
+        }
+      } else {
+        if (equipDecoration(item.type as DecorationType)) {
+          showToast(`装备了 ${item.name}！`);
+        } else {
+          showToast("装备失败，请检查槽位冲突");
+        }
+      }
+    } else {
+      // 库存中的装饰品：取出
+      if (item.count <= 0) return;
+      if (useDecoration(item.type as DecorationType)) {
+        showToast(`取出了 ${item.name}！`);
+      }
     }
   }
 };
@@ -138,7 +166,6 @@ const cssVars = computed(() => ({
     : "rgba(0, 0, 0, 0.03)",
   "--modal-close-color": "#9ca3af",
   "--text-color": isDark.value ? "#e2e8f0" : "#374151",
-  "--label-color": isDark.value ? "#cbd5e1" : "#4b5563",
   "--value-color": isDark.value ? "#f1f5f9" : "#1f2937",
   "--money-color": isDark.value ? "#fbbf24" : "#d97706",
   "--money-bg": isDark.value
@@ -159,7 +186,6 @@ const cssVars = computed(() => ({
   "--card-disabled-border": isDark.value
     ? "rgba(75, 85, 99, 0.1)"
     : "rgba(209, 213, 219, 0.3)",
-  "--cost-color": isDark.value ? "rgba(251, 191, 36, 0.8)" : "#b45309",
   "--effect-color": isDark.value
     ? "rgba(251, 191, 36, 0.6)"
     : "rgba(180, 83, 9, 0.5)",
@@ -172,35 +198,52 @@ const cssVars = computed(() => ({
   "--tab-inactive-bg": isDark.value
     ? "rgba(55, 50, 35, 0.3)"
     : "rgba(243, 244, 246, 0.6)",
+  "--bath-card-bg": isDark.value
+    ? "rgba(30, 40, 55, 0.4)"
+    : "rgba(219, 234, 254, 0.5)",
+  "--bath-card-hover-bg": isDark.value
+    ? "rgba(35, 50, 65, 0.5)"
+    : "rgba(191, 219, 254, 0.6)",
+  "--bath-card-border": isDark.value
+    ? "rgba(59, 130, 246, 0.12)"
+    : "rgba(59, 130, 246, 0.2)",
+  "--bath-effect-color": isDark.value
+    ? "rgba(96, 165, 250, 0.6)"
+    : "rgba(37, 99, 235, 0.5)",
+  "--count-color": isDark.value ? "#fbbf24" : "#d97706",
+  "--bath-count-color": isDark.value ? "#60a5fa" : "#2563eb",
   "--deco-card-bg": isDark.value
     ? "rgba(50, 35, 55, 0.4)"
     : "rgba(243, 232, 255, 0.5)",
-  "--deco-card-hover-bg": isDark.value
-    ? "rgba(60, 40, 65, 0.5)"
-    : "rgba(233, 213, 255, 0.6)",
   "--deco-card-border": isDark.value
     ? "rgba(168, 85, 247, 0.15)"
     : "rgba(168, 85, 247, 0.2)",
-  "--deco-cost-color": isDark.value ? "rgba(192, 132, 252, 0.8)" : "#7c3aed",
+  "--deco-count-color": isDark.value ? "#a78bfa" : "#7c3aed",
   "--deco-effect-color": isDark.value
     ? "rgba(168, 85, 247, 0.5)"
     : "rgba(124, 58, 237, 0.45)",
-  "--deco-owned-color": isDark.value ? "#a78bfa" : "#7c3aed",
+  "--owned-badge-color": isDark.value ? "#10b981" : "#059669",
+  "--owned-badge-bg": isDark.value
+    ? "rgba(16, 185, 129, 0.12)"
+    : "rgba(16, 185, 129, 0.1)",
   "--toast-bg": isDark.value
-    ? "rgba(30, 20, 50, 0.95)"
+    ? "rgba(30, 28, 20, 0.95)"
     : "rgba(255, 255, 255, 0.97)",
   "--toast-border": isDark.value
-    ? "rgba(168, 85, 247, 0.4)"
-    : "rgba(168, 85, 247, 0.2)",
+    ? "rgba(251, 191, 36, 0.4)"
+    : "rgba(251, 191, 36, 0.2)",
   "--toast-shadow": isDark.value
-    ? "0 8px 32px rgba(168, 85, 247, 0.2)"
-    : "0 8px 32px rgba(168, 85, 247, 0.12)",
+    ? "0 8px 32px rgba(251, 191, 36, 0.15)"
+    : "0 8px 32px rgba(251, 191, 36, 0.1)",
+  "--empty-color": isDark.value
+    ? "rgba(156, 163, 175, 0.5)"
+    : "rgba(156, 163, 175, 0.6)",
 }));
 
 // 关闭弹窗
 const close = () => {
   emit("close");
-  isShopModalOpen.value = false;
+  isWarehouseModalOpen.value = false;
   setPassthrough(true);
 };
 </script>
@@ -210,22 +253,26 @@ const close = () => {
     <Transition name="modal-pop">
       <div
         v-if="visible"
-        class="shop-modal-overlay"
+        class="warehouse-modal-overlay"
         :style="cssVars"
         @click="close"
       >
-        <div class="shop-modal" :class="{ 'dark-mode': isDark }" @click.stop>
+        <div
+          class="warehouse-modal"
+          :class="{ 'dark-mode': isDark }"
+          @click.stop
+        >
           <!-- 装饰元素 -->
           <div class="modal-decor">
-            <span class="decor-star star-1">🪙</span>
+            <span class="decor-star star-1">📦</span>
             <span class="decor-star star-2">✨</span>
             <span class="decor-star star-3">💫</span>
           </div>
 
           <div class="modal-header">
             <div class="header-title">
-              <span class="title-icon">🛒</span>
-              <span class="title-text shop-title">商店</span>
+              <span class="title-icon">📦</span>
+              <span class="title-text warehouse-title">仓库</span>
             </div>
             <button class="modal-close" @click="close">
               <span>✕</span>
@@ -281,7 +328,7 @@ const close = () => {
               </button>
             </div>
 
-            <!-- 购买提示 -->
+            <!-- 使用提示 -->
             <Transition name="toast-slide">
               <div v-if="toastVisible" class="toast-notification">
                 <span class="toast-icon">🎉</span>
@@ -289,50 +336,63 @@ const close = () => {
               </div>
             </Transition>
 
+            <!-- 空状态 -->
+            <div v-if="!hasAnyInventory" class="empty-state">
+              <span class="empty-icon">📭</span>
+              <span class="empty-text">仓库空空如也，去商店看看吧</span>
+            </div>
+
             <!-- 物品列表 -->
-            <div
-              class="items-grid"
-              :class="{ 'deco-grid': activeTab === 'decoration' }"
-            >
-              <button
-                v-for="item in currentItems"
-                :key="item.type"
-                class="item-card"
-                :class="{
-                  disabled: !item.canAfford,
-                  owned: item.owned,
-                  'deco-card': item.category === 'decoration',
-                }"
-                :disabled="!item.canAfford"
-                @click="handleBuy(item)"
-              >
-                <span class="item-icon">{{ item.icon }}</span>
-                <span class="item-name">{{ item.name }}</span>
-                <div class="item-info">
-                  <template v-if="item.owned">
+            <template v-else>
+              <div v-if="!currentTabHasItems" class="tab-empty">
+                <span class="tab-empty-text">当前分类没有库存</span>
+              </div>
+              <div v-else class="items-grid">
+                <button
+                  v-for="item in currentItems"
+                  :key="item.type"
+                  class="item-card"
+                  :class="{
+                    disabled:
+                      item.count <= 0 &&
+                      !('alreadyOwned' in item && item.alreadyOwned),
+                    'bath-card': item.category === 'bath',
+                    'deco-card': item.category === 'decoration',
+                  }"
+                  :disabled="
+                    item.count <= 0 &&
+                    !('alreadyOwned' in item && item.alreadyOwned)
+                  "
+                  @click="handleItemClick(item)"
+                >
+                  <span class="item-icon">{{ item.icon }}</span>
+                  <span class="item-name">{{ item.name }}</span>
+                  <template v-if="'alreadyOwned' in item && item.alreadyOwned">
                     <span class="item-owned-badge">{{
-                      item.equipped
-                        ? "装备中"
-                        : item.inInventory
-                          ? "在仓库"
-                          : "已拥有"
+                      item.isEquipped ? "装备中" : "已拥有"
                     }}</span>
                   </template>
                   <template v-else>
                     <span
-                      class="item-cost"
-                      :class="{ 'deco-cost': item.category === 'decoration' }"
-                      >💰{{ item.cost }}</span
-                    >
-                    <span
-                      class="item-effect"
-                      :class="{ 'deco-effect': item.category === 'decoration' }"
-                      >{{ item.effectLabel }}</span
+                      class="item-count"
+                      :class="{
+                        'bath-count': item.category === 'bath',
+                        'deco-count': item.category === 'decoration',
+                      }"
+                      >×{{ item.count }}</span
                     >
                   </template>
-                </div>
-              </button>
-            </div>
+                  <span
+                    class="item-effect"
+                    :class="{
+                      'bath-effect': item.category === 'bath',
+                      'deco-effect': item.category === 'decoration',
+                    }"
+                    >{{ item.effectLabel }}</span
+                  >
+                </button>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -341,7 +401,7 @@ const close = () => {
 </template>
 
 <style scoped>
-.shop-modal-overlay {
+.warehouse-modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 10001;
@@ -353,7 +413,7 @@ const close = () => {
   pointer-events: auto !important;
 }
 
-.shop-modal {
+.warehouse-modal {
   width: 380px;
   max-width: 90vw;
   height: 560px;
@@ -439,8 +499,8 @@ const close = () => {
   font-weight: 700;
 }
 
-.shop-title {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+.warehouse-title {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -574,7 +634,7 @@ const close = () => {
   box-shadow: 0 0 6px rgba(168, 85, 247, 0.4);
 }
 
-/* 购买提示 */
+/* 使用提示 */
 .toast-notification {
   display: flex;
   align-items: center;
@@ -596,7 +656,7 @@ const close = () => {
 .toast-text {
   font-size: 13px;
   font-weight: 600;
-  color: var(--deco-owned-color);
+  color: var(--count-color);
 }
 
 .toast-slide-enter-active {
@@ -629,6 +689,39 @@ const close = () => {
   }
 }
 
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 24px;
+}
+
+.empty-icon {
+  font-size: 40px;
+  opacity: 0.6;
+}
+
+.empty-text {
+  font-size: 14px;
+  color: var(--empty-color);
+  font-weight: 500;
+}
+
+.tab-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 24px;
+}
+
+.tab-empty-text {
+  font-size: 13px;
+  color: var(--empty-color);
+  font-weight: 500;
+}
+
 /* 物品卡片网格 */
 .items-grid {
   display: grid;
@@ -640,15 +733,14 @@ const close = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   padding: 10px 6px 8px;
   border: 1px solid var(--card-border);
   border-radius: 12px;
   background: var(--card-bg);
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .item-card::before {
@@ -667,7 +759,21 @@ const close = () => {
   border-radius: 16px 16px 0 0;
 }
 
-/* 装饰卡片紫色主题 */
+/* 沐浴露蓝色主题卡片 */
+.item-card.bath-card {
+  border-color: var(--bath-card-border);
+  background: var(--bath-card-bg);
+}
+
+.item-card.bath-card::before {
+  background: linear-gradient(
+    180deg,
+    rgba(59, 130, 246, 0.04) 0%,
+    transparent 100%
+  );
+}
+
+/* 装饰紫色主题卡片 */
 .item-card.deco-card {
   border-color: var(--deco-card-border);
   background: var(--deco-card-bg);
@@ -681,49 +787,16 @@ const close = () => {
   );
 }
 
-.item-card:hover:not(.disabled) {
-  background: var(--card-hover-bg);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(251, 191, 36, 0.15);
-  border-color: rgba(251, 191, 36, 0.3);
-}
-
-.item-card.deco-card:hover:not(.disabled) {
-  background: var(--deco-card-hover-bg);
-  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.18);
-  border-color: rgba(168, 85, 247, 0.35);
-}
-
-.item-card:active:not(.disabled) {
-  transform: translateY(0) scale(0.97);
-}
-
 .item-card.disabled {
   background: var(--card-disabled-bg);
   border-color: var(--card-disabled-border);
-  cursor: not-allowed;
   opacity: 0.55;
-}
-
-.item-card.owned {
-  opacity: 0.7;
-  cursor: default;
-}
-
-.item-card.owned:hover {
-  transform: none;
-  box-shadow: none;
 }
 
 .item-icon {
   font-size: 20px;
   line-height: 1;
   position: relative;
-}
-
-.item-card:hover:not(.disabled) .item-icon {
-  transform: scale(1.15);
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .item-name {
@@ -737,23 +810,23 @@ const close = () => {
   color: var(--disabled-color);
 }
 
-.item-info {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.item-cost {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--cost-color);
+.item-count {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--count-color);
   line-height: 1;
 }
 
-.item-cost.deco-cost {
-  color: var(--deco-cost-color);
+.item-count.bath-count {
+  color: var(--bath-count-color);
+}
+
+.item-count.deco-count {
+  color: var(--deco-count-color);
+}
+
+.item-card.disabled .item-count {
+  color: var(--disabled-color);
 }
 
 .item-effect {
@@ -765,34 +838,30 @@ const close = () => {
   border-radius: 6px;
 }
 
+.item-effect.bath-effect {
+  color: var(--bath-effect-color);
+  background: rgba(59, 130, 246, 0.08);
+}
+
 .item-effect.deco-effect {
   color: var(--deco-effect-color);
   background: rgba(168, 85, 247, 0.08);
 }
 
-.item-card.disabled .item-cost,
 .item-card.disabled .item-effect {
   color: var(--disabled-color);
   background: transparent;
 }
 
-/* 已拥有/装备中 徽章 */
+/* 已拥有徽章 */
 .item-owned-badge {
   font-size: 9px;
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 8px;
   letter-spacing: 0.5px;
-}
-
-.item-card.owned .item-owned-badge {
-  color: var(--deco-owned-color);
-  background: rgba(168, 85, 247, 0.1);
-}
-
-.item-card.owned:not([disabled]) .item-owned-badge {
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.1);
+  color: var(--owned-badge-color);
+  background: var(--owned-badge-bg);
 }
 
 /* 弹窗动画 */

@@ -241,50 +241,101 @@ function checkAutoBehaviors(): void {
 // 自动吃饭逻辑
 function checkAutoEat(): void {
   const data = attributeData.value;
+  // 优先从库存中找食物
+  const inventoryFoods = Object.entries(data.foodInventory)
+    .filter(([, count]) => count > 0)
+    .map(([type]) => FOOD_CONFIGS[type as FoodType])
+    .filter(Boolean)
+    .sort((a, b) => a.cost - b.cost);
+
+  if (inventoryFoods.length > 0) {
+    // 优先选择能让饱腹达到目标的
+    const targetSatiety = AUTO_EAT_SATIETY_TARGET;
+    const bestFood =
+      inventoryFoods.find(
+        (f) => data.satiety + f.satietyRestore >= targetSatiety,
+      ) || inventoryFoods[0];
+
+    useFood(bestFood.type, true);
+    return;
+  }
+
+  // 库存为空，尝试购买最便宜的
   const affordableFoods = Object.values(FOOD_CONFIGS)
     .filter((f) => f.cost <= data.money)
     .sort((a, b) => a.cost - b.cost);
 
   if (affordableFoods.length === 0) return;
 
-  // 优先选择能让饱腹达到目标的
-  const targetSatiety = AUTO_EAT_SATIETY_TARGET;
-  const bestFood =
-    affordableFoods.find(
-      (f) => data.satiety + f.satietyRestore >= targetSatiety,
-    ) || affordableFoods[0]; // 没有能达标的选最便宜的
-
-  feedPet(bestFood.type, true);
+  const bestFood = affordableFoods[0];
+  buyFoodItem(bestFood.type);
+  useFood(bestFood.type, true);
 }
 
 // 自动洗澡逻辑
 function checkAutoBath(): void {
   const data = attributeData.value;
+  // 优先从库存中找沐浴露
+  const inventoryBaths = Object.entries(data.bathInventory)
+    .filter(([, count]) => count > 0)
+    .map(([type]) => BATH_CONFIGS[type as BathType])
+    .filter(Boolean)
+    .sort((a, b) => a.cost - b.cost);
+
+  if (inventoryBaths.length > 0) {
+    const bestBath =
+      inventoryBaths.find(
+        (b) =>
+          data.cleanliness + b.cleanlinessRestore >=
+          AUTO_BATH_CLEANLINESS_TARGET,
+      ) || inventoryBaths[0];
+
+    useBathItem(bestBath.type, true);
+    return;
+  }
+
+  // 库存为空，尝试购买最便宜的
   const affordableBaths = Object.values(BATH_CONFIGS)
     .filter((b) => b.cost <= data.money)
     .sort((a, b) => a.cost - b.cost);
 
   if (affordableBaths.length === 0) return;
 
-  // 优先选择能让清洁达到目标的
-  const bestBath =
-    affordableBaths.find(
-      (b) =>
-        data.cleanliness + b.cleanlinessRestore >= AUTO_BATH_CLEANLINESS_TARGET,
-    ) || affordableBaths[0];
-
-  bathePet(bestBath.type, true);
+  const bestBath = affordableBaths[0];
+  buyBathItem(bestBath.type);
+  useBathItem(bestBath.type, true);
 }
 
-// 手动喂食
-export function feedPet(foodType: FoodType, isAuto = false): boolean {
+// 购买食物（加入库存）
+export function buyFoodItem(foodType: FoodType): boolean {
   const data = attributeData.value;
   const config = FOOD_CONFIGS[foodType];
 
   if (data.money < config.cost) return false;
 
-  const cap = getAttributeCap(data.level);
   data.money -= config.cost;
+  const inventory = { ...data.foodInventory };
+  inventory[foodType] = (inventory[foodType] || 0) + 1;
+  data.foodInventory = inventory;
+
+  addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
+  debouncedSave();
+  return true;
+}
+
+// 使用食物（从库存消耗，恢复饱腹值）
+export function useFood(foodType: FoodType, isAuto = false): boolean {
+  const data = attributeData.value;
+  const count = data.foodInventory[foodType] || 0;
+  if (count <= 0) return false;
+
+  const config = FOOD_CONFIGS[foodType];
+  const cap = getAttributeCap(data.level);
+  const inventory = { ...data.foodInventory };
+  inventory[foodType] = count - 1;
+  if (inventory[foodType] <= 0) delete inventory[foodType];
+  data.foodInventory = inventory;
+
   data.satiety = Math.min(cap, data.satiety + config.satietyRestore);
   currentFood.value = foodType;
 
@@ -292,7 +343,6 @@ export function feedPet(foodType: FoodType, isAuto = false): boolean {
     requestStateChange("eating");
   }
 
-  // 互动经验（仅手动时）
   if (!isAuto) {
     addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
   }
@@ -301,15 +351,36 @@ export function feedPet(foodType: FoodType, isAuto = false): boolean {
   return true;
 }
 
-// 手动洗澡
-export function bathePet(bathType: BathType, isAuto = false): boolean {
+// 购买沐浴露（加入库存）
+export function buyBathItem(bathType: BathType): boolean {
   const data = attributeData.value;
   const config = BATH_CONFIGS[bathType];
 
   if (data.money < config.cost) return false;
 
-  const cap = getAttributeCap(data.level);
   data.money -= config.cost;
+  const inventory = { ...data.bathInventory };
+  inventory[bathType] = (inventory[bathType] || 0) + 1;
+  data.bathInventory = inventory;
+
+  addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
+  debouncedSave();
+  return true;
+}
+
+// 使用沐浴露（从库存消耗，恢复清洁值）
+export function useBathItem(bathType: BathType, isAuto = false): boolean {
+  const data = attributeData.value;
+  const count = data.bathInventory[bathType] || 0;
+  if (count <= 0) return false;
+
+  const config = BATH_CONFIGS[bathType];
+  const cap = getAttributeCap(data.level);
+  const inventory = { ...data.bathInventory };
+  inventory[bathType] = count - 1;
+  if (inventory[bathType] <= 0) delete inventory[bathType];
+  data.bathInventory = inventory;
+
   data.cleanliness = Math.min(
     cap,
     data.cleanliness + config.cleanlinessRestore,
@@ -328,18 +399,42 @@ export function bathePet(bathType: BathType, isAuto = false): boolean {
   return true;
 }
 
-// 购买装饰
+// 购买装饰（加入库存）
 export function buyDecoration(decorationType: DecorationType): boolean {
   const data = attributeData.value;
   const config = DECORATION_CONFIGS[decorationType];
 
   if (data.money < config.cost) return false;
+  // 已拥有或已在库存中的不再购买
   if (data.ownedDecorations.includes(decorationType)) return false;
 
   data.money -= config.cost;
+  const inventory = { ...data.decorationInventory };
+  inventory[decorationType] = (inventory[decorationType] || 0) + 1;
+  data.decorationInventory = inventory;
+
+  addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
+  debouncedSave();
+  return true;
+}
+
+// 使用装饰（从库存取出，变为拥有）
+export function useDecoration(decorationType: DecorationType): boolean {
+  const data = attributeData.value;
+  const count = data.decorationInventory[decorationType] || 0;
+  if (count <= 0) return false;
+  if (data.ownedDecorations.includes(decorationType)) return false;
+
+  // 从库存扣除
+  const inventory = { ...data.decorationInventory };
+  inventory[decorationType] = count - 1;
+  if (inventory[decorationType] <= 0) delete inventory[decorationType];
+  data.decorationInventory = inventory;
+
+  // 加入拥有列表
   data.ownedDecorations = [...data.ownedDecorations, decorationType];
 
-  // 购买后自动装备（槽位空闲时）
+  // 自动装备（槽位空闲时）
   const slot = DECORATION_SLOTS[decorationType];
   const slotOccupied = data.equippedDecorations.some(
     (d) => DECORATION_SLOTS[d as DecorationType] === slot,
