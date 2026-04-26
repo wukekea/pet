@@ -472,6 +472,7 @@ const close = () => {
   padding: 0 24px 24px;
   overflow-y: auto;
   flex: 1;
+  position: relative;
 }
 
 /* 金币余额 */
@@ -581,12 +582,16 @@ const close = () => {
   justify-content: center;
   gap: 8px;
   padding: 10px 16px;
-  margin-bottom: 12px;
   background: var(--toast-bg);
   border: 1px solid var(--toast-border);
   border-radius: 12px;
   box-shadow: var(--toast-shadow);
   pointer-events: none;
+  position: absolute;
+  top: 8px;
+  left: 24px;
+  right: 24px;
+  z-index: 10;
 }
 
 .toast-icon {
