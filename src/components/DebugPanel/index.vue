@@ -50,6 +50,10 @@ import { getShapeOptions } from "../DesktopPet/shapes";
 // 属性数据（用于调试装饰装备）
 const attributeData = useAttributeRef();
 
+// 主 Tab
+type MainTab = "state" | "item" | "env";
+const mainTab = ref<MainTab>("state");
+
 // 调试物品 Tab
 type DebugItemTab = "food" | "bath" | "decoration";
 const debugItemTab = ref<DebugItemTab>("food");
@@ -348,7 +352,7 @@ defineExpose({
 </script>
 
 <template>
-  <!-- 调试面板 -->
+  <!-- 调试面板 - 赛博朋克数据终端 -->
   <Transition name="panel-fade">
     <div
       v-if="isVisible"
@@ -358,204 +362,246 @@ defineExpose({
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
     >
+      <!-- 点阵纹理叠加层 -->
+      <div class="dot-matrix"></div>
+
+      <!-- HUD 角标装饰 -->
+      <div class="corner-deco corner-tl"></div>
+      <div class="corner-deco corner-tr"></div>
+      <div class="corner-deco corner-bl"></div>
+      <div class="corner-deco corner-br"></div>
+
       <!-- 标题栏 - 可拖拽 -->
       <div class="panel-header" @mousedown="handleDragStart">
-        <div class="panel-title">
+        <div class="header-left">
+          <div class="status-dot-wrap">
+            <span class="status-dot"></span>
+          </div>
           <span class="title-icon">⚙</span>
-          <span class="title-text">调试控制台</span>
+          <span class="title-text">DEBUG</span>
         </div>
+        <span class="state-badge">{{ activeState }}</span>
         <button class="close-btn" @click="togglePanel" title="关闭 (Ctrl+D)">
           ✕
         </button>
       </div>
 
-      <!-- 当前状态指示器 -->
-      <div class="current-state">
-        <span class="state-label">当前状态:</span>
-        <span class="state-value">{{ activeState }}</span>
-      </div>
-
-      <!-- 天气信息 -->
-      <div class="weather-info">
-        <div class="weather-row">
-          <span class="weather-label">📍 城市:</span>
-          <span class="weather-value">{{
-            weatherStatus.cityName || "未获取"
-          }}</span>
-        </div>
-        <div class="weather-row">
-          <span class="weather-label">🌤️ 天气:</span>
-          <span class="weather-value">{{ realWeatherText }}</span>
-        </div>
-        <div class="weather-row">
-          <span class="weather-label">🔄 状态:</span>
-          <span
-            class="weather-value"
-            :class="weatherStatus.isLoading ? 'loading' : ''"
-          >
-            {{ weatherStatusText }}
-          </span>
-        </div>
-      </div>
-
-      <!-- 主题切换 -->
-      <div class="theme-section">
-        <div class="theme-title">🎨 主题模式</div>
-        <div class="theme-buttons">
-          <button
-            v-for="theme in themeOptions"
-            :key="theme.value"
-            class="theme-btn"
-            :class="{ active: themeMode === theme.value }"
-            @click="setThemeMode(theme.value)"
-            :title="theme.label"
-          >
-            <span class="theme-icon">{{ theme.icon }}</span>
-            <span class="theme-label">{{ theme.label }}</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- 动作分组 -->
-      <div class="action-groups">
-        <div
-          v-for="group in actionGroups"
-          :key="group.name"
-          class="action-group"
+      <!-- 主 Tab 导航 -->
+      <div class="main-tabs">
+        <button
+          class="main-tab-btn"
+          :class="{ active: mainTab === 'state' }"
+          @click="mainTab = 'state'"
         >
-          <div class="group-title">{{ group.name }}</div>
-          <div class="action-buttons">
-            <button
-              v-for="action in group.actions"
-              :key="action.label"
-              class="action-btn"
-              :class="{ active: isActionActive(action) }"
-              @click="triggerState(action.state, (action as any).food)"
-              :title="action.label"
-            >
-              <span class="btn-icon">{{ action.icon }}</span>
-              <span class="btn-label">{{ action.label }}</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 天气切换 -->
-        <div class="action-group">
-          <div class="group-title">天气效果</div>
-          <div class="action-buttons">
-            <button
-              v-for="weather in weatherOptions"
-              :key="weather.value"
-              class="action-btn"
-              :class="{ active: activeWeather === weather.value }"
-              @click="setWeather(weather.value)"
-              :title="weather.label"
-            >
-              <span class="btn-icon">{{ weather.icon }}</span>
-              <span class="btn-label">{{ weather.label }}</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 宠物形态切换 -->
-        <div class="action-group">
-          <div class="group-title">宠物形态</div>
-          <div class="action-buttons">
-            <button
-              v-for="shape in shapeOptions"
-              :key="shape.value"
-              class="action-btn"
-              :class="{ active: currentPetShape === shape.value }"
-              @click="setPetShape(shape.value)"
-              :title="shape.label"
-            >
-              <span class="btn-icon">{{ shape.icon }}</span>
-              <span class="btn-label">{{ shape.label }}</span>
-            </button>
-          </div>
-        </div>
+          <span class="main-tab-icon">🎮</span>
+          <span class="main-tab-label">状态</span>
+        </button>
+        <button
+          class="main-tab-btn"
+          :class="{ active: mainTab === 'item' }"
+          @click="mainTab = 'item'"
+        >
+          <span class="main-tab-icon">🎒</span>
+          <span class="main-tab-label">物品</span>
+        </button>
+        <button
+          class="main-tab-btn"
+          :class="{ active: mainTab === 'env' }"
+          @click="mainTab = 'env'"
+        >
+          <span class="main-tab-icon">🌍</span>
+          <span class="main-tab-label">环境</span>
+        </button>
       </div>
 
-      <!-- 调试物品 -->
-      <div class="debug-items-section">
-        <div class="debug-items-title">
-          🎒 调试物品 <span class="debug-items-hint">仅触发动画</span>
+      <!-- Tab 内容区域 -->
+      <div class="tab-content">
+        <!-- ====== 状态 Tab ====== -->
+        <div v-if="mainTab === 'state'" class="state-tab">
+          <div
+            v-for="group in actionGroups"
+            :key="group.name"
+            class="action-group"
+          >
+            <div class="group-title">{{ group.name }}</div>
+            <div class="action-buttons">
+              <button
+                v-for="action in group.actions"
+                :key="action.label"
+                class="action-btn"
+                :class="{ active: isActionActive(action) }"
+                @click="triggerState(action.state, (action as any).food)"
+                :title="action.label"
+              >
+                <span class="btn-icon">{{ action.icon }}</span>
+                <span class="btn-label">{{ action.label }}</span>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <!-- 分类 Tab -->
-        <div class="debug-tab-bar">
-          <button
-            v-for="tab in debugTabOptions"
-            :key="tab.value"
-            class="debug-tab-btn"
-            :class="{ active: debugItemTab === tab.value }"
-            @click="debugItemTab = tab.value"
-          >
-            <span class="debug-tab-icon">{{ tab.icon }}</span>
-            <span class="debug-tab-label">{{ tab.label }}</span>
-          </button>
-        </div>
+        <!-- ====== 物品 Tab ====== -->
+        <div v-if="mainTab === 'item'" class="item-tab">
+          <div class="item-hint">仅触发动画，不加属性</div>
 
-        <!-- 食物列表 -->
-        <div v-if="debugItemTab === 'food'" class="debug-item-grid">
-          <button
-            v-for="item in debugFoodItems"
-            :key="item.type"
-            class="debug-item-card"
-            :class="{
-              active: petState === 'eating' && currentFood === item.type,
-            }"
-            @click="debugUseFood(item.type)"
-            :title="item.name"
-          >
-            <span class="debug-item-icon">{{ FOOD_ICONS[item.type] }}</span>
-            <span class="debug-item-name">{{ item.name }}</span>
-          </button>
-        </div>
-
-        <!-- 沐浴露列表 -->
-        <div v-if="debugItemTab === 'bath'" class="debug-item-grid">
-          <button
-            v-for="item in debugBathItems"
-            :key="item.type"
-            class="debug-item-card"
-            :class="{
-              active: petState === 'bathing' && currentBathType === item.type,
-            }"
-            @click="debugUseBath(item.type)"
-            :title="item.name"
-          >
-            <span class="debug-item-icon">{{ BATH_ICONS[item.type] }}</span>
-            <span class="debug-item-name">{{ item.name }}</span>
-          </button>
-        </div>
-
-        <!-- 装饰品列表 -->
-        <div v-if="debugItemTab === 'decoration'" class="debug-item-grid">
-          <button
-            v-for="item in debugDecorationItems"
-            :key="item.type"
-            class="debug-item-card"
-            :class="{ equipped: isDecorationEquipped(item.type) }"
-            @click="debugToggleDecoration(item.type)"
-            :title="item.name"
-          >
-            <span class="debug-item-icon">{{
-              DECORATION_ICONS[item.type]
-            }}</span>
-            <span class="debug-item-name">{{ item.name }}</span>
-            <span
-              v-if="isDecorationEquipped(item.type)"
-              class="debug-item-badge"
-              >ON</span
+          <!-- 分类 Tab -->
+          <div class="debug-tab-bar">
+            <button
+              v-for="tab in debugTabOptions"
+              :key="tab.value"
+              class="debug-tab-btn"
+              :class="{ active: debugItemTab === tab.value }"
+              @click="debugItemTab = tab.value"
             >
-          </button>
+              <span class="debug-tab-icon">{{ tab.icon }}</span>
+              <span class="debug-tab-label">{{ tab.label }}</span>
+            </button>
+          </div>
+
+          <!-- 食物列表 -->
+          <div v-if="debugItemTab === 'food'" class="debug-item-grid">
+            <button
+              v-for="item in debugFoodItems"
+              :key="item.type"
+              class="debug-item-card"
+              :class="{
+                active: petState === 'eating' && currentFood === item.type,
+              }"
+              @click="debugUseFood(item.type)"
+              :title="item.name"
+            >
+              <span class="debug-item-icon">{{ FOOD_ICONS[item.type] }}</span>
+              <span class="debug-item-name">{{ item.name }}</span>
+            </button>
+          </div>
+
+          <!-- 沐浴露列表 -->
+          <div v-if="debugItemTab === 'bath'" class="debug-item-grid">
+            <button
+              v-for="item in debugBathItems"
+              :key="item.type"
+              class="debug-item-card"
+              :class="{
+                active: petState === 'bathing' && currentBathType === item.type,
+              }"
+              @click="debugUseBath(item.type)"
+              :title="item.name"
+            >
+              <span class="debug-item-icon">{{ BATH_ICONS[item.type] }}</span>
+              <span class="debug-item-name">{{ item.name }}</span>
+            </button>
+          </div>
+
+          <!-- 装饰品列表 -->
+          <div v-if="debugItemTab === 'decoration'" class="debug-item-grid">
+            <button
+              v-for="item in debugDecorationItems"
+              :key="item.type"
+              class="debug-item-card"
+              :class="{ equipped: isDecorationEquipped(item.type) }"
+              @click="debugToggleDecoration(item.type)"
+              :title="item.name"
+            >
+              <span class="debug-item-icon">{{
+                DECORATION_ICONS[item.type]
+              }}</span>
+              <span class="debug-item-name">{{ item.name }}</span>
+              <span
+                v-if="isDecorationEquipped(item.type)"
+                class="debug-item-badge"
+                >ON</span
+              >
+            </button>
+          </div>
+        </div>
+
+        <!-- ====== 环境 Tab ====== -->
+        <div v-if="mainTab === 'env'" class="env-tab">
+          <!-- 实时天气信息 -->
+          <div class="weather-card">
+            <div class="weather-card-title">实时天气</div>
+            <div class="weather-rows">
+              <div class="weather-row">
+                <span class="weather-key">📍 城市</span>
+                <span class="weather-val">{{
+                  weatherStatus.cityName || "未获取"
+                }}</span>
+              </div>
+              <div class="weather-row">
+                <span class="weather-key">🌡 天气</span>
+                <span class="weather-val">{{ realWeatherText }}</span>
+              </div>
+              <div class="weather-row">
+                <span class="weather-key">🔄 状态</span>
+                <span
+                  class="weather-val"
+                  :class="weatherStatus.isLoading ? 'loading' : ''"
+                >
+                  {{ weatherStatusText }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 天气效果切换 -->
+          <div class="action-group">
+            <div class="group-title">天气效果</div>
+            <div class="action-buttons">
+              <button
+                v-for="weather in weatherOptions"
+                :key="weather.value"
+                class="action-btn"
+                :class="{ active: activeWeather === weather.value }"
+                @click="setWeather(weather.value)"
+                :title="weather.label"
+              >
+                <span class="btn-icon">{{ weather.icon }}</span>
+                <span class="btn-label">{{ weather.label }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 宠物形态切换 -->
+          <div class="action-group">
+            <div class="group-title">宠物形态</div>
+            <div class="action-buttons">
+              <button
+                v-for="shape in shapeOptions"
+                :key="shape.value"
+                class="action-btn"
+                :class="{ active: currentPetShape === shape.value }"
+                @click="setPetShape(shape.value)"
+                :title="shape.label"
+              >
+                <span class="btn-icon">{{ shape.icon }}</span>
+                <span class="btn-label">{{ shape.label }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 主题切换 -->
+          <div class="theme-section">
+            <div class="group-title">主题模式</div>
+            <div class="theme-buttons">
+              <button
+                v-for="theme in themeOptions"
+                :key="theme.value"
+                class="theme-btn"
+                :class="{ active: themeMode === theme.value }"
+                @click="setThemeMode(theme.value)"
+                :title="theme.label"
+              >
+                <span class="theme-icon">{{ theme.icon }}</span>
+                <span class="theme-label">{{ theme.label }}</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- 底部提示 -->
       <div class="panel-footer">
-        <span class="hint">按 Ctrl+D 切换面板</span>
+        <span class="hint">Ctrl+D 切换</span>
         <span class="hint">拖拽标题栏移动</span>
       </div>
     </div>
@@ -564,42 +610,116 @@ defineExpose({
 
 <style scoped>
 /* ========================================
-   调试面板 - 复古街机控制台风格
+   调试面板 - 赛博朋克数据终端
+   深邃海军蓝底 + 霓虹青色主线 + 品红激活
    ======================================== */
 
+/* ---------- 面板容器 ---------- */
 .debug-panel {
   position: fixed;
   z-index: 9999;
-  min-width: 280px;
-  max-width: 340px;
-  border-radius: 16px;
+  width: 420px;
+  height: 520px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 4px;
   overflow: hidden;
-  font-family: "SF Mono", "Consolas", "Liberation Mono", monospace;
+  font-family: "Fira Code", "SF Mono", "Consolas", "Liberation Mono", monospace;
+  background: #f2f5f9;
+  border: 1px solid rgba(0, 160, 180, 0.2);
   box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(139, 92, 246, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(250, 245, 255, 0.95) 100%
-  );
-  backdrop-filter: blur(20px);
+    0 32px 64px -16px rgba(0, 50, 80, 0.12),
+    0 0 0 1px rgba(0, 160, 180, 0.08);
   user-select: none;
   pointer-events: auto !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* 深色模式 */
 .debug-panel.dark-mode {
-  background: linear-gradient(
-    135deg,
-    rgba(30, 27, 45, 0.95) 0%,
-    rgba(25, 23, 40, 0.95) 100%
-  );
+  background: #0b0f18;
+  border-color: rgba(0, 240, 255, 0.15);
   box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(167, 139, 250, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 32px 64px -16px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(0, 240, 255, 0.08),
+    0 0 80px -30px rgba(0, 240, 255, 0.08);
+  animation: border-breathe 4s ease-in-out infinite;
+}
+
+@keyframes border-breathe {
+  0%,
+  100% {
+    box-shadow:
+      0 32px 64px -16px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(0, 240, 255, 0.08),
+      0 0 60px -30px rgba(0, 240, 255, 0.06);
+  }
+  50% {
+    box-shadow:
+      0 32px 64px -16px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(0, 240, 255, 0.15),
+      0 0 80px -30px rgba(0, 240, 255, 0.12);
+  }
+}
+
+/* ---------- 点阵纹理 ---------- */
+.dot-matrix {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    rgba(0, 160, 180, 0.025) 1px,
+    transparent 1px
+  );
+  background-size: 4px 4px;
+  pointer-events: none;
+  z-index: 50;
+  border-radius: inherit;
+}
+
+.dark-mode .dot-matrix {
+  background-image: radial-gradient(
+    rgba(0, 240, 255, 0.04) 1px,
+    transparent 1px
+  );
+}
+
+/* ---------- HUD 角标装饰 ---------- */
+.corner-deco {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  z-index: 51;
+  border-style: solid;
+  border-color: rgba(0, 160, 180, 0.25);
+}
+
+.dark-mode .corner-deco {
+  border-color: rgba(0, 240, 255, 0.3);
+}
+
+.corner-tl {
+  top: 3px;
+  left: 3px;
+  border-width: 2px 0 0 2px;
+}
+
+.corner-tr {
+  top: 3px;
+  right: 3px;
+  border-width: 2px 2px 0 0;
+}
+
+.corner-bl {
+  bottom: 3px;
+  left: 3px;
+  border-width: 0 0 2px 2px;
+}
+
+.corner-br {
+  bottom: 3px;
+  right: 3px;
+  border-width: 0 2px 2px 0;
 }
 
 /* ========================================
@@ -608,350 +728,334 @@ defineExpose({
 .panel-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
+  gap: 8px;
+  padding: 8px 12px;
+  flex-shrink: 0;
   background: linear-gradient(
-    135deg,
-    rgba(139, 92, 246, 0.15) 0%,
-    rgba(167, 139, 250, 0.1) 100%
+    90deg,
+    rgba(0, 160, 180, 0.06) 0%,
+    rgba(0, 160, 180, 0.02) 100%
   );
   cursor: grab;
-  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  border-bottom: 1px solid rgba(0, 160, 180, 0.1);
+  position: relative;
+  z-index: 2;
 }
 
 .dark-mode .panel-header {
   background: linear-gradient(
-    135deg,
-    rgba(139, 92, 246, 0.2) 0%,
-    rgba(167, 139, 250, 0.15) 100%
+    90deg,
+    rgba(0, 240, 255, 0.06) 0%,
+    rgba(0, 240, 255, 0.01) 100%
   );
-  border-bottom-color: rgba(167, 139, 250, 0.2);
+  border-bottom-color: rgba(0, 240, 255, 0.1);
 }
 
 .panel-header:active {
   cursor: grabbing;
 }
 
-.panel-title {
+.header-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+}
+
+/* 状态指示灯 + 脉冲环 */
+.status-dot-wrap {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00a0a8;
+  position: relative;
+  z-index: 2;
+}
+
+.dark-mode .status-dot {
+  background: #00f0ff;
+  box-shadow: 0 0 6px rgba(0, 240, 255, 0.6);
+}
+
+.status-dot-wrap::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 160, 180, 0.3);
+  animation: ring-pulse 2.5s ease-out infinite;
+}
+
+.dark-mode .status-dot-wrap::after {
+  border-color: rgba(0, 240, 255, 0.4);
+}
+
+@keyframes ring-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
 }
 
 .title-icon {
-  font-size: 16px;
-  opacity: 0.8;
+  font-size: 12px;
+  opacity: 0.6;
 }
 
 .title-text {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: #6d28d9;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #008090;
 }
 
 .dark-mode .title-text {
-  color: #c4b5fd;
+  color: #00f0ff;
 }
 
-.close-btn {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: all 0.2s ease;
-}
-
-.close-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  transform: scale(1.1);
-}
-
-.dark-mode .close-btn {
-  background: rgba(239, 68, 68, 0.15);
-}
-
-/* ========================================
-   当前状态指示器
-   ======================================== */
-.current-state {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: linear-gradient(
-    90deg,
-    rgba(139, 92, 246, 0.08) 0%,
-    transparent 100%
-  );
-  border-bottom: 1px solid rgba(139, 92, 246, 0.1);
-}
-
-.dark-mode .current-state {
-  background: linear-gradient(
-    90deg,
-    rgba(139, 92, 246, 0.12) 0%,
-    transparent 100%
-  );
-  border-bottom-color: rgba(167, 139, 250, 0.15);
-}
-
-.state-label {
-  font-size: 11px;
-  color: #9ca3af;
-  letter-spacing: 0.3px;
-}
-
-.state-value {
-  font-size: 12px;
+.state-badge {
+  flex: 1;
+  text-align: center;
+  font-size: 10px;
   font-weight: 600;
-  color: #7c3aed;
-  background: rgba(139, 92, 246, 0.1);
-  padding: 2px 8px;
-  border-radius: 4px;
+  color: #008090;
+  background: rgba(0, 160, 180, 0.06);
+  border: 1px solid rgba(0, 160, 180, 0.15);
+  padding: 2px 10px;
+  border-radius: 2px;
+  letter-spacing: 0.5px;
   font-variant: small-caps;
 }
 
-.dark-mode .state-value {
-  color: #a78bfa;
-  background: rgba(167, 139, 250, 0.15);
+.dark-mode .state-badge {
+  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.06);
+  border-color: rgba(0, 240, 255, 0.15);
 }
 
-/* ========================================
-   天气信息
-   ======================================== */
-.weather-info {
-  padding: 10px 16px;
-  background: linear-gradient(
-    90deg,
-    rgba(34, 197, 94, 0.08) 0%,
-    transparent 100%
-  );
-  border-bottom: 1px solid rgba(34, 197, 94, 0.1);
-}
-
-.dark-mode .weather-info {
-  background: linear-gradient(
-    90deg,
-    rgba(34, 197, 94, 0.12) 0%,
-    transparent 100%
-  );
-  border-bottom-color: rgba(34, 197, 94, 0.15);
-}
-
-.weather-row {
+.close-btn {
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 4px 0;
+  justify-content: center;
+  border: 1px solid rgba(220, 50, 80, 0.15);
+  background: rgba(220, 50, 80, 0.04);
+  color: #c0304a;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 10px;
+  transition: all 0.15s ease;
 }
 
-.weather-label {
-  font-size: 11px;
-  color: #6b7280;
-  letter-spacing: 0.3px;
+.close-btn:hover {
+  background: rgba(220, 50, 80, 0.12);
+  border-color: rgba(220, 50, 80, 0.3);
 }
 
-.weather-value {
-  font-size: 11px;
-  font-weight: 500;
-  color: #059669;
+.dark-mode .close-btn {
+  border-color: rgba(255, 45, 120, 0.2);
+  background: rgba(255, 45, 120, 0.06);
+  color: #ff2d78;
 }
 
-.weather-value.loading {
-  color: #f59e0b;
-  animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-.dark-mode .weather-label {
-  color: #9ca3af;
-}
-
-.dark-mode .weather-value {
-  color: #34d399;
+.dark-mode .close-btn:hover {
+  background: rgba(255, 45, 120, 0.15);
+  border-color: rgba(255, 45, 120, 0.4);
+  box-shadow: 0 0 8px rgba(255, 45, 120, 0.2);
 }
 
 /* ========================================
-   主题切换
+   主 Tab 导航 - 机械键盘键帽风格
    ======================================== */
-.theme-section {
-  padding: 10px 16px;
-  background: linear-gradient(
-    90deg,
-    rgba(249, 115, 22, 0.08) 0%,
-    transparent 100%
-  );
-  border-bottom: 1px solid rgba(249, 115, 22, 0.1);
-}
-
-.dark-mode .theme-section {
-  background: linear-gradient(
-    90deg,
-    rgba(249, 115, 22, 0.12) 0%,
-    transparent 100%
-  );
-  border-bottom-color: rgba(249, 115, 22, 0.15);
-}
-
-.theme-title {
-  font-size: 11px;
-  color: #6b7280;
-  letter-spacing: 0.3px;
-  margin-bottom: 8px;
-}
-
-.dark-mode .theme-title {
-  color: #9ca3af;
-}
-
-.theme-buttons {
+.main-tabs {
   display: flex;
-  gap: 8px;
+  gap: 4px;
+  padding: 6px 8px;
+  flex-shrink: 0;
+  background: rgba(0, 160, 180, 0.03);
+  border-bottom: 1px solid rgba(0, 160, 180, 0.08);
 }
 
-.theme-btn {
+.dark-mode .main-tabs {
+  background: rgba(0, 240, 255, 0.02);
+  border-bottom-color: rgba(0, 240, 255, 0.06);
+}
+
+.main-tab-btn {
   flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 8px 4px;
-  border: none;
-  border-radius: 8px;
+  padding: 7px 4px;
+  border: 1px solid rgba(0, 160, 180, 0.12);
+  border-bottom: 3px solid rgba(0, 160, 180, 0.15);
+  border-radius: 3px;
   cursor: pointer;
-  transition: all 0.15s ease;
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(250, 245, 255, 0.9) 100%
-  );
+  transition: all 0.1s ease;
+  font-family: inherit;
+  background: #e8edf3;
+  box-shadow: 0 3px 4px rgba(0, 40, 60, 0.06);
+  position: relative;
+  top: 0;
+}
+
+.dark-mode .main-tab-btn {
+  background: #151c2c;
+  border-color: rgba(0, 240, 255, 0.1);
+  border-bottom-color: rgba(0, 240, 255, 0.18);
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.25);
+}
+
+.main-tab-btn:hover {
+  background: #dce3ec;
+  border-bottom-color: rgba(0, 160, 180, 0.35);
+  box-shadow: 0 4px 8px rgba(0, 40, 60, 0.08);
+  top: -1px;
+}
+
+.dark-mode .main-tab-btn:hover {
+  background: #1a2238;
+  border-bottom-color: rgba(0, 240, 255, 0.4);
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.05),
-    0 1px 2px rgba(0, 0, 0, 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(249, 115, 22, 0.1);
+    0 4px 8px rgba(0, 240, 255, 0.08),
+    0 3px 4px rgba(0, 0, 0, 0.25);
 }
 
-.dark-mode .theme-btn {
-  background: linear-gradient(
-    145deg,
-    rgba(55, 48, 85, 0.9) 0%,
-    rgba(45, 40, 70, 0.9) 100%
-  );
+.main-tab-btn:active {
+  border-bottom-width: 1px;
+  transform: translateY(2px);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+  top: 0;
+}
+
+/* Tab 激活态 - 霓虹内发光 */
+.main-tab-btn.active {
+  background: #00a0a8;
+  border-color: #00a0a8;
+  border-bottom-color: #007880;
+  border-bottom-width: 3px;
+  transform: translateY(0);
+  top: 0;
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.2),
-    0 1px 2px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  border-color: rgba(249, 115, 22, 0.15);
+    0 3px 4px rgba(0, 0, 0, 0.08),
+    0 0 12px rgba(0, 160, 180, 0.2);
 }
 
-.theme-btn:hover {
-  transform: translateY(-2px);
+.dark-mode .main-tab-btn.active {
+  background: rgba(0, 240, 255, 0.12);
+  border-color: #00f0ff;
+  border-bottom-color: #00c8d8;
   box-shadow:
-    0 4px 8px rgba(249, 115, 22, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 3px 4px rgba(0, 0, 0, 0.3),
+    0 0 16px rgba(0, 240, 255, 0.15),
+    inset 0 0 12px rgba(0, 240, 255, 0.06);
 }
 
-.dark-mode .theme-btn:hover {
-  box-shadow:
-    0 4px 8px rgba(249, 115, 22, 0.2),
-    0 2px 4px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-.theme-btn:active {
-  transform: translateY(1px);
-}
-
-/* 激活状态 */
-.theme-btn.active {
-  background: linear-gradient(145deg, #f97316 0%, #ea580c 100%);
-  box-shadow:
-    0 4px 12px rgba(249, 115, 22, 0.4),
-    0 2px 4px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  border-color: transparent;
-}
-
-.theme-btn.active .theme-icon,
-.theme-btn.active .theme-label {
+.main-tab-btn.active .main-tab-icon,
+.main-tab-btn.active .main-tab-label {
   color: white;
 }
 
-.theme-icon {
-  font-size: 16px;
+.dark-mode .main-tab-btn.active .main-tab-icon,
+.dark-mode .main-tab-btn.active .main-tab-label {
+  color: #00f0ff;
+}
+
+.main-tab-icon {
+  font-size: 13px;
   line-height: 1;
 }
 
-.theme-label {
+.main-tab-label {
   font-size: 10px;
-  font-weight: 500;
-  color: #ea580c;
-  letter-spacing: 0.3px;
+  font-weight: 600;
+  color: #4a6070;
+  letter-spacing: 0.5px;
 }
 
-.dark-mode .theme-label {
-  color: #fb923c;
+.dark-mode .main-tab-label {
+  color: #5a7a90;
 }
 
 /* ========================================
-   动作分组
+   Tab 内容区域
    ======================================== */
-.action-groups {
-  padding: 12px;
-  max-height: 400px;
+.tab-content {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  padding: 8px 10px;
+  position: relative;
+  z-index: 2;
 }
 
-.action-group {
-  margin-bottom: 12px;
-}
-
-.action-group:last-child {
-  margin-bottom: 0;
+/* ========================================
+   状态 Tab
+   ======================================== */
+.state-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .group-title {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: #a78bfa;
-  margin-bottom: 8px;
-  padding-left: 4px;
+  color: #008090;
+  margin-bottom: 4px;
+  padding-left: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .dark-mode .group-title {
-  color: #8b5cf6;
+  color: #00d8e8;
+}
+
+.group-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 160, 180, 0.15) 0%,
+    transparent 100%
+  );
+}
+
+.dark-mode .group-title::after {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 240, 255, 0.12) 0%,
+    transparent 100%
+  );
 }
 
 .action-buttons {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
 }
 
 /* ========================================
-   动作按钮 - 街机风格
+   动作按钮 - 机械键帽风格
    ======================================== */
 .action-btn {
   display: flex;
@@ -959,76 +1063,69 @@ defineExpose({
   align-items: center;
   justify-content: center;
   gap: 2px;
-  padding: 8px 4px;
-  border: none;
-  border-radius: 8px;
+  padding: 4px 2px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(0, 160, 180, 0.1);
+  border-bottom: 2px solid rgba(0, 160, 180, 0.12);
+  border-radius: 3px;
   cursor: pointer;
-  transition: all 0.15s ease;
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(250, 245, 255, 0.9) 100%
-  );
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.05),
-    0 1px 2px rgba(0, 0, 0, 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(139, 92, 246, 0.1);
+  transition: all 0.08s ease;
+  background: #e4e9f0;
+  box-shadow: 0 2px 3px rgba(0, 30, 60, 0.06);
+  position: relative;
+  top: 0;
 }
 
 .dark-mode .action-btn {
-  background: linear-gradient(
-    145deg,
-    rgba(55, 48, 85, 0.9) 0%,
-    rgba(45, 40, 70, 0.9) 100%
-  );
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.2),
-    0 1px 2px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  border-color: rgba(167, 139, 250, 0.15);
+  background: #131a2a;
+  border-color: rgba(0, 240, 255, 0.06);
+  border-bottom-color: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 .action-btn:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 4px 8px rgba(139, 92, 246, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(250, 245, 255, 1) 100%
-  );
+  top: -1px;
+  background: #d8e0ea;
+  border-bottom-color: rgba(0, 160, 180, 0.35);
+  box-shadow: 0 3px 6px rgba(0, 30, 60, 0.08);
 }
 
 .dark-mode .action-btn:hover {
-  background: linear-gradient(
-    145deg,
-    rgba(65, 55, 100, 0.95) 0%,
-    rgba(55, 48, 85, 0.95) 100%
-  );
+  background: #182030;
+  border-bottom-color: rgba(0, 240, 255, 0.35);
   box-shadow:
-    0 4px 8px rgba(139, 92, 246, 0.2),
-    0 2px 4px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 3px 6px rgba(0, 240, 255, 0.06),
+    0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 .action-btn:active {
+  border-bottom-width: 1px;
   transform: translateY(1px);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.1),
-    inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
+  top: 0;
 }
 
-/* 激活状态 */
+/* 激活态 - 霓虹边框 */
 .action-btn.active {
-  background: linear-gradient(145deg, #8b5cf6 0%, #7c3aed 100%);
+  background: #00a0a8;
+  border-color: #00c8d0;
+  border-bottom-color: #008088;
+  border-bottom-width: 2px;
+  transform: translateY(0);
+  top: 0;
   box-shadow:
-    0 4px 12px rgba(139, 92, 246, 0.4),
-    0 2px 4px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  border-color: transparent;
+    0 2px 3px rgba(0, 0, 0, 0.08),
+    0 0 10px rgba(0, 160, 180, 0.25);
+}
+
+.dark-mode .action-btn.active {
+  background: rgba(0, 240, 255, 0.08);
+  border-color: #00f0ff;
+  border-bottom-color: #00c8d8;
+  box-shadow:
+    0 2px 3px rgba(0, 0, 0, 0.2),
+    0 0 14px rgba(0, 240, 255, 0.2),
+    inset 0 0 8px rgba(0, 240, 255, 0.04);
 }
 
 .action-btn.active .btn-icon,
@@ -1036,99 +1133,81 @@ defineExpose({
   color: white;
 }
 
+.dark-mode .action-btn.active .btn-icon {
+  color: #00f0ff;
+}
+
+.dark-mode .action-btn.active .btn-label {
+  color: #c0f0ff;
+}
+
 .btn-icon {
-  font-size: 14px;
-  color: #6d28d9;
+  font-size: 13px;
+  color: #3a5565;
   line-height: 1;
-  transition: transform 0.15s ease;
+  transition: transform 0.1s ease;
 }
 
 .dark-mode .btn-icon {
-  color: #c4b5fd;
+  color: #6a90a8;
 }
 
 .action-btn:hover .btn-icon {
-  transform: scale(1.2);
+  transform: scale(1.12);
 }
 
 .btn-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
-  color: #7c3aed;
+  color: #4a6070;
   letter-spacing: 0.3px;
+  white-space: nowrap;
 }
 
 .dark-mode .btn-label {
-  color: #a78bfa;
+  color: #5a7a90;
 }
 
 /* ========================================
-   调试物品区域
+   物品 Tab
    ======================================== */
-.debug-items-section {
-  padding: 10px 12px 12px;
-  border-top: 1px solid rgba(139, 92, 246, 0.12);
-  background: linear-gradient(
-    180deg,
-    rgba(236, 72, 153, 0.05) 0%,
-    transparent 100%
-  );
-}
-
-.dark-mode .debug-items-section {
-  border-top-color: rgba(167, 139, 250, 0.15);
-  background: linear-gradient(
-    180deg,
-    rgba(236, 72, 153, 0.08) 0%,
-    transparent 100%
-  );
-}
-
-.debug-items-title {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: #a78bfa;
-  margin-bottom: 8px;
-  padding-left: 4px;
+.item-tab {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.dark-mode .debug-items-title {
-  color: #8b5cf6;
-}
-
-.debug-items-hint {
+.item-hint {
   font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0;
-  text-transform: none;
-  color: #ec4899;
-  background: rgba(236, 72, 153, 0.1);
-  padding: 1px 6px;
-  border-radius: 3px;
+  font-weight: 500;
+  color: #b04070;
+  background: rgba(200, 50, 100, 0.05);
+  border: 1px solid rgba(200, 50, 100, 0.12);
+  padding: 4px 8px;
+  border-radius: 2px;
+  text-align: center;
+  letter-spacing: 0.3px;
 }
 
-.dark-mode .debug-items-hint {
-  color: #f472b6;
-  background: rgba(236, 72, 153, 0.15);
+.dark-mode .item-hint {
+  color: #ff2d78;
+  background: rgba(255, 45, 120, 0.06);
+  border-color: rgba(255, 45, 120, 0.15);
 }
 
-/* Tab 切换栏 */
+/* 物品子 Tab */
 .debug-tab-bar {
   display: flex;
-  gap: 4px;
-  margin-bottom: 10px;
-  background: rgba(139, 92, 246, 0.06);
-  border-radius: 8px;
-  padding: 3px;
+  gap: 3px;
+  background: rgba(0, 160, 180, 0.04);
+  border: 1px solid rgba(0, 160, 180, 0.08);
+  border-radius: 3px;
+  padding: 2px;
 }
 
 .dark-mode .debug-tab-bar {
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(0, 240, 255, 0.02);
+  border-color: rgba(0, 240, 255, 0.06);
 }
 
 .debug-tab-btn {
@@ -1137,131 +1216,135 @@ defineExpose({
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 6px 4px;
+  padding: 5px 4px;
   border: none;
-  border-radius: 6px;
+  border-radius: 2px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.1s ease;
   background: transparent;
   font-family: inherit;
 }
 
 .debug-tab-btn:hover {
-  background: rgba(139, 92, 246, 0.08);
+  background: rgba(0, 160, 180, 0.06);
 }
 
 .dark-mode .debug-tab-btn:hover {
-  background: rgba(167, 139, 250, 0.12);
+  background: rgba(0, 240, 255, 0.05);
 }
 
 .debug-tab-btn.active {
-  background: linear-gradient(145deg, #8b5cf6 0%, #7c3aed 100%);
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+  background: #00a0a8;
+  box-shadow: 0 0 8px rgba(0, 160, 180, 0.2);
+}
+
+.dark-mode .debug-tab-btn.active {
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
 }
 
 .debug-tab-icon {
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1;
 }
 
 .debug-tab-label {
   font-size: 10px;
   font-weight: 500;
-  color: #7c3aed;
+  color: #4a6070;
   letter-spacing: 0.3px;
 }
 
 .dark-mode .debug-tab-label {
-  color: #a78bfa;
+  color: #5a7a90;
 }
 
 .debug-tab-btn.active .debug-tab-label {
   color: white;
 }
 
+.dark-mode .debug-tab-btn.active .debug-tab-label {
+  color: #00f0ff;
+}
+
 /* 物品网格 */
 .debug-item-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
 }
 
-/* 物品卡片 */
+/* 物品卡片 - 键帽风格 */
 .debug-item-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2px;
-  padding: 8px 4px;
-  border: none;
-  border-radius: 8px;
+  padding: 6px 4px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(0, 160, 180, 0.08);
+  border-bottom: 2px solid rgba(0, 160, 180, 0.1);
+  border-radius: 3px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.08s ease;
   position: relative;
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(250, 245, 255, 0.9) 100%
-  );
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.05),
-    0 1px 2px rgba(0, 0, 0, 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(236, 72, 153, 0.1);
+  background: #e4e9f0;
+  box-shadow: 0 2px 3px rgba(0, 30, 60, 0.06);
   font-family: inherit;
+  top: 0;
 }
 
 .dark-mode .debug-item-card {
-  background: linear-gradient(
-    145deg,
-    rgba(55, 48, 85, 0.9) 0%,
-    rgba(45, 40, 70, 0.9) 100%
-  );
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.2),
-    0 1px 2px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  border-color: rgba(236, 72, 153, 0.15);
+  background: #131a2a;
+  border-color: rgba(0, 240, 255, 0.05);
+  border-bottom-color: rgba(0, 240, 255, 0.08);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 .debug-item-card:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 4px 8px rgba(236, 72, 153, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(250, 245, 255, 1) 100%
-  );
+  top: -1px;
+  background: #d8e0ea;
+  border-bottom-color: rgba(0, 160, 180, 0.3);
+  box-shadow: 0 3px 6px rgba(0, 30, 60, 0.08);
 }
 
 .dark-mode .debug-item-card:hover {
-  background: linear-gradient(
-    145deg,
-    rgba(65, 55, 100, 0.95) 0%,
-    rgba(55, 48, 85, 0.95) 100%
-  );
+  background: #182030;
+  border-bottom-color: rgba(0, 240, 255, 0.3);
   box-shadow:
-    0 4px 8px rgba(236, 72, 153, 0.2),
-    0 2px 4px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 3px 6px rgba(0, 240, 255, 0.06),
+    0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 .debug-item-card:active {
+  border-bottom-width: 1px;
   transform: translateY(1px);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
+  top: 0;
 }
 
-/* 食物/沐浴露 选中态 */
+/* 食物/沐浴露 选中态 - 品红 */
 .debug-item-card.active {
-  background: linear-gradient(145deg, #ec4899 0%, #db2777 100%);
+  background: #c03068;
+  border-color: #e04080;
+  border-bottom-color: #a02858;
+  border-bottom-width: 2px;
+  top: 0;
   box-shadow:
-    0 4px 12px rgba(236, 72, 153, 0.4),
-    0 2px 4px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  border-color: transparent;
+    0 2px 3px rgba(0, 0, 0, 0.08),
+    0 0 12px rgba(200, 50, 100, 0.2);
+}
+
+.dark-mode .debug-item-card.active {
+  background: rgba(255, 45, 120, 0.1);
+  border-color: #ff2d78;
+  border-bottom-color: #d02060;
+  box-shadow:
+    0 2px 3px rgba(0, 0, 0, 0.2),
+    0 0 14px rgba(255, 45, 120, 0.2),
+    inset 0 0 8px rgba(255, 45, 120, 0.04);
 }
 
 .debug-item-card.active .debug-item-icon,
@@ -1269,14 +1352,34 @@ defineExpose({
   color: white;
 }
 
-/* 装饰 装备态 */
+.dark-mode .debug-item-card.active .debug-item-icon {
+  color: #ff2d78;
+}
+
+.dark-mode .debug-item-card.active .debug-item-name {
+  color: #ffc0d8;
+}
+
+/* 装饰 装备态 - 霓虹青 */
 .debug-item-card.equipped {
-  background: linear-gradient(145deg, #8b5cf6 0%, #7c3aed 100%);
+  background: #00a0a8;
+  border-color: #00c8d0;
+  border-bottom-color: #008088;
+  border-bottom-width: 2px;
+  top: 0;
   box-shadow:
-    0 4px 12px rgba(139, 92, 246, 0.4),
-    0 2px 4px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  border-color: transparent;
+    0 2px 3px rgba(0, 0, 0, 0.08),
+    0 0 10px rgba(0, 160, 180, 0.25);
+}
+
+.dark-mode .debug-item-card.equipped {
+  background: rgba(0, 240, 255, 0.08);
+  border-color: #00f0ff;
+  border-bottom-color: #00c8d8;
+  box-shadow:
+    0 2px 3px rgba(0, 0, 0, 0.2),
+    0 0 14px rgba(0, 240, 255, 0.2),
+    inset 0 0 8px rgba(0, 240, 255, 0.04);
 }
 
 .debug-item-card.equipped .debug-item-icon,
@@ -1284,25 +1387,33 @@ defineExpose({
   color: white;
 }
 
+.dark-mode .debug-item-card.equipped .debug-item-icon {
+  color: #00f0ff;
+}
+
+.dark-mode .debug-item-card.equipped .debug-item-name {
+  color: #c0f0ff;
+}
+
 .debug-item-icon {
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1;
-  transition: transform 0.15s ease;
+  transition: transform 0.1s ease;
 }
 
 .debug-item-card:hover .debug-item-icon {
-  transform: scale(1.2);
+  transform: scale(1.12);
 }
 
 .debug-item-name {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
-  color: #7c3aed;
+  color: #4a6070;
   letter-spacing: 0.3px;
 }
 
 .dark-mode .debug-item-name {
-  color: #a78bfa;
+  color: #5a7a90;
 }
 
 /* 装饰 ON 徽章 */
@@ -1310,36 +1421,247 @@ defineExpose({
   position: absolute;
   top: 2px;
   right: 2px;
-  font-size: 8px;
+  font-size: 7px;
   font-weight: 700;
-  color: white;
-  background: #22c55e;
-  padding: 0 4px;
-  border-radius: 3px;
-  line-height: 14px;
+  color: #00a0a8;
+  background: rgba(0, 160, 180, 0.1);
+  padding: 0 3px;
+  border-radius: 1px;
+  line-height: 12px;
   letter-spacing: 0.5px;
+  border: 1px solid rgba(0, 160, 180, 0.2);
+}
+
+.dark-mode .debug-item-badge {
+  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.1);
+  border-color: rgba(0, 240, 255, 0.3);
 }
 
 /* ========================================
-   底部提示
+   环境 Tab
+   ======================================== */
+.env-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 天气信息卡片 */
+.weather-card {
+  background: rgba(0, 160, 180, 0.03);
+  border: 1px solid rgba(0, 160, 180, 0.1);
+  border-left: 3px solid rgba(0, 160, 180, 0.25);
+  border-radius: 2px;
+  padding: 8px 10px;
+}
+
+.dark-mode .weather-card {
+  background: rgba(0, 240, 255, 0.02);
+  border-color: rgba(0, 240, 255, 0.08);
+  border-left-color: rgba(0, 240, 255, 0.3);
+}
+
+.weather-card-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #008090;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.dark-mode .weather-card-title {
+  color: #00d8e8;
+}
+
+.weather-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.weather-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.weather-key {
+  font-size: 10px;
+  color: #5a7080;
+  letter-spacing: 0.3px;
+}
+
+.dark-mode .weather-key {
+  color: #4a6578;
+}
+
+.weather-val {
+  font-size: 10px;
+  font-weight: 500;
+  color: #008060;
+}
+
+.dark-mode .weather-val {
+  color: #00e0a0;
+}
+
+.weather-val.loading {
+  color: #b08000;
+  animation: pulse 1s infinite;
+}
+
+.dark-mode .weather-val.loading {
+  color: #ffb800;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* 主题切换 */
+.theme-section {
+  /* 在环境 Tab 中的主题区域 */
+}
+
+.theme-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.theme-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 4px;
+  border: 1px solid rgba(180, 100, 0, 0.1);
+  border-bottom: 2px solid rgba(180, 100, 0, 0.12);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.08s ease;
+  background: #eae5de;
+  box-shadow: 0 2px 3px rgba(0, 30, 60, 0.05);
+  font-family: inherit;
+  top: 0;
+  position: relative;
+}
+
+.dark-mode .theme-btn {
+  background: #1a1820;
+  border-color: rgba(255, 184, 0, 0.08);
+  border-bottom-color: rgba(255, 184, 0, 0.12);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+.theme-btn:hover {
+  top: -1px;
+  background: #e0dace;
+  border-bottom-color: rgba(180, 100, 0, 0.3);
+  box-shadow: 0 3px 6px rgba(0, 30, 60, 0.06);
+}
+
+.dark-mode .theme-btn:hover {
+  background: #201e28;
+  border-bottom-color: rgba(255, 184, 0, 0.3);
+  box-shadow:
+    0 3px 6px rgba(255, 184, 0, 0.05),
+    0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+.theme-btn:active {
+  border-bottom-width: 1px;
+  transform: translateY(1px);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
+  top: 0;
+}
+
+/* 主题激活态 - 琥珀色 */
+.theme-btn.active {
+  background: #c08800;
+  border-color: #d89800;
+  border-bottom-color: #a07000;
+  border-bottom-width: 2px;
+  top: 0;
+  box-shadow:
+    0 2px 3px rgba(0, 0, 0, 0.08),
+    0 0 10px rgba(200, 140, 0, 0.2);
+}
+
+.dark-mode .theme-btn.active {
+  background: rgba(255, 184, 0, 0.1);
+  border-color: #ffb800;
+  border-bottom-color: #d89800;
+  box-shadow:
+    0 2px 3px rgba(0, 0, 0, 0.2),
+    0 0 14px rgba(255, 184, 0, 0.15),
+    inset 0 0 8px rgba(255, 184, 0, 0.04);
+}
+
+.theme-btn.active .theme-icon,
+.theme-btn.active .theme-label {
+  color: white;
+}
+
+.dark-mode .theme-btn.active .theme-icon {
+  color: #ffb800;
+}
+
+.dark-mode .theme-btn.active .theme-label {
+  color: #ffe8a0;
+}
+
+.theme-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.theme-label {
+  font-size: 9px;
+  font-weight: 500;
+  color: #907030;
+  letter-spacing: 0.3px;
+}
+
+.dark-mode .theme-label {
+  color: #8a7040;
+}
+
+/* ========================================
+   底部提示 - 终端状态栏风格
    ======================================== */
 .panel-footer {
   display: flex;
   justify-content: space-between;
-  padding: 8px 16px;
-  background: rgba(139, 92, 246, 0.05);
-  border-top: 1px solid rgba(139, 92, 246, 0.1);
+  padding: 4px 12px;
+  flex-shrink: 0;
+  background: rgba(0, 160, 180, 0.03);
+  border-top: 1px solid rgba(0, 160, 180, 0.06);
+  position: relative;
+  z-index: 2;
 }
 
 .dark-mode .panel-footer {
-  background: rgba(0, 0, 0, 0.2);
-  border-top-color: rgba(167, 139, 250, 0.15);
+  background: rgba(0, 240, 255, 0.01);
+  border-top-color: rgba(0, 240, 255, 0.04);
 }
 
 .hint {
-  font-size: 9px;
-  color: #9ca3af;
-  letter-spacing: 0.3px;
+  font-size: 8px;
+  color: #7a8a98;
+  letter-spacing: 0.5px;
+}
+
+.dark-mode .hint {
+  color: #2a4050;
 }
 
 /* ========================================
@@ -1356,7 +1678,7 @@ defineExpose({
 @keyframes panel-in {
   0% {
     opacity: 0;
-    transform: scale(0.9) translateY(-10px);
+    transform: scale(0.92) translateY(-8px);
   }
   100% {
     opacity: 1;
@@ -1378,20 +1700,28 @@ defineExpose({
 /* ========================================
    滚动条样式
    ======================================== */
-.action-groups::-webkit-scrollbar {
-  width: 4px;
+.tab-content::-webkit-scrollbar {
+  width: 3px;
 }
 
-.action-groups::-webkit-scrollbar-track {
+.tab-content::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.action-groups::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.3);
+.tab-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 160, 180, 0.15);
   border-radius: 2px;
 }
 
-.action-groups::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.5);
+.tab-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 160, 180, 0.3);
+}
+
+.dark-mode .tab-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.15);
+}
+
+.dark-mode .tab-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.3);
 }
 </style>
