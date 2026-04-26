@@ -1,7 +1,7 @@
 // 宠物形态相关类型定义
 
 // 宠物形态类型
-export type PetShape = "cloud" | "cat" | "panda";
+export type PetShape = "cloud" | "cat" | "panda" | "rabbit";
 
 // 颜色配置（支持深色/浅色主题）
 export interface ShapeColors {

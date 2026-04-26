@@ -4,15 +4,18 @@ import type { PetShape, PetShapeConfig } from "./types";
 import { cloudConfig } from "./cloud";
 import { catConfig } from "./cat";
 import { pandaConfig } from "./panda";
+import { rabbitConfig } from "./rabbit";
 import CatShape from "./cat/CatShape.vue";
 import CloudShape from "./cloud/CloudShape.vue";
 import PandaShape from "./panda/PandaShape.vue";
+import RabbitShape from "./rabbit/RabbitShape.vue";
 
 // 所有形态配置
 export const PET_SHAPES: Record<PetShape, PetShapeConfig> = {
   cloud: cloudConfig,
   cat: catConfig,
   panda: pandaConfig,
+  rabbit: rabbitConfig,
 };
 
 // 默认形态
@@ -29,6 +32,7 @@ export function getShapeComponent(shape: PetShape): Component {
     cloud: CloudShape,
     cat: CatShape,
     panda: PandaShape,
+    rabbit: RabbitShape,
   };
   return components[shape];
 }
