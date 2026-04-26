@@ -3,15 +3,17 @@
 </template>
 
 <style>
-/* 魔法杖 - 右手旁 */
+/* 魔法杖 - 右手持握 */
 .deco-magicWand {
-  right: -10px;
-  top: 5px;
+  bottom: 6px;
+  left: 50%;
+  margin-left: -1.5px;
   width: 3px;
-  height: 18px;
+  height: 22px;
   background: linear-gradient(to bottom, #92400e, #78350f);
   border-radius: 2px;
-  transform: rotate(-25deg);
+  transform: rotate(-15deg);
+  transform-origin: bottom center;
 }
 
 .deco-magicWand::before {

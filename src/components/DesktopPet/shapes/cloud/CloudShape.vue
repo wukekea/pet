@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PetState, PetDirection } from "../../types";
 import DecoBow from "../decorations/DecoBow.vue";
+import DecoMagicWand from "../decorations/DecoMagicWand.vue";
 import DecorationsLayer from "../decorations/DecorationsLayer.vue";
 
 // Props
@@ -68,7 +69,9 @@ defineProps<{
 
     <!-- 手臂 -->
     <div class="pet-arm arm-left"></div>
-    <div class="pet-arm arm-right"></div>
+    <div class="pet-arm arm-right">
+      <DecoMagicWand v-if="equippedDecorations.includes('magicWand')" />
+    </div>
 
     <!-- 腿 -->
     <div class="pet-leg leg-left"></div>

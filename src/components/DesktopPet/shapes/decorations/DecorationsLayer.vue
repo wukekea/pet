@@ -4,7 +4,6 @@ import DecoWreath from "./DecoWreath.vue";
 import DecoTopHat from "./DecoTopHat.vue";
 import DecoSunglasses from "./DecoSunglasses.vue";
 import DecoCrown from "./DecoCrown.vue";
-import DecoMagicWand from "./DecoMagicWand.vue";
 import DecoMedal from "./DecoMedal.vue";
 import "../decoration-overrides.css";
 
@@ -20,7 +19,6 @@ defineProps<{
     <DecoTopHat v-if="equippedDecorations.includes('topHat')" />
     <DecoSunglasses v-if="equippedDecorations.includes('sunglasses')" />
     <DecoCrown v-if="equippedDecorations.includes('crown')" />
-    <DecoMagicWand v-if="equippedDecorations.includes('magicWand')" />
     <DecoMedal v-if="equippedDecorations.includes('medal')" />
   </div>
 </template>
