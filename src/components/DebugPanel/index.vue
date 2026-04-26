@@ -5,14 +5,22 @@ import {
   isWorkState,
   stopWork,
 } from "../DesktopPet/composables/petController";
-import { startWork } from "../DesktopPet/composables/attributes";
+import {
+  useAttributeRef,
+  startWork,
+} from "../DesktopPet/composables/attributes";
 import {
   petState,
   isDebugPanelOpen,
   currentFood,
+  currentBathType,
   currentPetShape,
   type FoodType,
+  type BathType,
+  type DecorationType,
   FOOD_ICONS,
+  BATH_ICONS,
+  DECORATION_ICONS,
 } from "../DesktopPet/composables/sharedState";
 import {
   isDark,
@@ -29,8 +37,78 @@ import type { PetState } from "../DesktopPet/types";
 import type { WeatherType } from "../DesktopPet/types";
 import { setPassthrough } from "../DesktopPet/composables/passthrough";
 import { savePetShape } from "../DesktopPet/composables/petShapeStorage";
-import { FOOD_CONFIGS } from "../DesktopPet/composables/attributeStorage";
+import {
+  FOOD_CONFIGS,
+  BATH_CONFIGS,
+  DECORATION_CONFIGS,
+  DECORATION_SLOTS,
+  MAX_EQUIPPED_DECORATIONS,
+  saveAttributeData,
+} from "../DesktopPet/composables/attributeStorage";
 import { getShapeOptions } from "../DesktopPet/shapes";
+
+// 属性数据（用于调试装饰装备）
+const attributeData = useAttributeRef();
+
+// 调试物品 Tab
+type DebugItemTab = "food" | "bath" | "decoration";
+const debugItemTab = ref<DebugItemTab>("food");
+
+const debugTabOptions: { value: DebugItemTab; label: string; icon: string }[] =
+  [
+    { value: "food", label: "食物", icon: "🍖" },
+    { value: "bath", label: "沐浴露", icon: "🛁" },
+    { value: "decoration", label: "装饰", icon: "🎀" },
+  ];
+
+// 调试物品列表
+const debugFoodItems = computed(() => Object.values(FOOD_CONFIGS));
+const debugBathItems = computed(() => Object.values(BATH_CONFIGS));
+const debugDecorationItems = computed(() => Object.values(DECORATION_CONFIGS));
+
+// 当前装备的装饰（响应式）
+const equippedDecorations = computed(
+  () => attributeData.value.equippedDecorations,
+);
+
+// 判断装饰是否已装备
+const isDecorationEquipped = (type: DecorationType) =>
+  equippedDecorations.value.includes(type);
+
+// 调试使用食物 - 仅触发动画，不加属性
+const debugUseFood = (foodType: FoodType) => {
+  currentFood.value = foodType;
+  changeState("eating");
+};
+
+// 调试使用沐浴露 - 仅触发动画，不加属性
+const debugUseBath = (bathType: BathType) => {
+  currentBathType.value = bathType;
+  changeState("bathing");
+};
+
+// 调试切换装饰装备 - 直接修改，不检查拥有/槽位限制
+const debugToggleDecoration = (decorationType: DecorationType) => {
+  const data = attributeData.value;
+  const equipped = [...data.equippedDecorations];
+
+  if (equipped.includes(decorationType)) {
+    // 卸下
+    data.equippedDecorations = equipped.filter((d) => d !== decorationType);
+  } else {
+    // 装备：先移除同槽位的装饰，再添加
+    const slot = DECORATION_SLOTS[decorationType];
+    const filtered = equipped.filter(
+      (d) => DECORATION_SLOTS[d as DecorationType] !== slot,
+    );
+    if (filtered.length < MAX_EQUIPPED_DECORATIONS) {
+      filtered.push(decorationType);
+    }
+    data.equippedDecorations = filtered;
+  }
+
+  saveAttributeData(data);
+};
 
 // 面板可见性
 const isVisible = ref(false);
@@ -121,25 +199,12 @@ const actionGroups = [
     ],
   },
   {
-    name: "日常状态",
-    actions: [{ state: "bathing" as PetState, label: "洗澡", icon: "🛁" }],
-  },
-  {
     name: "打工状态",
     actions: [
       { state: "brickCarrying" as PetState, label: "搬砖", icon: "🧱" },
       { state: "flyerDistributing" as PetState, label: "发传单", icon: "📄" },
       { state: "programmer" as PetState, label: "程序员", icon: "💻" },
     ],
-  },
-  {
-    name: "吃东西",
-    actions: Object.values(FOOD_CONFIGS).map((f) => ({
-      state: "eating" as PetState,
-      label: f.name,
-      icon: FOOD_ICONS[f.type],
-      food: f.type as FoodType,
-    })),
   },
 ];
 
@@ -408,6 +473,83 @@ defineExpose({
               <span class="btn-label">{{ shape.label }}</span>
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- 调试物品 -->
+      <div class="debug-items-section">
+        <div class="debug-items-title">
+          🎒 调试物品 <span class="debug-items-hint">仅触发动画</span>
+        </div>
+
+        <!-- 分类 Tab -->
+        <div class="debug-tab-bar">
+          <button
+            v-for="tab in debugTabOptions"
+            :key="tab.value"
+            class="debug-tab-btn"
+            :class="{ active: debugItemTab === tab.value }"
+            @click="debugItemTab = tab.value"
+          >
+            <span class="debug-tab-icon">{{ tab.icon }}</span>
+            <span class="debug-tab-label">{{ tab.label }}</span>
+          </button>
+        </div>
+
+        <!-- 食物列表 -->
+        <div v-if="debugItemTab === 'food'" class="debug-item-grid">
+          <button
+            v-for="item in debugFoodItems"
+            :key="item.type"
+            class="debug-item-card"
+            :class="{
+              active: petState === 'eating' && currentFood === item.type,
+            }"
+            @click="debugUseFood(item.type)"
+            :title="item.name"
+          >
+            <span class="debug-item-icon">{{ FOOD_ICONS[item.type] }}</span>
+            <span class="debug-item-name">{{ item.name }}</span>
+          </button>
+        </div>
+
+        <!-- 沐浴露列表 -->
+        <div v-if="debugItemTab === 'bath'" class="debug-item-grid">
+          <button
+            v-for="item in debugBathItems"
+            :key="item.type"
+            class="debug-item-card"
+            :class="{
+              active: petState === 'bathing' && currentBathType === item.type,
+            }"
+            @click="debugUseBath(item.type)"
+            :title="item.name"
+          >
+            <span class="debug-item-icon">{{ BATH_ICONS[item.type] }}</span>
+            <span class="debug-item-name">{{ item.name }}</span>
+          </button>
+        </div>
+
+        <!-- 装饰品列表 -->
+        <div v-if="debugItemTab === 'decoration'" class="debug-item-grid">
+          <button
+            v-for="item in debugDecorationItems"
+            :key="item.type"
+            class="debug-item-card"
+            :class="{ equipped: isDecorationEquipped(item.type) }"
+            @click="debugToggleDecoration(item.type)"
+            :title="item.name"
+          >
+            <span class="debug-item-icon">{{
+              DECORATION_ICONS[item.type]
+            }}</span>
+            <span class="debug-item-name">{{ item.name }}</span>
+            <span
+              v-if="isDecorationEquipped(item.type)"
+              class="debug-item-badge"
+              >ON</span
+            >
+          </button>
         </div>
       </div>
 
@@ -918,6 +1060,264 @@ defineExpose({
 
 .dark-mode .btn-label {
   color: #a78bfa;
+}
+
+/* ========================================
+   调试物品区域
+   ======================================== */
+.debug-items-section {
+  padding: 10px 12px 12px;
+  border-top: 1px solid rgba(139, 92, 246, 0.12);
+  background: linear-gradient(
+    180deg,
+    rgba(236, 72, 153, 0.05) 0%,
+    transparent 100%
+  );
+}
+
+.dark-mode .debug-items-section {
+  border-top-color: rgba(167, 139, 250, 0.15);
+  background: linear-gradient(
+    180deg,
+    rgba(236, 72, 153, 0.08) 0%,
+    transparent 100%
+  );
+}
+
+.debug-items-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #a78bfa;
+  margin-bottom: 8px;
+  padding-left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dark-mode .debug-items-title {
+  color: #8b5cf6;
+}
+
+.debug-items-hint {
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #ec4899;
+  background: rgba(236, 72, 153, 0.1);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.dark-mode .debug-items-hint {
+  color: #f472b6;
+  background: rgba(236, 72, 153, 0.15);
+}
+
+/* Tab 切换栏 */
+.debug-tab-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+  background: rgba(139, 92, 246, 0.06);
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.dark-mode .debug-tab-bar {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.debug-tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 4px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: transparent;
+  font-family: inherit;
+}
+
+.debug-tab-btn:hover {
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.dark-mode .debug-tab-btn:hover {
+  background: rgba(167, 139, 250, 0.12);
+}
+
+.debug-tab-btn.active {
+  background: linear-gradient(145deg, #8b5cf6 0%, #7c3aed 100%);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.debug-tab-icon {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.debug-tab-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #7c3aed;
+  letter-spacing: 0.3px;
+}
+
+.dark-mode .debug-tab-label {
+  color: #a78bfa;
+}
+
+.debug-tab-btn.active .debug-tab-label {
+  color: white;
+}
+
+/* 物品网格 */
+.debug-item-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+/* 物品卡片 */
+.debug-item-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(250, 245, 255, 0.9) 100%
+  );
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(236, 72, 153, 0.1);
+  font-family: inherit;
+}
+
+.dark-mode .debug-item-card {
+  background: linear-gradient(
+    145deg,
+    rgba(55, 48, 85, 0.9) 0%,
+    rgba(45, 40, 70, 0.9) 100%
+  );
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: rgba(236, 72, 153, 0.15);
+}
+
+.debug-item-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 8px rgba(236, 72, 153, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(250, 245, 255, 1) 100%
+  );
+}
+
+.dark-mode .debug-item-card:hover {
+  background: linear-gradient(
+    145deg,
+    rgba(65, 55, 100, 0.95) 0%,
+    rgba(55, 48, 85, 0.95) 100%
+  );
+  box-shadow:
+    0 4px 8px rgba(236, 72, 153, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.debug-item-card:active {
+  transform: translateY(1px);
+}
+
+/* 食物/沐浴露 选中态 */
+.debug-item-card.active {
+  background: linear-gradient(145deg, #ec4899 0%, #db2777 100%);
+  box-shadow:
+    0 4px 12px rgba(236, 72, 153, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: transparent;
+}
+
+.debug-item-card.active .debug-item-icon,
+.debug-item-card.active .debug-item-name {
+  color: white;
+}
+
+/* 装饰 装备态 */
+.debug-item-card.equipped {
+  background: linear-gradient(145deg, #8b5cf6 0%, #7c3aed 100%);
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: transparent;
+}
+
+.debug-item-card.equipped .debug-item-icon,
+.debug-item-card.equipped .debug-item-name {
+  color: white;
+}
+
+.debug-item-icon {
+  font-size: 18px;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+
+.debug-item-card:hover .debug-item-icon {
+  transform: scale(1.2);
+}
+
+.debug-item-name {
+  font-size: 10px;
+  font-weight: 500;
+  color: #7c3aed;
+  letter-spacing: 0.3px;
+}
+
+.dark-mode .debug-item-name {
+  color: #a78bfa;
+}
+
+/* 装饰 ON 徽章 */
+.debug-item-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 8px;
+  font-weight: 700;
+  color: white;
+  background: #22c55e;
+  padding: 0 4px;
+  border-radius: 3px;
+  line-height: 14px;
+  letter-spacing: 0.5px;
 }
 
 /* ========================================
