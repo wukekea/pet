@@ -4,7 +4,7 @@ import { isDark } from "../composables/theme";
 import { setPassthrough } from "../composables/passthrough";
 import { isAnyUiOpen } from "../composables/sharedState";
 import { isAttributeModalOpen } from "../composables/sharedState";
-import type { DecorationType } from "../types";
+import type { DecorationType, DecorationEffectType } from "../types";
 import {
   useAttributeRef,
   getCurrentAttributeCap,
@@ -24,6 +24,8 @@ import {
   DECORATION_SLOTS,
   SLOT_NAMES,
   MAX_EQUIPPED_DECORATIONS,
+  getActiveEffects,
+  EFFECT_TYPE_NAMES,
 } from "../composables/attributeStorage";
 import DecoIcon from "../shapes/decorations/DecoIcon.vue";
 import { HEALTH_CAP, MAX_LEVEL } from "../constants";
@@ -204,6 +206,18 @@ const ownedDecoList = computed(() => {
       };
     })
     .filter(Boolean);
+});
+
+// 当前激活的装饰效果列表
+const activeEffectsList = computed(() => {
+  const equipped = attrData.value.equippedDecorations || [];
+  const effects = getActiveEffects(equipped);
+  return Object.entries(effects)
+    .filter(([, value]) => value > 0)
+    .map(([type, value]) => ({
+      name: EFFECT_TYPE_NAMES[type as DecorationEffectType],
+      value: `+${Math.round(value * 100)}%`,
+    }));
 });
 
 // 装饰提示
@@ -461,6 +475,20 @@ const close = () => {
                 </div>
               </template>
               <div v-else class="deco-empty">还没有装饰，去商店看看吧</div>
+
+              <!-- 装饰效果汇总 -->
+              <div v-if="activeEffectsList.length > 0" class="active-effects">
+                <div class="effects-title">✨ 装饰效果</div>
+                <div class="effects-list">
+                  <span
+                    v-for="effect in activeEffectsList"
+                    :key="effect.name"
+                    class="effect-tag"
+                  >
+                    {{ effect.name }}{{ effect.value }}
+                  </span>
+                </div>
+              </div>
             </div>
 
             <!-- 操作区域 -->
@@ -1220,6 +1248,46 @@ const close = () => {
   color: var(--attr-label-color);
   padding: 16px 0;
   opacity: 0.7;
+}
+
+/* 装饰效果汇总 */
+.active-effects {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: rgba(168, 85, 247, 0.06);
+  border-radius: 10px;
+  border: 1px solid rgba(168, 85, 247, 0.1);
+}
+
+.effects-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #7c3aed;
+  margin-bottom: 6px;
+}
+
+.dark-mode .effects-title {
+  color: #a78bfa;
+}
+
+.effects-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.effect-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(168, 85, 247, 0.1);
+  color: #7c3aed;
+}
+
+.dark-mode .effect-tag {
+  background: rgba(168, 85, 247, 0.15);
+  color: #a78bfa;
 }
 
 /* 金币 */

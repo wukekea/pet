@@ -4,6 +4,9 @@ import type {
   BathType,
   DecorationType,
   DecorationSlot,
+  DecorationEffect,
+  DecorationEffectType,
+  DecorationEffects,
 } from "../types";
 
 // localStorage 存储键
@@ -73,51 +76,68 @@ export interface DecorationConfig {
   name: string;
   cost: number;
   description: string;
+  effects: DecorationEffect[];
 }
 
 export const DECORATION_CONFIGS: Record<DecorationType, DecorationConfig> = {
-  bow: { type: "bow", name: "蝴蝶结", cost: 300, description: "可爱的蝴蝶结" },
+  bow: {
+    type: "bow",
+    name: "蝴蝶结",
+    cost: 300,
+    description: "可爱的蝴蝶结",
+    effects: [{ type: "staminaRecoverBonus", value: 0.15 }],
+  },
   scarf: {
     type: "scarf",
     name: "围巾",
     cost: 480,
     description: "温暖的小围巾",
+    effects: [{ type: "satietyDecayReduction", value: 0.2 }],
   },
   wreath: {
     type: "wreath",
     name: "花环",
     cost: 720,
     description: "美丽的花环",
+    effects: [{ type: "healthRecoverBonus", value: 0.25 }],
   },
   topHat: {
     type: "topHat",
     name: "礼帽",
     cost: 900,
     description: "优雅的礼帽",
+    effects: [{ type: "workIncomeBonus", value: 0.2 }],
   },
   sunglasses: {
     type: "sunglasses",
     name: "墨镜",
     cost: 1080,
     description: "酷酷的墨镜",
+    effects: [{ type: "cleanlinessDecayReduction", value: 0.25 }],
   },
   medal: {
     type: "medal",
     name: "勋章",
     cost: 1200,
     description: "荣誉勋章",
+    effects: [{ type: "workIncomeBonus", value: 0.3 }],
   },
   crown: {
     type: "crown",
     name: "皇冠",
     cost: 1500,
     description: "华丽的皇冠",
+    effects: [{ type: "allDecayReduction", value: 0.2 }],
   },
   magicWand: {
     type: "magicWand",
     name: "魔法杖",
     cost: 1800,
     description: "神奇的魔法杖",
+    effects: [
+      { type: "workDurationReduction", value: 0.2 },
+      { type: "workIncomeBonus", value: 0.15 },
+    ],
   },
 };
 
@@ -167,6 +187,41 @@ export const WORK_STAMINA_REQUIRED: Record<string, number> = {
 
 // 初始金币
 export const STARTING_MONEY = 50;
+
+// 效果类型中文名称
+export const EFFECT_TYPE_NAMES: Record<DecorationEffectType, string> = {
+  staminaRecoverBonus: "体力恢复",
+  satietyDecayReduction: "饱腹衰减减缓",
+  healthRecoverBonus: "健康恢复",
+  cleanlinessDecayReduction: "清洁衰减减缓",
+  workIncomeBonus: "打工收入",
+  workDurationReduction: "打工时间缩短",
+  allDecayReduction: "全属性衰减减缓",
+};
+
+// 汇总已装备装饰的活跃效果
+export function getActiveEffects(
+  equippedDecorations: string[],
+): DecorationEffects {
+  const result: DecorationEffects = {};
+  for (const type of equippedDecorations) {
+    const config = DECORATION_CONFIGS[type as DecorationType];
+    if (!config) continue;
+    for (const effect of config.effects) {
+      result[effect.type] = (result[effect.type] ?? 0) + effect.value;
+    }
+  }
+  return result;
+}
+
+// 生成装饰效果描述文本
+export function getDecorationEffectDescription(
+  effects: DecorationEffect[],
+): string {
+  return effects
+    .map((e) => `${EFFECT_TYPE_NAMES[e.type]}+${Math.round(e.value * 100)}%`)
+    .join("，");
+}
 
 // 默认属性数据
 export const DEFAULT_ATTRIBUTE_DATA: AttributeData = {

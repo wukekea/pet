@@ -110,6 +110,25 @@ export type DecorationType =
 // 装饰槽位 - 同槽位互斥
 export type DecorationSlot = "head" | "face" | "neck" | "hand";
 
+// 装饰效果类型
+export type DecorationEffectType =
+  | "staminaRecoverBonus" // 体力恢复加速
+  | "satietyDecayReduction" // 饱腹衰减减缓
+  | "healthRecoverBonus" // 健康恢复加速
+  | "cleanlinessDecayReduction" // 清洁衰减减缓
+  | "workIncomeBonus" // 打工收入增加
+  | "workDurationReduction" // 打工时间缩短
+  | "allDecayReduction"; // 全属性衰减减缓
+
+// 装饰效果
+export interface DecorationEffect {
+  type: DecorationEffectType;
+  value: number; // 百分比，如 0.15 = 15%
+}
+
+// 装饰效果汇总（各类型累加值）
+export type DecorationEffects = Partial<Record<DecorationEffectType, number>>;
+
 // 宠物形态类型
 export type PetShape = "cloud" | "cat" | "panda" | "rabbit";
 

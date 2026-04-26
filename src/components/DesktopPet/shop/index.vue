@@ -21,6 +21,7 @@ import {
   FOOD_CONFIGS,
   BATH_CONFIGS,
   DECORATION_CONFIGS,
+  getDecorationEffectDescription,
 } from "../composables/attributeStorage";
 import DecoIcon from "../shapes/decorations/DecoIcon.vue";
 
@@ -99,7 +100,7 @@ const currentItems = computed(() => {
     decoType: d.type as DecorationType,
     canAfford:
       money >= d.cost && !owned.includes(d.type) && !(decoInv[d.type] > 0),
-    effectLabel: d.description,
+    effectLabel: getDecorationEffectDescription(d.effects),
     category: "decoration" as const,
     owned: owned.includes(d.type) || decoInv[d.type] > 0,
     inInventory: decoInv[d.type] > 0,

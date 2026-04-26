@@ -62,6 +62,7 @@ import {
   addInteractionExperience,
   getHealthStatus,
   getAffordableWorkStates,
+  getWorkDurationMultiplier,
 } from "./attributes";
 
 // 是否刚从工作状态退出（用于增加休息间隔）
@@ -343,9 +344,20 @@ export async function changeState(newState: PetState, skipDialogue = false) {
     default:
       // 大多数状态完成后回到 idle
       if (duration) {
+        // 打工状态：应用装饰效果缩短时长
+        let effectiveDuration = duration;
+        if (isWorkState(newState)) {
+          const multiplier = getWorkDurationMultiplier();
+          if (multiplier < 1) {
+            effectiveDuration = Math.max(
+              60000,
+              Math.floor(duration * multiplier),
+            );
+          }
+        }
         // 不可打断状态：记录结束时间，支持拖拽后恢复计时
         if (isUninterruptibleState(newState)) {
-          workEndTime.value = Date.now() + duration;
+          workEndTime.value = Date.now() + effectiveDuration;
         }
         stateTimer.value = setTimeout(() => {
           // 打工状态结束时清除结束时间，设置休息间隔标记，发放工资
@@ -357,7 +369,7 @@ export async function changeState(newState: PetState, skipDialogue = false) {
             workEndTime.value = null;
           }
           changeState("idle");
-        }, duration);
+        }, effectiveDuration);
       }
       break;
   }

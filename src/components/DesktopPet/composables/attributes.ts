@@ -51,6 +51,7 @@ import {
   WORK_INCOME,
   WORK_EXPERIENCE,
   WORK_STAMINA_REQUIRED,
+  getActiveEffects,
 } from "./attributeStorage";
 import { isWorkState } from "./petController";
 
@@ -71,6 +72,13 @@ const { save: debouncedSave, flush: flushSave } = createDebouncedSave(() =>
 // tick 累加计数器
 let tickCount = 0;
 let companionshipTickCount = 0;
+
+// 装饰效果分数累加器
+let satietyDecayAcc = 0;
+let cleanlinessDecayAcc = 0;
+let staminaRecoverAcc = 0;
+let staminaSleepRecoverAcc = 0;
+let healthRecoverAcc = 0;
 
 // 判断是否是可以触发自动行为的状态
 function canTriggerAutoBehavior(): boolean {
@@ -160,7 +168,20 @@ function tick(): void {
       ? Math.floor(SATIETY_DECAY_INTERVAL / 3)
       : SATIETY_DECAY_INTERVAL;
   if (tickCount % satietyInterval === 0) {
-    data.satiety = Math.max(0, data.satiety - 1);
+    const effects = getActiveEffects(data.equippedDecorations);
+    const reduction =
+      (effects.satietyDecayReduction ?? 0) + (effects.allDecayReduction ?? 0);
+    if (reduction > 0) {
+      satietyDecayAcc += reduction;
+      if (satietyDecayAcc >= 1) {
+        satietyDecayAcc -= 1;
+        // 跳过本次衰减
+      } else {
+        data.satiety = Math.max(0, data.satiety - 1);
+      }
+    } else {
+      data.satiety = Math.max(0, data.satiety - 1);
+    }
   }
 
   // 清洁值衰减（搬砖时加速 3 倍）
@@ -169,10 +190,26 @@ function tick(): void {
       ? Math.floor(CLEANLINESS_DECAY_INTERVAL / 3)
       : CLEANLINESS_DECAY_INTERVAL;
   if (tickCount % cleanlinessInterval === 0) {
-    data.cleanliness = Math.max(0, data.cleanliness - 1);
+    const effects = getActiveEffects(data.equippedDecorations);
+    const reduction =
+      (effects.cleanlinessDecayReduction ?? 0) +
+      (effects.allDecayReduction ?? 0);
+    if (reduction > 0) {
+      cleanlinessDecayAcc += reduction;
+      if (cleanlinessDecayAcc >= 1) {
+        cleanlinessDecayAcc -= 1;
+      } else {
+        data.cleanliness = Math.max(0, data.cleanliness - 1);
+      }
+    } else {
+      data.cleanliness = Math.max(0, data.cleanliness - 1);
+    }
   }
 
   // 体力值变化
+  const effects = getActiveEffects(data.equippedDecorations);
+  const staminaBonus = effects.staminaRecoverBonus ?? 0;
+
   if (isWorkState(state)) {
     // 打工时体力消耗
     if (tickCount % STAMINA_WORK_DRAIN_INTERVAL === 0) {
@@ -181,12 +218,26 @@ function tick(): void {
   } else if (state === "sleeping") {
     // 睡眠时体力恢复
     if (tickCount % STAMINA_SLEEP_RECOVER_INTERVAL === 0) {
-      data.stamina = Math.min(cap, data.stamina + 1);
+      if (staminaBonus > 0) {
+        staminaSleepRecoverAcc += staminaBonus;
+        const extra = staminaSleepRecoverAcc >= 1 ? 1 : 0;
+        if (extra) staminaSleepRecoverAcc -= 1;
+        data.stamina = Math.min(cap, data.stamina + 1 + extra);
+      } else {
+        data.stamina = Math.min(cap, data.stamina + 1);
+      }
     }
   } else {
     // 平时体力缓慢恢复
     if (tickCount % STAMINA_NORMAL_RECOVER_INTERVAL === 0) {
-      data.stamina = Math.min(cap, data.stamina + 1);
+      if (staminaBonus > 0) {
+        staminaRecoverAcc += staminaBonus;
+        const extra = staminaRecoverAcc >= 1 ? 1 : 0;
+        if (extra) staminaRecoverAcc -= 1;
+        data.stamina = Math.min(cap, data.stamina + 1 + extra);
+      } else {
+        data.stamina = Math.min(cap, data.stamina + 1);
+      }
     }
   }
 
@@ -201,7 +252,15 @@ function tick(): void {
     data.health = Math.max(0, data.health - 1);
   }
   if (!isHungry && !isDirty && tickCount % HEALTH_RECOVER_INTERVAL === 0) {
-    data.health = Math.min(HEALTH_CAP, data.health + 1);
+    const healthBonus = effects.healthRecoverBonus ?? 0;
+    if (healthBonus > 0) {
+      healthRecoverAcc += healthBonus;
+      const extra = healthRecoverAcc >= 1 ? 1 : 0;
+      if (extra) healthRecoverAcc -= 1;
+      data.health = Math.min(HEALTH_CAP, data.health + 1 + extra);
+    } else {
+      data.health = Math.min(HEALTH_CAP, data.health + 1);
+    }
   }
 
   // 陪伴经验
@@ -521,12 +580,22 @@ export function startWork(workState: PetState): boolean {
 // 打工完成回调
 export function onWorkComplete(workState: PetState): void {
   const data = attributeData.value;
-  const income = (WORK_INCOME[workState] ?? 0) + (data.level - 1);
+  const baseIncome = (WORK_INCOME[workState] ?? 0) + (data.level - 1);
+  const effects = getActiveEffects(data.equippedDecorations);
+  const incomeBonus = 1 + (effects.workIncomeBonus ?? 0);
+  const income = Math.floor(baseIncome * incomeBonus);
   const exp = WORK_EXPERIENCE[workState] ?? 0;
 
   data.money += income;
   addExperience(exp);
   debouncedSave();
+}
+
+// 获取打工时长倍率（受装饰效果影响）
+export function getWorkDurationMultiplier(): number {
+  const data = attributeData.value;
+  const effects = getActiveEffects(data.equippedDecorations);
+  return 1 - (effects.workDurationReduction ?? 0);
 }
 
 // 带每日上限的交互经验
