@@ -1,5 +1,7 @@
 <script setup lang="ts">
 // 思考效果组件
+import SparkleSvg from "./icons/SparkleSvg.vue";
+import QuestionSvg from "./icons/QuestionSvg.vue";
 </script>
 
 <template>
@@ -58,19 +60,7 @@
 
     <!-- 问号 -->
     <div class="question-mark">
-      <svg viewBox="0 0 24 24" class="question-svg">
-        <!-- 问号主体 -->
-        <text
-          x="12"
-          y="20"
-          text-anchor="middle"
-          font-size="20"
-          font-weight="bold"
-          fill="#a78bfa"
-        >
-          ?
-        </text>
-      </svg>
+      <QuestionSvg color="#a78bfa" :font-size="20" class="question-svg" />
     </div>
 
     <!-- 灯泡 -->
@@ -108,20 +98,10 @@
 
     <!-- 闪烁的星星点缀 -->
     <div class="sparkle sparkle-1">
-      <svg viewBox="0 0 24 24" class="sparkle-svg">
-        <path
-          d="M12 2L14.09 8.26L22 8.27L16.54 12.97L18.09 20.5L12 16.27L5.91 20.5L7.46 12.97L2 8.27L9.91 8.26L12 2Z"
-          fill="#c4b5fd"
-        />
-      </svg>
+      <SparkleSvg color="#c4b5fd" class="sparkle-svg" />
     </div>
     <div class="sparkle sparkle-2">
-      <svg viewBox="0 0 24 24" class="sparkle-svg small">
-        <path
-          d="M12 2L14.09 8.26L22 8.27L16.54 12.97L18.09 20.5L12 16.27L5.91 20.5L7.46 12.97L2 8.27L9.91 8.26L12 2Z"
-          fill="#ddd6fe"
-        />
-      </svg>
+      <SparkleSvg color="#ddd6fe" class="sparkle-svg small" />
     </div>
   </div>
 </template>

@@ -2,7 +2,7 @@
 import { ref, computed } from "vue";
 import { isDark } from "../composables/theme";
 import { setPassthrough } from "../composables/passthrough";
-import { isStatsModalOpen } from "../composables/sharedState";
+import { isStatsModalOpen, isAnyUiOpen } from "../composables/sharedState";
 import {
   useStatsRef,
   resetStats as resetStatsData,
@@ -110,7 +110,7 @@ const filteredStateCounts = computed(() => {
 const close = () => {
   emit("close");
   isStatsModalOpen.value = false;
-  setPassthrough(true);
+  if (!isAnyUiOpen.value) setPassthrough(true);
 };
 
 // 重置统计数据

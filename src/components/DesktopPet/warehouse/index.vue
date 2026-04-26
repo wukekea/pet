@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
 import { setPassthrough } from "../composables/passthrough";
+import { isAnyUiOpen } from "../composables/sharedState";
 import {
   isWarehouseModalOpen,
   FOOD_ICONS,
@@ -246,7 +247,7 @@ const cssVars = computed(() => ({
 const close = () => {
   emit("close");
   isWarehouseModalOpen.value = false;
-  setPassthrough(true);
+  if (!isAnyUiOpen.value) setPassthrough(true);
 };
 </script>
 

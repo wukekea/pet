@@ -39,6 +39,7 @@ import {
 
 import { getTimeGreeting, showCustomDialogue, showDialogue } from "./dialogue";
 import { addFootprint, cleanupFootprints } from "./footprints";
+import { randomPick } from "../utils/random";
 import {
   onSleepEnd,
   onSleepStart,
@@ -92,7 +93,7 @@ function showBusyDialogue(state: PetState) {
   } else {
     messages = workBusyMessages;
   }
-  showCustomDialogue(messages[Math.floor(Math.random() * messages.length)]);
+  showCustomDialogue(randomPick(messages));
 }
 
 function isMouseOnPet(x: number, y: number): boolean {
@@ -239,17 +240,11 @@ export async function changeState(newState: PetState, skipDialogue = false) {
           if (isInWorkSchedule.value) {
             const affordable = getAffordableWorkStates(WORK_STATES);
             if (affordable.length > 0) {
-              const chosen =
-                affordable[Math.floor(Math.random() * affordable.length)];
-              changeState(chosen);
+              changeState(randomPick(affordable));
               return;
             }
             // 体力不够任何工作，显示太累台词，保持 idle
-            const msg =
-              workScheduleTooTiredMessages[
-                Math.floor(Math.random() * workScheduleTooTiredMessages.length)
-              ];
-            showCustomDialogue(msg);
+            showCustomDialogue(randomPick(workScheduleTooTiredMessages));
           }
           // 闲暇期间或工作作息中体力不足时的可用状态（排除打工和睡眠相关状态）
           const freeStates: PetState[] = [
@@ -285,17 +280,13 @@ export async function changeState(newState: PetState, skipDialogue = false) {
               "hello",
               "dancing",
             ];
-            changeState(
-              happyStates[Math.floor(Math.random() * happyStates.length)],
-            );
+            changeState(randomPick(happyStates));
           } else if (healthStatus === "sick" && random < 0.4) {
             // 低健康时频繁打喷嚏
             changeState("sneeze");
           } else if (random < 0.85) {
             // 从可用状态中随机选择
-            const state =
-              freeStates[Math.floor(Math.random() * freeStates.length)];
-            changeState(state);
+            changeState(randomPick(freeStates));
           } else {
             moveToRandomPosition();
           }
@@ -456,7 +447,7 @@ export function handlePetClick() {
       "shy",
       "celebrate",
     ];
-    changeState(reactions[Math.floor(Math.random() * reactions.length)]);
+    changeState(randomPick(reactions));
   }
 }
 
@@ -479,9 +470,7 @@ export function handlePetDoubleClick() {
   }
   // 双击触发跳舞或翻滚
   const specialActions: PetState[] = ["dancing", "rolling"];
-  changeState(
-    specialActions[Math.floor(Math.random() * specialActions.length)],
-  );
+  changeState(randomPick(specialActions));
 }
 // 拖拽相关
 let dragOffset = { x: 0, y: 0 };

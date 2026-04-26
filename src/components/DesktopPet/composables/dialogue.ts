@@ -1,4 +1,5 @@
 import { ref, watch } from "vue";
+import { randomPick } from "../utils/random";
 import {
   dialogueMessages,
   dreamTalkMessages,
@@ -83,7 +84,7 @@ export function showDialogue() {
   }
 
   const messages = dialogueMessages[currentState] || dialogueMessages.idle;
-  const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+  const randomMessage = randomPick(messages);
 
   dialogueText.value = randomMessage;
   isDialogueVisible.value = true;
@@ -113,14 +114,14 @@ export function hideDialogue() {
 // 随机获取梦话（仅在睡眠期间使用）
 export function getDreamTalk(): string {
   const messages = dreamTalkMessages;
-  return messages[Math.floor(Math.random() * messages.length)];
+  return randomPick(messages);
 }
 
 // 随机获取天气台词
 export function getWeatherDialogue(): string | null {
   const weather = currentWeather.value;
   const messages = weatherDialogues[weather] || weatherDialogues.default;
-  return messages[Math.floor(Math.random() * messages.length)];
+  return randomPick(messages);
 }
 
 // 显示天气对话

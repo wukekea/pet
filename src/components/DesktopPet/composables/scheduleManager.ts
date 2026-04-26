@@ -1,4 +1,5 @@
 import type { ScheduleConfig, ScheduleState, TimeSlot } from "../types";
+import { randomPick } from "../utils/random";
 import {
   isInSleepSchedule,
   isInWorkSchedule,
@@ -189,11 +190,7 @@ export function enterWorkSchedule(): void {
   scheduleEndTime.value = getScheduleEndTime();
 
   // 显示开工台词
-  const msg =
-    workScheduleEnterMessages[
-      Math.floor(Math.random() * workScheduleEnterMessages.length)
-    ];
-  showCustomDialogue(msg);
+  showCustomDialogue(randomPick(workScheduleEnterMessages));
 
   // 切换到 idle，idle 处理中会自动选工作
   changeState("idle");
@@ -207,11 +204,7 @@ export function exitWorkSchedule(): void {
   scheduleEndTime.value = null;
 
   // 显示下班台词
-  const msg =
-    workScheduleExitMessages[
-      Math.floor(Math.random() * workScheduleExitMessages.length)
-    ];
-  showCustomDialogue(msg);
+  showCustomDialogue(randomPick(workScheduleExitMessages));
 
   // 切换到 idle，恢复正常行为
   changeState("idle");

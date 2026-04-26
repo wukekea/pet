@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
 import { setPassthrough } from "../composables/passthrough";
+import { isAnyUiOpen } from "../composables/sharedState";
 import {
   isAttributeModalOpen,
   type DecorationType,
@@ -301,7 +302,7 @@ const cssVars = computed(() => ({
 const close = () => {
   emit("close");
   isAttributeModalOpen.value = false;
-  setPassthrough(true);
+  if (!isAnyUiOpen.value) setPassthrough(true);
 };
 </script>
 

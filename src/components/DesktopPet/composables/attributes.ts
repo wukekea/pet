@@ -310,116 +310,111 @@ function checkAutoBath(): void {
   useBathItem(bestBath.type, true);
 }
 
-// 购买食物（加入库存）
-export function buyFoodItem(foodType: FoodType): boolean {
+// 通用购买逻辑 - 扣钱、入库存、加经验
+function buyToInventory<K extends string>(
+  itemType: K,
+  inventoryKey: "foodInventory" | "bathInventory" | "decorationInventory",
+  getCost: (type: K) => number,
+  extraCheck?: (data: AttributeData, type: K) => boolean,
+): boolean {
   const data = attributeData.value;
-  const config = FOOD_CONFIGS[foodType];
+  const cost = getCost(itemType);
+  if (data.money < cost) return false;
+  if (extraCheck && !extraCheck(data, itemType)) return false;
 
-  if (data.money < config.cost) return false;
-
-  data.money -= config.cost;
-  const inventory = { ...data.foodInventory };
-  inventory[foodType] = (inventory[foodType] || 0) + 1;
-  data.foodInventory = inventory;
+  data.money -= cost;
+  const inventory = { ...(data[inventoryKey] as Record<string, number>) };
+  inventory[itemType] = (inventory[itemType] || 0) + 1;
+  (data as any)[inventoryKey] = inventory;
 
   addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
+  debouncedSave();
+  return true;
+}
+
+// 购买食物（加入库存）
+export function buyFoodItem(foodType: FoodType): boolean {
+  return buyToInventory(foodType, "foodInventory", (t) => FOOD_CONFIGS[t].cost);
+}
+
+// 购买沐浴露（加入库存）
+export function buyBathItem(bathType: BathType): boolean {
+  return buyToInventory(bathType, "bathInventory", (t) => BATH_CONFIGS[t].cost);
+}
+
+// 购买装饰（加入库存）
+export function buyDecoration(decorationType: DecorationType): boolean {
+  return buyToInventory(
+    decorationType,
+    "decorationInventory",
+    (t) => DECORATION_CONFIGS[t].cost,
+    (data, t) => !data.ownedDecorations.includes(t),
+  );
+}
+
+// 通用消耗逻辑 - 从库存扣除、恢复属性、触发状态
+function useFromInventory<K extends string>(
+  itemType: K,
+  inventoryKey: "foodInventory" | "bathInventory",
+  attributeKey: "satiety" | "cleanliness",
+  getRestore: (type: K) => number,
+  state: PetState,
+  setCurrent: (type: K) => void,
+  isAuto = false,
+): boolean {
+  const data = attributeData.value;
+  const count = (data[inventoryKey] as Record<string, number>)[itemType] || 0;
+  if (count <= 0) return false;
+
+  const cap = getAttributeCap(data.level);
+  const inventory = { ...(data[inventoryKey] as Record<string, number>) };
+  inventory[itemType] = count - 1;
+  if (inventory[itemType] <= 0) delete inventory[itemType];
+  (data as any)[inventoryKey] = inventory;
+
+  const restore = getRestore(itemType);
+  (data as any)[attributeKey] = Math.min(
+    cap,
+    (data as any)[attributeKey] + restore,
+  );
+  setCurrent(itemType);
+
+  if (requestStateChange) {
+    requestStateChange(state);
+  }
+
+  if (!isAuto) {
+    addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
+  }
+
   debouncedSave();
   return true;
 }
 
 // 使用食物（从库存消耗，恢复饱腹值）
 export function useFood(foodType: FoodType, isAuto = false): boolean {
-  const data = attributeData.value;
-  const count = data.foodInventory[foodType] || 0;
-  if (count <= 0) return false;
-
-  const config = FOOD_CONFIGS[foodType];
-  const cap = getAttributeCap(data.level);
-  const inventory = { ...data.foodInventory };
-  inventory[foodType] = count - 1;
-  if (inventory[foodType] <= 0) delete inventory[foodType];
-  data.foodInventory = inventory;
-
-  data.satiety = Math.min(cap, data.satiety + config.satietyRestore);
-  currentFood.value = foodType;
-
-  if (requestStateChange) {
-    requestStateChange("eating");
-  }
-
-  if (!isAuto) {
-    addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
-  }
-
-  debouncedSave();
-  return true;
-}
-
-// 购买沐浴露（加入库存）
-export function buyBathItem(bathType: BathType): boolean {
-  const data = attributeData.value;
-  const config = BATH_CONFIGS[bathType];
-
-  if (data.money < config.cost) return false;
-
-  data.money -= config.cost;
-  const inventory = { ...data.bathInventory };
-  inventory[bathType] = (inventory[bathType] || 0) + 1;
-  data.bathInventory = inventory;
-
-  addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
-  debouncedSave();
-  return true;
+  return useFromInventory(
+    foodType,
+    "foodInventory",
+    "satiety",
+    (t) => FOOD_CONFIGS[t].satietyRestore,
+    "eating",
+    (t) => (currentFood.value = t),
+    isAuto,
+  );
 }
 
 // 使用沐浴露（从库存消耗，恢复清洁值）
 export function useBathItem(bathType: BathType, isAuto = false): boolean {
-  const data = attributeData.value;
-  const count = data.bathInventory[bathType] || 0;
-  if (count <= 0) return false;
-
-  const config = BATH_CONFIGS[bathType];
-  const cap = getAttributeCap(data.level);
-  const inventory = { ...data.bathInventory };
-  inventory[bathType] = count - 1;
-  if (inventory[bathType] <= 0) delete inventory[bathType];
-  data.bathInventory = inventory;
-
-  data.cleanliness = Math.min(
-    cap,
-    data.cleanliness + config.cleanlinessRestore,
+  return useFromInventory(
+    bathType,
+    "bathInventory",
+    "cleanliness",
+    (t) => BATH_CONFIGS[t].cleanlinessRestore,
+    "bathing",
+    (t) => (currentBathType.value = t),
+    isAuto,
   );
-  currentBathType.value = bathType;
-
-  if (requestStateChange) {
-    requestStateChange("bathing");
-  }
-
-  if (!isAuto) {
-    addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
-  }
-
-  debouncedSave();
-  return true;
-}
-
-// 购买装饰（加入库存）
-export function buyDecoration(decorationType: DecorationType): boolean {
-  const data = attributeData.value;
-  const config = DECORATION_CONFIGS[decorationType];
-
-  if (data.money < config.cost) return false;
-  // 已拥有或已在库存中的不再购买
-  if (data.ownedDecorations.includes(decorationType)) return false;
-
-  data.money -= config.cost;
-  const inventory = { ...data.decorationInventory };
-  inventory[decorationType] = (inventory[decorationType] || 0) + 1;
-  data.decorationInventory = inventory;
-
-  addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
-  debouncedSave();
-  return true;
 }
 
 // 使用装饰（从库存取出，变为拥有）

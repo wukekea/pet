@@ -40,6 +40,7 @@ import AttributeModal from "./attributes/index.vue";
 import ShopModal from "./shop/index.vue";
 import WarehouseModal from "./warehouse/index.vue";
 import { FOOD_CONFIGS } from "./composables/attributeStorage";
+import { randomPick } from "./utils/random";
 import {
   scheduleModal,
   statsModal,
@@ -64,8 +65,7 @@ const foodTypes = Object.keys(FOOD_CONFIGS) as FoodType[];
 // 调试面板打开时，进入 eating 状态随机选择食物
 watch(petState, (newState) => {
   if (newState === "eating" && isDebugPanelOpen.value) {
-    const randomIndex = Math.floor(Math.random() * foodTypes.length);
-    currentFood.value = foodTypes[randomIndex];
+    currentFood.value = randomPick(foodTypes);
   }
 });
 

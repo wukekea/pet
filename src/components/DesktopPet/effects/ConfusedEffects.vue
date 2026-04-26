@@ -1,51 +1,20 @@
 <script setup lang="ts">
 // 疑惑效果组件
+import StarSvg from "./icons/StarSvg.vue";
+import QuestionSvg from "./icons/QuestionSvg.vue";
 </script>
 
 <template>
   <div class="confused-effects">
     <!-- 问号 -->
     <div class="question question-1">
-      <svg viewBox="0 0 24 24" class="question-svg">
-        <text
-          x="12"
-          y="20"
-          text-anchor="middle"
-          font-size="18"
-          font-weight="bold"
-          fill="#60a5fa"
-        >
-          ?
-        </text>
-      </svg>
+      <QuestionSvg color="#60a5fa" class="question-svg" />
     </div>
     <div class="question question-2">
-      <svg viewBox="0 0 24 24" class="question-svg small">
-        <text
-          x="12"
-          y="20"
-          text-anchor="middle"
-          font-size="18"
-          font-weight="bold"
-          fill="#93c5fd"
-        >
-          ?
-        </text>
-      </svg>
+      <QuestionSvg color="#93c5fd" class="question-svg small" />
     </div>
     <div class="question question-3">
-      <svg viewBox="0 0 24 24" class="question-svg tiny">
-        <text
-          x="12"
-          y="20"
-          text-anchor="middle"
-          font-size="18"
-          font-weight="bold"
-          fill="#bfdbfe"
-        >
-          ?
-        </text>
-      </svg>
+      <QuestionSvg color="#bfdbfe" class="question-svg tiny" />
     </div>
 
     <!-- 旋转的螺旋 -->
@@ -103,20 +72,10 @@
 
     <!-- 小星星 -->
     <div class="star star-1">
-      <svg viewBox="0 0 24 24" class="star-svg">
-        <path
-          d="M12 2L14 10H22L16 15L18 23L12 18L6 23L8 15L2 10H10L12 2Z"
-          fill="#cbd5e1"
-        />
-      </svg>
+      <StarSvg color="#cbd5e1" class="star-svg" />
     </div>
     <div class="star star-2">
-      <svg viewBox="0 0 24 24" class="star-svg small">
-        <path
-          d="M12 2L14 10H22L16 15L18 23L12 18L6 23L8 15L2 10H10L12 2Z"
-          fill="#e2e8f0"
-        />
-      </svg>
+      <StarSvg color="#e2e8f0" class="star-svg small" />
     </div>
 
     <!-- 波浪线 -->

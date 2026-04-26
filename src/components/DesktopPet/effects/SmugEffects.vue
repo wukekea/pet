@@ -1,5 +1,7 @@
 <script setup lang="ts">
 // 得意效果组件
+import HeartSvg from "./icons/HeartSvg.vue";
+import SparkleSvg from "./icons/SparkleSvg.vue";
 </script>
 
 <template>
@@ -29,28 +31,13 @@
 
     <!-- 闪光星星 -->
     <div class="sparkle sparkle-1">
-      <svg viewBox="0 0 24 24" class="sparkle-svg">
-        <path
-          d="M12 2L14.09 8.26L22 8.27L16.54 12.97L18.09 20.5L12 16.27L5.91 20.5L7.46 12.97L2 8.27L9.91 8.26L12 2Z"
-          fill="#fef08a"
-        />
-      </svg>
+      <SparkleSvg color="#fef08a" class="sparkle-svg" />
     </div>
     <div class="sparkle sparkle-2">
-      <svg viewBox="0 0 24 24" class="sparkle-svg small">
-        <path
-          d="M12 2L14.09 8.26L22 8.27L16.54 12.97L18.09 20.5L12 16.27L5.91 20.5L7.46 12.97L2 8.27L9.91 8.26L12 2Z"
-          fill="#fde047"
-        />
-      </svg>
+      <SparkleSvg color="#fde047" class="sparkle-svg small" />
     </div>
     <div class="sparkle sparkle-3">
-      <svg viewBox="0 0 24 24" class="sparkle-svg tiny">
-        <path
-          d="M12 2L14.09 8.26L22 8.27L16.54 12.97L18.09 20.5L12 16.27L5.91 20.5L7.46 12.97L2 8.27L9.91 8.26L12 2Z"
-          fill="#fef3c7"
-        />
-      </svg>
+      <SparkleSvg color="#fef3c7" class="sparkle-svg tiny" />
     </div>
 
     <!-- 光芒线条 -->
@@ -81,12 +68,7 @@
 
     <!-- 小爱心 -->
     <div class="heart heart-1">
-      <svg viewBox="0 0 24 24" class="heart-svg">
-        <path
-          d="M12 21.35L10.55 20.03C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5C22 12.28 18.6 15.36 13.45 20.04L12 21.35Z"
-          fill="#ff6b9d"
-        />
-      </svg>
+      <HeartSvg color="#ff6b9d" class="heart-svg" />
     </div>
   </div>
 </template>
