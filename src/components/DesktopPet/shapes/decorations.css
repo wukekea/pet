@@ -148,7 +148,7 @@
 
 /* ====== 礼帽 - 头顶正上方 ====== */
 .deco-topHat {
-  top: -20px;
+  top: -10px;
   left: 50%;
   transform: translateX(-50%);
   width: 20px;
@@ -180,7 +180,7 @@
 
 /* ====== 皇冠 - 头顶正上方 ====== */
 .deco-crown {
-  top: -10px;
+  top: -2px;
   left: 50%;
   transform: translateX(-50%);
   width: 26px;
@@ -407,7 +407,7 @@
 }
 
 .pet-shape-rabbit .deco-crown {
-  top: -4px;
+  top: 6px;
 }
 
 /* ====== 形态适配 - 熊猫 ====== */
@@ -425,6 +425,14 @@
   top: 24px;
 }
 
+.pet-shape-panda .deco-topHat {
+  top: -8px;
+}
+
+.pet-shape-panda .deco-crown {
+  top: 5px;
+}
+
 /* ====== 形态适配 - 猫咪 ====== */
 .pet-shape-cat .deco-wreath {
   top: 4px;
@@ -437,7 +445,11 @@
 }
 
 .pet-shape-cat .deco-topHat {
-  top: -22px;
+  top: -3px;
+}
+
+.pet-shape-cat .deco-crown {
+  top: 14px;
 }
 
 /* ====== 形态适配 - 云朵 ====== */
@@ -449,6 +461,14 @@
   top: auto;
   right: auto;
   bottom: 4px;
+}
+
+.pet-shape-cloud .deco-topHat {
+  top: -4px;
+}
+
+.pet-shape-cloud .deco-crown {
+  top: 13px;
 }
 
 /* ====== 背面时隐藏正面装饰 ====== */
