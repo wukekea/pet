@@ -18,11 +18,12 @@
   bottom: 4px;
   left: 50%;
   margin-left: -2px;
+  z-index: 1;
   width: 4px;
   height: 4px;
-  background: #f472b6;
+  background: #b91c1c;
   border-radius: 50%;
-  box-shadow: 0 0 3px rgba(244, 114, 182, 0.5);
+  box-shadow: 0 0 3px rgba(185, 28, 28, 0.5);
 }
 
 .deco-bow::before {
@@ -32,7 +33,7 @@
   left: -7px;
   width: 8px;
   height: 6px;
-  background: #f472b6;
+  background: #b91c1c;
   border-radius: 50%;
   transform: rotate(-15deg);
 }
@@ -44,7 +45,7 @@
   right: -7px;
   width: 8px;
   height: 6px;
-  background: #f472b6;
+  background: #b91c1c;
   border-radius: 50%;
   transform: rotate(15deg);
 }
