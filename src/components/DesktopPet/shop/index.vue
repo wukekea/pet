@@ -226,7 +226,7 @@ const close = () => {
 .shop-modal {
   width: 380px;
   max-width: 90vw;
-  max-height: 80vh;
+  height: 560px;
   border-radius: 24px;
   background: var(--modal-bg);
   box-shadow: var(--modal-shadow);
@@ -442,18 +442,18 @@ const close = () => {
 /* 物品卡片网格 */
 .items-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
 }
 
 .item-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 16px 10px 12px;
+  gap: 4px;
+  padding: 10px 6px 8px;
   border: 1px solid var(--card-border);
-  border-radius: 16px;
+  border-radius: 12px;
   background: var(--card-bg);
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -496,7 +496,7 @@ const close = () => {
 }
 
 .item-icon {
-  font-size: 28px;
+  font-size: 20px;
   line-height: 1;
   position: relative;
 }
@@ -507,7 +507,7 @@ const close = () => {
 }
 
 .item-name {
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--value-color);
   line-height: 1;
