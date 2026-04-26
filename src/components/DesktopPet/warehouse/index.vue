@@ -53,7 +53,7 @@ function showToast(msg: string) {
   }, 2000);
 }
 
-// 当前展示的库存列表
+// 当前展示的库存列表（只显示有库存或已拥有的物品）
 const currentItems = computed(() => {
   const foodInv = attrData.value.foodInventory || {};
   const bathInv = attrData.value.bathInventory || {};
@@ -62,40 +62,46 @@ const currentItems = computed(() => {
   const equipped = attrData.value.equippedDecorations || [];
 
   if (activeTab.value === "food") {
-    return Object.values(FOOD_CONFIGS).map((f) => ({
-      type: f.type as string,
-      name: f.name,
-      icon: FOOD_ICONS[f.type],
-      count: foodInv[f.type] || 0,
-      effectLabel: `+${f.satietyRestore}饱腹`,
-      category: "food" as const,
-    }));
+    return Object.values(FOOD_CONFIGS)
+      .filter((f) => (foodInv[f.type] || 0) > 0)
+      .map((f) => ({
+        type: f.type as string,
+        name: f.name,
+        icon: FOOD_ICONS[f.type],
+        count: foodInv[f.type] || 0,
+        effectLabel: `+${f.satietyRestore}饱腹`,
+        category: "food" as const,
+      }));
   }
 
   if (activeTab.value === "bath") {
-    return Object.values(BATH_CONFIGS).map((b) => ({
-      type: b.type as string,
-      name: b.name,
-      icon: BATH_ICONS[b.type],
-      count: bathInv[b.type] || 0,
-      effectLabel: `+${b.cleanlinessRestore}清洁`,
-      category: "bath" as const,
-    }));
+    return Object.values(BATH_CONFIGS)
+      .filter((b) => (bathInv[b.type] || 0) > 0)
+      .map((b) => ({
+        type: b.type as string,
+        name: b.name,
+        icon: BATH_ICONS[b.type],
+        count: bathInv[b.type] || 0,
+        effectLabel: `+${b.cleanlinessRestore}清洁`,
+        category: "bath" as const,
+      }));
   }
 
-  return Object.values(DECORATION_CONFIGS).map((d) => ({
-    type: d.type as string,
-    name: d.name,
-    icon: DECORATION_ICONS[d.type],
-    count: decoInv[d.type] || 0,
-    effectLabel: d.description,
-    category: "decoration" as const,
-    alreadyOwned: owned.includes(d.type),
-    isEquipped: equipped.includes(d.type),
-  }));
+  return Object.values(DECORATION_CONFIGS)
+    .filter((d) => (decoInv[d.type] || 0) > 0 || owned.includes(d.type))
+    .map((d) => ({
+      type: d.type as string,
+      name: d.name,
+      icon: DECORATION_ICONS[d.type],
+      count: decoInv[d.type] || 0,
+      effectLabel: d.description,
+      category: "decoration" as const,
+      alreadyOwned: owned.includes(d.type),
+      isEquipped: equipped.includes(d.type),
+    }));
 });
 
-// 是否有库存（含已拥有装饰）
+// 是否有任何库存或已拥有装饰
 const hasAnyInventory = computed(() => {
   const foodInv = attrData.value.foodInventory || {};
   const bathInv = attrData.value.bathInventory || {};
@@ -105,13 +111,6 @@ const hasAnyInventory = computed(() => {
   const bathCount = Object.values(bathInv).reduce((s, c) => s + c, 0);
   const decoCount = Object.values(decoInv).reduce((s, c) => s + c, 0);
   return foodCount + bathCount + decoCount > 0 || owned.length > 0;
-});
-
-// 当前 Tab 是否有库存或已拥有
-const currentTabHasItems = computed(() => {
-  return currentItems.value.some(
-    (item) => item.count > 0 || ("alreadyOwned" in item && item.alreadyOwned),
-  );
 });
 
 // 点击物品
@@ -344,7 +343,7 @@ const close = () => {
 
             <!-- 物品列表 -->
             <template v-else>
-              <div v-if="!currentTabHasItems" class="tab-empty">
+              <div v-if="currentItems.length === 0" class="tab-empty">
                 <span class="tab-empty-text">当前分类没有库存</span>
               </div>
               <div v-else class="items-grid">
