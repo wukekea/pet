@@ -19,7 +19,6 @@ import {
   type BathType,
   type DecorationType,
   FOOD_ICONS,
-  BATH_ICONS,
 } from "../DesktopPet/composables/sharedState";
 import {
   isDark,
@@ -487,7 +486,9 @@ defineExpose({
               @click="debugUseBath(item.type)"
               :title="item.name"
             >
-              <span class="debug-item-icon">{{ BATH_ICONS[item.type] }}</span>
+              <span class="debug-item-icon"
+                ><DecoIcon :type="item.type as BathType"
+              /></span>
               <span class="debug-item-name">{{ item.name }}</span>
             </button>
           </div>

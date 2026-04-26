@@ -369,7 +369,14 @@ const close = () => {
                   @click="handleItemClick(item)"
                 >
                   <span class="item-icon">
-                    <DecoIcon v-if="item.decoType" :type="item.decoType" />
+                    <DecoIcon
+                      v-if="item.decoType || item.category === 'bath'"
+                      :type="
+                        (item.decoType || item.type) as
+                          | DecorationType
+                          | BathType
+                      "
+                    />
                     <template v-else>{{ item.icon }}</template>
                   </span>
                   <span class="item-name">{{ item.name }}</span>
