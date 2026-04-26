@@ -60,10 +60,3 @@ export const STATE_EFFECTS: Partial<Record<PetState, Component>> = {
   flyerDistributing: FlyerDistributingEffects,
   programmer: ProgrammerEffects,
 };
-
-// 打工状态需要额外显示进度条
-export const WORK_STATE_WITH_PROGRESS: readonly PetState[] = [
-  "brickCarrying",
-  "flyerDistributing",
-  "programmer",
-] as const;

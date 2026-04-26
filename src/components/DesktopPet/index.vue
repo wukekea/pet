@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, ref, watch } from "vue";
+import { computed, onMounted, onBeforeUnmount, watch } from "vue";
 // 状态变量从 sharedState 导入
 import {
   petState,
@@ -7,12 +7,6 @@ import {
   position,
   isVisible,
   isDragging,
-  isContextMenuOpen,
-  isScheduleModalOpen,
-  isStatsModalOpen,
-  isAttributeModalOpen,
-  isShopModalOpen,
-  isWarehouseModalOpen,
   isDebugPanelOpen,
   currentFood,
   currentPetShape,
@@ -30,10 +24,10 @@ import {
 import { footprints } from "./composables/footprints";
 import { isDark, initTheme } from "./composables/theme";
 import { initStats, cleanupStats } from "./composables/stats";
-import { setPassthrough } from "./composables/passthrough";
 import { initPetShape } from "./composables/petShapeStorage";
 import { getShapeConfig, getShapeComponent } from "./shapes";
-import { STATE_EFFECTS, WORK_STATE_WITH_PROGRESS } from "./effectsMap";
+import { STATE_EFFECTS } from "./effectsMap";
+import { WORK_STATES } from "./constants";
 import { useAttributeRef } from "./composables/attributes";
 import WeatherBackground from "./WeatherBackground.vue";
 import WorkProgressBar from "./effects/WorkProgressBar.vue";
@@ -46,6 +40,18 @@ import AttributeModal from "./attributes/index.vue";
 import ShopModal from "./shop/index.vue";
 import WarehouseModal from "./warehouse/index.vue";
 import { FOOD_CONFIGS } from "./composables/attributeStorage";
+import {
+  scheduleModal,
+  statsModal,
+  attributeModal,
+  shopModal,
+  warehouseModal,
+  contextMenuVisible,
+  contextMenuX,
+  contextMenuY,
+  closeContextMenu,
+  openContextMenu,
+} from "./composables/useModal";
 import "./shapes/base.css";
 import "./shapes/cloud/styles.css";
 import "./shapes/cat/styles.css";
@@ -122,7 +128,7 @@ const currentEffectComponent = computed(() => {
 
 // 是否显示工作进度条
 const showWorkProgressBar = computed(() => {
-  return WORK_STATE_WITH_PROGRESS.includes(petState.value);
+  return WORK_STATES.includes(petState.value);
 });
 
 // 初始化
@@ -154,126 +160,17 @@ defineExpose({
   isVisible,
 });
 
-// 右键菜单状态
-const contextMenuVisible = ref(false);
-const contextMenuX = ref(0);
-const contextMenuY = ref(0);
-
-// 作息配置弹窗状态
-const scheduleModalVisible = ref(false);
-
-// 数据统计弹窗状态
-const statsModalVisible = ref(false);
-
-// 属性面板弹窗状态
-const attributeModalVisible = ref(false);
-
-// 商店弹窗状态
-const shopModalVisible = ref(false);
-
-// 仓库弹窗状态
-const warehouseModalVisible = ref(false);
-
-// 打开右键菜单
+// 右键菜单处理
 const handleContextMenu = (e: MouseEvent) => {
   e.preventDefault();
   e.stopPropagation();
-  setPassthrough(false);
-  isContextMenuOpen.value = true;
-  contextMenuX.value = e.clientX;
-  contextMenuY.value = e.clientY;
-  contextMenuVisible.value = true;
-};
-
-// 关闭右键菜单
-const closeContextMenu = () => {
-  contextMenuVisible.value = false;
-  isContextMenuOpen.value = false;
-  if (
-    !scheduleModalVisible.value &&
-    !statsModalVisible.value &&
-    !attributeModalVisible.value &&
-    !shopModalVisible.value &&
-    !warehouseModalVisible.value
-  ) {
-    setPassthrough(true);
-  }
-};
-
-// 打开作息配置弹窗
-const openScheduleModal = () => {
-  setPassthrough(false);
-  isScheduleModalOpen.value = true;
-  contextMenuVisible.value = false;
-  isContextMenuOpen.value = false;
-  scheduleModalVisible.value = true;
-};
-
-// 关闭作息配置弹窗
-const closeScheduleModal = () => {
-  scheduleModalVisible.value = false;
-};
-
-// 打开数据统计弹窗
-const openStatsModal = () => {
-  setPassthrough(false);
-  isStatsModalOpen.value = true;
-  contextMenuVisible.value = false;
-  isContextMenuOpen.value = false;
-  statsModalVisible.value = true;
-};
-
-// 关闭数据统计弹窗
-const closeStatsModal = () => {
-  statsModalVisible.value = false;
-};
-
-// 打开属性面板弹窗
-const openAttributeModal = () => {
-  setPassthrough(false);
-  isAttributeModalOpen.value = true;
-  contextMenuVisible.value = false;
-  isContextMenuOpen.value = false;
-  attributeModalVisible.value = true;
-};
-
-// 关闭属性面板弹窗
-const closeAttributeModal = () => {
-  attributeModalVisible.value = false;
-};
-
-// 打开商店弹窗
-const openShopModal = () => {
-  setPassthrough(false);
-  isShopModalOpen.value = true;
-  contextMenuVisible.value = false;
-  isContextMenuOpen.value = false;
-  shopModalVisible.value = true;
-};
-
-// 关闭商店弹窗
-const closeShopModal = () => {
-  shopModalVisible.value = false;
-};
-
-// 打开仓库弹窗
-const openWarehouseModal = () => {
-  setPassthrough(false);
-  isWarehouseModalOpen.value = true;
-  contextMenuVisible.value = false;
-  isContextMenuOpen.value = false;
-  warehouseModalVisible.value = true;
-};
-
-// 关闭仓库弹窗
-const closeWarehouseModal = () => {
-  warehouseModalVisible.value = false;
+  openContextMenu(e.clientX, e.clientY);
 };
 
 // 从属性面板打开商店
 const openShopFromAttributes = () => {
-  attributeModalVisible.value = false;
-  openShopModal();
+  attributeModal.visible.value = false;
+  shopModal.open();
 };
 </script>
 
@@ -339,37 +236,37 @@ const openShopFromAttributes = () => {
       :x="contextMenuX"
       :y="contextMenuY"
       @close="closeContextMenu"
-      @open-schedule="openScheduleModal"
-      @open-shop="openShopModal"
-      @open-warehouse="openWarehouseModal"
-      @open-attributes="openAttributeModal"
-      @open-stats="openStatsModal"
+      @open-schedule="scheduleModal.open"
+      @open-shop="shopModal.open"
+      @open-warehouse="warehouseModal.open"
+      @open-attributes="attributeModal.open"
+      @open-stats="statsModal.open"
     />
 
     <!-- 作息配置弹窗 -->
     <ScheduleModal
-      :visible="scheduleModalVisible"
-      @close="closeScheduleModal"
+      :visible="scheduleModal.visible.value"
+      @close="scheduleModal.close"
     />
 
     <!-- 属性面板弹窗 -->
     <AttributeModal
-      :visible="attributeModalVisible"
-      @close="closeAttributeModal"
+      :visible="attributeModal.visible.value"
+      @close="attributeModal.close"
       @open-shop="openShopFromAttributes"
     />
 
     <!-- 商店弹窗 -->
-    <ShopModal :visible="shopModalVisible" @close="closeShopModal" />
+    <ShopModal :visible="shopModal.visible.value" @close="shopModal.close" />
 
     <!-- 仓库弹窗 -->
     <WarehouseModal
-      :visible="warehouseModalVisible"
-      @close="closeWarehouseModal"
+      :visible="warehouseModal.visible.value"
+      @close="warehouseModal.close"
     />
 
     <!-- 数据统计弹窗 -->
-    <StatsModal :visible="statsModalVisible" @close="closeStatsModal" />
+    <StatsModal :visible="statsModal.visible.value" @close="statsModal.close" />
   </div>
 </template>
 

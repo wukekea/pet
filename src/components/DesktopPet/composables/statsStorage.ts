@@ -1,4 +1,6 @@
 import type { StatsData } from "../types";
+import { getTodayString } from "../utils/date";
+import { createLocalStorage } from "../utils/storage";
 
 // 导出 StatsData 类型供其他模块使用
 export type { StatsData };
@@ -19,46 +21,22 @@ export const DEFAULT_STATS_DATA: StatsData = {
   stateCounts: {},
 };
 
-// 获取今日日期字符串（YYYY-MM-DD）
-function getTodayString(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-}
-
-// 计算两个日期之间的天数差
-function getDaysDiff(date1: string, date2: string): number {
-  const d1 = new Date(date1);
-  const d2 = new Date(date2);
-  const diffTime = Math.abs(d2.getTime() - d1.getTime());
-  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-}
-
-const STORAGE_KEY = "pet-stats-data";
+const statsStorage = createLocalStorage<StatsData>(
+  "pet-stats-data",
+  DEFAULT_STATS_DATA,
+  (data): data is StatsData =>
+    !!(data as StatsData).startDate &&
+    typeof (data as StatsData).totalDuration === "number",
+);
 
 // 保存统计数据到 localStorage
 export function saveStatsData(data: StatsData): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (e) {
-    console.error("保存统计数据失败:", e);
-  }
+  statsStorage.save(data);
 }
 
 // 从 localStorage 加载统计数据
 export function loadStatsData(): StatsData {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const data = JSON.parse(saved) as StatsData;
-      // 验证数据格式
-      if (data.startDate && typeof data.totalDuration === "number") {
-        return data;
-      }
-    }
-  } catch (e) {
-    console.error("加载统计数据失败:", e);
-  }
-  return { ...DEFAULT_STATS_DATA };
+  return statsStorage.load();
 }
 
 // 更新连续使用天数
@@ -90,12 +68,15 @@ export function updateStreak(data: StatsData): StatsData {
 
 // 重置统计数据
 export function resetStatsData(): StatsData {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch (e) {
-    console.error("重置统计数据失败:", e);
-  }
-  return { ...DEFAULT_STATS_DATA, startDate: new Date().toISOString() };
+  return statsStorage.reset();
+}
+
+// 计算两个日期之间的天数差
+function getDaysDiff(date1: string, date2: string): number {
+  const d1 = new Date(date1);
+  const d2 = new Date(date2);
+  const diffTime = Math.abs(d2.getTime() - d1.getTime());
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
 }
 
 // 格式化时长显示

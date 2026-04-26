@@ -2,6 +2,8 @@ import { ref } from "vue";
 import type { AttributeData } from "../types";
 import type { PetState } from "../types";
 import type { FoodType, BathType, DecorationType } from "./sharedState";
+import { getTodayString } from "../utils/date";
+import { createDebouncedSave } from "../utils/debouncedSave";
 import {
   petState,
   currentFood,
@@ -57,9 +59,11 @@ let requestStateChange: ((state: PetState) => void) | null = null;
 // 计时器
 let tickTimer: ReturnType<typeof setInterval> | null = null;
 let companionshipTimer: ReturnType<typeof setInterval> | null = null;
-let saveTimer: ReturnType<typeof setInterval> | null = null;
-let hasPendingSave = false;
-let debouncedSaveTimer: ReturnType<typeof setTimeout> | null = null;
+
+// 防抖保存
+const { save: debouncedSave, flush: flushSave } = createDebouncedSave(() =>
+  saveAttributeData(attributeData.value),
+);
 
 // tick 累加计数器
 let tickCount = 0;
@@ -113,7 +117,7 @@ export function getDailyInteractionProgress(): {
   cap: number;
 } {
   const data = attributeData.value;
-  const today = getTodayDate();
+  const today = getTodayString();
   if (data.dailyInteractionExpDate !== today) {
     return { earned: 0, cap: DAILY_INTERACTION_EXPERIENCE_CAP };
   }
@@ -133,7 +137,7 @@ function tick(): void {
   const cap = getAttributeCap(data.level);
 
   // 跨午夜检查：重置每日交互经验，发放每日救济金
-  const today = getTodayDate();
+  const today = getTodayString();
   if (data.dailyInteractionExpDate !== today) {
     data.dailyInteractionExpDate = today;
     data.dailyInteractionExp = 0;
@@ -208,8 +212,8 @@ function tick(): void {
   // 检查自动行为
   checkAutoBehaviors();
 
-  // 防抖保存标记
-  hasPendingSave = true;
+  // 防抖保存
+  debouncedSave();
 }
 
 // 自动行为检查
@@ -527,16 +531,10 @@ export function onWorkComplete(workState: PetState): void {
   debouncedSave();
 }
 
-// 获取今日日期字符串
-function getTodayDate(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-}
-
 // 带每日上限的交互经验
 function addInteractionExpWithLimit(amount: number): void {
   const data = attributeData.value;
-  const today = getTodayDate();
+  const today = getTodayString();
 
   // 日期变更，重置计数
   if (data.dailyInteractionExpDate !== today) {
@@ -626,29 +624,6 @@ export function debugSetAttribute(
   }
 }
 
-// 防抖保存
-function debouncedSave(): void {
-  if (debouncedSaveTimer) {
-    clearTimeout(debouncedSaveTimer);
-  }
-  debouncedSaveTimer = setTimeout(() => {
-    saveAttributeData(attributeData.value);
-    hasPendingSave = false;
-  }, 2000);
-}
-
-// 立即保存
-function flushSave(): void {
-  if (debouncedSaveTimer) {
-    clearTimeout(debouncedSaveTimer);
-    debouncedSaveTimer = null;
-  }
-  if (hasPendingSave) {
-    saveAttributeData(attributeData.value);
-    hasPendingSave = false;
-  }
-}
-
 // 可见性变化处理
 function handleVisibilityChange(): void {
   if (document.visibilityState === "hidden") {
@@ -665,13 +640,6 @@ function handleVisibilityChange(): void {
 function startTimers(): void {
   // 每秒 tick
   tickTimer = setInterval(tick, 1000);
-  // 每60秒自动保存
-  saveTimer = setInterval(() => {
-    if (hasPendingSave) {
-      saveAttributeData(attributeData.value);
-      hasPendingSave = false;
-    }
-  }, 60000);
 }
 
 // 停止计时器
@@ -683,10 +651,6 @@ function stopTimers(): void {
   if (companionshipTimer) {
     clearInterval(companionshipTimer);
     companionshipTimer = null;
-  }
-  if (saveTimer) {
-    clearInterval(saveTimer);
-    saveTimer = null;
   }
 }
 
@@ -708,7 +672,7 @@ export function initAttributes(): void {
 // 检查并发放每日救济金
 function checkDailyAllowance(): void {
   const data = attributeData.value;
-  const today = getTodayDate();
+  const today = getTodayString();
   if (
     data.dailyAllowanceClaimed !== today &&
     data.money < DAILY_ALLOWANCE_THRESHOLD
