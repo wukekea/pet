@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import type { AttributeData } from "../types";
 import type { PetState } from "../types";
-import type { FoodType, BathType } from "./sharedState";
+import type { FoodType, BathType, DecorationType } from "./sharedState";
 import {
   petState,
   currentFood,
@@ -39,6 +39,7 @@ import {
   getExpRequiredForLevel,
   FOOD_CONFIGS,
   BATH_CONFIGS,
+  DECORATION_CONFIGS,
   WORK_INCOME,
   WORK_EXPERIENCE,
   WORK_STAMINA_REQUIRED,
@@ -321,6 +322,22 @@ export function bathePet(bathType: BathType, isAuto = false): boolean {
     addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
   }
 
+  debouncedSave();
+  return true;
+}
+
+// 购买装饰
+export function buyDecoration(decorationType: DecorationType): boolean {
+  const data = attributeData.value;
+  const config = DECORATION_CONFIGS[decorationType];
+
+  if (data.money < config.cost) return false;
+  if (data.ownedDecorations.includes(decorationType)) return false;
+
+  data.money -= config.cost;
+  data.ownedDecorations = [...data.ownedDecorations, decorationType];
+
+  addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
   debouncedSave();
   return true;
 }

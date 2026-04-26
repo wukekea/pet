@@ -67,6 +67,17 @@ export const currentFood = ref<FoodType>("apple");
 export type BathType = "soap" | "showerGel" | "bathBall" | "petShampoo";
 export const currentBathType = ref<BathType>("showerGel");
 
+// 装饰类型
+export type DecorationType =
+  | "bow"
+  | "scarf"
+  | "wreath"
+  | "topHat"
+  | "sunglasses"
+  | "crown"
+  | "magicWand"
+  | "medal";
+
 // 食物图标映射
 export const FOOD_ICONS: Record<FoodType, string> = {
   apple: "🍎",
@@ -84,6 +95,18 @@ export const BATH_ICONS: Record<BathType, string> = {
   showerGel: "🧴",
   bathBall: "🫧",
   petShampoo: "🧽",
+};
+
+// 装饰图标映射
+export const DECORATION_ICONS: Record<DecorationType, string> = {
+  bow: "🎀",
+  scarf: "🧣",
+  wreath: "🌸",
+  topHat: "🎩",
+  sunglasses: "🕶️",
+  medal: "🏅",
+  crown: "👑",
+  magicWand: "🪄",
 };
 
 // 宠物形态（从 petShapeStorage 导入）

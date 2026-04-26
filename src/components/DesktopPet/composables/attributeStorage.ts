@@ -1,5 +1,5 @@
 import type { AttributeData } from "../types";
-import type { FoodType, BathType } from "./sharedState";
+import type { FoodType, BathType, DecorationType } from "./sharedState";
 
 // localStorage 存储键
 const STORAGE_KEY = "pet-attributes";
@@ -62,6 +62,60 @@ export const BATH_CONFIGS: Record<BathType, BathConfig> = {
   },
 };
 
+// 装饰配置
+export interface DecorationConfig {
+  type: DecorationType;
+  name: string;
+  cost: number;
+  description: string;
+}
+
+export const DECORATION_CONFIGS: Record<DecorationType, DecorationConfig> = {
+  bow: { type: "bow", name: "蝴蝶结", cost: 5, description: "可爱的蝴蝶结" },
+  scarf: {
+    type: "scarf",
+    name: "围巾",
+    cost: 8,
+    description: "温暖的小围巾",
+  },
+  wreath: {
+    type: "wreath",
+    name: "花环",
+    cost: 12,
+    description: "美丽的花环",
+  },
+  topHat: {
+    type: "topHat",
+    name: "礼帽",
+    cost: 15,
+    description: "优雅的礼帽",
+  },
+  sunglasses: {
+    type: "sunglasses",
+    name: "墨镜",
+    cost: 18,
+    description: "酷酷的墨镜",
+  },
+  medal: {
+    type: "medal",
+    name: "勋章",
+    cost: 20,
+    description: "荣誉勋章",
+  },
+  crown: {
+    type: "crown",
+    name: "皇冠",
+    cost: 25,
+    description: "华丽的皇冠",
+  },
+  magicWand: {
+    type: "magicWand",
+    name: "魔法杖",
+    cost: 30,
+    description: "神奇的魔法杖",
+  },
+};
+
 // 打工收入
 export const WORK_INCOME: Record<string, number> = {
   brickCarrying: 35,
@@ -99,6 +153,7 @@ export const DEFAULT_ATTRIBUTE_DATA: AttributeData = {
   dailyInteractionExpDate: "",
   dailyAllowanceClaimed: "",
   lastUpdateTimestamp: Date.now(),
+  ownedDecorations: [],
 };
 
 // 保存属性数据
@@ -135,6 +190,9 @@ export function loadAttributeData(): AttributeData {
         }
         if (typeof data.dailyAllowanceClaimed !== "string") {
           data.dailyAllowanceClaimed = "";
+        }
+        if (!Array.isArray(data.ownedDecorations)) {
+          data.ownedDecorations = [];
         }
         return data;
       }

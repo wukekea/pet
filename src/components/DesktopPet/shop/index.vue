@@ -6,11 +6,22 @@ import {
   isShopModalOpen,
   FOOD_ICONS,
   BATH_ICONS,
+  DECORATION_ICONS,
   type FoodType,
   type BathType,
+  type DecorationType,
 } from "../composables/sharedState";
-import { useAttributeRef, feedPet, bathePet } from "../composables/attributes";
-import { FOOD_CONFIGS, BATH_CONFIGS } from "../composables/attributeStorage";
+import {
+  useAttributeRef,
+  feedPet,
+  bathePet,
+  buyDecoration,
+} from "../composables/attributes";
+import {
+  FOOD_CONFIGS,
+  BATH_CONFIGS,
+  DECORATION_CONFIGS,
+} from "../composables/attributeStorage";
 
 defineProps<{
   visible: boolean;
@@ -24,11 +35,27 @@ const emit = defineEmits<{
 const attrData = useAttributeRef();
 
 // 当前分类 Tab
-const activeTab = ref<"food" | "bath">("food");
+const activeTab = ref<"food" | "bath" | "decoration">("food");
+
+// 购买提示
+const toastMessage = ref("");
+const toastVisible = ref(false);
+let toastTimer: ReturnType<typeof setTimeout> | null = null;
+
+function showToast(msg: string) {
+  toastMessage.value = msg;
+  toastVisible.value = true;
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toastVisible.value = false;
+  }, 2000);
+}
 
 // 当前展示的物品列表
 const currentItems = computed(() => {
   const money = attrData.value.money;
+  const owned = attrData.value.ownedDecorations || [];
+
   if (activeTab.value === "food") {
     return Object.values(FOOD_CONFIGS).map((f) => ({
       type: f.type as string,
@@ -38,25 +65,48 @@ const currentItems = computed(() => {
       canAfford: money >= f.cost,
       effectLabel: `+${f.satietyRestore}饱腹`,
       category: "food" as const,
+      owned: false,
     }));
   }
-  return Object.values(BATH_CONFIGS).map((b) => ({
-    type: b.type as string,
-    name: b.name,
-    cost: b.cost,
-    icon: BATH_ICONS[b.type],
-    canAfford: money >= b.cost,
-    effectLabel: `+${b.cleanlinessRestore}清洁`,
-    category: "bath" as const,
+
+  if (activeTab.value === "bath") {
+    return Object.values(BATH_CONFIGS).map((b) => ({
+      type: b.type as string,
+      name: b.name,
+      cost: b.cost,
+      icon: BATH_ICONS[b.type],
+      canAfford: money >= b.cost,
+      effectLabel: `+${b.cleanlinessRestore}清洁`,
+      category: "bath" as const,
+      owned: false,
+    }));
+  }
+
+  return Object.values(DECORATION_CONFIGS).map((d) => ({
+    type: d.type as string,
+    name: d.name,
+    cost: d.cost,
+    icon: DECORATION_ICONS[d.type],
+    canAfford: money >= d.cost && !owned.includes(d.type),
+    effectLabel: d.description,
+    category: "decoration" as const,
+    owned: owned.includes(d.type),
   }));
 });
 
 const handleBuy = (item: (typeof currentItems.value)[number]) => {
+  if (item.owned) return;
+
   if (item.category === "food") {
     feedPet(item.type as FoodType);
-  } else {
+  } else if (item.category === "bath") {
     if (bathePet(item.type as BathType)) {
       close();
+    }
+  } else if (item.category === "decoration") {
+    const success = buyDecoration(item.type as DecorationType);
+    if (success) {
+      showToast(`成功购买 ${item.name}！`);
     }
   }
 };
@@ -111,6 +161,29 @@ const cssVars = computed(() => ({
   "--tab-inactive-bg": isDark.value
     ? "rgba(55, 50, 35, 0.3)"
     : "rgba(243, 244, 246, 0.6)",
+  "--deco-card-bg": isDark.value
+    ? "rgba(50, 35, 55, 0.4)"
+    : "rgba(243, 232, 255, 0.5)",
+  "--deco-card-hover-bg": isDark.value
+    ? "rgba(60, 40, 65, 0.5)"
+    : "rgba(233, 213, 255, 0.6)",
+  "--deco-card-border": isDark.value
+    ? "rgba(168, 85, 247, 0.15)"
+    : "rgba(168, 85, 247, 0.2)",
+  "--deco-cost-color": isDark.value ? "rgba(192, 132, 252, 0.8)" : "#7c3aed",
+  "--deco-effect-color": isDark.value
+    ? "rgba(168, 85, 247, 0.5)"
+    : "rgba(124, 58, 237, 0.45)",
+  "--deco-owned-color": isDark.value ? "#a78bfa" : "#7c3aed",
+  "--toast-bg": isDark.value
+    ? "rgba(30, 20, 50, 0.95)"
+    : "rgba(255, 255, 255, 0.97)",
+  "--toast-border": isDark.value
+    ? "rgba(168, 85, 247, 0.4)"
+    : "rgba(168, 85, 247, 0.2)",
+  "--toast-shadow": isDark.value
+    ? "0 8px 32px rgba(168, 85, 247, 0.2)"
+    : "0 8px 32px rgba(168, 85, 247, 0.12)",
 }));
 
 // 关闭弹窗
@@ -183,23 +256,63 @@ const close = () => {
                   class="tab-indicator bath-indicator"
                 ></div>
               </button>
+              <button
+                class="tab-btn"
+                :class="{ active: activeTab === 'decoration' }"
+                @click="activeTab = 'decoration'"
+              >
+                <span class="tab-icon">💍</span>
+                <span class="tab-text">装饰</span>
+                <div
+                  v-if="activeTab === 'decoration'"
+                  class="tab-indicator deco-indicator"
+                ></div>
+              </button>
             </div>
 
+            <!-- 购买提示 -->
+            <Transition name="toast-slide">
+              <div v-if="toastVisible" class="toast-notification">
+                <span class="toast-icon">🎉</span>
+                <span class="toast-text">{{ toastMessage }}</span>
+              </div>
+            </Transition>
+
             <!-- 物品列表 -->
-            <div class="items-grid">
+            <div
+              class="items-grid"
+              :class="{ 'deco-grid': activeTab === 'decoration' }"
+            >
               <button
                 v-for="item in currentItems"
                 :key="item.type"
                 class="item-card"
-                :class="{ disabled: !item.canAfford }"
+                :class="{
+                  disabled: !item.canAfford,
+                  owned: item.owned,
+                  'deco-card': item.category === 'decoration',
+                }"
                 :disabled="!item.canAfford"
                 @click="handleBuy(item)"
               >
                 <span class="item-icon">{{ item.icon }}</span>
                 <span class="item-name">{{ item.name }}</span>
                 <div class="item-info">
-                  <span class="item-cost">💰{{ item.cost }}</span>
-                  <span class="item-effect">{{ item.effectLabel }}</span>
+                  <template v-if="item.owned">
+                    <span class="item-owned-badge">已拥有</span>
+                  </template>
+                  <template v-else>
+                    <span
+                      class="item-cost"
+                      :class="{ 'deco-cost': item.category === 'decoration' }"
+                      >💰{{ item.cost }}</span
+                    >
+                    <span
+                      class="item-effect"
+                      :class="{ 'deco-effect': item.category === 'decoration' }"
+                      >{{ item.effectLabel }}</span
+                    >
+                  </template>
                 </div>
               </button>
             </div>
@@ -373,7 +486,7 @@ const close = () => {
 /* Tab 切换 */
 .tab-bar {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   margin-bottom: 16px;
   background: var(--tab-inactive-bg);
   padding: 4px;
@@ -385,8 +498,8 @@ const close = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 10px 12px;
+  gap: 4px;
+  padding: 8px 6px;
   border: none;
   border-radius: 11px;
   background: transparent;
@@ -395,7 +508,7 @@ const close = () => {
   transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .tab-btn.active {
@@ -411,20 +524,20 @@ const close = () => {
 }
 
 .tab-icon {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .tab-text {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 /* Tab 下划线指示器 */
 .tab-indicator {
   position: absolute;
-  bottom: 4px;
+  bottom: 3px;
   left: 50%;
   transform: translateX(-50%);
-  width: 24px;
+  width: 20px;
   height: 3px;
   border-radius: 2px;
 }
@@ -437,6 +550,66 @@ const close = () => {
 .bath-indicator {
   background: linear-gradient(90deg, #3b82f6, #60a5fa);
   box-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
+}
+
+.deco-indicator {
+  background: linear-gradient(90deg, #a855f7, #ec4899);
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.4);
+}
+
+/* 购买提示 */
+.toast-notification {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  background: var(--toast-bg);
+  border: 1px solid var(--toast-border);
+  border-radius: 12px;
+  box-shadow: var(--toast-shadow);
+  pointer-events: none;
+}
+
+.toast-icon {
+  font-size: 16px;
+}
+
+.toast-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--deco-owned-color);
+}
+
+.toast-slide-enter-active {
+  animation: toast-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toast-slide-leave-active {
+  animation: toast-out 0.25s ease-in;
+}
+
+@keyframes toast-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.95);
+  }
 }
 
 /* 物品卡片网格 */
@@ -477,11 +650,31 @@ const close = () => {
   border-radius: 16px 16px 0 0;
 }
 
+/* 装饰卡片紫色主题 */
+.item-card.deco-card {
+  border-color: var(--deco-card-border);
+  background: var(--deco-card-bg);
+}
+
+.item-card.deco-card::before {
+  background: linear-gradient(
+    180deg,
+    rgba(168, 85, 247, 0.06) 0%,
+    transparent 100%
+  );
+}
+
 .item-card:hover:not(.disabled) {
   background: var(--card-hover-bg);
   transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(251, 191, 36, 0.15);
   border-color: rgba(251, 191, 36, 0.3);
+}
+
+.item-card.deco-card:hover:not(.disabled) {
+  background: var(--deco-card-hover-bg);
+  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.18);
+  border-color: rgba(168, 85, 247, 0.35);
 }
 
 .item-card:active:not(.disabled) {
@@ -493,6 +686,16 @@ const close = () => {
   border-color: var(--card-disabled-border);
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+.item-card.owned {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.item-card.owned:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 .item-icon {
@@ -532,6 +735,10 @@ const close = () => {
   line-height: 1;
 }
 
+.item-cost.deco-cost {
+  color: var(--deco-cost-color);
+}
+
 .item-effect {
   font-size: 10px;
   color: var(--effect-color);
@@ -541,10 +748,26 @@ const close = () => {
   border-radius: 6px;
 }
 
+.item-effect.deco-effect {
+  color: var(--deco-effect-color);
+  background: rgba(168, 85, 247, 0.08);
+}
+
 .item-card.disabled .item-cost,
 .item-card.disabled .item-effect {
   color: var(--disabled-color);
   background: transparent;
+}
+
+/* 已拥有徽章 */
+.item-owned-badge {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--deco-owned-color);
+  padding: 2px 8px;
+  background: rgba(168, 85, 247, 0.1);
+  border-radius: 8px;
+  letter-spacing: 0.5px;
 }
 
 /* 弹窗动画 */
