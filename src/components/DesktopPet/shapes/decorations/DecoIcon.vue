@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import {
-  DECORATION_ICONS,
-  type DecorationType,
-} from "../../composables/sharedState";
+import { DECORATION_ICONS } from "../../composables/sharedState";
+import type { DecorationType } from "../../types";
 
 defineProps<{
   type: DecorationType;

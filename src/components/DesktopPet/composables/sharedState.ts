@@ -1,6 +1,16 @@
 // 共享状态 - 避免循环依赖
 import { ref, computed } from "vue";
-import type { PetDirection, PetPosition, PetState } from "../types";
+import type {
+  PetDirection,
+  PetPosition,
+  PetState,
+  FoodType,
+  BathType,
+  DecorationType,
+} from "../types";
+
+// 重新导出类型，保持兼容
+export type { FoodType, BathType, DecorationType } from "../types";
 
 // 宠物核心状态
 export const petState = ref<PetState>("idle");
@@ -19,7 +29,7 @@ export const screenSize = ref({
 });
 export const isVisible = ref(true);
 export const isDragging = ref(false);
-export const stateTimer = ref<number | null>(null);
+export const stateTimer = ref<ReturnType<typeof setTimeout> | null>(null);
 export const animationFrameId = ref<number | null>(null);
 export const mousePosition = ref<PetPosition>({ x: 0, y: 0 });
 
@@ -48,37 +58,17 @@ export const isAnyUiOpen = computed(
 export const isInSleepSchedule = ref(false);
 export const isInWorkSchedule = ref(false);
 export const scheduleEnabled = ref(false);
-export const dreamTalkTimerId = ref<number | null>(null);
+export const dreamTalkTimerId = ref<ReturnType<typeof setTimeout> | null>(null);
 export const scheduleEndTime = ref<number | null>(null);
 
 // 打工相关状态
 export const workEndTime = ref<number | null>(null);
 
-// 食物类型
-export type FoodType =
-  | "apple"
-  | "fish"
-  | "cake"
-  | "lollipop"
-  | "riceBall"
-  | "milk"
-  | "steak";
+// 食物
 export const currentFood = ref<FoodType>("apple");
 
-// 沐浴露类型
-export type BathType = "soap" | "showerGel" | "bathBall" | "petShampoo";
+// 沐浴露
 export const currentBathType = ref<BathType>("showerGel");
-
-// 装饰类型
-export type DecorationType =
-  | "bow"
-  | "scarf"
-  | "wreath"
-  | "topHat"
-  | "sunglasses"
-  | "crown"
-  | "magicWand"
-  | "medal";
 
 // 食物图标映射
 export const FOOD_ICONS: Record<FoodType, string> = {

@@ -18,7 +18,7 @@ import {
 
 // 对话气泡状态
 export const dialogueText = ref<string | null>(null);
-export const dialogueTimer = ref<number | null>(null);
+export const dialogueTimer = ref<ReturnType<typeof setTimeout> | null>(null);
 export const isDialogueVisible = ref(false);
 
 // 根据时间获取问候语
@@ -50,7 +50,7 @@ export function showCustomDialogue(text: string) {
   }
 
   // 3秒后隐藏
-  dialogueTimer.value = window.setTimeout(() => {
+  dialogueTimer.value = setTimeout(() => {
     hideDialogue();
   }, 3000);
 }
@@ -95,7 +95,7 @@ export function showDialogue() {
   }
 
   // 3秒后隐藏
-  dialogueTimer.value = window.setTimeout(() => {
+  dialogueTimer.value = setTimeout(() => {
     hideDialogue();
   }, 3000);
 }

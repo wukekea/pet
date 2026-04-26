@@ -3,10 +3,8 @@ import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
 import { setPassthrough } from "../composables/passthrough";
 import { isAnyUiOpen } from "../composables/sharedState";
-import {
-  isAttributeModalOpen,
-  type DecorationType,
-} from "../composables/sharedState";
+import { isAttributeModalOpen } from "../composables/sharedState";
+import type { DecorationType } from "../types";
 import {
   useAttributeRef,
   getCurrentAttributeCap,

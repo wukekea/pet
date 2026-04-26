@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type FoodType } from "../composables/sharedState";
+import { type FoodType } from "../types";
 import type { Component } from "vue";
 import FoodApple from "./FoodApple.vue";
 import FoodFish from "./FoodFish.vue";

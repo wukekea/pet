@@ -83,6 +83,60 @@ export type WeatherType =
   | "lightSnow" // 小雪
   | "heavySnow"; // 大雪
 
+// 食物类型
+export type FoodType =
+  | "apple"
+  | "fish"
+  | "cake"
+  | "lollipop"
+  | "riceBall"
+  | "milk"
+  | "steak";
+
+// 沐浴露类型
+export type BathType = "soap" | "showerGel" | "bathBall" | "petShampoo";
+
+// 装饰类型
+export type DecorationType =
+  | "bow"
+  | "scarf"
+  | "wreath"
+  | "topHat"
+  | "sunglasses"
+  | "crown"
+  | "magicWand"
+  | "medal";
+
+// 装饰槽位 - 同槽位互斥
+export type DecorationSlot = "head" | "face" | "neck" | "hand";
+
+// 宠物形态类型
+export type PetShape = "cloud" | "cat" | "panda" | "rabbit";
+
+// 颜色配置（支持深色/浅色主题）
+export interface ShapeColors {
+  body: { light: string; dark: string };
+  bodyGradient: { light: string; dark: string };
+  face: { light: string; dark: string };
+  eyes: { light: string; dark: string };
+  cheeks: { light: string; dark: string };
+  shadow: { light: string; dark: string };
+  footprint: { light: string; dark: string };
+  angryFace?: string;
+}
+
+// 形态完整配置
+export interface PetShapeConfig {
+  name: PetShape;
+  label: string;
+  icon: string;
+  colors: ShapeColors;
+  // 是否有尾巴
+  hasTail?: boolean;
+  // 是否有胡须
+  hasWhiskers?: boolean;
+}
+
 // 属性数据接口
 export interface AttributeData {
   satiety: number; // 饱腹值

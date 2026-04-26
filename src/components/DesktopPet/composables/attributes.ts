@@ -1,7 +1,11 @@
 import { ref } from "vue";
-import type { AttributeData } from "../types";
-import type { PetState } from "../types";
-import type { FoodType, BathType, DecorationType } from "./sharedState";
+import type {
+  AttributeData,
+  PetState,
+  FoodType,
+  BathType,
+  DecorationType,
+} from "../types";
 import { getTodayString } from "../utils/date";
 import { createDebouncedSave } from "../utils/debouncedSave";
 import {
@@ -58,7 +62,6 @@ let requestStateChange: ((state: PetState) => void) | null = null;
 
 // 计时器
 let tickTimer: ReturnType<typeof setInterval> | null = null;
-let companionshipTimer: ReturnType<typeof setInterval> | null = null;
 
 // 防抖保存
 const { save: debouncedSave, flush: flushSave } = createDebouncedSave(() =>
@@ -642,10 +645,6 @@ function stopTimers(): void {
   if (tickTimer) {
     clearInterval(tickTimer);
     tickTimer = null;
-  }
-  if (companionshipTimer) {
-    clearInterval(companionshipTimer);
-    companionshipTimer = null;
   }
 }
 

@@ -1,5 +1,10 @@
-import type { AttributeData } from "../types";
-import type { FoodType, BathType, DecorationType } from "./sharedState";
+import type {
+  AttributeData,
+  FoodType,
+  BathType,
+  DecorationType,
+  DecorationSlot,
+} from "../types";
 
 // localStorage 存储键
 const STORAGE_KEY = "pet-attributes";
@@ -120,7 +125,6 @@ export const DECORATION_CONFIGS: Record<DecorationType, DecorationConfig> = {
 export const MAX_EQUIPPED_DECORATIONS = 3;
 
 // 装饰槽位 - 同槽位互斥
-export type DecorationSlot = "head" | "face" | "neck" | "hand";
 export const DECORATION_SLOTS: Record<DecorationType, DecorationSlot> = {
   bow: "head",
   wreath: "head",

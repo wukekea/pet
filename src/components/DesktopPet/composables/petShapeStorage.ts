@@ -1,6 +1,6 @@
 // 宠物形态存储模块
 import { ref } from "vue";
-import type { PetShape } from "../shapes/types";
+import type { PetShape } from "../types";
 import { DEFAULT_SHAPE, PET_SHAPES } from "../shapes";
 
 const STORAGE_KEY = "pet-shape";

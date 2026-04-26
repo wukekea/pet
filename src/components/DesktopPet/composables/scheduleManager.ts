@@ -19,7 +19,7 @@ import { DREAM_TALK_INTERVAL, STRETCH_DURATION } from "../constants";
 
 // 当前配置
 let currentConfig: ScheduleConfig | null = null;
-let scheduleCheckTimerId: number | null = null;
+let scheduleCheckTimerId: ReturnType<typeof setInterval> | null = null;
 
 // 获取当前配置
 export function getScheduleConfig(): ScheduleConfig {
@@ -122,7 +122,7 @@ export function getScheduleEndTime(): number | null {
 // 开始梦话定时器
 function startDreamTalkTimer(): void {
   stopDreamTalkTimer();
-  dreamTalkTimerId.value = window.setTimeout(() => {
+  dreamTalkTimerId.value = setTimeout(() => {
     // 只有在睡眠状态时才显示梦话
     if (petState.value === "sleeping" && isInSleepSchedule.value) {
       showCustomDialogue(getDreamTalk());
@@ -281,7 +281,7 @@ export function startScheduleMonitor(): void {
   updateScheduleState();
 
   // 每分钟检查一次
-  scheduleCheckTimerId = window.setInterval(() => {
+  scheduleCheckTimerId = setInterval(() => {
     updateScheduleState();
   }, 60000);
 }

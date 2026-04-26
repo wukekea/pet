@@ -107,23 +107,15 @@ function isMouseOnPet(x: number, y: number): boolean {
 
 // 根据移动方向更新宠物朝向
 function updateDirection(dx: number, dy: number) {
-  // 如果水平移动较大
   if (Math.abs(dx) > Math.abs(dy) * 2) {
+    // 水平移动为主
     petDirection.value = dx > 0 ? "right" : "left";
   } else if (Math.abs(dy) > Math.abs(dx) * 2) {
-    // 如果垂直移动较大
+    // 垂直移动为主
     petDirection.value = dy > 0 ? "front" : "back";
   } else {
-    // 斜向移动
-    if (dx > 0 && dy > 0) {
-      petDirection.value = "right";
-    } else if (dx > 0 && dy < 0) {
-      petDirection.value = "right";
-    } else if (dx < 0 && dy > 0) {
-      petDirection.value = "left";
-    } else {
-      petDirection.value = "left";
-    }
+    // 斜向移动：以水平方向决定朝向
+    petDirection.value = dx > 0 ? "right" : "left";
   }
 }
 
@@ -229,7 +221,7 @@ export async function changeState(newState: PetState, skipDialogue = false) {
         : IDLE_DURATION;
       justFinishedWork = false; // 重置标记
 
-      stateTimer.value = window.setTimeout(() => {
+      stateTimer.value = setTimeout(() => {
         if (!isDragging.value) {
           if (isInSleepSchedule.value) {
             // 睡眠作息期间，只能进入睡眠状态
@@ -302,7 +294,7 @@ export async function changeState(newState: PetState, skipDialogue = false) {
       if (isInSleepSchedule.value) {
         // 睡眠作息期间，不设置固定定时器，等待作息结束
         // 但设置一个检查定时器，每分钟检查是否应该醒来
-        stateTimer.value = window.setTimeout(() => {
+        stateTimer.value = setTimeout(() => {
           if (!isInSleepSchedule.value) {
             changeState("idle");
           } else {
@@ -311,7 +303,7 @@ export async function changeState(newState: PetState, skipDialogue = false) {
           }
         }, 60000); // 每分钟检查一次
       } else {
-        stateTimer.value = window.setTimeout(() => {
+        stateTimer.value = setTimeout(() => {
           onSleepEnd();
           changeState("idle");
         }, SLEEP_DURATION);
@@ -320,14 +312,14 @@ export async function changeState(newState: PetState, skipDialogue = false) {
 
     case "yawn":
       // 打哈欠后进入睡眠状态
-      stateTimer.value = window.setTimeout(() => {
+      stateTimer.value = setTimeout(() => {
         changeState("sleeping");
       }, YAWN_DURATION);
       break;
 
     case "sleepy":
       // 睡眼朦胧后，检查是否仍在睡眠作息
-      stateTimer.value = window.setTimeout(() => {
+      stateTimer.value = setTimeout(() => {
         if (isInSleepSchedule.value) {
           changeState("sleeping");
         } else {
@@ -338,7 +330,7 @@ export async function changeState(newState: PetState, skipDialogue = false) {
 
     case "stretch":
       // 伸懒腰后进入空闲状态
-      stateTimer.value = window.setTimeout(() => {
+      stateTimer.value = setTimeout(() => {
         onSleepEnd();
         changeState("idle");
       }, duration);
@@ -355,7 +347,7 @@ export async function changeState(newState: PetState, skipDialogue = false) {
         if (isUninterruptibleState(newState)) {
           workEndTime.value = Date.now() + duration;
         }
-        stateTimer.value = window.setTimeout(() => {
+        stateTimer.value = setTimeout(() => {
           // 打工状态结束时清除结束时间，设置休息间隔标记，发放工资
           if (isWorkState(petState.value)) {
             workEndTime.value = null;
@@ -565,7 +557,7 @@ function handleDragEnd() {
     if (remainingTime !== null && remainingTime > 0) {
       // 更新 workEndTime，使进度条正确同步
       workEndTime.value = Date.now() + remainingTime;
-      stateTimer.value = window.setTimeout(() => {
+      stateTimer.value = setTimeout(() => {
         // 打工状态结束时发放工资
         if (isWorkState(petState.value)) {
           justFinishedWork = true;
