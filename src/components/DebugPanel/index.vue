@@ -624,7 +624,8 @@ defineExpose({
   flex-direction: column;
   border-radius: 4px;
   overflow: hidden;
-  font-family: "Fira Code", "SF Mono", "Consolas", "Liberation Mono", monospace;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: #f2f5f9;
   border: 1px solid rgba(0, 160, 180, 0.2);
   box-shadow:
@@ -810,12 +811,12 @@ defineExpose({
 }
 
 .title-icon {
-  font-size: 12px;
-  opacity: 0.6;
+  font-size: 13px;
+  opacity: 0.85;
 }
 
 .title-text {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 2px;
   color: #008090;
@@ -828,7 +829,7 @@ defineExpose({
 .state-badge {
   flex: 1;
   text-align: center;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   color: #008090;
   background: rgba(0, 160, 180, 0.06);
@@ -856,7 +857,7 @@ defineExpose({
   color: #c0304a;
   border-radius: 2px;
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
   transition: all 0.15s ease;
 }
 
@@ -906,7 +907,6 @@ defineExpose({
   border-radius: 3px;
   cursor: pointer;
   transition: all 0.1s ease;
-  font-family: inherit;
   background: #e8edf3;
   box-shadow: 0 3px 4px rgba(0, 40, 60, 0.06);
   position: relative;
@@ -976,19 +976,19 @@ defineExpose({
 }
 
 .main-tab-icon {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1;
 }
 
 .main-tab-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  color: #4a6070;
+  color: #374151;
   letter-spacing: 0.5px;
 }
 
 .dark-mode .main-tab-label {
-  color: #5a7a90;
+  color: #cbd5e1;
 }
 
 /* ========================================
@@ -1013,8 +1013,8 @@ defineExpose({
 }
 
 .group-title {
-  font-size: 9px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 600;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: #008090;
@@ -1142,14 +1142,14 @@ defineExpose({
 }
 
 .btn-icon {
-  font-size: 13px;
-  color: #3a5565;
+  font-size: 14px;
+  color: #374151;
   line-height: 1;
   transition: transform 0.1s ease;
 }
 
 .dark-mode .btn-icon {
-  color: #6a90a8;
+  color: #e2e8f0;
 }
 
 .action-btn:hover .btn-icon {
@@ -1157,15 +1157,375 @@ defineExpose({
 }
 
 .btn-label {
-  font-size: 9px;
-  font-weight: 500;
-  color: #4a6070;
+  font-size: 10px;
+  font-weight: 600;
+  color: #374151;
   letter-spacing: 0.3px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .dark-mode .btn-label {
-  color: #5a7a90;
+  color: #cbd5e1;
+}
+
+/* ========================================
+   分组独立配色 - 每组自己的色彩标识
+   ======================================== */
+
+/* 浅色模式变量 */
+.state-tab > .action-group:nth-child(1) {
+  --gt: #008090;
+  --gl: rgba(0, 160, 180, 0.15);
+  --gi: #374151;
+  --gk: #374151;
+  --gb: rgba(0, 160, 180, 0.1);
+  --gbb: rgba(0, 160, 180, 0.12);
+  --ghb: rgba(0, 160, 180, 0.35);
+  --gbs: rgba(0, 160, 180, 0.06);
+  --gbg: #dff0f2;
+  --gbh: #d0e8ec;
+  --gab: #00a0a8;
+  --gae: #00c8d0;
+  --gad: #008088;
+  --gai: white;
+  --gak: white;
+}
+.state-tab > .action-group:nth-child(2) {
+  --gt: #c03060;
+  --gl: rgba(200, 50, 100, 0.15);
+  --gi: #374151;
+  --gk: #374151;
+  --gb: rgba(200, 50, 100, 0.1);
+  --gbb: rgba(200, 50, 100, 0.12);
+  --ghb: rgba(200, 50, 100, 0.35);
+  --gbs: rgba(200, 50, 100, 0.06);
+  --gbg: #f2dfe6;
+  --gbh: #ecd5e0;
+  --gab: #d04070;
+  --gae: #e85090;
+  --gad: #b03060;
+  --gai: white;
+  --gak: white;
+}
+.state-tab > .action-group:nth-child(3) {
+  --gt: #7040c0;
+  --gl: rgba(112, 64, 192, 0.15);
+  --gi: #374151;
+  --gk: #374151;
+  --gb: rgba(112, 64, 192, 0.1);
+  --gbb: rgba(112, 64, 192, 0.12);
+  --ghb: rgba(112, 64, 192, 0.35);
+  --gbs: rgba(112, 64, 192, 0.06);
+  --gbg: #e8e0f2;
+  --gbh: #dfd5ec;
+  --gab: #7c3aed;
+  --gae: #8b5cf6;
+  --gad: #6d28d9;
+  --gai: white;
+  --gak: white;
+}
+.state-tab > .action-group:nth-child(4) {
+  --gt: #a07000;
+  --gl: rgba(180, 120, 0, 0.15);
+  --gi: #374151;
+  --gk: #374151;
+  --gb: rgba(180, 120, 0, 0.1);
+  --gbb: rgba(180, 120, 0, 0.12);
+  --ghb: rgba(180, 120, 0, 0.35);
+  --gbs: rgba(180, 120, 0, 0.06);
+  --gbg: #f2ead8;
+  --gbh: #ece2c8;
+  --gab: #c08800;
+  --gae: #d09800;
+  --gad: #a07000;
+  --gai: white;
+  --gak: white;
+}
+.state-tab > .action-group:nth-child(5) {
+  --gt: #4050c0;
+  --gl: rgba(64, 80, 192, 0.15);
+  --gi: #374151;
+  --gk: #374151;
+  --gb: rgba(64, 80, 192, 0.1);
+  --gbb: rgba(64, 80, 192, 0.12);
+  --ghb: rgba(64, 80, 192, 0.35);
+  --gbs: rgba(64, 80, 192, 0.06);
+  --gbg: #e0e2f2;
+  --gbh: #d5d8ec;
+  --gab: #5060d0;
+  --gae: #6070e0;
+  --gad: #4050b0;
+  --gai: white;
+  --gak: white;
+}
+.state-tab > .action-group:nth-child(6) {
+  --gt: #008860;
+  --gl: rgba(0, 136, 96, 0.15);
+  --gi: #374151;
+  --gk: #374151;
+  --gb: rgba(0, 136, 96, 0.1);
+  --gbb: rgba(0, 136, 96, 0.12);
+  --ghb: rgba(0, 136, 96, 0.35);
+  --gbs: rgba(0, 136, 96, 0.06);
+  --gbg: #dff2ea;
+  --gbh: #d2ecdf;
+  --gab: #00a870;
+  --gae: #00c080;
+  --gad: #009060;
+  --gai: white;
+  --gak: white;
+}
+
+/* 深色模式变量 */
+.dark-mode .state-tab > .action-group:nth-child(1) {
+  --gt: #00d8e8;
+  --gl: rgba(0, 240, 255, 0.12);
+  --gi: #e2e8f0;
+  --gk: #cbd5e1;
+  --gb: rgba(0, 240, 255, 0.06);
+  --gbb: rgba(0, 240, 255, 0.1);
+  --ghb: rgba(0, 240, 255, 0.35);
+  --gbs: rgba(0, 240, 255, 0.04);
+  --gbg: #0f1a28;
+  --gbh: #142030;
+  --gab: rgba(0, 240, 255, 0.08);
+  --gae: #00f0ff;
+  --gad: #00c8d8;
+  --gai: #00f0ff;
+  --gak: #c0f0ff;
+}
+.dark-mode .state-tab > .action-group:nth-child(2) {
+  --gt: #ff5090;
+  --gl: rgba(255, 80, 144, 0.12);
+  --gi: #e2e8f0;
+  --gk: #cbd5e1;
+  --gb: rgba(255, 45, 120, 0.06);
+  --gbb: rgba(255, 45, 120, 0.1);
+  --ghb: rgba(255, 45, 120, 0.35);
+  --gbs: rgba(255, 45, 120, 0.04);
+  --gbg: #1a0f18;
+  --gbh: #221420;
+  --gab: rgba(255, 45, 120, 0.08);
+  --gae: #ff2d78;
+  --gad: #d02060;
+  --gai: #ff2d78;
+  --gak: #ffc0d8;
+}
+.dark-mode .state-tab > .action-group:nth-child(3) {
+  --gt: #a78bfa;
+  --gl: rgba(167, 139, 250, 0.12);
+  --gi: #e2e8f0;
+  --gk: #cbd5e1;
+  --gb: rgba(139, 92, 246, 0.06);
+  --gbb: rgba(139, 92, 246, 0.1);
+  --ghb: rgba(139, 92, 246, 0.35);
+  --gbs: rgba(139, 92, 246, 0.04);
+  --gbg: #14102a;
+  --gbh: #1a1535;
+  --gab: rgba(139, 92, 246, 0.08);
+  --gae: #8b5cf6;
+  --gad: #7c3aed;
+  --gai: #8b5cf6;
+  --gak: #e0d0ff;
+}
+.dark-mode .state-tab > .action-group:nth-child(4) {
+  --gt: #ffb800;
+  --gl: rgba(255, 184, 0, 0.12);
+  --gi: #e2e8f0;
+  --gk: #cbd5e1;
+  --gb: rgba(255, 184, 0, 0.06);
+  --gbb: rgba(255, 184, 0, 0.1);
+  --ghb: rgba(255, 184, 0, 0.35);
+  --gbs: rgba(255, 184, 0, 0.04);
+  --gbg: #1a1608;
+  --gbh: #221e10;
+  --gab: rgba(255, 184, 0, 0.08);
+  --gae: #ffb800;
+  --gad: #d89800;
+  --gai: #ffb800;
+  --gak: #ffe8a0;
+}
+.dark-mode .state-tab > .action-group:nth-child(5) {
+  --gt: #818cf8;
+  --gl: rgba(129, 140, 248, 0.12);
+  --gi: #e2e8f0;
+  --gk: #cbd5e1;
+  --gb: rgba(99, 102, 241, 0.06);
+  --gbb: rgba(99, 102, 241, 0.1);
+  --ghb: rgba(99, 102, 241, 0.35);
+  --gbs: rgba(99, 102, 241, 0.04);
+  --gbg: #10102a;
+  --gbh: #161635;
+  --gab: rgba(99, 102, 241, 0.08);
+  --gae: #6366f1;
+  --gad: #4f46e5;
+  --gai: #6366f1;
+  --gak: #d0d0ff;
+}
+.dark-mode .state-tab > .action-group:nth-child(6) {
+  --gt: #34d399;
+  --gl: rgba(52, 211, 153, 0.12);
+  --gi: #e2e8f0;
+  --gk: #cbd5e1;
+  --gb: rgba(16, 185, 129, 0.06);
+  --gbb: rgba(16, 185, 129, 0.1);
+  --ghb: rgba(16, 185, 129, 0.35);
+  --gbs: rgba(16, 185, 129, 0.04);
+  --gbg: #0f1a18;
+  --gbh: #142220;
+  --gab: rgba(16, 185, 129, 0.08);
+  --gae: #10b981;
+  --gad: #059669;
+  --gai: #10b981;
+  --gak: #c0ffe0;
+}
+
+/* 变量引用 - 覆盖基色 */
+.state-tab > .action-group .group-title {
+  color: var(--gt);
+}
+.state-tab > .action-group .group-title::after {
+  background: linear-gradient(90deg, var(--gl), transparent);
+}
+.state-tab > .action-group .action-btn {
+  border-color: var(--gb);
+  border-bottom-color: var(--gbb);
+  background: var(--gbg);
+  box-shadow: 0 2px 3px var(--gbs);
+}
+.state-tab > .action-group .action-btn:hover {
+  border-bottom-color: var(--ghb);
+  background: var(--gbh);
+}
+.state-tab > .action-group .action-btn.active {
+  background: var(--gab);
+  border-color: var(--gae);
+  border-bottom-color: var(--gad);
+  box-shadow:
+    0 2px 3px rgba(0, 0, 0, 0.08),
+    0 0 10px var(--gbs);
+}
+.state-tab > .action-group .btn-icon {
+  color: var(--gi);
+}
+.state-tab > .action-group .btn-label {
+  color: var(--gk);
+}
+.state-tab > .action-group .action-btn.active .btn-icon {
+  color: var(--gai);
+}
+.state-tab > .action-group .action-btn.active .btn-label {
+  color: var(--gak);
+}
+
+/* 环境Tab分组配色 */
+.env-tab > .action-group:nth-child(2) {
+  --gt: #0088c0;
+  --gl: rgba(0, 136, 192, 0.15);
+  --gi: #374151;
+  --gk: #374151;
+  --gb: rgba(0, 136, 192, 0.1);
+  --gbb: rgba(0, 136, 192, 0.12);
+  --ghb: rgba(0, 136, 192, 0.35);
+  --gbs: rgba(0, 136, 192, 0.06);
+  --gbg: #dff0f8;
+  --gbh: #d0e8f2;
+  --gab: #0098d0;
+  --gae: #00a8e0;
+  --gad: #0080b0;
+  --gai: white;
+  --gak: white;
+}
+.env-tab > .action-group:nth-child(3) {
+  --gt: #8848b0;
+  --gl: rgba(136, 72, 176, 0.15);
+  --gi: #374151;
+  --gk: #374151;
+  --gb: rgba(136, 72, 176, 0.1);
+  --gbb: rgba(136, 72, 176, 0.12);
+  --ghb: rgba(136, 72, 176, 0.35);
+  --gbs: rgba(136, 72, 176, 0.06);
+  --gbg: #e8e0f2;
+  --gbh: #dfd5ec;
+  --gab: #9858c0;
+  --gae: #a868d0;
+  --gad: #7840a0;
+  --gai: white;
+  --gak: white;
+}
+.dark-mode .env-tab > .action-group:nth-child(2) {
+  --gt: #38bdf8;
+  --gl: rgba(56, 189, 248, 0.12);
+  --gi: #e2e8f0;
+  --gk: #cbd5e1;
+  --gb: rgba(56, 189, 248, 0.06);
+  --gbb: rgba(56, 189, 248, 0.1);
+  --ghb: rgba(56, 189, 248, 0.35);
+  --gbs: rgba(56, 189, 248, 0.04);
+  --gbg: #0f1828;
+  --gbh: #142030;
+  --gab: rgba(56, 189, 248, 0.08);
+  --gae: #38bdf8;
+  --gad: #0ea5e9;
+  --gai: #38bdf8;
+  --gak: #c0e8ff;
+}
+.dark-mode .env-tab > .action-group:nth-child(3) {
+  --gt: #c084fc;
+  --gl: rgba(192, 132, 252, 0.12);
+  --gi: #e2e8f0;
+  --gk: #cbd5e1;
+  --gb: rgba(168, 85, 247, 0.06);
+  --gbb: rgba(168, 85, 247, 0.1);
+  --ghb: rgba(168, 85, 247, 0.35);
+  --gbs: rgba(168, 85, 247, 0.04);
+  --gbg: #14102a;
+  --gbh: #1a1535;
+  --gab: rgba(168, 85, 247, 0.08);
+  --gae: #a855f7;
+  --gad: #9333ea;
+  --gai: #a855f7;
+  --gak: #e8d0ff;
+}
+.env-tab > .action-group .group-title {
+  color: var(--gt, #008090);
+}
+.env-tab > .action-group .group-title::after {
+  background: linear-gradient(
+    90deg,
+    var(--gl, rgba(0, 160, 180, 0.15)),
+    transparent
+  );
+}
+.env-tab > .action-group .action-btn {
+  border-color: var(--gb, rgba(0, 160, 180, 0.1));
+  border-bottom-color: var(--gbb, rgba(0, 160, 180, 0.12));
+  background: var(--gbg, #e4e9f0);
+  box-shadow: 0 2px 3px var(--gbs, rgba(0, 30, 60, 0.06));
+}
+.env-tab > .action-group .action-btn:hover {
+  border-bottom-color: var(--ghb, rgba(0, 160, 180, 0.35));
+  background: var(--gbh, #d8e0ea);
+}
+.env-tab > .action-group .action-btn.active {
+  background: var(--gab, #00a0a8);
+  border-color: var(--gae, #00c8d0);
+  border-bottom-color: var(--gad, #008088);
+}
+.env-tab > .action-group .btn-icon {
+  color: var(--gi, #3a5565);
+}
+.env-tab > .action-group .btn-label {
+  color: var(--gk, #4a6070);
+}
+.env-tab > .action-group .action-btn.active .btn-icon {
+  color: var(--gai, white);
+}
+.env-tab > .action-group .action-btn.active .btn-label {
+  color: var(--gak, white);
 }
 
 /* ========================================
@@ -1222,7 +1582,6 @@ defineExpose({
   cursor: pointer;
   transition: all 0.1s ease;
   background: transparent;
-  font-family: inherit;
 }
 
 .debug-tab-btn:hover {
@@ -1245,19 +1604,19 @@ defineExpose({
 }
 
 .debug-tab-icon {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1;
 }
 
 .debug-tab-label {
-  font-size: 10px;
-  font-weight: 500;
-  color: #4a6070;
+  font-size: 11px;
+  font-weight: 600;
+  color: #374151;
   letter-spacing: 0.3px;
 }
 
 .dark-mode .debug-tab-label {
-  color: #5a7a90;
+  color: #cbd5e1;
 }
 
 .debug-tab-btn.active .debug-tab-label {
@@ -1292,7 +1651,6 @@ defineExpose({
   position: relative;
   background: #e4e9f0;
   box-shadow: 0 2px 3px rgba(0, 30, 60, 0.06);
-  font-family: inherit;
   top: 0;
 }
 
@@ -1396,7 +1754,7 @@ defineExpose({
 }
 
 .debug-item-icon {
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1;
   transition: transform 0.1s ease;
 }
@@ -1406,14 +1764,18 @@ defineExpose({
 }
 
 .debug-item-name {
-  font-size: 9px;
-  font-weight: 500;
-  color: #4a6070;
+  font-size: 10px;
+  font-weight: 600;
+  color: #374151;
   letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .dark-mode .debug-item-name {
-  color: #5a7a90;
+  color: #cbd5e1;
 }
 
 /* 装饰 ON 徽章 */
@@ -1421,7 +1783,7 @@ defineExpose({
   position: absolute;
   top: 2px;
   right: 2px;
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 700;
   color: #00a0a8;
   background: rgba(0, 160, 180, 0.1);
@@ -1488,18 +1850,18 @@ defineExpose({
 }
 
 .weather-key {
-  font-size: 10px;
-  color: #5a7080;
+  font-size: 11px;
+  color: #374151;
   letter-spacing: 0.3px;
 }
 
 .dark-mode .weather-key {
-  color: #4a6578;
+  color: #cbd5e1;
 }
 
 .weather-val {
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   color: #008060;
 }
 
@@ -1550,7 +1912,6 @@ defineExpose({
   transition: all 0.08s ease;
   background: #eae5de;
   box-shadow: 0 2px 3px rgba(0, 30, 60, 0.05);
-  font-family: inherit;
   top: 0;
   position: relative;
 }
@@ -1625,14 +1986,14 @@ defineExpose({
 }
 
 .theme-label {
-  font-size: 9px;
-  font-weight: 500;
-  color: #907030;
+  font-size: 10px;
+  font-weight: 600;
+  color: #374151;
   letter-spacing: 0.3px;
 }
 
 .dark-mode .theme-label {
-  color: #8a7040;
+  color: #cbd5e1;
 }
 
 /* ========================================
@@ -1655,13 +2016,13 @@ defineExpose({
 }
 
 .hint {
-  font-size: 8px;
-  color: #7a8a98;
+  font-size: 9px;
+  color: #6b7280;
   letter-spacing: 0.5px;
 }
 
 .dark-mode .hint {
-  color: #2a4050;
+  color: #94a3b8;
 }
 
 /* ========================================
