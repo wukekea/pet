@@ -6,7 +6,6 @@ import {
   isShopModalOpen,
   FOOD_ICONS,
   BATH_ICONS,
-  DECORATION_ICONS,
   type FoodType,
   type BathType,
   type DecorationType,
@@ -22,6 +21,7 @@ import {
   BATH_CONFIGS,
   DECORATION_CONFIGS,
 } from "../composables/attributeStorage";
+import DecoIcon from "../shapes/decorations/DecoIcon.vue";
 
 defineProps<{
   visible: boolean;
@@ -64,6 +64,7 @@ const currentItems = computed(() => {
       name: f.name,
       cost: f.cost,
       icon: FOOD_ICONS[f.type],
+      decoType: undefined as DecorationType | undefined,
       canAfford: money >= f.cost,
       effectLabel: `+${f.satietyRestore}饱腹`,
       category: "food" as const,
@@ -79,6 +80,7 @@ const currentItems = computed(() => {
       name: b.name,
       cost: b.cost,
       icon: BATH_ICONS[b.type],
+      decoType: undefined as DecorationType | undefined,
       canAfford: money >= b.cost,
       effectLabel: `+${b.cleanlinessRestore}清洁`,
       category: "bath" as const,
@@ -92,7 +94,8 @@ const currentItems = computed(() => {
     type: d.type as string,
     name: d.name,
     cost: d.cost,
-    icon: DECORATION_ICONS[d.type],
+    icon: "",
+    decoType: d.type as DecorationType,
     canAfford:
       money >= d.cost && !owned.includes(d.type) && !(decoInv[d.type] > 0),
     effectLabel: d.description,
@@ -306,7 +309,10 @@ const close = () => {
                 :disabled="!item.canAfford"
                 @click="handleBuy(item)"
               >
-                <span class="item-icon">{{ item.icon }}</span>
+                <span class="item-icon">
+                  <DecoIcon v-if="item.decoType" :type="item.decoType" />
+                  <template v-else>{{ item.icon }}</template>
+                </span>
                 <span class="item-name">{{ item.name }}</span>
                 <div class="item-info">
                   <template v-if="item.owned">

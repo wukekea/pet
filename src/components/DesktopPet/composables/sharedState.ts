@@ -108,7 +108,7 @@ export const DECORATION_ICONS: Record<DecorationType, string> = {
   sunglasses: "🕶️",
   medal: "🏅",
   crown: "👑",
-  magicWand: "🪄",
+  magicWand: "✨",
 };
 
 // 宠物形态（从 petShapeStorage 导入）

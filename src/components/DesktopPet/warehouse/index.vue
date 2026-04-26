@@ -6,7 +6,6 @@ import {
   isWarehouseModalOpen,
   FOOD_ICONS,
   BATH_ICONS,
-  DECORATION_ICONS,
   type FoodType,
   type BathType,
   type DecorationType,
@@ -24,6 +23,7 @@ import {
   BATH_CONFIGS,
   DECORATION_CONFIGS,
 } from "../composables/attributeStorage";
+import DecoIcon from "../shapes/decorations/DecoIcon.vue";
 
 defineProps<{
   visible: boolean;
@@ -68,6 +68,7 @@ const currentItems = computed(() => {
         type: f.type as string,
         name: f.name,
         icon: FOOD_ICONS[f.type],
+        decoType: undefined as DecorationType | undefined,
         count: foodInv[f.type] || 0,
         effectLabel: `+${f.satietyRestore}饱腹`,
         category: "food" as const,
@@ -81,6 +82,7 @@ const currentItems = computed(() => {
         type: b.type as string,
         name: b.name,
         icon: BATH_ICONS[b.type],
+        decoType: undefined as DecorationType | undefined,
         count: bathInv[b.type] || 0,
         effectLabel: `+${b.cleanlinessRestore}清洁`,
         category: "bath" as const,
@@ -92,7 +94,8 @@ const currentItems = computed(() => {
     .map((d) => ({
       type: d.type as string,
       name: d.name,
-      icon: DECORATION_ICONS[d.type],
+      icon: "",
+      decoType: d.type as DecorationType,
       count: decoInv[d.type] || 0,
       effectLabel: d.description,
       category: "decoration" as const,
@@ -364,7 +367,10 @@ const close = () => {
                   "
                   @click="handleItemClick(item)"
                 >
-                  <span class="item-icon">{{ item.icon }}</span>
+                  <span class="item-icon">
+                    <DecoIcon v-if="item.decoType" :type="item.decoType" />
+                    <template v-else>{{ item.icon }}</template>
+                  </span>
                   <span class="item-name">{{ item.name }}</span>
                   <template v-if="'alreadyOwned' in item && item.alreadyOwned">
                     <span class="item-owned-badge">{{

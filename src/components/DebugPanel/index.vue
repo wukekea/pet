@@ -20,7 +20,6 @@ import {
   type DecorationType,
   FOOD_ICONS,
   BATH_ICONS,
-  DECORATION_ICONS,
 } from "../DesktopPet/composables/sharedState";
 import {
   isDark,
@@ -33,6 +32,7 @@ import {
   setWeather,
 } from "../DesktopPet/composables/weatherState";
 import { weatherStatus } from "../DesktopPet/composables/qweatherService";
+import DecoIcon from "../DesktopPet/shapes/decorations/DecoIcon.vue";
 import type { PetState } from "../DesktopPet/types";
 import type { WeatherType } from "../DesktopPet/types";
 import { setPassthrough } from "../DesktopPet/composables/passthrough";
@@ -502,9 +502,9 @@ defineExpose({
               @click="debugToggleDecoration(item.type)"
               :title="item.name"
             >
-              <span class="debug-item-icon">{{
-                DECORATION_ICONS[item.type]
-              }}</span>
+              <span class="debug-item-icon">
+                <DecoIcon :type="item.type as DecorationType" />
+              </span>
               <span class="debug-item-name">{{ item.name }}</span>
               <span
                 v-if="isDecorationEquipped(item.type)"

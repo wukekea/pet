@@ -4,7 +4,6 @@ import { isDark } from "../composables/theme";
 import { setPassthrough } from "../composables/passthrough";
 import {
   isAttributeModalOpen,
-  DECORATION_ICONS,
   type DecorationType,
 } from "../composables/sharedState";
 import {
@@ -27,6 +26,7 @@ import {
   SLOT_NAMES,
   MAX_EQUIPPED_DECORATIONS,
 } from "../composables/attributeStorage";
+import DecoIcon from "../shapes/decorations/DecoIcon.vue";
 import { HEALTH_CAP, MAX_LEVEL } from "../constants";
 import type { PetState } from "../types";
 
@@ -198,7 +198,7 @@ const ownedDecoList = computed(() => {
       return {
         type,
         name: config.name,
-        icon: DECORATION_ICONS[type as DecorationType],
+        icon: "",
         isEquipped: equipped.includes(type),
         slot: DECORATION_SLOTS[type as DecorationType],
         slotName: SLOT_NAMES[DECORATION_SLOTS[type as DecorationType]],
@@ -446,7 +446,9 @@ const close = () => {
                     :class="{ equipped: item!.isEquipped }"
                     @click="handleDecoClick(item!.type)"
                   >
-                    <span class="deco-item-icon">{{ item!.icon }}</span>
+                    <span class="deco-item-icon"
+                      ><DecoIcon :type="item!.type as DecorationType"
+                    /></span>
                     <span class="deco-item-name">{{ item!.name }}</span>
                     <span
                       class="deco-item-badge"
