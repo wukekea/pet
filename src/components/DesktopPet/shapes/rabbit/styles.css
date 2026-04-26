@@ -463,6 +463,94 @@
 }
 
 /* ========================================
+   兔子打工状态覆盖 - 恢复三瓣嘴
+   ======================================== */
+
+/* 搬砖 - 略微紧闭的三瓣嘴 */
+.pet-shape-rabbit.pet-brickCarrying .mouth-smile {
+  width: 2px;
+  height: 4px;
+  border: none;
+  border-radius: 0;
+  animation: none;
+}
+
+.pet-shape-rabbit.pet-brickCarrying .mouth-smile::before {
+  left: -6px;
+  width: 8px;
+  height: 5px;
+}
+
+.pet-shape-rabbit.pet-brickCarrying .mouth-smile::after {
+  right: -6px;
+  width: 8px;
+  height: 5px;
+}
+
+/* 发传单 - 热情的三瓣嘴，轻微脉动 */
+.pet-shape-rabbit.pet-flyerDistributing .mouth-smile {
+  width: 2px;
+  height: 5px;
+  border: none;
+  border-radius: 0;
+  animation: rabbit-flyer-smile 0.8s ease-in-out infinite;
+}
+
+.pet-shape-rabbit.pet-flyerDistributing .mouth-smile::before {
+  left: -7px;
+  width: 9px;
+  height: 6px;
+}
+
+.pet-shape-rabbit.pet-flyerDistributing .mouth-smile::after {
+  right: -7px;
+  width: 9px;
+  height: 6px;
+}
+
+@keyframes rabbit-flyer-smile {
+  0%,
+  100% {
+    transform: translateY(2px) scaleY(1);
+  }
+  50% {
+    transform: translateY(2px) scaleY(1.15);
+  }
+}
+
+/* 写代码 - 微微嘟嘴的三瓣嘴 */
+.pet-shape-rabbit.pet-programmer .mouth-smile {
+  width: 2px;
+  height: 3px;
+  border: none;
+  border-radius: 0;
+  animation: rabbit-programmer-mouth 4s ease-in-out infinite;
+}
+
+.pet-shape-rabbit.pet-programmer .mouth-smile::before {
+  left: -5px;
+  width: 7px;
+  height: 4px;
+}
+
+.pet-shape-rabbit.pet-programmer .mouth-smile::after {
+  right: -5px;
+  width: 7px;
+  height: 4px;
+}
+
+@keyframes rabbit-programmer-mouth {
+  0%,
+  90%,
+  100% {
+    transform: translateY(2px) scale(1);
+  }
+  95% {
+    transform: translateY(2px) scale(1.1);
+  }
+}
+
+/* ========================================
    兔子睡眼朦胧/睡眠行走状态覆盖
    ======================================== */
 
@@ -558,4 +646,3 @@
   width: 11px;
   height: 9px;
 }
-
