@@ -52,7 +52,7 @@
 
 /* ====== 花环 - 中世纪花冠（环形正视视角）====== */
 .deco-wreath {
-  top: -5px;
+  top: 1px;
   left: 50%;
   transform: translateX(-50%);
   width: 48px;
@@ -399,7 +399,7 @@
 }
 
 .pet-shape-rabbit .deco-wreath {
-  top: 1px;
+  top: 5px;
 }
 
 .pet-shape-rabbit .deco-topHat {
@@ -411,6 +411,10 @@
 }
 
 /* ====== 形态适配 - 熊猫 ====== */
+.pet-shape-panda .deco-wreath {
+  top: 3px;
+}
+
 .pet-shape-panda .deco-bow {
   top: auto;
   right: auto;
@@ -422,6 +426,10 @@
 }
 
 /* ====== 形态适配 - 猫咪 ====== */
+.pet-shape-cat .deco-wreath {
+  top: 4px;
+}
+
 .pet-shape-cat .deco-bow {
   top: auto;
   right: auto;
@@ -433,6 +441,10 @@
 }
 
 /* ====== 形态适配 - 云朵 ====== */
+.pet-shape-cloud .deco-wreath {
+  top: 4px;
+}
+
 .pet-shape-cloud .deco-bow {
   top: auto;
   right: auto;
