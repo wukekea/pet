@@ -33,6 +33,7 @@ import { setPassthrough } from "./composables/passthrough";
 import { initPetShape } from "./composables/petShapeStorage";
 import { getShapeConfig, getShapeComponent } from "./shapes";
 import { STATE_EFFECTS, WORK_STATE_WITH_PROGRESS } from "./effectsMap";
+import { useAttributeRef } from "./composables/attributes";
 import WeatherBackground from "./WeatherBackground.vue";
 import WorkProgressBar from "./effects/WorkProgressBar.vue";
 import Footprints from "./footprints/index.vue";
@@ -44,6 +45,7 @@ import AttributeModal from "./attributes/index.vue";
 import ShopModal from "./shop/index.vue";
 import { FOOD_CONFIGS } from "./composables/attributeStorage";
 import "./shapes/base.css";
+import "./shapes/decorations.css";
 import "./shapes/cloud/styles.css";
 import "./shapes/cat/styles.css";
 import "./shapes/panda/styles.css";
@@ -98,6 +100,12 @@ const petColors = computed(() => {
 // 当前形态组件
 const currentShapeComponent = computed(() =>
   getShapeComponent(currentPetShape.value),
+);
+
+// 装备的装饰
+const attrData = useAttributeRef();
+const equippedDecorations = computed(
+  () => attrData.value.equippedDecorations || [],
 );
 
 // 对话气泡样式变体
@@ -288,6 +296,7 @@ const openShopFromAttributes = () => {
         :is="currentShapeComponent"
         :pet-state="petState"
         :pet-direction="petDirection"
+        :equipped-decorations="equippedDecorations"
       />
 
       <!-- 状态效果组件 -->

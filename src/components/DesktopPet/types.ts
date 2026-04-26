@@ -97,6 +97,7 @@ export interface AttributeData {
   dailyAllowanceClaimed: string; // 上次领取救济金日期（YYYY-MM-DD）
   lastUpdateTimestamp: number; // 上次更新时间戳（毫秒）
   ownedDecorations: string[]; // 已拥有的装饰列表
+  equippedDecorations: string[]; // 当前装备的装饰列表
 }
 
 // 统计数据接口

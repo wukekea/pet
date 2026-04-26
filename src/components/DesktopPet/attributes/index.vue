@@ -2,7 +2,11 @@
 import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
 import { setPassthrough } from "../composables/passthrough";
-import { isAttributeModalOpen } from "../composables/sharedState";
+import {
+  isAttributeModalOpen,
+  DECORATION_ICONS,
+  type DecorationType,
+} from "../composables/sharedState";
 import {
   useAttributeRef,
   getCurrentAttributeCap,
@@ -10,11 +14,18 @@ import {
   getDailyInteractionProgress,
   startWork,
   canWork,
+  equipDecoration,
+  unequipDecoration,
+  getDecorationSlotConflict,
 } from "../composables/attributes";
 import {
   WORK_INCOME,
   WORK_STAMINA_REQUIRED,
   getExpRequiredForLevel,
+  DECORATION_CONFIGS,
+  DECORATION_SLOTS,
+  SLOT_NAMES,
+  MAX_EQUIPPED_DECORATIONS,
 } from "../composables/attributeStorage";
 import { HEALTH_CAP, MAX_LEVEL } from "../constants";
 import type { PetState } from "../types";
@@ -174,6 +185,67 @@ const handleWork = (workState: PetState) => {
   if (startWork(workState)) {
     close();
   }
+};
+
+// 装饰列表（已拥有的）
+const ownedDecoList = computed(() => {
+  const owned = attrData.value.ownedDecorations || [];
+  const equipped = attrData.value.equippedDecorations || [];
+  return owned
+    .map((type) => {
+      const config = DECORATION_CONFIGS[type as DecorationType];
+      if (!config) return null;
+      return {
+        type,
+        name: config.name,
+        icon: DECORATION_ICONS[type as DecorationType],
+        isEquipped: equipped.includes(type),
+        slot: DECORATION_SLOTS[type as DecorationType],
+        slotName: SLOT_NAMES[DECORATION_SLOTS[type as DecorationType]],
+      };
+    })
+    .filter(Boolean);
+});
+
+// 装饰提示
+const decoToast = ref("");
+const decoToastVisible = ref(false);
+let decoToastTimer: ReturnType<typeof setTimeout> | null = null;
+
+function showDecoToast(msg: string) {
+  decoToast.value = msg;
+  decoToastVisible.value = true;
+  if (decoToastTimer) clearTimeout(decoToastTimer);
+  decoToastTimer = setTimeout(() => {
+    decoToastVisible.value = false;
+  }, 2000);
+}
+
+// 装备/卸下装饰
+const handleDecoClick = (type: string) => {
+  const dType = type as DecorationType;
+  const equipped = attrData.value.equippedDecorations || [];
+
+  if (equipped.includes(type)) {
+    unequipDecoration(dType);
+    return;
+  }
+
+  // 检查槽位冲突
+  const conflict = getDecorationSlotConflict(dType);
+  if (conflict) {
+    const slotName = SLOT_NAMES[DECORATION_SLOTS[dType]];
+    showDecoToast(`需先卸下${conflict}(${slotName}位)`);
+    return;
+  }
+
+  // 检查数量上限
+  if (equipped.length >= MAX_EQUIPPED_DECORATIONS) {
+    showDecoToast("最多同时装备3个装饰");
+    return;
+  }
+
+  equipDecoration(dType);
 };
 
 // CSS 变量
@@ -349,6 +421,47 @@ const close = () => {
               </div>
             </div>
 
+            <!-- 我的装饰 -->
+            <div class="deco-section">
+              <div class="deco-header">
+                <span class="deco-title">💍 我的装饰</span>
+                <button class="deco-shop-link" @click="handleOpenShop">
+                  去商店 ›
+                </button>
+              </div>
+
+              <!-- 提示 -->
+              <Transition name="toast-slide">
+                <div v-if="decoToastVisible" class="deco-toast">
+                  <span>{{ decoToast }}</span>
+                </div>
+              </Transition>
+
+              <template v-if="ownedDecoList.length > 0">
+                <div class="deco-grid">
+                  <button
+                    v-for="item in ownedDecoList"
+                    :key="item!.type"
+                    class="deco-item"
+                    :class="{ equipped: item!.isEquipped }"
+                    @click="handleDecoClick(item!.type)"
+                  >
+                    <span class="deco-item-icon">{{ item!.icon }}</span>
+                    <span class="deco-item-name">{{ item!.name }}</span>
+                    <span
+                      class="deco-item-badge"
+                      :class="
+                        item!.isEquipped ? 'badge-equipped' : 'badge-equip'
+                      "
+                    >
+                      {{ item!.isEquipped ? "已装备" : item!.slotName }}
+                    </span>
+                  </button>
+                </div>
+              </template>
+              <div v-else class="deco-empty">还没有装饰，去商店看看吧</div>
+            </div>
+
             <!-- 操作区域 -->
             <div class="actions-section">
               <!-- 去商店 -->
@@ -446,7 +559,7 @@ const close = () => {
 }
 
 .attr-modal {
-  width: 320px;
+  width: 360px;
   max-width: 90vw;
   max-height: 80vh;
   border-radius: 24px;
@@ -927,6 +1040,185 @@ const close = () => {
 
 .dark-mode .tooltip-title-purple {
   color: #a78bfa;
+}
+
+/* 我的装饰 */
+.deco-section {
+  margin-bottom: 16px;
+}
+
+.deco-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.deco-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--section-title-color);
+}
+
+.deco-shop-link {
+  font-size: 12px;
+  color: #a855f7;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.deco-shop-link:hover {
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.deco-toast {
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #7c3aed;
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+  text-align: center;
+}
+
+.toast-slide-enter-active {
+  animation: toast-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toast-slide-leave-active {
+  animation: toast-out 0.2s ease-in;
+}
+
+@keyframes toast-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.95);
+  }
+}
+
+.deco-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.deco-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px 6px;
+  border: 1px solid rgba(168, 85, 247, 0.12);
+  border-radius: 10px;
+  background: rgba(168, 85, 247, 0.04);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.deco-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(168, 85, 247, 0.04) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+  border-radius: 14px 14px 0 0;
+}
+
+.deco-item.equipped {
+  border-color: rgba(168, 85, 247, 0.35);
+  background: rgba(168, 85, 247, 0.1);
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.1);
+}
+
+.deco-item.equipped::before {
+  background: linear-gradient(
+    180deg,
+    rgba(168, 85, 247, 0.08) 0%,
+    transparent 100%
+  );
+}
+
+.deco-item:hover:not(.equipped) {
+  border-color: rgba(168, 85, 247, 0.25);
+  background: rgba(168, 85, 247, 0.07);
+  transform: translateY(-2px);
+}
+
+.deco-item:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.deco-item-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.deco-item:hover .deco-item-icon {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+.deco-item-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--attr-value-color);
+  line-height: 1;
+}
+
+.deco-item-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 6px;
+  line-height: 1.3;
+}
+
+.badge-equipped {
+  color: #7c3aed;
+  background: rgba(168, 85, 247, 0.12);
+}
+
+.badge-equip {
+  color: var(--attr-label-color);
+  background: rgba(107, 114, 128, 0.08);
+}
+
+.deco-empty {
+  text-align: center;
+  font-size: 12px;
+  color: var(--attr-label-color);
+  padding: 16px 0;
+  opacity: 0.7;
 }
 
 /* 金币 */

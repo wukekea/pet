@@ -55,6 +55,7 @@ function showToast(msg: string) {
 const currentItems = computed(() => {
   const money = attrData.value.money;
   const owned = attrData.value.ownedDecorations || [];
+  const equipped = attrData.value.equippedDecorations || [];
 
   if (activeTab.value === "food") {
     return Object.values(FOOD_CONFIGS).map((f) => ({
@@ -66,6 +67,7 @@ const currentItems = computed(() => {
       effectLabel: `+${f.satietyRestore}饱腹`,
       category: "food" as const,
       owned: false,
+      equipped: false,
     }));
   }
 
@@ -79,6 +81,7 @@ const currentItems = computed(() => {
       effectLabel: `+${b.cleanlinessRestore}清洁`,
       category: "bath" as const,
       owned: false,
+      equipped: false,
     }));
   }
 
@@ -91,6 +94,7 @@ const currentItems = computed(() => {
     effectLabel: d.description,
     category: "decoration" as const,
     owned: owned.includes(d.type),
+    equipped: equipped.includes(d.type),
   }));
 });
 
@@ -299,7 +303,9 @@ const close = () => {
                 <span class="item-name">{{ item.name }}</span>
                 <div class="item-info">
                   <template v-if="item.owned">
-                    <span class="item-owned-badge">已拥有</span>
+                    <span class="item-owned-badge">{{
+                      item.equipped ? "装备中" : "已拥有"
+                    }}</span>
                   </template>
                   <template v-else>
                     <span
@@ -759,15 +765,23 @@ const close = () => {
   background: transparent;
 }
 
-/* 已拥有徽章 */
+/* 已拥有/装备中 徽章 */
 .item-owned-badge {
   font-size: 9px;
   font-weight: 700;
-  color: var(--deco-owned-color);
   padding: 2px 8px;
-  background: rgba(168, 85, 247, 0.1);
   border-radius: 8px;
   letter-spacing: 0.5px;
+}
+
+.item-card.owned .item-owned-badge {
+  color: var(--deco-owned-color);
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.item-card.owned:not([disabled]) .item-owned-badge {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
 }
 
 /* 弹窗动画 */

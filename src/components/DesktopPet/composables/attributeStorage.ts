@@ -71,49 +71,73 @@ export interface DecorationConfig {
 }
 
 export const DECORATION_CONFIGS: Record<DecorationType, DecorationConfig> = {
-  bow: { type: "bow", name: "蝴蝶结", cost: 5, description: "可爱的蝴蝶结" },
+  bow: { type: "bow", name: "蝴蝶结", cost: 300, description: "可爱的蝴蝶结" },
   scarf: {
     type: "scarf",
     name: "围巾",
-    cost: 8,
+    cost: 480,
     description: "温暖的小围巾",
   },
   wreath: {
     type: "wreath",
     name: "花环",
-    cost: 12,
+    cost: 720,
     description: "美丽的花环",
   },
   topHat: {
     type: "topHat",
     name: "礼帽",
-    cost: 15,
+    cost: 900,
     description: "优雅的礼帽",
   },
   sunglasses: {
     type: "sunglasses",
     name: "墨镜",
-    cost: 18,
+    cost: 1080,
     description: "酷酷的墨镜",
   },
   medal: {
     type: "medal",
     name: "勋章",
-    cost: 20,
+    cost: 1200,
     description: "荣誉勋章",
   },
   crown: {
     type: "crown",
     name: "皇冠",
-    cost: 25,
+    cost: 1500,
     description: "华丽的皇冠",
   },
   magicWand: {
     type: "magicWand",
     name: "魔法杖",
-    cost: 30,
+    cost: 1800,
     description: "神奇的魔法杖",
   },
+};
+
+// 最大同时装备数量
+export const MAX_EQUIPPED_DECORATIONS = 3;
+
+// 装饰槽位 - 同槽位互斥
+export type DecorationSlot = "head" | "face" | "neck" | "hand";
+export const DECORATION_SLOTS: Record<DecorationType, DecorationSlot> = {
+  bow: "head",
+  wreath: "head",
+  topHat: "head",
+  crown: "head",
+  sunglasses: "face",
+  scarf: "neck",
+  medal: "neck",
+  magicWand: "hand",
+};
+
+// 槽位中文名称
+export const SLOT_NAMES: Record<DecorationSlot, string> = {
+  head: "头部",
+  face: "脸部",
+  neck: "颈部",
+  hand: "手部",
 };
 
 // 打工收入
@@ -154,6 +178,7 @@ export const DEFAULT_ATTRIBUTE_DATA: AttributeData = {
   dailyAllowanceClaimed: "",
   lastUpdateTimestamp: Date.now(),
   ownedDecorations: [],
+  equippedDecorations: [],
 };
 
 // 保存属性数据
@@ -193,6 +218,17 @@ export function loadAttributeData(): AttributeData {
         }
         if (!Array.isArray(data.ownedDecorations)) {
           data.ownedDecorations = [];
+        }
+        if (!Array.isArray(data.equippedDecorations)) {
+          data.equippedDecorations = [];
+        }
+        // 清理无效装备（不在拥有列表中的）
+        if (Array.isArray(data.equippedDecorations)) {
+          data.equippedDecorations = data.equippedDecorations.filter(
+            (d: string) =>
+              Array.isArray(data.ownedDecorations) &&
+              data.ownedDecorations.includes(d),
+          );
         }
         return data;
       }

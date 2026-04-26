@@ -40,6 +40,8 @@ import {
   FOOD_CONFIGS,
   BATH_CONFIGS,
   DECORATION_CONFIGS,
+  DECORATION_SLOTS,
+  MAX_EQUIPPED_DECORATIONS,
   WORK_INCOME,
   WORK_EXPERIENCE,
   WORK_STAMINA_REQUIRED,
@@ -337,9 +339,68 @@ export function buyDecoration(decorationType: DecorationType): boolean {
   data.money -= config.cost;
   data.ownedDecorations = [...data.ownedDecorations, decorationType];
 
+  // 购买后自动装备（槽位空闲时）
+  const slot = DECORATION_SLOTS[decorationType];
+  const slotOccupied = data.equippedDecorations.some(
+    (d) => DECORATION_SLOTS[d as DecorationType] === slot,
+  );
+  if (
+    !slotOccupied &&
+    data.equippedDecorations.length < MAX_EQUIPPED_DECORATIONS
+  ) {
+    data.equippedDecorations = [...data.equippedDecorations, decorationType];
+  }
+
   addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
   debouncedSave();
   return true;
+}
+
+// 装备装饰
+export function equipDecoration(decorationType: DecorationType): boolean {
+  const data = attributeData.value;
+
+  if (!data.ownedDecorations.includes(decorationType)) return false;
+  if (data.equippedDecorations.includes(decorationType)) return false;
+  if (data.equippedDecorations.length >= MAX_EQUIPPED_DECORATIONS) return false;
+
+  // 检查槽位是否已被占用
+  const slot = DECORATION_SLOTS[decorationType];
+  const occupiedSlot = data.equippedDecorations.find(
+    (d) => DECORATION_SLOTS[d as DecorationType] === slot,
+  );
+  if (occupiedSlot) return false;
+
+  data.equippedDecorations = [...data.equippedDecorations, decorationType];
+  debouncedSave();
+  return true;
+}
+
+// 卸下装饰
+export function unequipDecoration(decorationType: DecorationType): boolean {
+  const data = attributeData.value;
+  if (!data.equippedDecorations.includes(decorationType)) return false;
+
+  data.equippedDecorations = data.equippedDecorations.filter(
+    (d) => d !== decorationType,
+  );
+  debouncedSave();
+  return true;
+}
+
+// 获取装饰槽位冲突信息
+export function getDecorationSlotConflict(
+  decorationType: DecorationType,
+): string | null {
+  const data = attributeData.value;
+  const slot = DECORATION_SLOTS[decorationType];
+  const occupied = data.equippedDecorations.find(
+    (d) => DECORATION_SLOTS[d as DecorationType] === slot,
+  );
+  if (occupied) {
+    return DECORATION_CONFIGS[occupied as DecorationType].name;
+  }
+  return null;
 }
 
 // 开始打工
