@@ -21,6 +21,10 @@ defineProps<{
     </div>
     <div class="pet-ear ear-right">
       <div class="ear-inner"></div>
+      <div
+        v-if="equippedDecorations.includes('bow')"
+        class="deco deco-bow"
+      ></div>
     </div>
 
     <!-- 脸部 -->
@@ -82,10 +86,6 @@ defineProps<{
 
     <!-- 装饰层 -->
     <div class="pet-decorations">
-      <div
-        v-if="equippedDecorations.includes('bow')"
-        class="deco deco-bow"
-      ></div>
       <div
         v-if="equippedDecorations.includes('scarf')"
         class="deco deco-scarf"
