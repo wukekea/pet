@@ -47,7 +47,6 @@ import ShopModal from "./shop/index.vue";
 import WarehouseModal from "./warehouse/index.vue";
 import { FOOD_CONFIGS } from "./composables/attributeStorage";
 import "./shapes/base.css";
-import "./shapes/decorations.css";
 import "./shapes/cloud/styles.css";
 import "./shapes/cat/styles.css";
 import "./shapes/panda/styles.css";

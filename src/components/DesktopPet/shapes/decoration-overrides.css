@@ -1,0 +1,85 @@
+/* 饰品形态适配 - 各宠物形态的饰品位置偏移 */
+
+/* ====== 兔子长耳避让 ====== */
+.pet-shape-rabbit .deco-bow {
+  bottom: 6px;
+}
+
+.pet-shape-rabbit .deco-wreath {
+  top: 5px;
+}
+
+.pet-shape-rabbit .deco-topHat {
+  top: -8px;
+}
+
+.pet-shape-rabbit .deco-crown {
+  top: 6px;
+}
+
+/* ====== 熊猫 ====== */
+.pet-shape-panda .deco-wreath {
+  top: 3px;
+}
+
+.pet-shape-panda .deco-bow {
+  top: auto;
+  right: auto;
+  bottom: 2px;
+}
+
+.pet-shape-panda .deco-sunglasses {
+  top: 24px;
+}
+
+.pet-shape-panda .deco-topHat {
+  top: -8px;
+}
+
+.pet-shape-panda .deco-crown {
+  top: 5px;
+}
+
+/* ====== 猫咪 ====== */
+.pet-shape-cat .deco-wreath {
+  top: 4px;
+}
+
+.pet-shape-cat .deco-bow {
+  top: auto;
+  right: auto;
+  bottom: 4px;
+}
+
+.pet-shape-cat .deco-topHat {
+  top: -3px;
+}
+
+.pet-shape-cat .deco-crown {
+  top: 14px;
+}
+
+/* ====== 云朵 ====== */
+.pet-shape-cloud .deco-wreath {
+  top: 4px;
+}
+
+.pet-shape-cloud .deco-bow {
+  top: auto;
+  right: auto;
+  bottom: 4px;
+}
+
+.pet-shape-cloud .deco-topHat {
+  top: -4px;
+}
+
+.pet-shape-cloud .deco-crown {
+  top: 13px;
+}
+
+/* ====== 背面时隐藏正面装饰 ====== */
+.pet-back .deco-sunglasses,
+.pet-back .deco-medal {
+  opacity: 0.2;
+}

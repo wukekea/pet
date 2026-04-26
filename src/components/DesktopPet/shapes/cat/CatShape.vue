@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { PetState, PetDirection } from "../../types";
+import DecoBow from "../decorations/DecoBow.vue";
+import DecorationsLayer from "../decorations/DecorationsLayer.vue";
 
 // Props
 defineProps<{
@@ -18,10 +20,7 @@ defineProps<{
     <!-- 耳朵 -->
     <div class="pet-ear ear-left"></div>
     <div class="pet-ear ear-right">
-      <div
-        v-if="equippedDecorations.includes('bow')"
-        class="deco deco-bow"
-      ></div>
+      <DecoBow v-if="equippedDecorations.includes('bow')" />
     </div>
 
     <!-- 胡须 -->
@@ -89,35 +88,6 @@ defineProps<{
     <div class="pet-leg leg-right"></div>
 
     <!-- 装饰层 -->
-    <div class="pet-decorations">
-      <div
-        v-if="equippedDecorations.includes('scarf')"
-        class="deco deco-scarf"
-      ></div>
-      <div
-        v-if="equippedDecorations.includes('wreath')"
-        class="deco deco-wreath"
-      ></div>
-      <div
-        v-if="equippedDecorations.includes('topHat')"
-        class="deco deco-topHat"
-      ></div>
-      <div
-        v-if="equippedDecorations.includes('sunglasses')"
-        class="deco deco-sunglasses"
-      ></div>
-      <div
-        v-if="equippedDecorations.includes('crown')"
-        class="deco deco-crown"
-      ></div>
-      <div
-        v-if="equippedDecorations.includes('magicWand')"
-        class="deco deco-magicWand"
-      ></div>
-      <div
-        v-if="equippedDecorations.includes('medal')"
-        class="deco deco-medal"
-      ></div>
-    </div>
+    <DecorationsLayer :equipped-decorations="equippedDecorations" />
   </div>
 </template>
