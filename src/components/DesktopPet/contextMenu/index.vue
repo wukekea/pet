@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount } from "vue";
+import { computed } from "vue";
 import { isDark } from "../composables/theme";
 
-const props = defineProps<{
+defineProps<{
   visible: boolean;
   x: number;
   y: number;
@@ -16,6 +16,17 @@ const emit = defineEmits<{
   openShop: [];
   openWarehouse: [];
 }>();
+
+// 点击遮罩层关闭菜单
+const handleOverlayClick = () => {
+  emit("close");
+};
+
+// 点击菜单项：先关闭菜单，再打开对应弹窗
+const handleMenuClick = (action: () => void) => {
+  emit("close");
+  action();
+};
 
 // CSS 变量 - 用于主题切换
 const cssVars = computed(() => ({
@@ -48,116 +59,146 @@ const cssVars = computed(() => ({
     ? "rgba(35, 30, 55, 0.97)"
     : "rgba(255, 255, 255, 0.97)",
 }));
-
-// 点击其他地方关闭菜单
-const handleGlobalClick = () => {
-  if (props.visible) {
-    emit("close");
-  }
-};
-
-onMounted(() => {
-  document.addEventListener("click", handleGlobalClick);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleGlobalClick);
-});
 </script>
 
 <template>
   <Teleport to="body">
-    <Transition name="menu-pop">
+    <Transition name="fade">
       <div
         v-if="visible"
-        class="pet-context-menu"
-        :style="{
-          left: `${x}px`,
-          top: `${y}px`,
-          ...cssVars,
-        }"
-        @click.stop
+        class="menu-overlay"
+        @mousedown.stop="handleOverlayClick"
       >
-        <!-- 装饰星星 -->
-        <div class="menu-decor-stars">
-          <span class="decor-star-small star-1">✦</span>
-          <span class="decor-star-small star-2">✧</span>
-          <span class="decor-star-small star-3">✦</span>
-        </div>
+        <Transition name="menu-pop">
+          <div
+            v-if="visible"
+            class="pet-context-menu"
+            :style="{
+              left: `${x}px`,
+              top: `${y}px`,
+              ...cssVars,
+            }"
+            @mousedown.stop
+          >
+            <!-- 装饰星星 -->
+            <div class="menu-decor-stars">
+              <span class="decor-star-small star-1">✦</span>
+              <span class="decor-star-small star-2">✧</span>
+              <span class="decor-star-small star-3">✦</span>
+            </div>
 
-        <div class="menu-bubble">
-          <div class="menu-item" @click="emit('openSchedule')">
-            <div class="menu-icon-wrapper moon">
-              <span class="menu-icon">🌙</span>
+            <div class="menu-bubble">
+              <div
+                class="menu-item"
+                @mousedown.stop="handleMenuClick(() => emit('openSchedule'))"
+              >
+                <div class="menu-icon-wrapper moon">
+                  <span class="menu-icon">🌙</span>
+                </div>
+                <div class="menu-text-group">
+                  <span class="menu-text">作息设置</span>
+                  <span class="menu-desc">设置睡眠时间</span>
+                </div>
+                <span class="menu-arrow">›</span>
+              </div>
+              <div class="menu-divider">
+                <div class="divider-line"></div>
+              </div>
+              <div
+                class="menu-item"
+                @mousedown.stop="handleMenuClick(() => emit('openShop'))"
+              >
+                <div class="menu-icon-wrapper shop">
+                  <span class="menu-icon">🛒</span>
+                </div>
+                <div class="menu-text-group">
+                  <span class="menu-text">商店</span>
+                  <span class="menu-desc">购买食物和沐浴露</span>
+                </div>
+                <span class="menu-arrow">›</span>
+              </div>
+              <div class="menu-divider">
+                <div class="divider-line"></div>
+              </div>
+              <div
+                class="menu-item"
+                @mousedown.stop="handleMenuClick(() => emit('openWarehouse'))"
+              >
+                <div class="menu-icon-wrapper warehouse">
+                  <span class="menu-icon">📦</span>
+                </div>
+                <div class="menu-text-group">
+                  <span class="menu-text">仓库</span>
+                  <span class="menu-desc">查看和使用库存</span>
+                </div>
+                <span class="menu-arrow">›</span>
+              </div>
+              <div class="menu-divider">
+                <div class="divider-line"></div>
+              </div>
+              <div
+                class="menu-item"
+                @mousedown.stop="handleMenuClick(() => emit('openAttributes'))"
+              >
+                <div class="menu-icon-wrapper heart">
+                  <span class="menu-icon">💖</span>
+                </div>
+                <div class="menu-text-group">
+                  <span class="menu-text">宠物属性</span>
+                  <span class="menu-desc">查看成长状态</span>
+                </div>
+                <span class="menu-arrow">›</span>
+              </div>
+              <div class="menu-divider">
+                <div class="divider-line"></div>
+              </div>
+              <div
+                class="menu-item"
+                @mousedown.stop="handleMenuClick(() => emit('openStats'))"
+              >
+                <div class="menu-icon-wrapper chart">
+                  <span class="menu-icon">📊</span>
+                </div>
+                <div class="menu-text-group">
+                  <span class="menu-text">数据统计</span>
+                  <span class="menu-desc">查看互动记录</span>
+                </div>
+                <span class="menu-arrow">›</span>
+              </div>
             </div>
-            <div class="menu-text-group">
-              <span class="menu-text">作息设置</span>
-              <span class="menu-desc">设置睡眠时间</span>
-            </div>
-            <span class="menu-arrow">›</span>
-          </div>
-          <div class="menu-divider">
-            <div class="divider-line"></div>
-          </div>
-          <div class="menu-item" @click="emit('openShop')">
-            <div class="menu-icon-wrapper shop">
-              <span class="menu-icon">🛒</span>
-            </div>
-            <div class="menu-text-group">
-              <span class="menu-text">商店</span>
-              <span class="menu-desc">购买食物和沐浴露</span>
-            </div>
-            <span class="menu-arrow">›</span>
-          </div>
-          <div class="menu-divider">
-            <div class="divider-line"></div>
-          </div>
-          <div class="menu-item" @click="emit('openWarehouse')">
-            <div class="menu-icon-wrapper warehouse">
-              <span class="menu-icon">📦</span>
-            </div>
-            <div class="menu-text-group">
-              <span class="menu-text">仓库</span>
-              <span class="menu-desc">查看和使用库存</span>
-            </div>
-            <span class="menu-arrow">›</span>
-          </div>
-          <div class="menu-divider">
-            <div class="divider-line"></div>
-          </div>
-          <div class="menu-item" @click="emit('openAttributes')">
-            <div class="menu-icon-wrapper heart">
-              <span class="menu-icon">💖</span>
-            </div>
-            <div class="menu-text-group">
-              <span class="menu-text">宠物属性</span>
-              <span class="menu-desc">查看成长状态</span>
-            </div>
-            <span class="menu-arrow">›</span>
-          </div>
-          <div class="menu-divider">
-            <div class="divider-line"></div>
-          </div>
-          <div class="menu-item" @click="emit('openStats')">
-            <div class="menu-icon-wrapper chart">
-              <span class="menu-icon">📊</span>
-            </div>
-            <div class="menu-text-group">
-              <span class="menu-text">数据统计</span>
-              <span class="menu-desc">查看互动记录</span>
-            </div>
-            <span class="menu-arrow">›</span>
-          </div>
-        </div>
 
-        <!-- 小尾巴 -->
-        <div class="menu-tail"></div>
+            <!-- 小尾巴 -->
+            <div class="menu-tail"></div>
+          </div>
+        </Transition>
       </div>
     </Transition>
   </Teleport>
 </template>
 
 <style scoped>
+/* ========================================
+   透明遮罩层
+   ======================================== */
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: auto !important;
+  background: transparent;
+  cursor: default;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 /* ========================================
    右键菜单样式 - 梦幻云朵风格
    ======================================== */
@@ -166,6 +207,7 @@ onBeforeUnmount(() => {
   z-index: 10000;
   pointer-events: auto !important;
   transform-origin: top left;
+  cursor: default;
 }
 
 .menu-decor-stars {

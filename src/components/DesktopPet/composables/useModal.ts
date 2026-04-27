@@ -59,6 +59,7 @@ for (const key of Object.keys(MODAL_STATE_MAP) as ModalKey[]) {
 // 关闭右键菜单，并根据 UI 状态恢复穿透
 export function closeContextMenu() {
   isContextMenuOpen.value = false;
+  contextMenuVisible.value = false;
   if (!isAnyUiOpen.value) {
     setPassthrough(true);
   }
