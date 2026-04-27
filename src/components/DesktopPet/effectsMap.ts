@@ -24,7 +24,7 @@ import SleepyEffects from "./effects/SleepyEffects.vue";
 import SleepwalkingEffects from "./effects/SleepwalkingEffects.vue";
 import StretchEffects from "./effects/StretchEffects.vue";
 import BathingEffects from "./effects/BathingEffects.vue";
-import EatingEffects from "./EatingEffects.vue";
+import EatingEffects from "./effects/EatingEffects.vue";
 import BrickCarryingEffects from "./effects/BrickCarryingEffects.vue";
 import FlyerDistributingEffects from "./effects/FlyerDistributingEffects.vue";
 import ProgrammerEffects from "./effects/ProgrammerEffects.vue";

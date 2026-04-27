@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { currentFood } from "./composables/sharedState";
-import FoodItem from "./foods/FoodItem.vue";
+import { currentFood } from "../composables/sharedState";
+import FoodItem from "../foods/FoodItem.vue";
 </script>
 
 <template>
