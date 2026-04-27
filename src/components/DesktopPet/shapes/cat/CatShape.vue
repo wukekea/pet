@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { PetState, PetDirection } from "../../types";
-import DecoBow from "../decorations/DecoBow.vue";
-import DecoMagicWand from "../decorations/DecoMagicWand.vue";
-import DecorationsLayer from "../decorations/DecorationsLayer.vue";
+import { DecoBow, DecoMagicWand, DecorationsLayer } from "../decorations";
 
 // Props
 defineProps<{

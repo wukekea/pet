@@ -1,4 +1,11 @@
 <script setup lang="ts">
+/**
+ * 通用定位装饰层 — 管理相对于 pet-body 绝对定位的装饰品
+ *
+ * 注意：bow（蝴蝶结）和 magicWand（魔法杖）不在此管理，
+ * 它们需要嵌入各 Shape 的耳朵/手臂 DOM 子节点中以跟随 CSS 动画。
+ * 详见 decorations/index.ts 的说明。
+ */
 import DecoScarf from "./DecoScarf.vue";
 import DecoWreath from "./DecoWreath.vue";
 import DecoTopHat from "./DecoTopHat.vue";
