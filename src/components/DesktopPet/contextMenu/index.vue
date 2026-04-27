@@ -1,12 +1,49 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch, nextTick } from "vue";
 import { isDark } from "../composables/theme";
 
-defineProps<{
+const props = defineProps<{
   visible: boolean;
   x: number;
   y: number;
 }>();
+
+// 菜单元素引用
+const menuRef = ref<HTMLElement | null>(null);
+
+// 经过边界检测调整后的位置
+const adjustedX = ref(0);
+const adjustedY = ref(0);
+
+// 边界检测：菜单显示后测量实际尺寸，防止溢出屏幕
+watch(
+  () => props.visible,
+  async (val) => {
+    if (val) {
+      // 先设为原始位置
+      adjustedX.value = props.x;
+      adjustedY.value = props.y;
+      await nextTick();
+      if (menuRef.value) {
+        const rect = menuRef.value.getBoundingClientRect();
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const margin = 8;
+        // 右边溢出
+        if (adjustedX.value + rect.width > vw - margin) {
+          adjustedX.value = vw - rect.width - margin;
+        }
+        // 底部溢出
+        if (adjustedY.value + rect.height > vh - margin) {
+          adjustedY.value = vh - rect.height - margin;
+        }
+        // 左边/顶部兜底
+        if (adjustedX.value < margin) adjustedX.value = margin;
+        if (adjustedY.value < margin) adjustedY.value = margin;
+      }
+    }
+  },
+);
 
 const emit = defineEmits<{
   close: [];
@@ -72,10 +109,11 @@ const cssVars = computed(() => ({
         <Transition name="menu-pop">
           <div
             v-if="visible"
+            ref="menuRef"
             class="pet-context-menu"
             :style="{
-              left: `${x}px`,
-              top: `${y}px`,
+              left: `${adjustedX}px`,
+              top: `${adjustedY}px`,
               ...cssVars,
             }"
             @mousedown.stop
