@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
-import { setPassthrough } from "../composables/passthrough";
-import { isAnyUiOpen } from "../composables/sharedState";
-import { isAttributeModalOpen } from "../composables/sharedState";
+import { useToast } from "../composables/useToast";
 import type { DecorationType, DecorationEffectType } from "../types";
 import {
   useAttributeRef,
@@ -221,18 +219,11 @@ const activeEffectsList = computed(() => {
 });
 
 // 装饰提示
-const decoToast = ref("");
-const decoToastVisible = ref(false);
-let decoToastTimer: ReturnType<typeof setTimeout> | null = null;
-
-function showDecoToast(msg: string) {
-  decoToast.value = msg;
-  decoToastVisible.value = true;
-  if (decoToastTimer) clearTimeout(decoToastTimer);
-  decoToastTimer = setTimeout(() => {
-    decoToastVisible.value = false;
-  }, 2000);
-}
+const {
+  toastMessage: decoToast,
+  toastVisible: decoToastVisible,
+  showToast: showDecoToast,
+} = useToast();
 
 // 装备/卸下装饰
 const handleDecoClick = (type: string) => {
@@ -310,11 +301,9 @@ const cssVars = computed(() => ({
     : "rgba(139, 92, 246, 0.6)",
 }));
 
-// 关闭弹窗
+// 关闭弹窗（passthrough 由父组件 useModal 管理）
 const close = () => {
   emit("close");
-  isAttributeModalOpen.value = false;
-  if (!isAnyUiOpen.value) setPassthrough(true);
 };
 </script>
 

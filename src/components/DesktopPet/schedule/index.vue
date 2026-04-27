@@ -5,8 +5,6 @@ import {
   getScheduleConfig,
   updateScheduleConfig,
 } from "../composables/scheduleManager";
-import { setPassthrough } from "../composables/passthrough";
-import { isScheduleModalOpen, isAnyUiOpen } from "../composables/sharedState";
 import type { ScheduleConfig, TimeSlot } from "../types";
 
 const props = defineProps<{
@@ -118,11 +116,9 @@ watch(
   },
 );
 
-// 关闭弹窗
+// 关闭弹窗（passthrough 由父组件 useModal 管理）
 const close = () => {
   emit("close");
-  isScheduleModalOpen.value = false;
-  if (!isAnyUiOpen.value) setPassthrough(true);
 };
 
 // 切换作息启用状态

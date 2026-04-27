@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
-import { setPassthrough } from "../composables/passthrough";
-import { isAnyUiOpen } from "../composables/sharedState";
+import { useToast } from "../composables/useToast";
 import {
-  isWarehouseModalOpen,
   FOOD_ICONS,
   BATH_ICONS,
   type FoodType,
@@ -42,18 +40,7 @@ const attrData = useAttributeRef();
 const activeTab = ref<"food" | "bath" | "decoration">("food");
 
 // 使用提示
-const toastMessage = ref("");
-const toastVisible = ref(false);
-let toastTimer: ReturnType<typeof setTimeout> | null = null;
-
-function showToast(msg: string) {
-  toastMessage.value = msg;
-  toastVisible.value = true;
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    toastVisible.value = false;
-  }, 2000);
-}
+const { toastMessage, toastVisible, showToast } = useToast();
 
 // 当前展示的库存列表（只显示有库存或已拥有的物品）
 const currentItems = computed(() => {
@@ -244,11 +231,9 @@ const cssVars = computed(() => ({
     : "rgba(156, 163, 175, 0.6)",
 }));
 
-// 关闭弹窗
+// 关闭弹窗（passthrough 由父组件 useModal 管理）
 const close = () => {
   emit("close");
-  isWarehouseModalOpen.value = false;
-  if (!isAnyUiOpen.value) setPassthrough(true);
 };
 </script>
 

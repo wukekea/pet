@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { isDark } from "../composables/theme";
-import { setPassthrough } from "../composables/passthrough";
-import { isStatsModalOpen, isAnyUiOpen } from "../composables/sharedState";
 import {
   useStatsRef,
   resetStats as resetStatsData,
@@ -106,11 +104,9 @@ const filteredStateCounts = computed(() => {
   return Object.fromEntries(entries);
 });
 
-// 关闭弹窗
+// 关闭弹窗（passthrough 由父组件 useModal 管理）
 const close = () => {
   emit("close");
-  isStatsModalOpen.value = false;
-  if (!isAnyUiOpen.value) setPassthrough(true);
 };
 
 // 重置统计数据
