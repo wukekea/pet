@@ -209,7 +209,7 @@ const onCoinGainComplete = () => {
       @click="handlePetClick"
       @dblclick="handlePetDoubleClick"
       @contextmenu="handleContextMenu"
-      title="拖动：移动位置 | 单击：互动 | 双击：跳舞/翻滚 | 右键：菜单"
+      title="拖动：移动位置 | 单击：互动 | 右键：菜单"
     >
       <!-- 阴影 -->
       <div class="pet-shadow"></div>

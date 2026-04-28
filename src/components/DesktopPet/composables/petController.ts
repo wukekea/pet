@@ -47,12 +47,7 @@ import {
   stopScheduleMonitor,
 } from "./scheduleManager";
 import { initWeatherService, cleanupWeatherService } from "./qweatherService";
-import {
-  recordClick,
-  recordDoubleClick,
-  recordDrag,
-  recordState,
-} from "./stats";
+import { recordClick, recordDrag, recordState } from "./stats";
 import { setPassthrough } from "./passthrough";
 import {
   initAttributes,
@@ -450,31 +445,16 @@ export function handlePetClick() {
       "smug",
       "shy",
       "celebrate",
+      "dancing",
+      "rolling",
     ];
     changeState(randomPick(reactions));
   }
 }
 
-// 双击宠物 - 触发特殊动作
+// 双击宠物 - 暂无特殊效果
 export function handlePetDoubleClick() {
-  if (isDragging.value) return;
-  // 记录双击互动
-  recordDoubleClick();
-  // 互动经验
-  addInteractionExperience();
-  // 睡眠作息期间，只响应睡眼朦胧表情
-  if (petState.value === "sleeping" || petState.value === "sleepy") {
-    changeState("sleepy");
-    return;
-  }
-  // 不可打断状态下，显示忙碌台词，不改变状态
-  if (isUninterruptibleState(petState.value)) {
-    showBusyDialogue(petState.value);
-    return;
-  }
-  // 双击触发跳舞或翻滚
-  const specialActions: PetState[] = ["dancing", "rolling"];
-  changeState(randomPick(specialActions));
+  // 暂时不触发任何动画
 }
 // 拖拽相关
 let dragOffset = { x: 0, y: 0 };

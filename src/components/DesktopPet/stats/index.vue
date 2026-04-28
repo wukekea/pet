@@ -230,13 +230,6 @@ const getStateBarWidth = (count: number) => {
                   }}</span>
                 </div>
                 <div class="interaction-item">
-                  <span class="interaction-icon">👆👆</span>
-                  <span class="interaction-label">双击</span>
-                  <span class="interaction-value">{{
-                    statsData.interactions.doubleClick
-                  }}</span>
-                </div>
-                <div class="interaction-item">
                   <span class="interaction-icon">✋</span>
                   <span class="interaction-label">拖拽</span>
                   <span class="interaction-value">{{
@@ -246,9 +239,7 @@ const getStateBarWidth = (count: number) => {
               </div>
               <div class="interactions-total">
                 总互动次数：<span class="total-value">{{
-                  statsData.interactions.click +
-                  statsData.interactions.doubleClick +
-                  statsData.interactions.drag
+                  statsData.interactions.click + statsData.interactions.drag
                 }}</span>
               </div>
             </div>
@@ -627,7 +618,7 @@ const getStateBarWidth = (count: number) => {
 
 .interactions-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   margin-bottom: 12px;
 }
