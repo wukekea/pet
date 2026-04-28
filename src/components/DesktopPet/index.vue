@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, watch } from "vue";
+import { computed, ref, onMounted, onBeforeUnmount, watch } from "vue";
 // 状态变量从 sharedState 导入
 import {
   petState,
@@ -28,11 +28,25 @@ import { initStats, cleanupStats } from "./composables/stats";
 import { initPetShape } from "./composables/petShapeStorage";
 import { getShapeConfig, getShapeComponent } from "./shapes";
 import { STATE_EFFECTS } from "./effectsMap";
-import { WORK_STATES } from "./constants";
-import { useAttributeRef } from "./composables/attributes";
+import { WORK_STATES, UNINTERRUPTIBLE_STATES } from "./constants";
+import {
+  useAttributeRef,
+  useFood,
+  useBathItem,
+  startWork,
+  getAffordableWorkStates,
+} from "./composables/attributes";
+import {
+  getAttributeCap,
+  FOOD_CONFIGS,
+  BATH_CONFIGS,
+  WORK_INCOME,
+} from "./composables/attributeStorage";
+import type { BathType } from "./types";
 import WeatherBackground from "./WeatherBackground.vue";
 import WorkProgressBar from "./effects/WorkProgressBar.vue";
 import CoinGainEffects from "./effects/CoinGainEffects.vue";
+import QuickActionPanel from "./QuickActionPanel.vue";
 import Footprints from "./footprints/index.vue";
 import DialogueBubble from "./dialogue/index.vue";
 import ContextMenu from "./contextMenu/index.vue";
@@ -41,7 +55,6 @@ import StatsModal from "./stats/index.vue";
 import AttributeModal from "./attributes/index.vue";
 import ShopModal from "./shop/index.vue";
 import WarehouseModal from "./warehouse/index.vue";
-import { FOOD_CONFIGS } from "./composables/attributeStorage";
 import { randomPick } from "./utils/random";
 import {
   scheduleModal,
@@ -69,7 +82,108 @@ watch(petState, (newState) => {
   if (newState === "eating" && isDebugPanelOpen.value) {
     currentFood.value = randomPick(foodTypes);
   }
+  // 状态变化时关闭快捷面板
+  if (quickPanelVisible.value) {
+    quickPanelVisible.value = false;
+  }
 });
+
+// ===== 快捷操作面板 =====
+const quickPanelVisible = ref(false);
+
+// 属性上限
+const attributeCap = computed(() => getAttributeCap(attrData.value.level));
+
+// 是否有可用食物
+const canFeed = computed(() => {
+  const inv = attrData.value.foodInventory;
+  return Object.values(inv).some((count) => count > 0);
+});
+
+// 是否有可用沐浴露
+const canBath = computed(() => {
+  const inv = attrData.value.bathInventory;
+  return Object.values(inv).some((count) => count > 0);
+});
+
+// 是否可以打工
+const canQuickWork = computed(() => {
+  return getAffordableWorkStates(WORK_STATES).length > 0;
+});
+
+// 双击时显示快捷面板（覆盖原 handlePetDoubleClick）
+const onPetDoubleClick = () => {
+  handlePetDoubleClick();
+  // 不可打断状态下不弹出
+  if (UNINTERRUPTIBLE_STATES.includes(petState.value)) return;
+  // 睡眠中不弹出
+  if (petState.value === "sleeping" || petState.value === "sleepy") return;
+  quickPanelVisible.value = true;
+};
+
+// 单击/双击区分：延迟单击执行，双击时取消单击
+let clickTimer: ReturnType<typeof setTimeout> | null = null;
+const DBLCLICK_DELAY = 250;
+
+const onPetClick = () => {
+  if (clickTimer) {
+    // 双击：取消单击，执行双击
+    clearTimeout(clickTimer);
+    clickTimer = null;
+    onPetDoubleClick();
+  } else {
+    // 首次点击：延迟执行单击
+    clickTimer = setTimeout(() => {
+      clickTimer = null;
+      handlePetClick();
+    }, DBLCLICK_DELAY);
+  }
+};
+
+// 快捷喂食 - 选库存中恢复值最高的食物
+const quickFeed = () => {
+  const inv = attrData.value.foodInventory;
+  let bestFood: FoodType | null = null;
+  let bestRestore = -1;
+  for (const [type, count] of Object.entries(inv)) {
+    if (count > 0) {
+      const config = FOOD_CONFIGS[type as FoodType];
+      if (config && config.satietyRestore > bestRestore) {
+        bestRestore = config.satietyRestore;
+        bestFood = type as FoodType;
+      }
+    }
+  }
+  if (bestFood) useFood(bestFood);
+};
+
+// 快捷清洗 - 选库存中恢复值最高的沐浴露
+const quickBath = () => {
+  const inv = attrData.value.bathInventory;
+  let bestBath: BathType | null = null;
+  let bestRestore = -1;
+  for (const [type, count] of Object.entries(inv)) {
+    if (count > 0) {
+      const config = BATH_CONFIGS[type as BathType];
+      if (config && config.cleanlinessRestore > bestRestore) {
+        bestRestore = config.cleanlinessRestore;
+        bestBath = type as BathType;
+      }
+    }
+  }
+  if (bestBath) useBathItem(bestBath);
+};
+
+// 快捷打工 - 选收入最高且体力足够的工作
+const quickWork = () => {
+  const affordable = getAffordableWorkStates(WORK_STATES);
+  if (affordable.length === 0) return;
+  // 按收入排序，选最高的
+  const sorted = [...affordable].sort(
+    (a, b) => (WORK_INCOME[b] ?? 0) - (WORK_INCOME[a] ?? 0),
+  );
+  startWork(sorted[0]);
+};
 
 // 宠物颜色 - 根据主题和形态变化
 const petColors = computed(() => {
@@ -206,8 +320,7 @@ const onCoinGainComplete = () => {
         top: `${position.y}px`,
       }"
       @mousedown="handleDragStart"
-      @click="handlePetClick"
-      @dblclick="handlePetDoubleClick"
+      @click="onPetClick"
       @contextmenu="handleContextMenu"
       title="拖动：移动位置 | 单击：互动 | 右键：菜单"
     >
@@ -233,6 +346,23 @@ const onCoinGainComplete = () => {
         v-if="coinGainAmount !== null"
         :amount="coinGainAmount"
         @complete="onCoinGainComplete"
+      />
+
+      <!-- 快捷操作面板 -->
+      <QuickActionPanel
+        :visible="quickPanelVisible"
+        :satiety="attrData.satiety"
+        :cleanliness="attrData.cleanliness"
+        :stamina="attrData.stamina"
+        :health="attrData.health"
+        :attribute-cap="attributeCap"
+        :can-feed="canFeed"
+        :can-bath="canBath"
+        :can-work="canQuickWork"
+        @close="quickPanelVisible = false"
+        @feed="quickFeed"
+        @bath="quickBath"
+        @work="quickWork"
       />
     </div>
 
