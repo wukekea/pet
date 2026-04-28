@@ -35,6 +35,7 @@ import {
   stateTimer,
   targetPosition,
   workEndTime,
+  quickPanelVisible,
 } from "./sharedState";
 
 import { getTimeGreeting, showCustomDialogue, showDialogue } from "./dialogue";
@@ -602,12 +603,53 @@ export async function initScreenSize() {
 }
 // 缓存进度条元素引用，避免频繁 DOM 查询
 let cachedProgressBar: HTMLElement | null = null;
+// 缓存快捷面板元素引用
+let cachedQuickPanel: HTMLElement | null = null;
+
+// 检测鼠标是否在指定元素区域内
+function isMouseInElement(
+  el: HTMLElement | null,
+  x: number,
+  y: number,
+): boolean {
+  if (!el) return false;
+  const rect = el.getBoundingClientRect();
+  return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+}
 
 // 处理鼠标移动
 export function handleMouseMove(e: MouseEvent) {
   mousePosition.value = { x: e.clientX, y: e.clientY };
   // 任意 UI 弹窗打开时，不自动控制穿透
   if (isAnyUiOpen.value) return;
+
+  // 快捷操作面板打开时，检查面板交互区域
+  if (quickPanelVisible.value) {
+    if (!cachedQuickPanel || !cachedQuickPanel.isConnected) {
+      cachedQuickPanel = document.querySelector(
+        ".quick-action-panel",
+      ) as HTMLElement;
+    }
+    if (cachedQuickPanel) {
+      // 检查属性条和操作按钮区域
+      const attrBars = cachedQuickPanel.querySelector(
+        ".attr-bars",
+      ) as HTMLElement;
+      const actionBtns = cachedQuickPanel.querySelector(
+        ".action-btns",
+      ) as HTMLElement;
+      if (
+        isMouseInElement(attrBars, e.clientX, e.clientY) ||
+        isMouseInElement(actionBtns, e.clientX, e.clientY)
+      ) {
+        setPassthrough(false);
+        return;
+      }
+    }
+  } else {
+    cachedQuickPanel = null;
+  }
+
   // 只在打工状态下检查进度条区域
   if (WORK_STATES.includes(petState.value)) {
     if (!cachedProgressBar || !cachedProgressBar.isConnected) {

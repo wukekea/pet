@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, onBeforeUnmount, watch } from "vue";
+import { computed, onMounted, onBeforeUnmount, watch } from "vue";
 // 状态变量从 sharedState 导入
 import {
   petState,
@@ -11,6 +11,7 @@ import {
   currentFood,
   currentPetShape,
   coinGainAmount,
+  quickPanelVisible,
   type FoodType,
 } from "./composables/sharedState";
 // 函数从 usePetState 导入
@@ -82,14 +83,9 @@ watch(petState, (newState) => {
   if (newState === "eating" && isDebugPanelOpen.value) {
     currentFood.value = randomPick(foodTypes);
   }
-  // 状态变化时关闭快捷面板
-  if (quickPanelVisible.value) {
-    quickPanelVisible.value = false;
-  }
 });
 
 // ===== 快捷操作面板 =====
-const quickPanelVisible = ref(false);
 
 // 属性上限
 const attributeCap = computed(() => getAttributeCap(attrData.value.level));

@@ -67,6 +67,9 @@ export const workEndTime = ref<number | null>(null);
 // 金币增长特效状态
 export const coinGainAmount = ref<number | null>(null);
 
+// 快捷操作面板状态
+export const quickPanelVisible = ref(false);
+
 // 食物
 export const currentFood = ref<FoodType>("apple");
 

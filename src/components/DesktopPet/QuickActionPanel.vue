@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // 快捷操作面板 - 双击宠物后显示属性概览和快捷操作按钮
 import { ref, watch, onBeforeUnmount, computed } from "vue";
+import { mousePosition } from "./composables/sharedState";
 
 const props = defineProps<{
   visible: boolean;
@@ -50,9 +51,33 @@ const isCleanlinesLow = computed(
 const isStaminaLow = computed(() => props.stamina / props.attributeCap < 0.25);
 const isHealthLow = computed(() => props.health / props.attributeCap < 0.25);
 
-function resetAutoClose() {
+// 通过坐标检测鼠标是否在面板交互区域内
+function isMouseOnPanel(): boolean {
+  const mx = mousePosition.value.x;
+  const my = mousePosition.value.y;
+  const els = document.querySelectorAll(".attr-bars, .action-btns");
+  for (const el of els) {
+    const rect = el.getBoundingClientRect();
+    if (
+      mx >= rect.left &&
+      mx <= rect.right &&
+      my >= rect.top &&
+      my <= rect.bottom
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function startAutoClose() {
   if (autoCloseTimer) clearTimeout(autoCloseTimer);
   autoCloseTimer = setTimeout(() => {
+    // 通过坐标检测鼠标是否仍在面板上
+    if (isMouseOnPanel()) {
+      startAutoClose();
+      return;
+    }
     emit("close");
   }, AUTO_CLOSE_DELAY);
 }
@@ -65,10 +90,9 @@ function handleAction(action: "feed" | "bath" | "work") {
   emit("close");
 }
 
-// 点击面板自身时重置计时器，阻止冒泡
+// 点击面板自身时阻止冒泡
 function handlePanelClick(e: MouseEvent) {
   e.stopPropagation();
-  resetAutoClose();
 }
 
 watch(
@@ -76,7 +100,7 @@ watch(
   (val) => {
     if (val) {
       isShowing.value = true;
-      resetAutoClose();
+      startAutoClose();
     } else {
       isShowing.value = false;
       if (autoCloseTimer) {
@@ -94,12 +118,7 @@ onBeforeUnmount(() => {
 
 <template>
   <Transition name="qap">
-    <div
-      v-if="visible"
-      class="quick-action-panel"
-      @click="handlePanelClick"
-      @mouseenter="resetAutoClose"
-    >
+    <div v-if="visible" class="quick-action-panel" @click="handlePanelClick">
       <!-- 头顶属性条 -->
       <div class="attr-bars">
         <div class="attr-row" :class="{ warning: isSatietyLow }">
