@@ -13,6 +13,7 @@ import {
   currentFood,
   currentBathType,
   isDragging,
+  coinGainAmount,
 } from "./sharedState";
 import {
   SATIETY_DECAY_INTERVAL,
@@ -589,6 +590,9 @@ export function onWorkComplete(workState: PetState): void {
   data.money += income;
   addExperience(exp);
   debouncedSave();
+
+  // 触发金币增长特效
+  coinGainAmount.value = income;
 }
 
 // 获取打工时长倍率（受装饰效果影响）

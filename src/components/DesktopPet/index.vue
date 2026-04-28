@@ -10,6 +10,7 @@ import {
   isDebugPanelOpen,
   currentFood,
   currentPetShape,
+  coinGainAmount,
   type FoodType,
 } from "./composables/sharedState";
 // 函数从 usePetState 导入
@@ -31,6 +32,7 @@ import { WORK_STATES } from "./constants";
 import { useAttributeRef } from "./composables/attributes";
 import WeatherBackground from "./WeatherBackground.vue";
 import WorkProgressBar from "./effects/WorkProgressBar.vue";
+import CoinGainEffects from "./effects/CoinGainEffects.vue";
 import Footprints from "./footprints/index.vue";
 import DialogueBubble from "./dialogue/index.vue";
 import ContextMenu from "./contextMenu/index.vue";
@@ -172,6 +174,11 @@ const openShopFromAttributes = () => {
   attributeModal.visible.value = false;
   shopModal.open();
 };
+
+// 金币特效播放完毕
+const onCoinGainComplete = () => {
+  coinGainAmount.value = null;
+};
 </script>
 
 <template>
@@ -220,6 +227,13 @@ const openShopFromAttributes = () => {
 
       <!-- 工作进度条 -->
       <WorkProgressBar v-if="showWorkProgressBar" />
+
+      <!-- 金币增长特效 -->
+      <CoinGainEffects
+        v-if="coinGainAmount !== null"
+        :amount="coinGainAmount"
+        @complete="onCoinGainComplete"
+      />
     </div>
 
     <!-- 对话气泡 -->

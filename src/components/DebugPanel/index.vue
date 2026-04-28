@@ -15,6 +15,7 @@ import {
   currentFood,
   currentBathType,
   currentPetShape,
+  coinGainAmount,
   type FoodType,
   type BathType,
   type DecorationType,
@@ -111,6 +112,12 @@ const debugToggleDecoration = (decorationType: DecorationType) => {
   }
 
   saveAttributeData(data);
+};
+
+// 测试金币增长特效
+const debugCoinGain = () => {
+  const amount = Math.floor(Math.random() * 41) + 10;
+  coinGainAmount.value = amount;
 };
 
 // 面板可见性
@@ -434,6 +441,21 @@ defineExpose({
               >
                 <span class="btn-icon">{{ action.icon }}</span>
                 <span class="btn-label">{{ action.label }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 特效测试 -->
+          <div class="action-group">
+            <div class="group-title">特效测试</div>
+            <div class="action-buttons">
+              <button
+                class="action-btn"
+                @click="debugCoinGain"
+                title="金币特效"
+              >
+                <span class="btn-icon">💰</span>
+                <span class="btn-label">金币</span>
               </button>
             </div>
           </div>

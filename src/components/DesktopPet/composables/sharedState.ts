@@ -64,6 +64,9 @@ export const scheduleEndTime = ref<number | null>(null);
 // 打工相关状态
 export const workEndTime = ref<number | null>(null);
 
+// 金币增长特效状态
+export const coinGainAmount = ref<number | null>(null);
+
 // 食物
 export const currentFood = ref<FoodType>("apple");
 
