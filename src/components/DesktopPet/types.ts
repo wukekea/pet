@@ -130,7 +130,14 @@ export interface DecorationEffect {
 export type DecorationEffects = Partial<Record<DecorationEffectType, number>>;
 
 // 宠物形态类型
-export type PetShape = "cloud" | "cat" | "panda" | "rabbit" | "chick" | "dog";
+export type PetShape =
+  | "cloud"
+  | "cat"
+  | "panda"
+  | "rabbit"
+  | "chick"
+  | "dog"
+  | "penguin";
 
 // 颜色配置（支持深色/浅色主题）
 export interface ShapeColors {

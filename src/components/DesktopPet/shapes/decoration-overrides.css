@@ -124,6 +124,33 @@
   top: 22px;
 }
 
+/* ====== 企鹅 ====== */
+.pet-shape-penguin .deco-wreath {
+  top: 3px;
+}
+
+.pet-shape-penguin .deco-bow {
+  bottom: 0;
+  left: 0;
+  margin-left: 0;
+}
+
+.pet-shape-penguin .deco-topHat {
+  top: -5px;
+}
+
+.pet-shape-penguin .deco-crown {
+  top: 10px;
+}
+
+.pet-shape-penguin .deco-sunglasses {
+  top: 22px;
+}
+
+.pet-shape-penguin .deco-scarf {
+  bottom: 40px;
+}
+
 /* ====== 背面时隐藏正面装饰 ====== */
 .pet-back .deco-sunglasses,
 .pet-back .deco-medal {

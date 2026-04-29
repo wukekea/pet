@@ -1,0 +1,740 @@
+/* ====== 企鹅形态样式 ====== */
+
+/* === 身体（拉高，更像企鹅体型） === */
+.pet-shape-penguin .pet-body {
+  border-radius: 45% 45% 48% 48%;
+  height: 80px;
+  margin-top: -10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* === 白色腹部（从脸部下方延伸到底部） === */
+.pet-shape-penguin .pet-belly {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 46px;
+  background: #f8fafc;
+  border-radius: 50% 50% 46% 46%;
+  z-index: 3;
+  box-shadow: inset 0 -3px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* 脸部层级高于腹部 */
+.pet-shape-penguin .pet-face {
+  z-index: 6;
+  margin-top: -14px;
+}
+
+/* === 耳朵隐藏 === */
+.pet-shape-penguin .pet-ear {
+  width: 0;
+  height: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+/* 右耳保留为蝴蝶结锚点 */
+.pet-shape-penguin .pet-ear.ear-right {
+  position: absolute;
+  top: -2px;
+  right: 10px;
+  width: 10px;
+  height: 10px;
+  transform: none;
+}
+
+.pet-shape-penguin .pet-ear::before,
+.pet-shape-penguin .pet-ear::after {
+  display: none;
+}
+
+/* === 眼睛（白底黑瞳，在黑色头部上清晰可见） === */
+.pet-shape-penguin .pet-eyes:not(.blink) .eye {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.pet-shape-penguin .pet-eyes:not(.blink) .eye::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: #1c1917;
+  border-radius: 50%;
+}
+
+.pet-shape-penguin .pet-eyes:not(.blink) .eye-shine {
+  width: 3px;
+  height: 3px;
+  top: 2px;
+  right: 3px;
+  z-index: 2;
+}
+
+/* === 喙（橙色三角） === */
+.pet-shape-penguin .pet-beak {
+  position: absolute;
+  left: 50%;
+  top: 34px;
+  transform: translateX(-50%);
+  z-index: 8;
+}
+
+.pet-shape-penguin .pet-beak .beak-upper {
+  width: 12px;
+  height: 6px;
+  background: #f97316;
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  transform: rotate(180deg);
+  position: relative;
+  z-index: 2;
+}
+
+.pet-shape-penguin .pet-beak .beak-lower {
+  width: 8px;
+  height: 3px;
+  background: #ea580c;
+  clip-path: polygon(0 0, 50% 100%, 100% 0);
+  margin: -1px auto 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* 隐藏默认嘴巴 */
+.pet-shape-penguin .pet-mouth {
+  opacity: 0;
+}
+
+/* === 鳍状翅膀 === */
+.pet-shape-penguin .pet-flipper {
+  position: absolute;
+  width: 14px;
+  height: 30px;
+  background: var(--pet-body);
+  z-index: 3;
+  top: 32px;
+  border-radius: 40% 60% 60% 40%;
+  box-shadow: inset 0 -3px 5px rgba(0, 0, 0, 0.15);
+  transition: transform 0.1s ease;
+  transform-origin: top center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.pet-shape-penguin .pet-flipper.flipper-left {
+  left: -4px;
+  border-radius: 60% 40% 40% 60%;
+  transform: rotate(8deg);
+}
+
+.pet-shape-penguin .pet-flipper.flipper-right {
+  right: -4px;
+  border-radius: 40% 60% 60% 40%;
+  transform: rotate(-8deg);
+}
+
+/* 隐藏默认手臂 */
+.pet-shape-penguin .pet-arm {
+  width: 0;
+  height: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+/* === 脚蹼（橙色） === */
+.pet-shape-penguin .pet-leg {
+  background: #f97316;
+  width: 14px;
+  height: 8px;
+  border-radius: 50% 50% 40% 40%;
+}
+
+/* === 腮红 === */
+.pet-shape-penguin .pet-cheek {
+  width: 10px;
+  height: 7px;
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+/* ====== 走路摇摆动画 ====== */
+
+/* 走路时身体左右摇摆 */
+.pet-walking .pet-shape-penguin .pet-body,
+.pet-shape-penguin.pet-walking .pet-body {
+  animation: penguin-waddle 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes penguin-waddle {
+  0% {
+    transform: rotate(-4deg);
+  }
+  100% {
+    transform: rotate(4deg);
+  }
+}
+
+/* ====== 翅膀动画 ====== */
+
+/* 空闲时翅膀微动 */
+.pet-idle .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-idle .pet-flipper.flipper-left {
+  animation: penguin-flipper-idle-left 2.5s ease-in-out infinite;
+}
+
+.pet-idle .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-idle .pet-flipper.flipper-right {
+  animation: penguin-flipper-idle-right 2.5s ease-in-out infinite;
+}
+
+@keyframes penguin-flipper-idle-left {
+  0%,
+  100% {
+    transform: rotate(8deg);
+  }
+  50% {
+    transform: rotate(12deg);
+  }
+}
+
+@keyframes penguin-flipper-idle-right {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(-12deg);
+  }
+}
+
+/* 走路时翅膀摆动 */
+.pet-walking .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-walking .pet-flipper.flipper-left {
+  animation: penguin-flipper-walk-left 0.4s ease-in-out infinite alternate;
+}
+
+.pet-walking .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-walking .pet-flipper.flipper-right {
+  animation: penguin-flipper-walk-right 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes penguin-flipper-walk-left {
+  0% {
+    transform: rotate(8deg);
+  }
+  100% {
+    transform: rotate(25deg);
+  }
+}
+
+@keyframes penguin-flipper-walk-right {
+  0% {
+    transform: rotate(-25deg);
+  }
+  100% {
+    transform: rotate(-8deg);
+  }
+}
+
+/* 开心时翅膀快速拍打 */
+.pet-happy .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-happy .pet-flipper.flipper-left {
+  animation: penguin-flipper-flap-left 0.2s ease-in-out infinite alternate;
+}
+
+.pet-happy .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-happy .pet-flipper.flipper-right {
+  animation: penguin-flipper-flap-right 0.2s ease-in-out infinite alternate;
+}
+
+@keyframes penguin-flipper-flap-left {
+  0% {
+    transform: rotate(8deg);
+  }
+  100% {
+    transform: rotate(40deg);
+  }
+}
+
+@keyframes penguin-flipper-flap-right {
+  0% {
+    transform: rotate(-8deg);
+  }
+  100% {
+    transform: rotate(-40deg);
+  }
+}
+
+/* 庆祝时也快速拍打 */
+.pet-celebrate .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-celebrate .pet-flipper.flipper-left {
+  animation: penguin-flipper-flap-left 0.2s ease-in-out infinite alternate;
+}
+
+.pet-celebrate .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-celebrate .pet-flipper.flipper-right {
+  animation: penguin-flipper-flap-right 0.2s ease-in-out infinite alternate;
+}
+
+/* 跳跃时翅膀展开 */
+.pet-jumping .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-jumping .pet-flipper.flipper-left {
+  animation: penguin-flipper-jump-left 0.8s ease-in-out;
+}
+
+.pet-jumping .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-jumping .pet-flipper.flipper-right {
+  animation: penguin-flipper-jump-right 0.8s ease-in-out;
+}
+
+@keyframes penguin-flipper-jump-left {
+  0%,
+  100% {
+    transform: rotate(8deg);
+  }
+  30%,
+  70% {
+    transform: rotate(50deg);
+  }
+}
+
+@keyframes penguin-flipper-jump-right {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  30%,
+  70% {
+    transform: rotate(-50deg);
+  }
+}
+
+/* 害怕时翅膀贴紧 */
+.pet-scared .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-scared .pet-flipper.flipper-left {
+  transform: rotate(2deg) translateX(2px);
+}
+
+.pet-scared .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-scared .pet-flipper.flipper-right {
+  transform: rotate(-2deg) translateX(-2px);
+}
+
+/* 跳舞时翅膀交替 */
+.pet-dancing .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-dancing .pet-flipper.flipper-left {
+  animation: penguin-flipper-dance-left 0.5s ease-in-out infinite;
+}
+
+.pet-dancing .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-dancing .pet-flipper.flipper-right {
+  animation: penguin-flipper-dance-right 0.5s ease-in-out infinite;
+}
+
+@keyframes penguin-flipper-dance-left {
+  0%,
+  100% {
+    transform: rotate(8deg);
+  }
+  50% {
+    transform: rotate(35deg);
+  }
+}
+
+@keyframes penguin-flipper-dance-right {
+  0%,
+  100% {
+    transform: rotate(-35deg);
+  }
+  50% {
+    transform: rotate(-8deg);
+  }
+}
+
+/* 跳舞时也摇摆 */
+.pet-dancing .pet-shape-penguin .pet-body,
+.pet-shape-penguin.pet-dancing .pet-body {
+  animation: penguin-waddle 0.3s ease-in-out infinite alternate;
+}
+
+/* 睡觉时翅膀放松 */
+.pet-sleeping .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-sleeping .pet-flipper.flipper-left {
+  transform: rotate(5deg) translateY(2px);
+}
+
+.pet-sleeping .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-sleeping .pet-flipper.flipper-right {
+  transform: rotate(-5deg) translateY(2px);
+}
+
+/* 困倦时翅膀下垂 */
+.pet-sleepy .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-sleepy .pet-flipper.flipper-left,
+.pet-yawn .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-yawn .pet-flipper.flipper-left {
+  transform: rotate(5deg) translateY(1px);
+}
+
+.pet-sleepy .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-sleepy .pet-flipper.flipper-right,
+.pet-yawn .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-yawn .pet-flipper.flipper-right {
+  transform: rotate(-5deg) translateY(1px);
+}
+
+/* 追逐时翅膀快拍 */
+.pet-chase .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-chase .pet-flipper.flipper-left {
+  animation: penguin-flipper-flap-left 0.18s ease-in-out infinite alternate;
+}
+
+.pet-chase .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-chase .pet-flipper.flipper-right {
+  animation: penguin-flipper-flap-right 0.18s ease-in-out infinite alternate;
+}
+
+/* 追逐时也摇摆 */
+.pet-chase .pet-shape-penguin .pet-body,
+.pet-shape-penguin.pet-chase .pet-body {
+  animation: penguin-waddle 0.3s ease-in-out infinite alternate;
+}
+
+/* ====== 喙状态动画 ====== */
+
+/* 开心时嘴微张 */
+.pet-happy .pet-shape-penguin .pet-beak .beak-lower,
+.pet-shape-penguin.pet-happy .pet-beak .beak-lower {
+  transform: translateY(2px);
+}
+
+/* 打招呼时嘴张合 */
+.pet-hello .pet-shape-penguin .pet-beak .beak-lower,
+.pet-shape-penguin.pet-hello .pet-beak .beak-lower {
+  animation: penguin-beak-talk 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes penguin-beak-talk {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(3px);
+  }
+}
+
+/* 吃东西时啄食 */
+.pet-eating .pet-shape-penguin .pet-beak,
+.pet-shape-penguin.pet-eating .pet-beak {
+  animation: penguin-peck 0.4s ease-in-out infinite;
+}
+
+@keyframes penguin-peck {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(3px);
+  }
+}
+
+/* 打喷嚏时嘴大张 */
+.pet-sneeze .pet-shape-penguin .pet-beak .beak-lower,
+.pet-shape-penguin.pet-sneeze .pet-beak .beak-lower {
+  transform: translateY(4px);
+}
+
+/* 哈欠时嘴大张 */
+.pet-yawn .pet-shape-penguin .pet-beak .beak-lower,
+.pet-shape-penguin.pet-yawn .pet-beak .beak-lower {
+  animation: penguin-beak-yawn 2s ease-in-out;
+}
+
+@keyframes penguin-beak-yawn {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  20%,
+  80% {
+    transform: translateY(5px);
+  }
+}
+
+/* 生气时嘴紧闭 */
+.pet-angry .pet-shape-penguin .pet-beak .beak-lower,
+.pet-shape-penguin.pet-angry .pet-beak .beak-lower {
+  transform: translateY(-1px);
+}
+
+/* 害怕时嘴微颤 */
+.pet-scared .pet-shape-penguin .pet-beak,
+.pet-shape-penguin.pet-scared .pet-beak {
+  animation: penguin-beak-tremble 0.1s ease-in-out infinite alternate;
+}
+
+@keyframes penguin-beak-tremble {
+  0% {
+    transform: translateX(-51%);
+  }
+  100% {
+    transform: translateX(-49%);
+  }
+}
+
+/* 哭泣时嘴张开 */
+.pet-crying .pet-shape-penguin .pet-beak .beak-lower,
+.pet-shape-penguin.pet-crying .pet-beak .beak-lower {
+  transform: translateY(3px);
+}
+
+/* 得意时嘴上翘 */
+.pet-smug .pet-shape-penguin .pet-beak,
+.pet-shape-penguin.pet-smug .pet-beak {
+  transform: translateX(-50%) rotate(-5deg);
+}
+
+/* ====== 状态特殊处理 ====== */
+
+/* 害羞时腮红加深 */
+.pet-shy .pet-shape-penguin .pet-cheek,
+.pet-shape-penguin.pet-shy .pet-cheek {
+  opacity: 1;
+  transform: scale(1.3);
+}
+
+/* 洗澡时翅膀搓动 */
+.pet-bathing .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-bathing .pet-flipper.flipper-left {
+  animation: penguin-flipper-scrub-left 0.6s ease-in-out infinite;
+}
+
+.pet-bathing .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-bathing .pet-flipper.flipper-right {
+  animation: penguin-flipper-scrub-right 0.6s ease-in-out infinite;
+}
+
+@keyframes penguin-flipper-scrub-left {
+  0%,
+  100% {
+    transform: rotate(8deg);
+  }
+  50% {
+    transform: rotate(20deg) translateY(-2px);
+  }
+}
+
+@keyframes penguin-flipper-scrub-right {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(-20deg) translateY(-2px);
+  }
+}
+
+/* 搬砖时翅膀举高 */
+.pet-brickCarrying .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-brickCarrying .pet-flipper.flipper-left {
+  transform: rotate(25deg) translateY(-4px);
+}
+
+.pet-brickCarrying .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-brickCarrying .pet-flipper.flipper-right {
+  transform: rotate(-25deg) translateY(-4px);
+}
+
+/* 发传单时翅膀伸出 */
+.pet-flyerDistributing .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-flyerDistributing .pet-flipper.flipper-right {
+  animation: penguin-flipper-distribute 0.8s ease-in-out infinite;
+}
+
+@keyframes penguin-flipper-distribute {
+  0%,
+  100% {
+    transform: rotate(-12deg);
+  }
+  50% {
+    transform: rotate(-35deg) translateX(2px);
+  }
+}
+
+/* 编程时翅膀打字 */
+.pet-programmer .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-programmer .pet-flipper.flipper-left {
+  animation: penguin-flipper-type-left 0.3s ease-in-out infinite alternate;
+}
+
+.pet-programmer .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-programmer .pet-flipper.flipper-right {
+  animation: penguin-flipper-type-right 0.3s ease-in-out infinite
+    alternate-reverse;
+}
+
+@keyframes penguin-flipper-type-left {
+  0% {
+    transform: rotate(8deg) translateY(0);
+  }
+  100% {
+    transform: rotate(12deg) translateY(2px);
+  }
+}
+
+@keyframes penguin-flipper-type-right {
+  0% {
+    transform: rotate(-8deg) translateY(0);
+  }
+  100% {
+    transform: rotate(-12deg) translateY(2px);
+  }
+}
+
+/* 伸懒腰时翅膀展开 */
+.pet-stretch .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-stretch .pet-flipper.flipper-left {
+  animation: penguin-flipper-stretch-left 2.5s ease-in-out;
+}
+
+.pet-stretch .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-stretch .pet-flipper.flipper-right {
+  animation: penguin-flipper-stretch-right 2.5s ease-in-out;
+}
+
+@keyframes penguin-flipper-stretch-left {
+  0%,
+  100% {
+    transform: rotate(8deg);
+  }
+  30%,
+  70% {
+    transform: rotate(50deg) translateY(-3px);
+  }
+}
+
+@keyframes penguin-flipper-stretch-right {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  30%,
+  70% {
+    transform: rotate(-50deg) translateY(-3px);
+  }
+}
+
+/* 抓挠时翅膀挠头 */
+.pet-scratch .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-scratch .pet-flipper.flipper-right {
+  animation: penguin-flipper-scratch 0.3s ease-in-out infinite alternate;
+  transform-origin: bottom left;
+}
+
+@keyframes penguin-flipper-scratch {
+  0% {
+    transform: rotate(-25deg) translateY(-6px);
+  }
+  100% {
+    transform: rotate(-18deg) translateY(-8px);
+  }
+}
+
+/* 窥视时翅膀遮脸 */
+.pet-peek .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-peek .pet-flipper.flipper-left {
+  transform: rotate(18deg) translateY(-4px) translateX(4px);
+}
+
+.pet-peek .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-peek .pet-flipper.flipper-right {
+  transform: rotate(-18deg) translateY(-4px) translateX(-4px);
+}
+
+/* 思考时翅膀托腮 */
+.pet-thinking .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-thinking .pet-flipper.flipper-right {
+  transform: rotate(-22deg) translateY(-5px);
+}
+
+/* 坠落时翅膀乱拍 */
+.pet-fallen .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-fallen .pet-flipper.flipper-left {
+  animation: penguin-flipper-flap-left 0.1s ease-in-out infinite alternate;
+}
+
+.pet-fallen .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-fallen .pet-flipper.flipper-right {
+  animation: penguin-flipper-flap-right 0.1s ease-in-out infinite alternate;
+}
+
+/* 翻滚时翅膀展开 */
+.pet-rolling .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-rolling .pet-flipper.flipper-left {
+  transform: rotate(35deg);
+}
+
+.pet-rolling .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-rolling .pet-flipper.flipper-right {
+  transform: rotate(-35deg);
+}
+
+/* 困惑时翅膀抱胸 */
+.pet-confused .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-confused .pet-flipper.flipper-left {
+  transform: rotate(4deg) translateX(2px);
+}
+
+.pet-confused .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-confused .pet-flipper.flipper-right {
+  transform: rotate(-4deg) translateX(-2px);
+}
+
+/* 梦游时翅膀下垂 */
+.pet-sleepwalking .pet-shape-penguin .pet-flipper.flipper-left,
+.pet-shape-penguin.pet-sleepwalking .pet-flipper.flipper-left {
+  transform: rotate(5deg) translateY(3px);
+}
+
+.pet-sleepwalking .pet-shape-penguin .pet-flipper.flipper-right,
+.pet-shape-penguin.pet-sleepwalking .pet-flipper.flipper-right {
+  transform: rotate(-5deg) translateY(3px);
+}
+
+/* 坏笑时喙歪 */
+.pet-grin .pet-shape-penguin .pet-beak,
+.pet-shape-penguin.pet-grin .pet-beak {
+  transform: translateX(-50%) rotate(5deg);
+}
+
+/* ====== 方向相关 ====== */
+
+/* 背面时隐藏喙和腹部 */
+.pet-back .pet-shape-penguin .pet-beak {
+  opacity: 0;
+}
+
+.pet-back .pet-shape-penguin .pet-belly {
+  opacity: 0;
+}
+
+/* 左右朝向时喙偏移 */
+.pet-left .pet-shape-penguin .pet-beak,
+.pet-shape-penguin.pet-left .pet-beak {
+  transform: translateX(-70%);
+}
+
+.pet-right .pet-shape-penguin .pet-beak,
+.pet-shape-penguin.pet-right .pet-beak {
+  transform: translateX(-30%);
+}
