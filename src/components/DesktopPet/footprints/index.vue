@@ -65,34 +65,33 @@ const getOpacity = (footprint: Footprint): number => {
   height: 100%;
 }
 
-/* 脚印旋转：根据脚侧（左/右脚）和朝向组合 */
-/* 朝左走：左脚外撇，右脚内收 */
-.foot-side-left.dir-left {
-  transform: translate(-50%, -100%) rotate(25deg);
-}
-.foot-side-right.dir-left {
-  transform: translate(-50%, -100%) rotate(-10deg);
-}
-/* 朝右走：右脚外撇，左脚内收 */
-.foot-side-left.dir-right {
-  transform: translate(-50%, -100%) rotate(10deg);
-}
-.foot-side-right.dir-right {
-  transform: translate(-50%, -100%) rotate(-25deg);
-}
-/* 朝正面：左脚微左偏，右脚微右偏 */
+/* 脚印旋转：根据移动方向旋转，脚趾指向移动方向 */
+/* 基础朝上（脚趾在上），根据方向旋转 */
+/* front = 朝向屏幕前方 = 向下移动 */
+/* back = 背对屏幕 = 向上移动 */
 .foot-side-left.dir-front {
-  transform: translate(-50%, -100%) rotate(10deg);
+  transform: translate(-50%, -100%) rotate(-188deg);
 }
 .foot-side-right.dir-front {
-  transform: translate(-50%, -100%) rotate(-10deg);
+  transform: translate(-50%, -100%) rotate(-172deg);
 }
-/* 朝背面：轻微外撇 */
 .foot-side-left.dir-back {
-  transform: translate(-50%, -100%) rotate(12deg);
+  transform: translate(-50%, -100%) rotate(-8deg);
 }
 .foot-side-right.dir-back {
-  transform: translate(-50%, -100%) rotate(-12deg);
+  transform: translate(-50%, -100%) rotate(8deg);
+}
+.foot-side-left.dir-left {
+  transform: translate(-50%, -100%) rotate(-98deg);
+}
+.foot-side-right.dir-left {
+  transform: translate(-50%, -100%) rotate(-82deg);
+}
+.foot-side-left.dir-right {
+  transform: translate(-50%, -100%) rotate(82deg);
+}
+.foot-side-right.dir-right {
+  transform: translate(-50%, -100%) rotate(98deg);
 }
 
 /* 雪脚印样式 */
