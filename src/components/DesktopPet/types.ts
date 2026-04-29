@@ -137,7 +137,8 @@ export type PetShape =
   | "rabbit"
   | "chick"
   | "dog"
-  | "penguin";
+  | "penguin"
+  | "frog";
 
 // 颜色配置（支持深色/浅色主题）
 export interface ShapeColors {

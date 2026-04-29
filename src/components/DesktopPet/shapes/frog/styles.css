@@ -1,0 +1,464 @@
+/* ====== 青蛙形态样式 ====== */
+
+/* === 身体（扁平圆润） === */
+.pet-shape-frog .pet-body {
+  border-radius: 50% 50% 48% 48%;
+  height: 62px;
+  margin-top: 4px;
+}
+
+/* === 浅绿色肚皮 === */
+.pet-shape-frog .pet-belly {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 46px;
+  height: 36px;
+  background: #bbf7d0;
+  border-radius: 50% 50% 46% 46%;
+  z-index: 3;
+  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.04);
+}
+
+/* === 耳朵隐藏 === */
+.pet-shape-frog .pet-ear {
+  width: 0;
+  height: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+/* 右耳保留为蝴蝶结锚点 */
+.pet-shape-frog .pet-ear.ear-right {
+  position: absolute;
+  top: -8px;
+  right: 8px;
+  width: 10px;
+  height: 10px;
+  transform: none;
+}
+
+.pet-shape-frog .pet-ear::before,
+.pet-shape-frog .pet-ear::after {
+  display: none;
+}
+
+/* === 蛙眼（突出在头顶） === */
+.pet-shape-frog .pet-frog-eye {
+  position: absolute;
+  top: -10px;
+  width: 22px;
+  height: 22px;
+  background: var(--pet-body);
+  border-radius: 50%;
+  z-index: 10;
+  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pet-shape-frog .pet-frog-eye.frog-eye-left {
+  left: 8px;
+}
+
+.pet-shape-frog .pet-frog-eye.frog-eye-right {
+  right: 8px;
+}
+
+.pet-shape-frog .frog-eyeball {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 14px;
+  background: #ffffff;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.pet-shape-frog .frog-pupil {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: #1c1917;
+  border-radius: 50%;
+}
+
+.pet-shape-frog .frog-eye-shine {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 4px;
+  height: 4px;
+  background: #ffffff;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+/* 隐藏默认眼睛 */
+.pet-shape-frog .pet-eyes {
+  opacity: 0;
+}
+
+/* === 宽嘴巴 === */
+.pet-shape-frog .pet-mouth .mouth-smile {
+  width: 24px;
+  height: 8px;
+  border: none;
+  border-bottom: 2.5px solid currentColor;
+  border-radius: 0 0 50% 50%;
+  top: 44px;
+}
+
+/* === 腮红隐藏（青蛙用鼓腮替代） === */
+.pet-shape-frog .pet-cheek {
+  display: none;
+}
+
+/* === 前腿（短粗） === */
+.pet-shape-frog .pet-arm {
+  width: 14px;
+  height: 16px;
+  border-radius: 50% 50% 40% 40%;
+}
+
+/* === 后腿（蹲坐宽腿） === */
+.pet-shape-frog .pet-leg {
+  width: 18px;
+  height: 10px;
+  border-radius: 50% 50% 30% 30%;
+  background: var(--pet-body);
+  box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ====== 蛙眼动画 ====== */
+
+/* 空闲时眼睛微动 */
+.pet-idle .pet-shape-frog .pet-frog-eye,
+.pet-shape-frog.pet-idle .pet-frog-eye {
+  animation: frog-eye-idle 3s ease-in-out infinite;
+}
+
+@keyframes frog-eye-idle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
+/* 开心时眼睛弹跳 */
+.pet-happy .pet-shape-frog .pet-frog-eye,
+.pet-shape-frog.pet-happy .pet-frog-eye {
+  animation: frog-eye-bounce 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes frog-eye-bounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-3px);
+  }
+}
+
+/* 睡觉时眼睛缩下（闭眼） */
+.pet-sleeping .pet-shape-frog .frog-eyeball,
+.pet-shape-frog.pet-sleeping .frog-eyeball {
+  height: 3px;
+  top: 10px;
+  overflow: hidden;
+}
+
+/* 困倦时眼睛半闭 */
+.pet-sleepy .pet-shape-frog .frog-eyeball,
+.pet-shape-frog.pet-sleepy .frog-eyeball {
+  height: 8px;
+  top: 8px;
+  overflow: hidden;
+}
+
+/* 哈欠时眼睛半闭 */
+.pet-yawn .pet-shape-frog .frog-eyeball,
+.pet-shape-frog.pet-yawn .frog-eyeball {
+  height: 6px;
+  top: 9px;
+  overflow: hidden;
+}
+
+/* 害怕时眼睛睁大 */
+.pet-scared .pet-shape-frog .frog-eyeball,
+.pet-shape-frog.pet-scared .frog-eyeball {
+  width: 16px;
+  height: 16px;
+  top: 2px;
+}
+
+.pet-scared .pet-shape-frog .frog-pupil,
+.pet-shape-frog.pet-scared .frog-pupil {
+  width: 5px;
+  height: 5px;
+}
+
+/* 生气时瞳孔缩小 */
+.pet-angry .pet-shape-frog .frog-pupil,
+.pet-shape-frog.pet-angry .frog-pupil {
+  width: 5px;
+  height: 5px;
+}
+
+/* 得意时眼睛眯起 */
+.pet-smug .pet-shape-frog .frog-eyeball,
+.pet-shape-frog.pet-smug .frog-eyeball {
+  height: 7px;
+  top: 8px;
+  overflow: hidden;
+}
+
+/* ====== 跳跃特化（青蛙弹跳更高） ====== */
+
+.pet-jumping .pet-shape-frog .pet-body,
+.pet-shape-frog.pet-jumping .pet-body {
+  animation: frog-jump 0.8s ease-in-out;
+}
+
+@keyframes frog-jump {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  20% {
+    transform: translateY(2px) scaleY(0.9) scaleX(1.1);
+  }
+  50% {
+    transform: translateY(-15px) scaleY(1.1) scaleX(0.95);
+  }
+}
+
+/* 跳跃时眼睛跟随 */
+.pet-jumping .pet-shape-frog .pet-frog-eye,
+.pet-shape-frog.pet-jumping .pet-frog-eye {
+  animation: frog-eye-jump 0.8s ease-in-out;
+}
+
+@keyframes frog-eye-jump {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* ====== 走路摇摆 ====== */
+
+.pet-walking .pet-shape-frog .pet-frog-eye,
+.pet-shape-frog.pet-walking .pet-frog-eye {
+  animation: frog-eye-walk 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes frog-eye-walk {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-1px);
+  }
+}
+
+/* ====== 状态特殊处理 ====== */
+
+/* 吃东西时嘴巴大张（吞食） */
+.pet-eating .pet-shape-frog .pet-mouth .mouth-smile,
+.pet-shape-frog.pet-eating .pet-mouth .mouth-smile {
+  width: 28px;
+  height: 12px;
+  animation: frog-eat 0.5s ease-in-out infinite;
+}
+
+@keyframes frog-eat {
+  0%,
+  100% {
+    width: 28px;
+    height: 12px;
+  }
+  50% {
+    width: 24px;
+    height: 8px;
+  }
+}
+
+/* 洗澡时眼睛眯起享受 */
+.pet-bathing .pet-shape-frog .frog-eyeball,
+.pet-shape-frog.pet-bathing .frog-eyeball {
+  height: 8px;
+  top: 8px;
+  overflow: hidden;
+}
+
+/* 思考时瞳孔偏移 */
+.pet-thinking .pet-shape-frog .frog-pupil,
+.pet-shape-frog.pet-thinking .frog-pupil {
+  transform: translate(-30%, -50%);
+}
+
+/* 困惑时瞳孔各看一边 */
+.pet-confused .pet-shape-frog .frog-eye-left .frog-pupil,
+.pet-shape-frog.pet-confused .frog-eye-left .frog-pupil {
+  transform: translate(-80%, -50%);
+}
+
+.pet-confused .pet-shape-frog .frog-eye-right .frog-pupil,
+.pet-shape-frog.pet-confused .frog-eye-right .frog-pupil {
+  transform: translate(-20%, -50%);
+}
+
+/* 追逐时身体前倾 */
+.pet-chase .pet-shape-frog .pet-frog-eye,
+.pet-shape-frog.pet-chase .pet-frog-eye {
+  animation: frog-eye-bounce 0.2s ease-in-out infinite alternate;
+}
+
+/* 跳舞时眼睛摇摆 */
+.pet-dancing .pet-shape-frog .pet-frog-eye.frog-eye-left,
+.pet-shape-frog.pet-dancing .pet-frog-eye.frog-eye-left {
+  animation: frog-eye-dance-left 0.5s ease-in-out infinite;
+}
+
+.pet-dancing .pet-shape-frog .pet-frog-eye.frog-eye-right,
+.pet-shape-frog.pet-dancing .pet-frog-eye.frog-eye-right {
+  animation: frog-eye-dance-right 0.5s ease-in-out infinite;
+}
+
+@keyframes frog-eye-dance-left {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes frog-eye-dance-right {
+  0%,
+  100% {
+    transform: translateY(-3px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+}
+
+/* 坠落时眼睛乱转 */
+.pet-fallen .pet-shape-frog .frog-pupil,
+.pet-shape-frog.pet-fallen .frog-pupil {
+  animation: frog-eye-spin 0.3s linear infinite;
+}
+
+@keyframes frog-eye-spin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) translateX(2px);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg) translateX(2px);
+  }
+}
+
+/* 窥视时只露眼睛 */
+.pet-peek .pet-shape-frog .pet-frog-eye,
+.pet-shape-frog.pet-peek .pet-frog-eye {
+  transform: translateY(-2px);
+}
+
+/* 打喷嚏时眼睛闭上 */
+.pet-sneeze .pet-shape-frog .frog-eyeball,
+.pet-shape-frog.pet-sneeze .frog-eyeball {
+  height: 3px;
+  top: 10px;
+  overflow: hidden;
+}
+
+/* 伸懒腰时眼睛慢睁 */
+.pet-stretch .pet-shape-frog .frog-eyeball,
+.pet-shape-frog.pet-stretch .frog-eyeball {
+  animation: frog-eye-stretch 2.5s ease-in-out;
+}
+
+@keyframes frog-eye-stretch {
+  0% {
+    height: 3px;
+    top: 10px;
+  }
+  50%,
+  100% {
+    height: 14px;
+    top: 4px;
+  }
+}
+
+/* 梦游时眼睛半闭 */
+.pet-sleepwalking .pet-shape-frog .frog-eyeball,
+.pet-shape-frog.pet-sleepwalking .frog-eyeball {
+  height: 4px;
+  top: 10px;
+  overflow: hidden;
+}
+
+/* 坏笑时眼睛眯起 */
+.pet-grin .pet-shape-frog .frog-eyeball,
+.pet-shape-frog.pet-grin .frog-eyeball {
+  height: 6px;
+  top: 9px;
+  overflow: hidden;
+}
+
+/* 翻滚时眼睛乱转 */
+.pet-rolling .pet-shape-frog .frog-pupil,
+.pet-shape-frog.pet-rolling .frog-pupil {
+  animation: frog-eye-spin 0.2s linear infinite;
+}
+
+/* 抓挠动画 */
+.pet-scratch .pet-shape-frog .pet-arm.arm-right,
+.pet-shape-frog.pet-scratch .pet-arm.arm-right {
+  animation: frog-scratch 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes frog-scratch {
+  0% {
+    transform: translateY(-4px) rotate(-10deg);
+  }
+  100% {
+    transform: translateY(-6px) rotate(5deg);
+  }
+}
+
+/* ====== 方向相关 ====== */
+
+/* 背面时隐藏肚皮和蛙眼眼球 */
+.pet-back .pet-shape-frog .pet-belly {
+  opacity: 0;
+}
+
+.pet-back .pet-shape-frog .frog-eyeball {
+  opacity: 0.3;
+}
+
+/* 左右朝向时瞳孔跟随 */
+.pet-left .pet-shape-frog .frog-pupil,
+.pet-shape-frog.pet-left .frog-pupil {
+  transform: translate(-80%, -50%);
+}
+
+.pet-right .pet-shape-frog .frog-pupil,
+.pet-shape-frog.pet-right .frog-pupil {
+  transform: translate(-20%, -50%);
+}

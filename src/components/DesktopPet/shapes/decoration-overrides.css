@@ -151,6 +151,29 @@
   bottom: 40px;
 }
 
+/* ====== 青蛙（无耳，蛙眼突出） ====== */
+.pet-shape-frog .deco-wreath {
+  top: 2px;
+}
+
+.pet-shape-frog .deco-bow {
+  bottom: 0;
+  left: 0;
+  margin-left: 0;
+}
+
+.pet-shape-frog .deco-topHat {
+  top: -8px;
+}
+
+.pet-shape-frog .deco-crown {
+  top: 6px;
+}
+
+.pet-shape-frog .deco-sunglasses {
+  top: 20px;
+}
+
 /* ====== 背面时隐藏正面装饰 ====== */
 .pet-back .deco-sunglasses,
 .pet-back .deco-medal {
