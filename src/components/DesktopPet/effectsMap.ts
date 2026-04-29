@@ -18,7 +18,6 @@ import ScratchEffects from "./effects/ScratchEffects.vue";
 import CelebrateEffects from "./effects/CelebrateEffects.vue";
 import PeekEffects from "./effects/PeekEffects.vue";
 import DancingEffects from "./effects/DancingEffects.vue";
-import RollingEffects from "./effects/RollingEffects.vue";
 import YawnEffects from "./effects/YawnEffects.vue";
 import SleepyEffects from "./effects/SleepyEffects.vue";
 import SleepwalkingEffects from "./effects/SleepwalkingEffects.vue";
@@ -49,7 +48,6 @@ export const STATE_EFFECTS: Partial<Record<PetState, Component>> = {
   celebrate: CelebrateEffects,
   peek: PeekEffects,
   dancing: DancingEffects,
-  rolling: RollingEffects,
   yawn: YawnEffects,
   sleepy: SleepyEffects,
   sleepwalking: SleepwalkingEffects,

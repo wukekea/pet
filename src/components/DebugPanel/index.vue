@@ -197,7 +197,6 @@ const actionGroups = [
       { state: "peek" as PetState, label: "偷看", icon: "🤫" },
       { state: "chase" as PetState, label: "追逐", icon: "→" },
       { state: "dancing" as PetState, label: "跳舞", icon: "♪" },
-      { state: "rolling" as PetState, label: "翻滚", icon: "↻" },
     ],
   },
   {
