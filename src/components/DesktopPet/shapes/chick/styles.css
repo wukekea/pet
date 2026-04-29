@@ -1,0 +1,751 @@
+/* ====== 小鸡形态样式 ====== */
+
+/* === 鸡冠 === */
+.pet-shape-chick .pet-comb {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  display: flex;
+  gap: 1px;
+}
+
+.pet-shape-chick .comb-spike {
+  width: 8px;
+  height: 12px;
+  background: #ef4444;
+  border-radius: 50% 50% 30% 30%;
+  box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.15);
+}
+
+.pet-shape-chick .comb-spike.comb-1 {
+  height: 9px;
+  transform: rotate(-8deg);
+}
+
+.pet-shape-chick .comb-spike.comb-2 {
+  height: 13px;
+}
+
+.pet-shape-chick .comb-spike.comb-3 {
+  height: 9px;
+  transform: rotate(8deg);
+}
+
+/* 生气时鸡冠变深红 */
+.pet-angry .pet-shape-chick .pet-comb .comb-spike,
+.pet-shape-chick.pet-angry .pet-comb .comb-spike {
+  background: #dc2626;
+  box-shadow: 0 0 6px rgba(220, 38, 38, 0.5);
+}
+
+/* === 耳朵隐藏（小鸡没有耳朵，用鸡冠替代） === */
+.pet-shape-chick .pet-ear {
+  width: 0;
+  height: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+/* 右耳保留为蝴蝶结锚点，定位到鸡冠右侧 */
+.pet-shape-chick .pet-ear.ear-right {
+  position: absolute;
+  top: -6px;
+  right: 12px;
+  width: 10px;
+  height: 10px;
+  transform: none;
+}
+
+.pet-shape-chick .pet-ear::before,
+.pet-shape-chick .pet-ear::after {
+  display: none;
+}
+
+/* === 身体调整（更圆润） === */
+.pet-shape-chick .pet-body {
+  border-radius: 50%;
+}
+
+/* === 眼睛（圆豆眼） === */
+.pet-shape-chick .pet-eyes:not(.blink) .eye {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--pet-eyes);
+}
+
+.pet-shape-chick .pet-eyes:not(.blink) .eye-shine {
+  width: 4px;
+  height: 4px;
+  top: 2px;
+  right: 2px;
+}
+
+/* === 尖嘴喙 === */
+.pet-shape-chick .pet-beak {
+  position: absolute;
+  left: 50%;
+  top: 42px;
+  transform: translateX(-50%);
+  z-index: 8;
+}
+
+.pet-shape-chick .pet-beak .beak-upper {
+  width: 14px;
+  height: 7px;
+  background: #f97316;
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  transform: rotate(180deg);
+  position: relative;
+  z-index: 2;
+}
+
+.pet-shape-chick .pet-beak .beak-lower {
+  width: 10px;
+  height: 4px;
+  background: #ea580c;
+  clip-path: polygon(0 0, 50% 100%, 100% 0);
+  margin: -1px auto 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* 隐藏默认嘴巴（用喙替代） */
+.pet-shape-chick .pet-mouth {
+  opacity: 0;
+}
+
+/* === 翅膀 === */
+.pet-shape-chick .pet-wing {
+  position: absolute;
+  width: 18px;
+  height: 24px;
+  background: var(--pet-body);
+  border-radius: 50% 50% 50% 20%;
+  z-index: 3;
+  top: 28px;
+  box-shadow:
+    inset 0 -3px 5px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: transform 0.1s ease;
+}
+
+.pet-shape-chick .pet-wing.wing-left {
+  left: -8px;
+  border-radius: 50% 20% 50% 50%;
+  transform: rotate(10deg);
+  transform-origin: top right;
+}
+
+.pet-shape-chick .pet-wing.wing-right {
+  right: -8px;
+  border-radius: 20% 50% 50% 50%;
+  transform: rotate(-10deg);
+  transform-origin: top left;
+}
+
+/* 隐藏默认手臂（用翅膀替代） */
+.pet-shape-chick .pet-arm {
+  width: 0;
+  height: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+/* === 腿（橙色鸡爪） === */
+.pet-shape-chick .pet-leg {
+  background: #f97316;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px 3px 2px 2px;
+}
+
+.pet-shape-chick .pet-leg::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 4px;
+  background: #f97316;
+  border-radius: 2px;
+  clip-path: polygon(0 0, 20% 100%, 50% 40%, 80% 100%, 100% 0);
+}
+
+/* === 腮红（更圆润偏橙） === */
+.pet-shape-chick .pet-cheek {
+  width: 11px;
+  height: 8px;
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+/* ====== 翅膀动画 ====== */
+
+/* 空闲时翅膀微动 */
+.pet-idle .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-idle .pet-wing {
+  animation: chick-wing-idle 2s ease-in-out infinite;
+}
+
+.pet-idle .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-idle .pet-wing.wing-right {
+  animation: chick-wing-idle-right 2s ease-in-out infinite;
+}
+
+@keyframes chick-wing-idle {
+  0%,
+  100% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(15deg);
+  }
+}
+
+@keyframes chick-wing-idle-right {
+  0%,
+  100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(-15deg);
+  }
+}
+
+/* 开心时翅膀快速扑扇 */
+.pet-happy .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-happy .pet-wing {
+  animation: chick-wing-flap 0.15s ease-in-out infinite alternate;
+}
+
+.pet-happy .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-happy .pet-wing.wing-right {
+  animation: chick-wing-flap-right 0.15s ease-in-out infinite alternate;
+}
+
+@keyframes chick-wing-flap {
+  0% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(45deg);
+  }
+}
+
+@keyframes chick-wing-flap-right {
+  0% {
+    transform: rotate(-10deg);
+  }
+  100% {
+    transform: rotate(-45deg);
+  }
+}
+
+/* 庆祝时也扑扇翅膀 */
+.pet-celebrate .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-celebrate .pet-wing {
+  animation: chick-wing-flap 0.15s ease-in-out infinite alternate;
+}
+
+.pet-celebrate .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-celebrate .pet-wing.wing-right {
+  animation: chick-wing-flap-right 0.15s ease-in-out infinite alternate;
+}
+
+/* 跳跃时翅膀展开 */
+.pet-jumping .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-jumping .pet-wing {
+  animation: chick-wing-jump 0.8s ease-in-out;
+}
+
+.pet-jumping .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-jumping .pet-wing.wing-right {
+  animation: chick-wing-jump-right 0.8s ease-in-out;
+}
+
+@keyframes chick-wing-jump {
+  0%,
+  100% {
+    transform: rotate(10deg);
+  }
+  30%,
+  70% {
+    transform: rotate(50deg);
+  }
+}
+
+@keyframes chick-wing-jump-right {
+  0%,
+  100% {
+    transform: rotate(-10deg);
+  }
+  30%,
+  70% {
+    transform: rotate(-50deg);
+  }
+}
+
+/* 害怕时翅膀抱紧身体 */
+.pet-scared .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-scared .pet-wing {
+  transform: rotate(2deg) translateX(3px);
+}
+
+.pet-scared .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-scared .pet-wing.wing-right {
+  transform: rotate(-2deg) translateX(-3px);
+}
+
+/* 跳舞时翅膀交替摆动 */
+.pet-dancing .pet-shape-chick .pet-wing.wing-left,
+.pet-shape-chick.pet-dancing .pet-wing.wing-left {
+  animation: chick-wing-dance-left 0.5s ease-in-out infinite;
+}
+
+.pet-dancing .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-dancing .pet-wing.wing-right {
+  animation: chick-wing-dance-right 0.5s ease-in-out infinite;
+}
+
+@keyframes chick-wing-dance-left {
+  0%,
+  100% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(40deg);
+  }
+}
+
+@keyframes chick-wing-dance-right {
+  0%,
+  100% {
+    transform: rotate(-40deg);
+  }
+  50% {
+    transform: rotate(-10deg);
+  }
+}
+
+/* 睡觉时翅膀放松下垂 */
+.pet-sleeping .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-sleeping .pet-wing {
+  transform: rotate(5deg) translateY(2px);
+}
+
+.pet-sleeping .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-sleeping .pet-wing.wing-right {
+  transform: rotate(-5deg) translateY(2px);
+}
+
+/* 困倦和哈欠时翅膀也微垂 */
+.pet-sleepy .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-sleepy .pet-wing,
+.pet-yawn .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-yawn .pet-wing {
+  transform: rotate(5deg) translateY(1px);
+}
+
+.pet-sleepy .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-sleepy .pet-wing.wing-right,
+.pet-yawn .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-yawn .pet-wing.wing-right {
+  transform: rotate(-5deg) translateY(1px);
+}
+
+/* ====== 鸡冠动画 ====== */
+
+/* 行走时鸡冠轻微晃动 */
+.pet-walking .pet-shape-chick .pet-comb,
+.pet-shape-chick.pet-walking .pet-comb {
+  animation: chick-comb-bob 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes chick-comb-bob {
+  0% {
+    transform: translateX(-50%) rotate(-3deg);
+  }
+  100% {
+    transform: translateX(-50%) rotate(3deg);
+  }
+}
+
+/* ====== 喙状态动画 ====== */
+
+/* 开心时嘴微张 */
+.pet-happy .pet-shape-chick .pet-beak .beak-lower,
+.pet-shape-chick.pet-happy .pet-beak .beak-lower {
+  transform: translateY(2px);
+}
+
+/* 打招呼时嘴张开 */
+.pet-hello .pet-shape-chick .pet-beak .beak-lower,
+.pet-shape-chick.pet-hello .pet-beak .beak-lower {
+  animation: chick-beak-talk 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes chick-beak-talk {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(3px);
+  }
+}
+
+/* 吃东西时啄食动画 */
+.pet-eating .pet-shape-chick .pet-beak,
+.pet-shape-chick.pet-eating .pet-beak {
+  animation: chick-peck 0.4s ease-in-out infinite;
+}
+
+@keyframes chick-peck {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(3px);
+  }
+}
+
+/* 打喷嚏时嘴大张 */
+.pet-sneeze .pet-shape-chick .pet-beak .beak-lower,
+.pet-shape-chick.pet-sneeze .pet-beak .beak-lower {
+  transform: translateY(4px);
+}
+
+/* 哈欠时嘴大张 */
+.pet-yawn .pet-shape-chick .pet-beak .beak-lower,
+.pet-shape-chick.pet-yawn .pet-beak .beak-lower {
+  animation: chick-beak-yawn 2s ease-in-out;
+}
+
+@keyframes chick-beak-yawn {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  20%,
+  80% {
+    transform: translateY(5px);
+  }
+}
+
+/* 生气时嘴紧闭 */
+.pet-angry .pet-shape-chick .pet-beak .beak-lower,
+.pet-shape-chick.pet-angry .pet-beak .beak-lower {
+  transform: translateY(-1px);
+}
+
+/* 害怕时嘴微颤 */
+.pet-scared .pet-shape-chick .pet-beak,
+.pet-shape-chick.pet-scared .pet-beak {
+  animation: chick-beak-tremble 0.1s ease-in-out infinite alternate;
+}
+
+@keyframes chick-beak-tremble {
+  0% {
+    transform: translateX(-50%) translateX(-1px);
+  }
+  100% {
+    transform: translateX(-50%) translateX(1px);
+  }
+}
+
+/* 哭泣时嘴张开 */
+.pet-crying .pet-shape-chick .pet-beak .beak-lower,
+.pet-shape-chick.pet-crying .pet-beak .beak-lower {
+  transform: translateY(3px);
+}
+
+/* 得意时嘴上翘 */
+.pet-smug .pet-shape-chick .pet-beak,
+.pet-shape-chick.pet-smug .pet-beak {
+  transform: translateX(-50%) rotate(-5deg);
+}
+
+/* 害羞时腮红加深 */
+.pet-shy .pet-shape-chick .pet-cheek,
+.pet-shape-chick.pet-shy .pet-cheek {
+  opacity: 1;
+  transform: scale(1.3);
+}
+
+/* 洗澡时翅膀搓动 */
+.pet-bathing .pet-shape-chick .pet-wing.wing-left,
+.pet-shape-chick.pet-bathing .pet-wing.wing-left {
+  animation: chick-wing-scrub-left 0.6s ease-in-out infinite;
+}
+
+.pet-bathing .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-bathing .pet-wing.wing-right {
+  animation: chick-wing-scrub-right 0.6s ease-in-out infinite;
+}
+
+@keyframes chick-wing-scrub-left {
+  0%,
+  100% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(25deg) translateY(-2px);
+  }
+}
+
+@keyframes chick-wing-scrub-right {
+  0%,
+  100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(-25deg) translateY(-2px);
+  }
+}
+
+/* 搬砖时翅膀举高 */
+.pet-brickCarrying .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-brickCarrying .pet-wing {
+  transform: rotate(30deg) translateY(-5px);
+}
+
+.pet-brickCarrying .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-brickCarrying .pet-wing.wing-right {
+  transform: rotate(-30deg) translateY(-5px);
+}
+
+/* 发传单时翅膀伸出 */
+.pet-flyerDistributing .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-flyerDistributing .pet-wing.wing-right {
+  animation: chick-wing-distribute 0.8s ease-in-out infinite;
+}
+
+@keyframes chick-wing-distribute {
+  0%,
+  100% {
+    transform: rotate(-15deg);
+  }
+  50% {
+    transform: rotate(-40deg) translateX(3px);
+  }
+}
+
+/* 编程时翅膀打字 */
+.pet-programmer .pet-shape-chick .pet-wing.wing-left,
+.pet-shape-chick.pet-programmer .pet-wing.wing-left {
+  animation: chick-wing-type-left 0.3s ease-in-out infinite alternate;
+}
+
+.pet-programmer .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-programmer .pet-wing.wing-right {
+  animation: chick-wing-type-right 0.3s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes chick-wing-type-left {
+  0% {
+    transform: rotate(10deg) translateY(0);
+  }
+  100% {
+    transform: rotate(15deg) translateY(2px);
+  }
+}
+
+@keyframes chick-wing-type-right {
+  0% {
+    transform: rotate(-10deg) translateY(0);
+  }
+  100% {
+    transform: rotate(-15deg) translateY(2px);
+  }
+}
+
+/* 伸懒腰时翅膀展开 */
+.pet-stretch .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-stretch .pet-wing {
+  animation: chick-wing-stretch 2.5s ease-in-out;
+}
+
+.pet-stretch .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-stretch .pet-wing.wing-right {
+  animation: chick-wing-stretch-right 2.5s ease-in-out;
+}
+
+@keyframes chick-wing-stretch {
+  0%,
+  100% {
+    transform: rotate(10deg);
+  }
+  30%,
+  70% {
+    transform: rotate(55deg) translateY(-3px);
+  }
+}
+
+@keyframes chick-wing-stretch-right {
+  0%,
+  100% {
+    transform: rotate(-10deg);
+  }
+  30%,
+  70% {
+    transform: rotate(-55deg) translateY(-3px);
+  }
+}
+
+/* 抓挠时翅膀挠头 */
+.pet-scratch .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-scratch .pet-wing.wing-right {
+  animation: chick-wing-scratch 0.3s ease-in-out infinite alternate;
+  transform-origin: bottom left;
+}
+
+@keyframes chick-wing-scratch {
+  0% {
+    transform: rotate(-30deg) translateY(-8px);
+  }
+  100% {
+    transform: rotate(-20deg) translateY(-10px);
+  }
+}
+
+/* 窥视时翅膀遮脸 */
+.pet-peek .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-peek .pet-wing {
+  transform: rotate(20deg) translateY(-5px) translateX(5px);
+}
+
+.pet-peek .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-peek .pet-wing.wing-right {
+  transform: rotate(-20deg) translateY(-5px) translateX(-5px);
+}
+
+/* 走路时翅膀微摆 */
+.pet-walking .pet-shape-chick .pet-wing.wing-left,
+.pet-shape-chick.pet-walking .pet-wing.wing-left {
+  animation: chick-wing-walk-left 0.4s ease-in-out infinite alternate;
+}
+
+.pet-walking .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-walking .pet-wing.wing-right {
+  animation: chick-wing-walk-right 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes chick-wing-walk-left {
+  0% {
+    transform: rotate(8deg);
+  }
+  100% {
+    transform: rotate(18deg);
+  }
+}
+
+@keyframes chick-wing-walk-right {
+  0% {
+    transform: rotate(-18deg);
+  }
+  100% {
+    transform: rotate(-8deg);
+  }
+}
+
+/* 追逐时翅膀向后 */
+.pet-chase .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-chase .pet-wing {
+  animation: chick-wing-flap 0.2s ease-in-out infinite alternate;
+}
+
+.pet-chase .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-chase .pet-wing.wing-right {
+  animation: chick-wing-flap-right 0.2s ease-in-out infinite alternate;
+}
+
+/* 背面时隐藏喙 */
+.pet-back .pet-shape-chick .pet-beak {
+  opacity: 0;
+}
+
+/* 背面时鸡冠仍可见 */
+.pet-back .pet-shape-chick .pet-comb {
+  z-index: 12;
+}
+
+/* ====== 方向相关 ====== */
+
+/* 左右朝向时喙偏移 */
+.pet-left .pet-shape-chick .pet-beak,
+.pet-shape-chick.pet-left .pet-beak {
+  transform: translateX(-70%);
+}
+
+.pet-right .pet-shape-chick .pet-beak,
+.pet-shape-chick.pet-right .pet-beak {
+  transform: translateX(-30%);
+}
+
+/* 梦游时翅膀下垂 */
+.pet-sleepwalking .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-sleepwalking .pet-wing {
+  transform: rotate(5deg) translateY(3px);
+}
+
+.pet-sleepwalking .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-sleepwalking .pet-wing.wing-right {
+  transform: rotate(-5deg) translateY(3px);
+}
+
+/* 困惑时翅膀抱胸 */
+.pet-confused .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-confused .pet-wing {
+  transform: rotate(5deg) translateX(3px);
+}
+
+.pet-confused .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-confused .pet-wing.wing-right {
+  transform: rotate(-5deg) translateX(-3px);
+}
+
+/* 思考时翅膀托腮 */
+.pet-thinking .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-thinking .pet-wing.wing-right {
+  transform: rotate(-25deg) translateY(-6px);
+}
+
+/* 坠落时翅膀乱摆 */
+.pet-fallen .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-fallen .pet-wing {
+  animation: chick-wing-flap 0.1s ease-in-out infinite alternate;
+}
+
+.pet-fallen .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-fallen .pet-wing.wing-right {
+  animation: chick-wing-flap-right 0.1s ease-in-out infinite alternate;
+}
+
+/* 坠落时鸡冠歪斜 */
+.pet-fallen .pet-shape-chick .pet-comb,
+.pet-shape-chick.pet-fallen .pet-comb {
+  transform: translateX(-50%) rotate(15deg);
+}
+
+/* 翻滚时翅膀展开 */
+.pet-rolling .pet-shape-chick .pet-wing,
+.pet-shape-chick.pet-rolling .pet-wing {
+  transform: rotate(40deg);
+}
+
+.pet-rolling .pet-shape-chick .pet-wing.wing-right,
+.pet-shape-chick.pet-rolling .pet-wing.wing-right {
+  transform: rotate(-40deg);
+}
+
+/* 坏笑时喙歪 */
+.pet-grin .pet-shape-chick .pet-beak,
+.pet-shape-chick.pet-grin .pet-beak {
+  transform: translateX(-50%) rotate(5deg);
+}
