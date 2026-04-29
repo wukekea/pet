@@ -1,0 +1,363 @@
+/* ====== 小狗形态样式 ====== */
+
+/* === 垂耳 === */
+.pet-shape-dog .pet-ear {
+  position: absolute;
+  top: -2px;
+  width: 18px;
+  height: 28px;
+  background: var(--pet-body);
+  border-radius: 50% 50% 60% 60%;
+  z-index: 2;
+  box-shadow:
+    inset 0 -4px 6px rgba(0, 0, 0, 0.1),
+    0 2px 3px rgba(0, 0, 0, 0.05);
+  transform-origin: top center;
+}
+
+.pet-shape-dog .pet-ear::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 18px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 50% 50% 60% 60%;
+}
+
+.pet-shape-dog .pet-ear.ear-left {
+  left: -2px;
+  transform: rotate(8deg);
+}
+
+.pet-shape-dog .pet-ear.ear-right {
+  right: -2px;
+  transform: rotate(-8deg);
+}
+
+/* === 鼻子（大圆鼻） === */
+.pet-shape-dog .pet-nose {
+  position: absolute;
+  left: 50%;
+  top: 38px;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 11px;
+  background: #1c1917;
+  border-radius: 50% 50% 45% 45%;
+  z-index: 8;
+  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.15);
+}
+
+.pet-shape-dog .pet-nose::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  width: 4px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+}
+
+/* === 眼睛（圆豆眼） === */
+.pet-shape-dog .pet-eyes:not(.blink) .eye {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--pet-eyes);
+}
+
+.pet-shape-dog .pet-eyes:not(.blink) .eye-shine {
+  width: 5px;
+  height: 5px;
+  top: 2px;
+  right: 2px;
+}
+
+/* === 嘴巴（微笑弧线） === */
+.pet-shape-dog .pet-mouth .mouth-smile {
+  width: 16px;
+  height: 8px;
+  border: none;
+  border-bottom: 2.5px solid currentColor;
+  border-radius: 0 0 50% 50%;
+  top: 48px;
+}
+
+/* === 舌头 === */
+.pet-shape-dog .pet-tongue {
+  position: absolute;
+  left: 50%;
+  top: 53px;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 0;
+  background: #f87171;
+  border-radius: 0 0 50% 50%;
+  z-index: 7;
+  overflow: hidden;
+  transition: height 0.2s ease;
+}
+
+/* 开心时吐舌头 */
+.pet-happy .pet-shape-dog .pet-tongue,
+.pet-shape-dog.pet-happy .pet-tongue {
+  height: 10px;
+  animation: dog-tongue-pant 0.4s ease-in-out infinite alternate;
+}
+
+/* 庆祝时也吐舌 */
+.pet-celebrate .pet-shape-dog .pet-tongue,
+.pet-shape-dog.pet-celebrate .pet-tongue {
+  height: 8px;
+  animation: dog-tongue-pant 0.3s ease-in-out infinite alternate;
+}
+
+/* 跳跃时吐舌 */
+.pet-jumping .pet-shape-dog .pet-tongue,
+.pet-shape-dog.pet-jumping .pet-tongue {
+  height: 7px;
+}
+
+/* 追逐时吐舌 */
+.pet-chase .pet-shape-dog .pet-tongue,
+.pet-shape-dog.pet-chase .pet-tongue {
+  height: 10px;
+  animation: dog-tongue-pant 0.25s ease-in-out infinite alternate;
+}
+
+@keyframes dog-tongue-pant {
+  0% {
+    height: 8px;
+  }
+  100% {
+    height: 12px;
+  }
+}
+
+/* === 腮红 === */
+.pet-shape-dog .pet-cheek {
+  width: 10px;
+  height: 7px;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+/* ====== 垂耳动画 ====== */
+
+/* 空闲时耳朵微动 */
+.pet-idle .pet-shape-dog .pet-ear,
+.pet-shape-dog.pet-idle .pet-ear {
+  animation: dog-ear-idle 2.5s ease-in-out infinite;
+}
+
+@keyframes dog-ear-idle {
+  0%,
+  100% {
+    transform: rotate(8deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+.pet-idle .pet-shape-dog .pet-ear.ear-right,
+.pet-shape-dog.pet-idle .pet-ear.ear-right {
+  animation: dog-ear-idle-right 2.5s ease-in-out infinite;
+}
+
+@keyframes dog-ear-idle-right {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(-10deg);
+  }
+}
+
+/* 开心时耳朵弹跳 */
+.pet-happy .pet-shape-dog .pet-ear,
+.pet-shape-dog.pet-happy .pet-ear {
+  animation: dog-ear-happy 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes dog-ear-happy {
+  0% {
+    transform: rotate(8deg) translateY(0);
+  }
+  100% {
+    transform: rotate(5deg) translateY(-2px);
+  }
+}
+
+.pet-happy .pet-shape-dog .pet-ear.ear-right,
+.pet-shape-dog.pet-happy .pet-ear.ear-right {
+  animation: dog-ear-happy-right 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes dog-ear-happy-right {
+  0% {
+    transform: rotate(-8deg) translateY(0);
+  }
+  100% {
+    transform: rotate(-5deg) translateY(-2px);
+  }
+}
+
+/* 害怕时耳朵贴紧 */
+.pet-scared .pet-shape-dog .pet-ear,
+.pet-shape-dog.pet-scared .pet-ear {
+  transform: rotate(15deg) translateY(3px);
+  animation: none;
+}
+
+.pet-scared .pet-shape-dog .pet-ear.ear-right,
+.pet-shape-dog.pet-scared .pet-ear.ear-right {
+  transform: rotate(-15deg) translateY(3px);
+}
+
+/* 警觉/生气时耳朵竖起 */
+.pet-angry .pet-shape-dog .pet-ear,
+.pet-shape-dog.pet-angry .pet-ear {
+  transform: rotate(3deg) translateY(-3px);
+  animation: none;
+}
+
+.pet-angry .pet-shape-dog .pet-ear.ear-right,
+.pet-shape-dog.pet-angry .pet-ear.ear-right {
+  transform: rotate(-3deg) translateY(-3px);
+}
+
+/* 走路时耳朵晃动 */
+.pet-walking .pet-shape-dog .pet-ear,
+.pet-shape-dog.pet-walking .pet-ear {
+  animation: dog-ear-walk 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes dog-ear-walk {
+  0% {
+    transform: rotate(6deg);
+  }
+  100% {
+    transform: rotate(12deg);
+  }
+}
+
+.pet-walking .pet-shape-dog .pet-ear.ear-right,
+.pet-shape-dog.pet-walking .pet-ear.ear-right {
+  animation: dog-ear-walk-right 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes dog-ear-walk-right {
+  0% {
+    transform: rotate(-12deg);
+  }
+  100% {
+    transform: rotate(-6deg);
+  }
+}
+
+/* 睡觉时耳朵完全垂下 */
+.pet-sleeping .pet-shape-dog .pet-ear,
+.pet-shape-dog.pet-sleeping .pet-ear {
+  transform: rotate(12deg) translateY(4px);
+  animation: none;
+}
+
+.pet-sleeping .pet-shape-dog .pet-ear.ear-right,
+.pet-shape-dog.pet-sleeping .pet-ear.ear-right {
+  transform: rotate(-12deg) translateY(4px);
+}
+
+/* ====== 状态特殊处理 ====== */
+
+/* 害羞时腮红加深 */
+.pet-shy .pet-shape-dog .pet-cheek,
+.pet-shape-dog.pet-shy .pet-cheek {
+  opacity: 1;
+  transform: scale(1.3);
+}
+
+/* 吃东西时舌头微露 */
+.pet-eating .pet-shape-dog .pet-tongue,
+.pet-shape-dog.pet-eating .pet-tongue {
+  height: 5px;
+  animation: dog-tongue-eat 0.5s ease-in-out infinite;
+}
+
+@keyframes dog-tongue-eat {
+  0%,
+  100% {
+    height: 5px;
+  }
+  50% {
+    height: 2px;
+  }
+}
+
+/* 思考时耳朵单侧抬 */
+.pet-thinking .pet-shape-dog .pet-ear.ear-right,
+.pet-shape-dog.pet-thinking .pet-ear.ear-right {
+  transform: rotate(-3deg) translateY(-2px);
+  animation: none;
+}
+
+/* 困惑时歪头，耳朵一高一低 */
+.pet-confused .pet-shape-dog .pet-ear.ear-left,
+.pet-shape-dog.pet-confused .pet-ear.ear-left {
+  transform: rotate(5deg) translateY(-2px);
+}
+
+.pet-confused .pet-shape-dog .pet-ear.ear-right,
+.pet-shape-dog.pet-confused .pet-ear.ear-right {
+  transform: rotate(-12deg) translateY(2px);
+}
+
+/* 坏笑时舌头微露 */
+.pet-grin .pet-shape-dog .pet-tongue,
+.pet-shape-dog.pet-grin .pet-tongue {
+  height: 5px;
+}
+
+/* 打喷嚏时耳朵弹起 */
+.pet-sneeze .pet-shape-dog .pet-ear,
+.pet-shape-dog.pet-sneeze .pet-ear {
+  animation: dog-ear-sneeze 1s ease-in-out;
+}
+
+@keyframes dog-ear-sneeze {
+  0%,
+  100% {
+    transform: rotate(8deg);
+  }
+  50% {
+    transform: rotate(2deg) translateY(-4px);
+  }
+}
+
+.pet-sneeze .pet-shape-dog .pet-ear.ear-right,
+.pet-shape-dog.pet-sneeze .pet-ear.ear-right {
+  animation: dog-ear-sneeze-right 1s ease-in-out;
+}
+
+@keyframes dog-ear-sneeze-right {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(-2deg) translateY(-4px);
+  }
+}
+
+/* ====== 方向相关 ====== */
+
+/* 背面时隐藏舌头和鼻子 */
+.pet-back .pet-shape-dog .pet-tongue,
+.pet-back .pet-shape-dog .pet-nose {
+  opacity: 0;
+}

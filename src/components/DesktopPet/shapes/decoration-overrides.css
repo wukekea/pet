@@ -101,6 +101,29 @@
   top: 22px;
 }
 
+/* ====== 小狗（垂耳适配） ====== */
+.pet-shape-dog .deco-wreath {
+  top: 4px;
+}
+
+.pet-shape-dog .deco-bow {
+  top: auto;
+  right: auto;
+  bottom: 4px;
+}
+
+.pet-shape-dog .deco-topHat {
+  top: -4px;
+}
+
+.pet-shape-dog .deco-crown {
+  top: 12px;
+}
+
+.pet-shape-dog .deco-sunglasses {
+  top: 22px;
+}
+
 /* ====== 背面时隐藏正面装饰 ====== */
 .pet-back .deco-sunglasses,
 .pet-back .deco-medal {

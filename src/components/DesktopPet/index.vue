@@ -75,6 +75,7 @@ import "./shapes/cat/styles.css";
 import "./shapes/panda/styles.css";
 import "./shapes/rabbit/styles.css";
 import "./shapes/chick/styles.css";
+import "./shapes/dog/styles.css";
 
 // 食物类型列表（调试面板使用）
 const foodTypes = Object.keys(FOOD_CONFIGS) as FoodType[];
