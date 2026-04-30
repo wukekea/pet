@@ -16,6 +16,8 @@ import {
   currentBathType,
   currentPetShape,
   coinGainAmount,
+  mood,
+  moodLevel,
   type FoodType,
   type BathType,
   type DecorationType,
@@ -561,6 +563,27 @@ defineExpose({
                 >
                   {{ weatherStatusText }}
                 </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 心情信息 -->
+          <div class="weather-card">
+            <div class="weather-card-title">心情系统</div>
+            <div class="weather-rows">
+              <div class="weather-row">
+                <span class="weather-key">😊 心情值</span>
+                <span class="weather-val">{{ mood }}/100</span>
+              </div>
+              <div class="weather-row">
+                <span class="weather-key">📊 心情等级</span>
+                <span class="weather-val" :class="`mood-${moodLevel}`">{{
+                  moodLevel === "good"
+                    ? "好"
+                    : moodLevel === "bad"
+                      ? "差"
+                      : "一般"
+                }}</span>
               </div>
             </div>
           </div>
@@ -1898,6 +1921,31 @@ defineExpose({
 
 .dark-mode .weather-val.loading {
   color: #ffb800;
+}
+
+/* 心情等级颜色 */
+.weather-val.mood-good {
+  color: #10b981;
+}
+
+.weather-val.mood-bad {
+  color: #ef4444;
+}
+
+.weather-val.mood-normal {
+  color: #f59e0b;
+}
+
+.dark-mode .weather-val.mood-good {
+  color: #34d399;
+}
+
+.dark-mode .weather-val.mood-bad {
+  color: #f87171;
+}
+
+.dark-mode .weather-val.mood-normal {
+  color: #fbbf24;
 }
 
 @keyframes pulse {

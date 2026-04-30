@@ -4,9 +4,10 @@ import {
   dialogueMessages,
   dreamTalkMessages,
   weatherDialogues,
+  moodDialogues,
 } from "../dialogues";
 import { petState } from "./sharedState";
-import { isDragging } from "./sharedState";
+import { isDragging, moodLevel } from "./sharedState";
 import { currentWeather, isWeatherChanging } from "./weatherState";
 import {
   getTimePeriod,
@@ -79,6 +80,16 @@ export function showDialogue() {
     const weatherMessage = getWeatherDialogue();
     if (weatherMessage) {
       showCustomDialogue(weatherMessage);
+      return;
+    }
+  }
+
+  // 有 15% 概率显示心情相关台词（心情好或心情差时）
+  const currentMood = moodLevel.value;
+  if (currentMood !== "normal" && Math.random() < 0.15) {
+    const moodMessages = moodDialogues[currentMood];
+    if (moodMessages && moodMessages.length > 0) {
+      showCustomDialogue(randomPick(moodMessages));
       return;
     }
   }

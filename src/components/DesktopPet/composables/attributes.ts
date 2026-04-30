@@ -14,7 +14,9 @@ import {
   currentBathType,
   isDragging,
   coinGainAmount,
+  mood,
 } from "./sharedState";
+import { currentWeather } from "./weatherState";
 import {
   SATIETY_DECAY_INTERVAL,
   CLEANLINESS_DECAY_INTERVAL,
@@ -80,6 +82,40 @@ let cleanlinessDecayAcc = 0;
 let staminaRecoverAcc = 0;
 let staminaSleepRecoverAcc = 0;
 let healthRecoverAcc = 0;
+
+// 心情更新间隔（每 10 秒计算一次）
+const MOOD_UPDATE_INTERVAL = 10;
+
+// 天气对心情的修正值
+const WEATHER_MOOD_MODIFIERS: Record<string, number> = {
+  sunny: 10,
+  lightSnow: 5,
+  heavySnow: -10,
+  heavyRain: -10,
+  thunderstorm: -15,
+};
+
+// 更新心情值
+function updateMood(): void {
+  const data = attributeData.value;
+  const cap = getAttributeCap(data.level);
+
+  // 属性基础分：各属性占上限百分比的加权平均（0-100）
+  const satietyPercent = (data.satiety / cap) * 100;
+  const cleanlinessPercent = (data.cleanliness / cap) * 100;
+  const staminaPercent = (data.stamina / cap) * 100;
+  const healthPercent = (data.health / HEALTH_CAP) * 100;
+  const baseMood =
+    (satietyPercent + cleanlinessPercent + staminaPercent + healthPercent) / 4;
+
+  // 天气修正
+  const weatherModifier = WEATHER_MOOD_MODIFIERS[currentWeather.value] ?? 0;
+
+  // 最终心情值（0-100）
+  mood.value = Math.round(
+    Math.max(0, Math.min(100, baseMood + weatherModifier)),
+  );
+}
 
 // 判断是否是可以触发自动行为的状态
 function canTriggerAutoBehavior(): boolean {
@@ -267,6 +303,11 @@ function tick(): void {
   // 陪伴经验
   if (companionshipTickCount % COMPANIONSHIP_INTERVAL === 0) {
     addExperience(COMPANIONSHIP_EXPERIENCE);
+  }
+
+  // 更新心情（每 10 秒一次）
+  if (tickCount % MOOD_UPDATE_INTERVAL === 0) {
+    updateMood();
   }
 
   // 更新时间戳
@@ -728,6 +769,9 @@ export function initAttributes(): void {
 
   // 启动时检查救济金（首次打开或跨天重启时）
   checkDailyAllowance();
+
+  // 初始化心情值
+  updateMood();
 
   // 启动计时器
   startTimers();

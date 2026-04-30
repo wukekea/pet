@@ -107,5 +107,14 @@ export const DECORATION_ICONS: Record<DecorationType, string> = {
   magicWand: "✨",
 };
 
+// 心情系统
+export const mood = ref(60);
+export type MoodLevel = "good" | "normal" | "bad";
+export const moodLevel = computed<MoodLevel>(() => {
+  if (mood.value >= 70) return "good";
+  if (mood.value < 30) return "bad";
+  return "normal";
+});
+
 // 宠物形态（从 petShapeStorage 导入）
 export { currentPetShape } from "./petShapeStorage";

@@ -36,6 +36,7 @@ import {
   targetPosition,
   workEndTime,
   quickPanelVisible,
+  moodLevel,
 } from "./sharedState";
 
 import { getTimeGreeting, showCustomDialogue, showDialogue } from "./dialogue";
@@ -56,7 +57,6 @@ import {
   registerAttributeCallbacks,
   onWorkComplete,
   addInteractionExperience,
-  getHealthStatus,
   getAffordableWorkStates,
   getWorkDurationMultiplier,
 } from "./attributes";
@@ -254,25 +254,27 @@ export async function changeState(newState: PetState, skipDialogue = false) {
             "peek",
           ];
 
-          // 健康状态影响 idle 行为
-          const healthStatus = getHealthStatus();
+          // 心情影响 idle 行为
+          const currentMood = moodLevel.value;
           const random = Math.random();
 
           if (random < 0.1 && !scheduleEnabled.value) {
             // 只有未启用作息时才允许随机睡眠
             changeState("sleeping");
-          } else if (healthStatus === "happy" && random < 0.3) {
-            // 高健康时倾向开心表情
+          } else if (currentMood === "good" && random < 0.3) {
+            // 心情好时倾向开心表情
             const happyStates: PetState[] = [
               "happy",
               "celebrate",
               "hello",
               "dancing",
+              "grin",
             ];
             changeState(randomPick(happyStates));
-          } else if (healthStatus === "sick" && random < 0.4) {
-            // 低健康时频繁打喷嚏
-            changeState("sneeze");
+          } else if (currentMood === "bad" && random < 0.3) {
+            // 心情差时倾向伤心表情
+            const sadStates: PetState[] = ["crying", "angry", "scared"];
+            changeState(randomPick(sadStates));
           } else if (random < 0.85) {
             // 从可用状态中随机选择
             changeState(randomPick(freeStates));
@@ -438,17 +440,25 @@ export function handlePetClick() {
     // 不可打断状态下，显示忙碌台词，不改变状态
     showBusyDialogue(petState.value);
   } else {
-    // 点击反应（移除工作状态，工作需通过属性面板触发）
-    const reactions: PetState[] = [
-      "happy",
-      "scared",
-      "fallen",
-      "smug",
-      "shy",
-      "celebrate",
-      "dancing",
-      "rolling",
-    ];
+    // 点击反应受心情影响
+    let reactions: PetState[];
+    const currentMood = moodLevel.value;
+    if (currentMood === "good") {
+      reactions = ["happy", "celebrate", "dancing", "smug"];
+    } else if (currentMood === "bad") {
+      reactions = ["crying", "scared", "angry", "confused"];
+    } else {
+      reactions = [
+        "happy",
+        "scared",
+        "fallen",
+        "smug",
+        "shy",
+        "celebrate",
+        "dancing",
+        "rolling",
+      ];
+    }
     changeState(randomPick(reactions));
   }
 }
