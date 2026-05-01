@@ -398,11 +398,11 @@ const removeRainDrop = (id: number) => {
 
 // 监听雨滴列表变化，所有雨滴消失后重置退出状态并启动新天气效果
 watch(
-  rainDrops,
-  (newDrops) => {
+  () => rainDrops.value.length,
+  (newLen) => {
     if (
       isWeatherChanging.value &&
-      newDrops.length === 0 &&
+      newLen === 0 &&
       snowFlakes.value.length === 0
     ) {
       isWeatherChanging.value = false;
@@ -434,16 +434,15 @@ watch(
       }
     }
   },
-  { deep: true },
 );
 
 // 监听雪花列表变化，所有雪花消失后重置退出状态并启动新天气效果
 watch(
-  snowFlakes,
-  (newFlakes) => {
+  () => snowFlakes.value.length,
+  (newLen) => {
     if (
       isWeatherChanging.value &&
-      newFlakes.length === 0 &&
+      newLen === 0 &&
       rainDrops.value.length === 0
     ) {
       isWeatherChanging.value = false;
@@ -475,7 +474,6 @@ watch(
       }
     }
   },
-  { deep: true },
 );
 
 // 启动雨滴生成
@@ -609,9 +607,9 @@ const startCloudExit = () => {
 
 // 监听云朵列表变化，所有云朵消失后重置退出状态并启动新天气效果
 watch(
-  clouds,
-  (newClouds) => {
-    if (isWeatherChanging.value && newClouds.length === 0) {
+  () => clouds.value.length,
+  (newLen) => {
+    if (isWeatherChanging.value && newLen === 0) {
       // 所有云朵消失，恢复状态
       isWeatherChanging.value = false;
 
@@ -631,7 +629,6 @@ watch(
       }
     }
   },
-  { deep: true },
 );
 
 // 监听天气变化，启动/停止云朵和雨滴生成

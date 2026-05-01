@@ -57,6 +57,7 @@ import {
   getActiveEffects,
 } from "./attributeStorage";
 import { isWorkState } from "./petController";
+import { tickStats } from "./stats";
 
 // 响应式属性数据
 const attributeData = ref<AttributeData>(loadAttributeData());
@@ -314,6 +315,9 @@ function tick(): void {
 
   // 检查自动行为
   checkAutoBehaviors();
+
+  // 统计系统计时（共用同一个定时器）
+  tickStats();
 
   // 防抖保存
   debouncedSave();
