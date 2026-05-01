@@ -40,7 +40,7 @@ import {
 } from "./sharedState";
 
 import { getTimeGreeting, showCustomDialogue, showDialogue } from "./dialogue";
-import { addFootprint, cleanupFootprints } from "./footprints";
+import { addFootprint, stopFootprintCleanup } from "./footprints";
 import { randomPick } from "../utils/random";
 import {
   onSleepEnd,
@@ -130,6 +130,8 @@ export function moveToRandomPosition() {
   const dy = targetPosition.value.y - position.value.y;
   updateDirection(dx, dy);
   petState.value = "walking";
+  // 启动动画循环驱动移动
+  startAnimationLoop();
 }
 // 平滑结束跳跃类动画（如庆祝、跳跃等）
 // 等待动画回到地面位置后再切换状态
@@ -200,6 +202,12 @@ export async function changeState(newState: PetState, skipDialogue = false) {
     recordState(newState);
   }
   petState.value = newState;
+
+  // 需要移动的状态启动动画循环
+  if (newState === "chase" || newState === "walking") {
+    startAnimationLoop();
+  }
+
   if (!skipDialogue) {
     showDialogue();
   }
@@ -372,11 +380,14 @@ export async function changeState(newState: PetState, skipDialogue = false) {
       break;
   }
 }
-// 动画循环
+// 动画循环 - 仅在移动状态下运行（walking/chase）
 export function animate() {
-  cleanupFootprints();
+  if (!isVisible.value) {
+    stopAnimationLoop();
+    return;
+  }
 
-  if (petState.value === "chase" && isVisible.value) {
+  if (petState.value === "chase") {
     const dx = mousePosition.value.x - position.value.x - PET_SIZE / 2;
     const dy = mousePosition.value.y - position.value.y - PET_SIZE / 2;
     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -392,17 +403,11 @@ export function animate() {
       updateDirection(moveX, moveY);
       addFootprint(position.value.x, position.value.y, petDirection.value);
     }
-  }
-
-  if (isVisible.value && petState.value !== "chase") {
+  } else if (petState.value === "walking" && !isDragging.value) {
     const dx = targetPosition.value.x - position.value.x;
     const dy = targetPosition.value.y - position.value.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    if (
-      distance > WALK_SPEED &&
-      petState.value === "walking" &&
-      !isDragging.value
-    ) {
+    if (distance > WALK_SPEED) {
       const ratio = WALK_SPEED / distance;
       const moveX = dx * ratio;
       const moveY = dy * ratio;
@@ -411,19 +416,36 @@ export function animate() {
       // 根据移动方向设置朝向
       updateDirection(moveX, moveY);
       addFootprint(position.value.x, position.value.y, petDirection.value);
-    } else if (
-      distance <= WALK_SPEED &&
-      petState.value === "walking" &&
-      !isDragging.value
-    ) {
+    } else {
       position.value.x = targetPosition.value.x;
       position.value.y = targetPosition.value.y;
       // 恢复正面朝向
       petDirection.value = "front";
+      stopAnimationLoop();
       changeState("idle");
+      return;
     }
+  } else {
+    // 非移动状态，停止循环
+    stopAnimationLoop();
+    return;
   }
+
   animationFrameId.value = requestAnimationFrame(animate);
+}
+
+// 启动动画循环（防止重复启动）
+export function startAnimationLoop() {
+  if (animationFrameId.value !== null) return;
+  animationFrameId.value = requestAnimationFrame(animate);
+}
+
+// 停止动画循环
+export function stopAnimationLoop() {
+  if (animationFrameId.value !== null) {
+    cancelAnimationFrame(animationFrameId.value);
+    animationFrameId.value = null;
+  }
 }
 // 点击宠物
 export function handlePetClick() {
@@ -583,10 +605,9 @@ function handleDragEnd() {
 export function togglePet() {
   isVisible.value = !isVisible.value;
   if (!isVisible.value) {
-    if (animationFrameId.value) cancelAnimationFrame(animationFrameId.value);
+    stopAnimationLoop();
     if (stateTimer.value) clearTimeout(stateTimer.value);
   } else {
-    animate();
     changeState("idle");
   }
 }
@@ -703,7 +724,6 @@ export function initPet() {
   initWeatherService();
 
   if (isVisible.value) {
-    animate();
     // 每次启动都打招呼
     initTimer = setTimeout(() => {
       // 显示问候语
@@ -730,7 +750,8 @@ export function initPet() {
 }
 // 清理
 export function cleanupPet() {
-  if (animationFrameId.value) cancelAnimationFrame(animationFrameId.value);
+  stopAnimationLoop();
+  stopFootprintCleanup();
   if (stateTimer.value) clearTimeout(stateTimer.value);
   if (initTimer) clearTimeout(initTimer);
   if (initTimer2) clearTimeout(initTimer2);
