@@ -98,8 +98,11 @@ function isMouseOnPet(x: number, y: number): boolean {
   const petY = position.value.y;
   const petCenterX = petX + PET_SIZE / 2;
   const petCenterY = petY + PET_SIZE / 2;
-  const distance = Math.sqrt((x - petCenterX) ** 2 + (y - petCenterY) ** 2);
-  return distance < PET_SIZE / 2 + 15;
+  const dx = x - petCenterX;
+  const dy = y - petCenterY;
+  const radius = PET_SIZE / 2 + 15;
+  // 用距离平方比较，避免 Math.sqrt
+  return dx * dx + dy * dy < radius * radius;
 }
 
 // 根据移动方向更新宠物朝向
@@ -650,7 +653,10 @@ function isMouseInElement(
 
 // 处理鼠标移动
 export function handleMouseMove(e: MouseEvent) {
-  mousePosition.value = { x: e.clientX, y: e.clientY };
+  // mousePosition 仅 chase 状态需要，按需更新避免不必要的响应式触发
+  if (petState.value === "chase") {
+    mousePosition.value = { x: e.clientX, y: e.clientY };
+  }
   // 任意 UI 弹窗打开时，不自动控制穿透
   if (isAnyUiOpen.value) return;
 

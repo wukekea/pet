@@ -183,6 +183,8 @@ function tick(): void {
   const data = attributeData.value;
   const state = petState.value;
   const cap = getAttributeCap(data.level);
+  // 缓存装饰效果，避免每次衰减/恢复检查都重新计算
+  const effects = getActiveEffects(data.equippedDecorations);
 
   // 跨午夜检查：重置每日交互经验，发放每日救济金
   const today = getTodayString();
@@ -205,7 +207,6 @@ function tick(): void {
       ? Math.floor(SATIETY_DECAY_INTERVAL / 3)
       : SATIETY_DECAY_INTERVAL;
   if (tickCount % satietyInterval === 0) {
-    const effects = getActiveEffects(data.equippedDecorations);
     const reduction =
       (effects.satietyDecayReduction ?? 0) + (effects.allDecayReduction ?? 0);
     if (reduction > 0) {
@@ -227,7 +228,6 @@ function tick(): void {
       ? Math.floor(CLEANLINESS_DECAY_INTERVAL / 3)
       : CLEANLINESS_DECAY_INTERVAL;
   if (tickCount % cleanlinessInterval === 0) {
-    const effects = getActiveEffects(data.equippedDecorations);
     const reduction =
       (effects.cleanlinessDecayReduction ?? 0) +
       (effects.allDecayReduction ?? 0);
@@ -244,7 +244,6 @@ function tick(): void {
   }
 
   // 体力值变化
-  const effects = getActiveEffects(data.equippedDecorations);
   const staminaBonus = effects.staminaRecoverBonus ?? 0;
 
   if (isWorkState(state)) {
