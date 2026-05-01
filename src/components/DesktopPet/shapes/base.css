@@ -26,6 +26,7 @@
   pointer-events: auto;
   cursor: pointer;
   transition: transform 0.3s ease;
+  will-change: left, top;
 }
 
 .pet-container:hover {

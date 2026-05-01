@@ -88,10 +88,3 @@ export function addFootprint(x: number, y: number, direction: PetDirection) {
   // 有新脚印时确保清理定时器在运行
   startFootprintCleanup();
 }
-
-// 获取脚印透明度
-export function getFootprintOpacity(footprint: Footprint): number {
-  const age = Date.now() - footprint.createdAt;
-  const remaining = FOOTPRINT_LIFETIME - age;
-  return Math.max(0, remaining / FOOTPRINT_LIFETIME);
-}

@@ -6,12 +6,14 @@
 /* === 基础容器 === */
 .weather-background {
   position: fixed;
+  left: 0;
+  top: 0;
   width: 280px;
   height: 280px;
-  transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 1;
   overflow: visible;
+  will-change: transform;
   /* 移除边框，使用柔和的阴影 */
   filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.1));
 }

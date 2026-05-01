@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Footprint } from "../types";
+import { FOOTPRINT_LIFETIME } from "../constants";
 
 // 脚印组件
 defineProps<{
@@ -7,12 +8,8 @@ defineProps<{
   color: string;
 }>();
 
-// 获取脚印透明度
-const getOpacity = (footprint: Footprint): number => {
-  const age = Date.now() - footprint.createdAt;
-  const maxAge = 3000; // 3秒后完全消失
-  return Math.max(0, 1 - age / maxAge);
-};
+// 渐隐动画时长（与常量保持一致）
+const fadeoutDuration = `${FOOTPRINT_LIFETIME}ms`;
 </script>
 
 <template>
@@ -29,7 +26,6 @@ const getOpacity = (footprint: Footprint): number => {
       :style="{
         left: `${footprint.x}px`,
         top: `${footprint.y}px`,
-        opacity: getOpacity(footprint),
       }"
     >
       <svg viewBox="0 0 24 24" class="footprint-svg" :style="{ color }">
@@ -56,8 +52,18 @@ const getOpacity = (footprint: Footprint): number => {
   width: 20px;
   height: 20px;
   transform: translate(-50%, -100%);
-  transition: opacity 0.1s linear;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  /* 使用 CSS 动画渐隐，替代 JS 计算透明度 */
+  animation: footprint-fadeout v-bind(fadeoutDuration) linear forwards;
+}
+
+@keyframes footprint-fadeout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .footprint-svg {
@@ -66,9 +72,6 @@ const getOpacity = (footprint: Footprint): number => {
 }
 
 /* 脚印旋转：根据移动方向旋转，脚趾指向移动方向 */
-/* 基础朝上（脚趾在上），根据方向旋转 */
-/* front = 朝向屏幕前方 = 向下移动 */
-/* back = 背对屏幕 = 向上移动 */
 .foot-side-left.dir-front {
   transform: translate(-50%, -100%) rotate(-188deg);
 }

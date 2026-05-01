@@ -117,10 +117,10 @@ const themeClass = computed(() =>
 );
 
 // 天气背景位置 - 跟随宠物位置，居中显示
-// 偏移量：left 向右偏移 40px，top 向上偏移（负值），使宠物在天气背景中位置偏下
+// 使用 transform 替代 left/top，利用 GPU 合成层避免 reflow
+// 包含 translate(-50%, -50%) 用于居中（原在 CSS 中定义）
 const weatherStyle = computed(() => ({
-  left: `${position.value.x + 40}px`,
-  top: `${position.value.y - 20}px`,
+  transform: `translate(calc(${position.value.x + 40}px - 50%), calc(${position.value.y - 20}px - 50%))`,
 }));
 
 // ========== 工具函数 ==========
