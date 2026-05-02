@@ -20,6 +20,7 @@ import { DREAM_TALK_INTERVAL, STRETCH_DURATION } from "../constants";
 // 当前配置
 let currentConfig: ScheduleConfig | null = null;
 let scheduleCheckTimerId: ReturnType<typeof setInterval> | null = null;
+let stretchGreetingTimerId: ReturnType<typeof setTimeout> | null = null;
 
 // 获取当前配置
 export function getScheduleConfig(): ScheduleConfig {
@@ -167,8 +168,10 @@ export function exitSleepSchedule(): void {
   // 触发伸懒腰状态，然后显示问候语
   changeState("stretch");
 
-  // 在伸懒腰结束后显示问候语
-  setTimeout(() => {
+  // 在伸懒腰结束后显示问候语，存储 ID 以便必要时取消
+  if (stretchGreetingTimerId) clearTimeout(stretchGreetingTimerId);
+  stretchGreetingTimerId = setTimeout(() => {
+    stretchGreetingTimerId = null;
     const greeting = getTimeGreetingForSleep();
     showCustomDialogue(greeting);
   }, STRETCH_DURATION);
@@ -291,6 +294,10 @@ export function stopScheduleMonitor(): void {
   if (scheduleCheckTimerId) {
     clearInterval(scheduleCheckTimerId);
     scheduleCheckTimerId = null;
+  }
+  if (stretchGreetingTimerId) {
+    clearTimeout(stretchGreetingTimerId);
+    stretchGreetingTimerId = null;
   }
   stopDreamTalkTimer();
 }

@@ -9,6 +9,7 @@ import {
   saveWeatherStatus,
   loadWeatherStatus,
 } from "./qweatherStorage";
+import { getTodayString } from "../utils/date";
 import type {
   QWeatherLocationResponse,
   QWeatherNowResponse,
@@ -144,7 +145,7 @@ async function performUpdate(): Promise<boolean> {
   try {
     // 1. 检查是否需要 IP 定位（启动时或每天一次）
     let cityId = weatherStatus.value.cityId;
-    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    const today = getTodayString(); // YYYY-MM-DD（本地时区，与其他模块一致）
     const needIpLocation =
       !weatherStatus.value.lastIpLocationDate ||
       weatherStatus.value.lastIpLocationDate !== today;
