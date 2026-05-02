@@ -126,17 +126,20 @@ export interface LLMConfig {
   baseURL: string;
   apiKey: string;
   model: string;
+  /** 请求格式：openai（标准）| weibo（微博 aigc 代理） */
+  requestFormat: "openai" | "weibo";
 }
 
 function loadLLMConfig(): LLMConfig {
   try {
     const saved = localStorage.getItem("llm-config");
-    if (saved) return JSON.parse(saved);
+    if (saved) return { requestFormat: "openai", ...JSON.parse(saved) };
   } catch {}
   return {
     baseURL: "https://api.openai.com/v1/chat/completions",
     apiKey: "",
     model: "gpt-4o-mini",
+    requestFormat: "openai",
   };
 }
 

@@ -34,7 +34,6 @@ const error = ref("");
 // 设置面板
 const showSettings = ref(false);
 const editConfig = ref({ ...llmConfig.value });
-
 function toggleSettings() {
   showSettings.value = !showSettings.value;
   if (showSettings.value) {
@@ -287,6 +286,13 @@ const cssVars = computed(() => ({
                 placeholder="gpt-4o-mini"
                 spellcheck="false"
               />
+            </div>
+            <div class="setting-group">
+              <label>请求格式</label>
+              <select v-model="editConfig.requestFormat" class="setting-select">
+                <option value="openai">标准 OpenAI（支持工具调用）</option>
+                <option value="weibo">微博 aigc 代理</option>
+              </select>
             </div>
             <button class="save-btn" @click="saveConfig">保存</button>
           </div>
@@ -605,7 +611,23 @@ const cssVars = computed(() => ({
   transition: border-color 0.2s;
 }
 
-.setting-group input:focus {
+.setting-select {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--text-main);
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.setting-group input:focus,
+.setting-select:focus {
   border-color: rgba(139, 92, 246, 0.6);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
