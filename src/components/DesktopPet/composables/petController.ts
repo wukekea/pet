@@ -40,7 +40,12 @@ import {
 } from "./sharedState";
 
 import { getTimeGreeting, showCustomDialogue, showDialogue } from "./dialogue";
-import { addFootprint, stopFootprintCleanup } from "./footprints";
+import {
+  addFootprint,
+  stopFootprintCleanup,
+  footprints,
+  lastFootprintTime,
+} from "./footprints";
 import { randomPick } from "../utils/random";
 import {
   onSleepEnd,
@@ -713,6 +718,28 @@ export function handleMouseMove(e: MouseEvent) {
   const onPet = isMouseOnPet(e.clientX, e.clientY);
   setPassthrough(!onPet);
 }
+// 处理系统休眠/唤醒：防止积累的 setTimeout 在醒来后批量触发导致异常
+function handlePetVisibilityChange(): void {
+  if (document.visibilityState === "hidden") {
+    // 进入后台：暂停动画循环，清除状态定时器
+    stopAnimationLoop();
+    if (stateTimer.value) {
+      clearTimeout(stateTimer.value);
+      stateTimer.value = null;
+    }
+  } else {
+    // 恢复前台：清理旧脚印、重置脚印时间戳，然后恢复 idle 状态
+    footprints.value = [];
+    lastFootprintTime.value = Date.now();
+    // 短暂延迟后再恢复，避免与其他唤醒逻辑冲突
+    setTimeout(() => {
+      if (isVisible.value) {
+        changeState("idle");
+      }
+    }, 200);
+  }
+}
+
 // 初始化宠物
 export function initPet() {
   // 初始化属性系统
@@ -752,6 +779,7 @@ export function initPet() {
   }
   window.addEventListener("resize", handleResize);
   window.addEventListener("mousemove", handleMouseMove);
+  document.addEventListener("visibilitychange", handlePetVisibilityChange);
   (window as any).togglePet = togglePet;
 }
 // 清理
@@ -769,4 +797,5 @@ export function cleanupPet() {
   cleanupWeatherService();
   window.removeEventListener("resize", handleResize);
   window.removeEventListener("mousemove", handleMouseMove);
+  document.removeEventListener("visibilitychange", handlePetVisibilityChange);
 }

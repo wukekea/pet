@@ -872,13 +872,56 @@ onMounted(() => {
       triggerLightning();
     }, initialDelay);
   }
+  document.addEventListener("visibilitychange", handleWeatherVisibilityChange);
 });
+
+// 系统休眠唤醒处理：重置天气效果，防止云朵/雨滴/雪花积累堆叠
+function handleWeatherVisibilityChange(): void {
+  if (document.visibilityState !== "visible") return;
+
+  const weather = currentWeather.value;
+
+  if (weather === "cloudy") {
+    // 清除积累的定时器和旧云朵，重新生成
+    if (cloudTimer) {
+      clearTimeout(cloudTimer);
+      cloudTimer = null;
+    }
+    isWeatherChanging.value = false;
+    clouds.value = [];
+    spawnCloud();
+    const scheduleNextCloud = () => {
+      const randomDelay = CLOUD_GENERATE_INTERVAL + Math.random() * 5000;
+      cloudTimer = setTimeout(() => {
+        spawnCloud();
+        scheduleNextCloud();
+      }, randomDelay);
+    };
+    scheduleNextCloud();
+  } else if (["lightRain", "heavyRain", "thunderstorm"].includes(weather)) {
+    // 重置雨滴
+    stopRainGeneration();
+    isWeatherChanging.value = false;
+    rainDrops.value = [];
+    startRainGeneration();
+  } else if (["lightSnow", "heavySnow"].includes(weather)) {
+    // 重置雪花
+    stopSnowGeneration();
+    isWeatherChanging.value = false;
+    snowFlakes.value = [];
+    startSnowGeneration();
+  }
+}
 
 // 组件卸载时清理
 onUnmounted(() => {
   if (lightningTimer) {
     clearTimeout(lightningTimer);
   }
+  document.removeEventListener(
+    "visibilitychange",
+    handleWeatherVisibilityChange,
+  );
 });
 </script>
 
