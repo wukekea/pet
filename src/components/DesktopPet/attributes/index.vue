@@ -24,10 +24,12 @@ import {
   MAX_EQUIPPED_DECORATIONS,
   getActiveEffects,
   EFFECT_TYPE_NAMES,
+  SHAPE_SHOP_CONFIGS,
 } from "../composables/attributeStorage";
+import { currentPetShape, savePetShape } from "../composables/petShapeStorage";
 import DecoIcon from "../shapes/decorations/DecoIcon.vue";
 import { HEALTH_CAP, MAX_LEVEL } from "../constants";
-import type { PetState } from "../types";
+import type { PetState, PetShape } from "../types";
 
 defineProps<{
   visible: boolean;
@@ -225,6 +227,26 @@ const {
   showToast: showDecoToast,
 } = useToast();
 
+// 形态列表（已拥有）
+const ownedShapeList = computed(() => {
+  const ownedShapes = attrData.value.ownedShapes ?? ["cloud"];
+  // cloud 是默认形态
+  const allShapes: Array<{ type: PetShape; name: string; icon: string }> = [
+    { type: "cloud", name: "云朵", icon: "☁️" },
+    ...Object.values(SHAPE_SHOP_CONFIGS).map((s) => ({
+      type: s.type as PetShape,
+      name: s.name,
+      icon: s.icon,
+    })),
+  ];
+  return allShapes.filter((s) => ownedShapes.includes(s.type));
+});
+
+// 切换形态
+const handleShapeSwitch = (shape: PetShape) => {
+  savePetShape(shape);
+};
+
 // 装备/卸下装饰
 const handleDecoClick = (type: string) => {
   const dType = type as DecorationType;
@@ -420,6 +442,38 @@ const close = () => {
               <div class="money-badge">
                 <span class="money-icon">💰</span>
                 <span class="money-amount">{{ attrData.money }}</span>
+              </div>
+            </div>
+
+            <!-- 我的形态 -->
+            <div class="shape-section">
+              <div class="shape-header">
+                <span class="shape-title">🐾 我的形态</span>
+                <button class="deco-shop-link" @click="handleOpenShop">
+                  去商店 ›
+                </button>
+              </div>
+              <div class="shape-grid">
+                <button
+                  v-for="shape in ownedShapeList"
+                  :key="shape.type"
+                  class="shape-item"
+                  :class="{ active: currentPetShape === shape.type }"
+                  @click="handleShapeSwitch(shape.type)"
+                >
+                  <span class="shape-item-icon">{{ shape.icon }}</span>
+                  <span class="shape-item-name">{{ shape.name }}</span>
+                  <span
+                    class="shape-item-badge"
+                    :class="
+                      currentPetShape === shape.type
+                        ? 'badge-active'
+                        : 'badge-inactive'
+                    "
+                  >
+                    {{ currentPetShape === shape.type ? "使用中" : "切换" }}
+                  </span>
+                </button>
               </div>
             </div>
 
@@ -1058,6 +1112,96 @@ const close = () => {
 
 .dark-mode .tooltip-title-purple {
   color: #a78bfa;
+}
+
+/* 我的形态 */
+.shape-section {
+  margin-bottom: 16px;
+}
+
+.shape-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.shape-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--section-title-color);
+}
+
+.shape-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.shape-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px 6px;
+  border: 1px solid rgba(52, 211, 153, 0.12);
+  border-radius: 10px;
+  background: rgba(52, 211, 153, 0.04);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.shape-item.active {
+  border-color: rgba(52, 211, 153, 0.35);
+  background: rgba(52, 211, 153, 0.1);
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.1);
+}
+
+.shape-item:hover:not(.active) {
+  border-color: rgba(52, 211, 153, 0.25);
+  background: rgba(52, 211, 153, 0.07);
+  transform: translateY(-2px);
+}
+
+.shape-item:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.shape-item-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.shape-item-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--attr-value-color);
+  line-height: 1;
+}
+
+.shape-item-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 6px;
+  line-height: 1.3;
+}
+
+.badge-active {
+  color: #059669;
+  background: rgba(52, 211, 153, 0.12);
+}
+
+.dark-mode .badge-active {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.15);
+}
+
+.badge-inactive {
+  color: var(--attr-label-color);
+  background: rgba(107, 114, 128, 0.08);
 }
 
 /* 我的装饰 */

@@ -7,6 +7,7 @@ import type {
   DecorationEffect,
   DecorationEffectType,
   DecorationEffects,
+  PetShape,
 } from "../types";
 
 // localStorage 存储键
@@ -188,6 +189,71 @@ export const WORK_STAMINA_REQUIRED: Record<string, number> = {
 // 初始金币
 export const STARTING_MONEY = 50;
 
+// 形态商店配置
+export interface ShapeShopConfig {
+  type: PetShape;
+  name: string;
+  icon: string;
+  cost: number;
+  description: string;
+}
+
+// cloud 是默认形态，不在商店出售；其余 7 种按价格升序排列
+export const SHAPE_SHOP_CONFIGS: Record<
+  Exclude<PetShape, "cloud">,
+  ShapeShopConfig
+> = {
+  chick: {
+    type: "chick",
+    name: "小鸡",
+    icon: "🐥",
+    cost: 200,
+    description: "活泼可爱的小鸡",
+  },
+  rabbit: {
+    type: "rabbit",
+    name: "兔子",
+    icon: "🐰",
+    cost: 350,
+    description: "软萌温柔的兔子",
+  },
+  dog: {
+    type: "dog",
+    name: "狗狗",
+    icon: "🐶",
+    cost: 500,
+    description: "忠诚活泼的狗狗",
+  },
+  cat: {
+    type: "cat",
+    name: "猫咪",
+    icon: "🐱",
+    cost: 650,
+    description: "神秘优雅的猫咪",
+  },
+  frog: {
+    type: "frog",
+    name: "青蛙",
+    icon: "🐸",
+    cost: 800,
+    description: "活跃跳跃的青蛙",
+  },
+  panda: {
+    type: "panda",
+    name: "熊猫",
+    icon: "🐼",
+    cost: 1000,
+    description: "国宝级的熊猫",
+  },
+  penguin: {
+    type: "penguin",
+    name: "企鹅",
+    icon: "🐧",
+    cost: 1200,
+    description: "优雅可爱的企鹅",
+  },
+};
+
 // 效果类型中文名称
 export const EFFECT_TYPE_NAMES: Record<DecorationEffectType, string> = {
   staminaRecoverBonus: "体力恢复",
@@ -238,6 +304,7 @@ export const DEFAULT_ATTRIBUTE_DATA: AttributeData = {
   lastUpdateTimestamp: Date.now(),
   ownedDecorations: [],
   equippedDecorations: [],
+  ownedShapes: ["cloud"],
   foodInventory: {},
   bathInventory: {},
   decorationInventory: {},
@@ -283,6 +350,13 @@ export function loadAttributeData(): AttributeData {
         }
         if (!Array.isArray(data.equippedDecorations)) {
           data.equippedDecorations = [];
+        }
+        // 兼容旧数据：补全形态列表
+        if (!Array.isArray(data.ownedShapes)) {
+          data.ownedShapes = ["cloud"];
+        }
+        if (!data.ownedShapes.includes("cloud")) {
+          data.ownedShapes = ["cloud", ...data.ownedShapes];
         }
         // 清理无效装备（不在拥有列表中的）
         if (Array.isArray(data.equippedDecorations)) {

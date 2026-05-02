@@ -14,13 +14,16 @@ import {
   buyFoodItem,
   buyBathItem,
   buyDecoration,
+  buyPetShape,
 } from "../composables/attributes";
 import {
   FOOD_CONFIGS,
   BATH_CONFIGS,
   DECORATION_CONFIGS,
+  SHAPE_SHOP_CONFIGS,
   getDecorationEffectDescription,
 } from "../composables/attributeStorage";
+import type { PetShape } from "../types";
 import DecoIcon from "../shapes/decorations/DecoIcon.vue";
 
 defineProps<{
@@ -35,7 +38,7 @@ const emit = defineEmits<{
 const attrData = useAttributeRef();
 
 // 当前分类 Tab
-const activeTab = ref<"food" | "bath" | "decoration">("food");
+const activeTab = ref<"food" | "bath" | "decoration" | "shape">("food");
 
 // 购买提示
 const { toastMessage, toastVisible, showToast } = useToast();
@@ -79,6 +82,23 @@ const currentItems = computed(() => {
     }));
   }
 
+  if (activeTab.value === "shape") {
+    const ownedShapes = attrData.value.ownedShapes ?? ["cloud"];
+    return Object.values(SHAPE_SHOP_CONFIGS).map((s) => ({
+      type: s.type as string,
+      name: s.name,
+      cost: s.cost,
+      icon: s.icon,
+      decoType: undefined as DecorationType | undefined,
+      canAfford: money >= s.cost && !ownedShapes.includes(s.type),
+      effectLabel: s.description,
+      category: "shape" as const,
+      owned: ownedShapes.includes(s.type),
+      inInventory: false,
+      equipped: false,
+    }));
+  }
+
   return Object.values(DECORATION_CONFIGS).map((d) => ({
     type: d.type as string,
     name: d.name,
@@ -110,6 +130,11 @@ const handleBuy = (item: (typeof currentItems.value)[number]) => {
     const success = buyDecoration(item.type as DecorationType);
     if (success) {
       showToast(`成功购买 ${item.name}！已放入仓库`);
+    }
+  } else if (item.category === "shape") {
+    const success = buyPetShape(item.type as PetShape);
+    if (success) {
+      showToast(`成功购买 ${item.name}形态！`);
     }
   }
 };
@@ -178,6 +203,21 @@ const cssVars = computed(() => ({
     ? "rgba(168, 85, 247, 0.5)"
     : "rgba(124, 58, 237, 0.45)",
   "--deco-owned-color": isDark.value ? "#a78bfa" : "#7c3aed",
+  "--shape-card-bg": isDark.value
+    ? "rgba(20, 50, 50, 0.4)"
+    : "rgba(209, 250, 229, 0.5)",
+  "--shape-card-hover-bg": isDark.value
+    ? "rgba(25, 60, 60, 0.5)"
+    : "rgba(167, 243, 208, 0.6)",
+  "--shape-card-border": isDark.value
+    ? "rgba(52, 211, 153, 0.15)"
+    : "rgba(52, 211, 153, 0.25)",
+  "--shape-cost-color": isDark.value ? "rgba(52, 211, 153, 0.9)" : "#059669",
+  "--shape-effect-color": isDark.value
+    ? "rgba(52, 211, 153, 0.55)"
+    : "rgba(5, 150, 105, 0.5)",
+  "--shape-owned-color": isDark.value ? "#34d399" : "#059669",
+  "--shape-indicator": isDark.value ? "#34d399" : "#10b981",
   "--toast-bg": isDark.value
     ? "rgba(30, 20, 50, 0.95)"
     : "rgba(255, 255, 255, 0.97)",
@@ -269,6 +309,18 @@ const close = () => {
                   class="tab-indicator deco-indicator"
                 ></div>
               </button>
+              <button
+                class="tab-btn"
+                :class="{ active: activeTab === 'shape' }"
+                @click="activeTab = 'shape'"
+              >
+                <span class="tab-icon">🐾</span>
+                <span class="tab-text">形态</span>
+                <div
+                  v-if="activeTab === 'shape'"
+                  class="tab-indicator shape-indicator"
+                ></div>
+              </button>
             </div>
 
             <!-- 购买提示 -->
@@ -282,7 +334,10 @@ const close = () => {
             <!-- 物品列表 -->
             <div
               class="items-grid"
-              :class="{ 'deco-grid': activeTab === 'decoration' }"
+              :class="{
+                'deco-grid': activeTab === 'decoration',
+                'shape-grid': activeTab === 'shape',
+              }"
             >
               <button
                 v-for="item in currentItems"
@@ -292,6 +347,7 @@ const close = () => {
                   disabled: !item.canAfford,
                   owned: item.owned,
                   'deco-card': item.category === 'decoration',
+                  'shape-card': item.category === 'shape',
                 }"
                 :disabled="!item.canAfford"
                 @click="handleBuy(item)"
@@ -319,12 +375,18 @@ const close = () => {
                   <template v-else>
                     <span
                       class="item-cost"
-                      :class="{ 'deco-cost': item.category === 'decoration' }"
+                      :class="{
+                        'deco-cost': item.category === 'decoration',
+                        'shape-cost': item.category === 'shape',
+                      }"
                       >💰{{ item.cost }}</span
                     >
                     <span
                       class="item-effect"
-                      :class="{ 'deco-effect': item.category === 'decoration' }"
+                      :class="{
+                        'deco-effect': item.category === 'decoration',
+                        'shape-effect': item.category === 'shape',
+                      }"
                       >{{ item.effectLabel }}</span
                     >
                   </template>
@@ -573,6 +635,11 @@ const close = () => {
   box-shadow: 0 0 6px rgba(168, 85, 247, 0.4);
 }
 
+.shape-indicator {
+  background: linear-gradient(90deg, #10b981, #34d399);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+}
+
 /* 购买提示 */
 .toast-notification {
   display: flex;
@@ -639,6 +706,11 @@ const close = () => {
   gap: 6px;
 }
 
+.shape-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
 .item-card {
   display: flex;
   flex-direction: column;
@@ -684,6 +756,20 @@ const close = () => {
   );
 }
 
+/* 形态卡片绿色主题 */
+.item-card.shape-card {
+  border-color: var(--shape-card-border);
+  background: var(--shape-card-bg);
+}
+
+.item-card.shape-card::before {
+  background: linear-gradient(
+    180deg,
+    rgba(52, 211, 153, 0.06) 0%,
+    transparent 100%
+  );
+}
+
 .item-card:hover:not(.disabled) {
   background: var(--card-hover-bg);
   transform: translateY(-3px);
@@ -695,6 +781,12 @@ const close = () => {
   background: var(--deco-card-hover-bg);
   box-shadow: 0 6px 16px rgba(168, 85, 247, 0.18);
   border-color: rgba(168, 85, 247, 0.35);
+}
+
+.item-card.shape-card:hover:not(.disabled) {
+  background: var(--shape-card-hover-bg);
+  box-shadow: 0 6px 16px rgba(52, 211, 153, 0.18);
+  border-color: rgba(52, 211, 153, 0.35);
 }
 
 .item-card:active:not(.disabled) {
@@ -759,6 +851,10 @@ const close = () => {
   color: var(--deco-cost-color);
 }
 
+.item-cost.shape-cost {
+  color: var(--shape-cost-color);
+}
+
 .item-effect {
   font-size: 10px;
   color: var(--effect-color);
@@ -771,6 +867,11 @@ const close = () => {
 .item-effect.deco-effect {
   color: var(--deco-effect-color);
   background: rgba(168, 85, 247, 0.08);
+}
+
+.item-effect.shape-effect {
+  color: var(--shape-effect-color);
+  background: rgba(52, 211, 153, 0.08);
 }
 
 .item-card.disabled .item-cost,

@@ -5,6 +5,7 @@ import type {
   FoodType,
   BathType,
   DecorationType,
+  PetShape,
 } from "../types";
 import { getTodayString } from "../utils/date";
 import { createDebouncedSave } from "../utils/debouncedSave";
@@ -55,6 +56,7 @@ import {
   WORK_EXPERIENCE,
   WORK_STAMINA_REQUIRED,
   getActiveEffects,
+  SHAPE_SHOP_CONFIGS,
 } from "./attributeStorage";
 import { isWorkState } from "./petController";
 import { tickStats } from "./stats";
@@ -737,6 +739,25 @@ export function debugSetAttribute(
     (data as any)[key] = value;
     debouncedSave();
   }
+}
+
+// 购买形态
+export function buyPetShape(shape: PetShape): boolean {
+  // cloud 是默认形态，不可购买
+  if (shape === "cloud") return false;
+
+  const data = attributeData.value;
+  if (data.ownedShapes?.includes(shape)) return false;
+
+  const config = SHAPE_SHOP_CONFIGS[shape as Exclude<PetShape, "cloud">];
+  if (!config) return false;
+  if (data.money < config.cost) return false;
+
+  data.money -= config.cost;
+  data.ownedShapes = [...(data.ownedShapes ?? ["cloud"]), shape];
+  addInteractionExpWithLimit(INTERACTION_EXPERIENCE);
+  debouncedSave();
+  return true;
 }
 
 // 可见性变化处理

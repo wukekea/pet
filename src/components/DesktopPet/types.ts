@@ -179,6 +179,7 @@ export interface AttributeData {
   lastUpdateTimestamp: number; // 上次更新时间戳（毫秒）
   ownedDecorations: string[]; // 已拥有的装饰列表
   equippedDecorations: string[]; // 当前装备的装饰列表
+  ownedShapes: string[]; // 已解锁的形态列表
   foodInventory: Record<string, number>; // 食物库存 { type: count }
   bathInventory: Record<string, number>; // 沐浴露库存 { type: count }
   decorationInventory: Record<string, number>; // 装饰品库存 { type: count }
