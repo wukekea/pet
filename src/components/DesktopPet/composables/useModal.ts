@@ -7,6 +7,7 @@ import {
   isShopModalOpen,
   isWarehouseModalOpen,
   isChatPanelOpen,
+  isSettingsModalOpen,
   isContextMenuOpen,
   isAnyUiOpen,
 } from "./sharedState";
@@ -19,6 +20,7 @@ const MODAL_STATE_MAP = {
   shop: isShopModalOpen,
   warehouse: isWarehouseModalOpen,
   chat: isChatPanelOpen,
+  settings: isSettingsModalOpen,
 } as const;
 
 type ModalKey = keyof typeof MODAL_STATE_MAP;
@@ -88,4 +90,5 @@ export const {
   shop: shopModal,
   warehouse: warehouseModal,
   chat: chatModal,
+  settings: settingsModal,
 } = modals;

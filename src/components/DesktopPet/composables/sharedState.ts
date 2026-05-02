@@ -42,6 +42,7 @@ export const isAttributeModalOpen = ref(false);
 export const isShopModalOpen = ref(false);
 export const isWarehouseModalOpen = ref(false);
 export const isChatPanelOpen = ref(false);
+export const isSettingsModalOpen = ref(false);
 
 // 统一的 UI 打开状态 - 用于穿透控制
 export const isAnyUiOpen = computed(
@@ -53,7 +54,8 @@ export const isAnyUiOpen = computed(
     isAttributeModalOpen.value ||
     isShopModalOpen.value ||
     isWarehouseModalOpen.value ||
-    isChatPanelOpen.value,
+    isChatPanelOpen.value ||
+    isSettingsModalOpen.value,
 );
 
 // 作息相关状态

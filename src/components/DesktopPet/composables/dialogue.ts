@@ -16,6 +16,7 @@ import {
   TIME_PERIOD_AFTERNOON,
   TIME_PERIOD_DAWN,
 } from "@/constants/time";
+import { speak, stopSpeaking, speechEnabled } from "./speech";
 
 // 对话气泡状态
 export const dialogueText = ref<string | null>(null);
@@ -45,6 +46,11 @@ export function getTimeGreeting(): string {
 export function showCustomDialogue(text: string) {
   dialogueText.value = text;
   isDialogueVisible.value = true;
+
+  // 播放语音
+  if (speechEnabled.value) {
+    speak(text);
+  }
 
   if (dialogueTimer.value) {
     clearTimeout(dialogueTimer.value);
@@ -114,6 +120,8 @@ export function showDialogue() {
 // 隐藏对话气泡
 export function hideDialogue() {
   isDialogueVisible.value = false;
+  // 停止语音播放
+  stopSpeaking();
   // 等待动画结束后清除文字
   setTimeout(() => {
     if (!isDialogueVisible.value) {

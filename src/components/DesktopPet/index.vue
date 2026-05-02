@@ -57,7 +57,9 @@ import AttributeModal from "./attributes/index.vue";
 import ShopModal from "./shop/index.vue";
 import WarehouseModal from "./warehouse/index.vue";
 import ChatPanel from "./ChatPanel/index.vue";
+import SettingsModal from "./settings/index.vue";
 import { randomPick } from "./utils/random";
+import { initSpeech } from "./composables/speech";
 import {
   scheduleModal,
   statsModal,
@@ -65,6 +67,7 @@ import {
   shopModal,
   warehouseModal,
   chatModal,
+  settingsModal,
   contextMenuVisible,
   contextMenuX,
   contextMenuY,
@@ -265,6 +268,9 @@ onMounted(async () => {
 
   // 初始化统计
   initStats();
+
+  // 初始化语音系统
+  initSpeech();
 });
 
 // 清理
@@ -388,6 +394,7 @@ const onCoinGainComplete = () => {
       @open-attributes="attributeModal.open"
       @open-stats="statsModal.open"
       @open-chat="chatModal.open"
+      @open-settings="settingsModal.open"
     />
 
     <!-- 作息配置弹窗 -->
@@ -417,6 +424,12 @@ const onCoinGainComplete = () => {
 
     <!-- AI 聊天面板 -->
     <ChatPanel />
+
+    <!-- 设置弹窗 -->
+    <SettingsModal
+      :visible="settingsModal.visible.value"
+      @close="settingsModal.close"
+    />
   </div>
 </template>
 
