@@ -536,13 +536,6 @@ const close = () => {
 
             <!-- 操作区域 -->
             <div class="actions-section">
-              <!-- 去商店 -->
-              <button class="shop-btn" @click="handleOpenShop">
-                <span class="shop-btn-icon">🛒</span>
-                <span class="shop-btn-text">去商店</span>
-                <span class="shop-btn-desc">购买食物和沐浴露</span>
-              </button>
-
               <!-- 打工 -->
               <div class="action-group">
                 <div class="action-label">
@@ -1454,75 +1447,6 @@ const close = () => {
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-/* 去商店按钮 */
-.shop-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  border: 1px solid rgba(251, 191, 36, 0.2);
-  border-radius: 14px;
-  background: linear-gradient(
-    135deg,
-    rgba(251, 191, 36, 0.08),
-    rgba(245, 158, 11, 0.04)
-  );
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.shop-btn::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 50%;
-  background: linear-gradient(
-    180deg,
-    rgba(251, 191, 36, 0.06) 0%,
-    transparent 100%
-  );
-  pointer-events: none;
-}
-
-.shop-btn:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(251, 191, 36, 0.15),
-    rgba(245, 158, 11, 0.08)
-  );
-  border-color: rgba(251, 191, 36, 0.35);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.15);
-}
-
-.shop-btn:active {
-  transform: translateY(0) scale(0.98);
-}
-
-.shop-btn-icon {
-  font-size: 20px;
-}
-
-.shop-btn-text {
-  font-size: 14px;
-  font-weight: 700;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.shop-btn-desc {
-  font-size: 11px;
-  color: var(--attr-label-color);
-  flex: 1;
-  text-align: right;
 }
 
 .action-group {
