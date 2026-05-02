@@ -11,4 +11,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("fetch-city-by-location", lat, lon, apiKey, apiHost),
   fetchWeather: (locationId, apiKey, apiHost) =>
     ipcRenderer.invoke("fetch-weather", locationId, apiKey, apiHost),
+  fetchLLM: (url, options) => ipcRenderer.invoke("fetch-llm", url, options),
 });

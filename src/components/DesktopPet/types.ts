@@ -254,6 +254,17 @@ declare global {
           humidity: string;
         };
       }>;
+      fetchLLM: (
+        url: string,
+        options: {
+          headers: Record<string, string>;
+          body: Record<string, unknown>;
+        },
+      ) => Promise<{
+        success: boolean;
+        data?: Record<string, unknown>;
+        message?: string;
+      }>;
     };
   }
 }

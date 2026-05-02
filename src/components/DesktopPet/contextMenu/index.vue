@@ -52,6 +52,7 @@ const emit = defineEmits<{
   openAttributes: [];
   openShop: [];
   openWarehouse: [];
+  openChat: [];
 }>();
 
 // 点击遮罩层关闭菜单
@@ -200,6 +201,22 @@ const cssVars = computed(() => ({
                 <div class="menu-text-group">
                   <span class="menu-text">数据统计</span>
                   <span class="menu-desc">查看互动记录</span>
+                </div>
+                <span class="menu-arrow">›</span>
+              </div>
+              <div class="menu-divider">
+                <div class="divider-line"></div>
+              </div>
+              <div
+                class="menu-item"
+                @mousedown.stop="handleMenuClick(() => emit('openChat'))"
+              >
+                <div class="menu-icon-wrapper chat">
+                  <span class="menu-icon">💬</span>
+                </div>
+                <div class="menu-text-group">
+                  <span class="menu-text">AI 对话</span>
+                  <span class="menu-desc">和宠物聊天</span>
                 </div>
                 <span class="menu-arrow">›</span>
               </div>
@@ -396,6 +413,15 @@ const cssVars = computed(() => ({
   box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
 }
 
+.menu-icon-wrapper.chat {
+  background: linear-gradient(
+    135deg,
+    rgba(6, 182, 212, 0.15),
+    rgba(139, 92, 246, 0.1)
+  );
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.15);
+}
+
 .menu-item:hover .menu-icon-wrapper {
   transform: scale(1.1) rotate(-5deg);
 }
@@ -437,6 +463,14 @@ const cssVars = computed(() => ({
     135deg,
     rgba(245, 158, 11, 0.25),
     rgba(217, 119, 6, 0.2)
+  );
+}
+
+.menu-item:hover .menu-icon-wrapper.chat {
+  background: linear-gradient(
+    135deg,
+    rgba(6, 182, 212, 0.25),
+    rgba(139, 92, 246, 0.2)
   );
 }
 

@@ -41,6 +41,7 @@ export const isContextMenuOpen = ref(false);
 export const isAttributeModalOpen = ref(false);
 export const isShopModalOpen = ref(false);
 export const isWarehouseModalOpen = ref(false);
+export const isChatPanelOpen = ref(false);
 
 // 统一的 UI 打开状态 - 用于穿透控制
 export const isAnyUiOpen = computed(
@@ -51,7 +52,8 @@ export const isAnyUiOpen = computed(
     isContextMenuOpen.value ||
     isAttributeModalOpen.value ||
     isShopModalOpen.value ||
-    isWarehouseModalOpen.value,
+    isWarehouseModalOpen.value ||
+    isChatPanelOpen.value,
 );
 
 // 作息相关状态
@@ -118,3 +120,24 @@ export const moodLevel = computed<MoodLevel>(() => {
 
 // 宠物形态（从 petShapeStorage 导入）
 export { currentPetShape } from "./petShapeStorage";
+
+// LLM 配置
+export interface LLMConfig {
+  baseURL: string;
+  apiKey: string;
+  model: string;
+}
+
+function loadLLMConfig(): LLMConfig {
+  try {
+    const saved = localStorage.getItem("llm-config");
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return {
+    baseURL: "https://api.openai.com/v1/chat/completions",
+    apiKey: "",
+    model: "gpt-4o-mini",
+  };
+}
+
+export const llmConfig = ref<LLMConfig>(loadLLMConfig());

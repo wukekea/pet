@@ -156,6 +156,22 @@ ipcMain.handle(
   },
 );
 
+// LLM API 代理（支持任意 OpenAI 兼容接口）
+ipcMain.handle("fetch-llm", async (event, url, options) => {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: options.headers,
+      body: JSON.stringify(options.body),
+    });
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error) {
+    console.error("LLM 请求失败:", error);
+    return { success: false, message: error.message };
+  }
+});
+
 // IP 定位服务（高德地图）
 ipcMain.handle("fetch-ip-location", async (event, amapKey) => {
   try {

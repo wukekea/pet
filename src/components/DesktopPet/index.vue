@@ -56,6 +56,7 @@ import StatsModal from "./stats/index.vue";
 import AttributeModal from "./attributes/index.vue";
 import ShopModal from "./shop/index.vue";
 import WarehouseModal from "./warehouse/index.vue";
+import ChatPanel from "./ChatPanel/index.vue";
 import { randomPick } from "./utils/random";
 import {
   scheduleModal,
@@ -63,6 +64,7 @@ import {
   attributeModal,
   shopModal,
   warehouseModal,
+  chatModal,
   contextMenuVisible,
   contextMenuX,
   contextMenuY,
@@ -385,6 +387,7 @@ const onCoinGainComplete = () => {
       @open-warehouse="warehouseModal.open"
       @open-attributes="attributeModal.open"
       @open-stats="statsModal.open"
+      @open-chat="chatModal.open"
     />
 
     <!-- 作息配置弹窗 -->
@@ -411,6 +414,9 @@ const onCoinGainComplete = () => {
 
     <!-- 数据统计弹窗 -->
     <StatsModal :visible="statsModal.visible.value" @close="statsModal.close" />
+
+    <!-- AI 聊天面板 -->
+    <ChatPanel />
   </div>
 </template>
 
