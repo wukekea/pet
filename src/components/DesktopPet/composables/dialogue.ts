@@ -6,7 +6,7 @@ import {
   weatherDialogues,
   moodDialogues,
 } from "../dialogues";
-import { petState } from "./sharedState";
+import { petState, isChatPanelOpen } from "./sharedState";
 import { isDragging, moodLevel } from "./sharedState";
 import { currentWeather, isWeatherChanging } from "./weatherState";
 import {
@@ -44,6 +44,9 @@ export function getTimeGreeting(): string {
 
 // 显示自定义对话（用于打招呼等场景）
 export function showCustomDialogue(text: string) {
+  // AI 聊天面板打开时不显示头顶气泡
+  if (isChatPanelOpen.value) return;
+
   dialogueText.value = text;
   isDialogueVisible.value = true;
 
@@ -64,8 +67,9 @@ export function showCustomDialogue(text: string) {
 
 // 显示对话气泡
 export function showDialogue() {
-  // 如果已经在显示或者正在拖动，不显示
-  if (isDialogueVisible.value || isDragging.value) return;
+  // 如果已经在显示、正在拖动、或 AI 聊天面板打开，不显示
+  if (isDialogueVisible.value || isDragging.value || isChatPanelOpen.value)
+    return;
 
   const currentState = petState.value;
 

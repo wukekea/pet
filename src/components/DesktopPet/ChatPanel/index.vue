@@ -4,6 +4,7 @@ import { isChatPanelOpen, llmConfig } from "../composables/sharedState";
 import { sendMessage } from "../composables/llmService";
 import type { ChatMessage } from "../composables/llmService";
 import { isDark } from "../composables/theme";
+import { speak, speechEnabled } from "../composables/speech";
 
 // 消息历史
 const MAX_HISTORY = 50;
@@ -72,6 +73,10 @@ async function handleSend() {
     const reply = await sendMessage(historyToSend, text);
     messages.value.push({ role: "assistant", content: reply });
     saveHistory();
+    // 播放语音（不显示气泡）
+    if (speechEnabled.value) {
+      speak(reply);
+    }
     await scrollToBottom();
   } catch (e) {
     error.value = e instanceof Error ? e.message : "请求失败，请检查配置";
