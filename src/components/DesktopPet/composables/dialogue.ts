@@ -106,6 +106,11 @@ export function showDialogue() {
   dialogueText.value = randomMessage;
   isDialogueVisible.value = true;
 
+  // 播放语音
+  if (speechEnabled.value) {
+    speak(randomMessage);
+  }
+
   // 清除之前的定时器
   if (dialogueTimer.value) {
     clearTimeout(dialogueTimer.value);
