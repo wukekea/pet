@@ -9,6 +9,7 @@ import {
   getAttributeData,
   getCurrentAttributeCap,
 } from "./attributes";
+import { weatherStatus } from "./qweatherService";
 import type { PetState, FoodType, BathType } from "../types";
 
 // 可触发的宠物情绪状态（排除工作/服务类状态）
@@ -130,6 +131,20 @@ export interface ChatMessage {
   content: string;
 }
 
+// 生成天气与位置状态描述
+function buildWeatherStatus(): string {
+  const ws = weatherStatus.value;
+  if (!ws.enabled || (!ws.cityName && !ws.weatherText)) return "";
+  const parts: string[] = [];
+  if (ws.cityName) parts.push(`当前位置：${ws.cityName}`);
+  if (ws.weatherText) {
+    let desc = `天气：${ws.weatherText}`;
+    if (ws.weatherTemp !== null) desc += `，气温 ${ws.weatherTemp}℃`;
+    parts.push(desc);
+  }
+  return `\n【位置与天气】\n${parts.map((p) => `- ${p}`).join("\n")}`;
+}
+
 // 生成宠物当前属性状态描述（注入到系统提示词）
 function buildPetStatus(): string {
   const data = getAttributeData();
@@ -147,7 +162,7 @@ function buildPetStatus(): string {
 - 心情：${moodVal}/100（${moodDesc}）
 - 等级：${data.level}级，经验 ${data.experience}
 - 金币：${data.money}
-
+${buildWeatherStatus()}
 请根据以上真实属性，诚实地回答主人关于你状态的问题。`;
 }
 
