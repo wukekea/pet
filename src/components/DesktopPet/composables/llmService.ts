@@ -1,5 +1,5 @@
 // LLM 服务 - 处理 AI 对话与宠物状态联动
-import { llmConfig, currentFood, currentBathType } from "./sharedState";
+import { llmConfig, currentFood, currentBathType, mood } from "./sharedState";
 import { changeState, stopWork } from "./petController";
 import { showCustomDialogue } from "./dialogue";
 import {
@@ -7,6 +7,7 @@ import {
   useFood,
   useBathItem,
   getAttributeData,
+  getCurrentAttributeCap,
 } from "./attributes";
 import type { PetState, FoodType, BathType } from "../types";
 
@@ -129,6 +130,27 @@ export interface ChatMessage {
   content: string;
 }
 
+// 生成宠物当前属性状态描述（注入到系统提示词）
+function buildPetStatus(): string {
+  const data = getAttributeData();
+  const cap = getCurrentAttributeCap();
+  const pct = (v: number) => Math.round((v / cap) * 100);
+  const moodVal = mood.value;
+  const moodDesc = moodVal >= 70 ? "愉快" : moodVal < 30 ? "低落" : "一般";
+
+  return `
+【你当前的属性状态】
+- 饱腹值：${data.satiety}/${cap}（${pct(data.satiety)}%）${data.satiety < cap * 0.3 ? "，你很饿" : data.satiety < cap * 0.6 ? "，有点饿" : "，吃饱了"}
+- 清洁值：${data.cleanliness}/${cap}（${pct(data.cleanliness)}%）${data.cleanliness < cap * 0.3 ? "，你很脏" : data.cleanliness < cap * 0.6 ? "，有点脏" : "，很干净"}
+- 体力值：${data.stamina}/${cap}（${pct(data.stamina)}%）${data.stamina < cap * 0.3 ? "，你很疲惫" : data.stamina < cap * 0.6 ? "，有些累" : "，精力充沛"}
+- 健康值：${data.health}/${cap}（${pct(data.health)}%）${data.health <= 0 ? "，你生病了" : data.health < cap * 0.5 ? "，身体不太好" : "，很健康"}
+- 心情：${moodVal}/100（${moodDesc}）
+- 等级：${data.level}级，经验 ${data.experience}
+- 金币：${data.money}
+
+请根据以上真实属性，诚实地回答主人关于你状态的问题。`;
+}
+
 // 找到库存中第一个有存量的食物
 function findAvailableFood(): FoodType | null {
   const data = getAttributeData();
@@ -247,7 +269,10 @@ export async function sendMessage(
     requestBody = {
       model: config.model,
       model_ext: {
-        messages: [{ role: "system", content: SYSTEM_PROMPT_TAG }, ...messages],
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT_TAG + buildPetStatus() },
+          ...messages,
+        ],
         thinking: { type: "disabled" },
       },
       stream: "false",
@@ -257,7 +282,7 @@ export async function sendMessage(
     requestBody = {
       model: config.model,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT_OPENAI },
+        { role: "system", content: SYSTEM_PROMPT_OPENAI + buildPetStatus() },
         ...messages,
       ],
       tools: TOOLS,
