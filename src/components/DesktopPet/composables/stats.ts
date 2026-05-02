@@ -48,9 +48,9 @@ export function tickStats(): void {
   checkDateRollover();
   statsData.value.totalDuration += 1;
   statsData.value.todayDuration += 1;
-  // 每 60 秒保存一次
+  // 每 60 秒触发一次防抖保存（替代直接写入，避免每分钟同步 I/O 阻塞主线程）
   if (statsData.value.totalDuration % 60 === 0) {
-    saveStatsData(statsData.value);
+    debouncedSave();
   }
 }
 

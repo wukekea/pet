@@ -12,7 +12,7 @@ import { currentWeather } from "./weatherState";
 export const footprints = ref<Footprint[]>([]);
 export const lastFootprintTime = ref(0);
 export const lastFootprintWasLeft = ref(false);
-export const footprintIdCounter = ref(0);
+let footprintIdCounter = 0;
 
 // 脚印清理定时器
 let cleanupTimerId: ReturnType<typeof setInterval> | null = null;
@@ -69,7 +69,7 @@ export function addFootprint(x: number, y: number, direction: PetDirection) {
   const footprintY = y + PET_SIZE - 5;
 
   const newFootprint: Footprint = {
-    id: footprintIdCounter.value++,
+    id: footprintIdCounter++,
     x: footprintX,
     y: footprintY,
     isLeft: lastFootprintWasLeft.value,

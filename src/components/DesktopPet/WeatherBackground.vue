@@ -415,16 +415,7 @@ watch(
       const isNewSnow = ["lightSnow", "heavySnow"].includes(newWeather);
 
       if (newWeather === "cloudy") {
-        clouds.value = [];
-        spawnCloud();
-        const scheduleNextCloud = () => {
-          const randomDelay = CLOUD_GENERATE_INTERVAL + Math.random() * 5000;
-          cloudTimer = setTimeout(() => {
-            spawnCloud();
-            scheduleNextCloud();
-          }, randomDelay);
-        };
-        scheduleNextCloud();
+        startCloudGeneration();
       } else if (isNewRain) {
         rainDrops.value = [];
         startRainGeneration();
@@ -455,16 +446,7 @@ watch(
       const isNewSnow = ["lightSnow", "heavySnow"].includes(newWeather);
 
       if (newWeather === "cloudy") {
-        clouds.value = [];
-        spawnCloud();
-        const scheduleNextCloud = () => {
-          const randomDelay = CLOUD_GENERATE_INTERVAL + Math.random() * 5000;
-          cloudTimer = setTimeout(() => {
-            spawnCloud();
-            scheduleNextCloud();
-          }, randomDelay);
-        };
-        scheduleNextCloud();
+        startCloudGeneration();
       } else if (isNewRain) {
         rainDrops.value = [];
         startRainGeneration();
@@ -557,6 +539,30 @@ let cloudTimer: ReturnType<typeof setTimeout> | null = null;
 
 // 云朵退出状态（已移至 useWeather.ts）
 let exitKey = 0; // 退出时的渲染 key
+
+// 递归调度下一朵云（模块级函数，防止多条递归链同时运行）
+const scheduleNextCloud = () => {
+  if (cloudTimer) {
+    clearTimeout(cloudTimer);
+    cloudTimer = null;
+  }
+  const randomDelay = CLOUD_GENERATE_INTERVAL + Math.random() * 5000;
+  cloudTimer = setTimeout(() => {
+    spawnCloud();
+    scheduleNextCloud();
+  }, randomDelay);
+};
+
+// 启动云朵生成（清理旧链，重新生成）
+const startCloudGeneration = () => {
+  if (cloudTimer) {
+    clearTimeout(cloudTimer);
+    cloudTimer = null;
+  }
+  clouds.value = [];
+  spawnCloud();
+  scheduleNextCloud();
+};
 
 // 随机选择一个位置生成云朵
 const spawnCloud = () => {
@@ -716,16 +722,7 @@ watch(
     isWeatherChanging.value = false;
 
     if (newWeather === "cloudy") {
-      clouds.value = [];
-      spawnCloud();
-      const scheduleNextCloud = () => {
-        const randomDelay = CLOUD_GENERATE_INTERVAL + Math.random() * 5000;
-        cloudTimer = setTimeout(() => {
-          spawnCloud();
-          scheduleNextCloud();
-        }, randomDelay);
-      };
-      scheduleNextCloud();
+      startCloudGeneration();
     }
 
     // 启动雨天（从非雨天切换到雨天）
@@ -883,21 +880,8 @@ function handleWeatherVisibilityChange(): void {
 
   if (weather === "cloudy") {
     // 清除积累的定时器和旧云朵，重新生成
-    if (cloudTimer) {
-      clearTimeout(cloudTimer);
-      cloudTimer = null;
-    }
     isWeatherChanging.value = false;
-    clouds.value = [];
-    spawnCloud();
-    const scheduleNextCloud = () => {
-      const randomDelay = CLOUD_GENERATE_INTERVAL + Math.random() * 5000;
-      cloudTimer = setTimeout(() => {
-        spawnCloud();
-        scheduleNextCloud();
-      }, randomDelay);
-    };
-    scheduleNextCloud();
+    startCloudGeneration();
   } else if (["lightRain", "heavyRain", "thunderstorm"].includes(weather)) {
     // 重置雨滴
     stopRainGeneration();
