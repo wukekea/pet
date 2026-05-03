@@ -71,11 +71,25 @@ class EdgeTTS {
 
         if (code !== 0) {
           this.cleanup();
-          reject(
-            new Error(
-              `edge-tts 退出码: ${code}, stderr: ${errorOutput || "无"}`,
-            ),
-          );
+          // 分析常见错误类型，提供友好的错误信息
+          let errorMessage = `edge-tts 退出码: ${code}`;
+          if (errorOutput.includes("NoAudioReceived")) {
+            errorMessage =
+              "Edge TTS 服务未返回音频，可能原因：网络连接问题、微软服务暂时不可用或文本内容无效";
+          } else if (errorOutput.includes("WebSocket")) {
+            errorMessage = "无法连接到 Edge TTS 服务，请检查网络连接";
+          }
+          reject(new Error(errorMessage));
+          return;
+        }
+
+        // 检查音频文件是否生成成功
+        if (
+          !fs.existsSync(this.tmpFile) ||
+          fs.statSync(this.tmpFile).size === 0
+        ) {
+          this.cleanup();
+          reject(new Error("音频文件生成失败，请检查网络连接和文本内容"));
           return;
         }
 
