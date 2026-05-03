@@ -19,7 +19,8 @@
   background: #f8fafc;
   border-radius: 50% 50% 46% 46%;
   z-index: 3;
-  box-shadow: inset 0 calc(var(--pet-size, 80px) * -0.0375) calc(var(--pet-size, 80px) * 0.075) rgba(0, 0, 0, 0.04);
+  box-shadow: inset 0 calc(var(--pet-size, 80px) * -0.0375)
+    calc(var(--pet-size, 80px) * 0.075) rgba(0, 0, 0, 0.04);
 }
 
 /* 脸部层级高于腹部 */
@@ -123,7 +124,8 @@
   z-index: 3;
   top: calc(var(--pet-size, 80px) * 0.4);
   border-radius: 40% 60% 60% 40%;
-  box-shadow: inset 0 calc(var(--pet-size, 80px) * -0.0375) calc(var(--pet-size, 80px) * 0.0625) rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 calc(var(--pet-size, 80px) * -0.0375)
+    calc(var(--pet-size, 80px) * 0.0625) rgba(0, 0, 0, 0.15);
   transition: transform 0.1s ease;
   transform-origin: top center;
   border: calc(var(--pet-size, 80px) * 0.0125) solid rgba(255, 255, 255, 0.3);
@@ -653,12 +655,14 @@
 /* 窥视时翅膀遮脸 */
 .pet-peek .pet-shape-penguin .pet-flipper.flipper-left,
 .pet-shape-penguin.pet-peek .pet-flipper.flipper-left {
-  transform: rotate(18deg) translateY(calc(var(--pet-size, 80px) * -0.05)) translateX(calc(var(--pet-size, 80px) * 0.05));
+  transform: rotate(18deg) translateY(calc(var(--pet-size, 80px) * -0.05))
+    translateX(calc(var(--pet-size, 80px) * 0.05));
 }
 
 .pet-peek .pet-shape-penguin .pet-flipper.flipper-right,
 .pet-shape-penguin.pet-peek .pet-flipper.flipper-right {
-  transform: rotate(-18deg) translateY(calc(var(--pet-size, 80px) * -0.05)) translateX(calc(var(--pet-size, 80px) * -0.05));
+  transform: rotate(-18deg) translateY(calc(var(--pet-size, 80px) * -0.05))
+    translateX(calc(var(--pet-size, 80px) * -0.05));
 }
 
 /* 思考时翅膀托腮 */

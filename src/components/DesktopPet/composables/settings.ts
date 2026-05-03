@@ -25,6 +25,25 @@ export interface PetSettings {
   // 交互
   clickReaction: boolean;
   dragSound: boolean;
+  // API 配置
+  apiConfig: {
+    // 和风天气
+    qweather: {
+      key: string;
+      host: string;
+    };
+    // 高德地图
+    amap: {
+      key: string;
+    };
+    // AI 对话
+    ai: {
+      key: string;
+      url: string;
+      model: string;
+      format: "openai" | "anthropic" | "gemini" | "custom";
+    };
+  };
 }
 
 // 默认设置
@@ -39,6 +58,21 @@ const defaultSettings: PetSettings = {
   voiceEnabled: true,
   clickReaction: true,
   dragSound: true,
+  apiConfig: {
+    qweather: {
+      key: "",
+      host: "https://devapi.qweather.com",
+    },
+    amap: {
+      key: "",
+    },
+    ai: {
+      key: "",
+      url: "",
+      model: "",
+      format: "openai" as const,
+    },
+  },
 };
 
 // 设置状态

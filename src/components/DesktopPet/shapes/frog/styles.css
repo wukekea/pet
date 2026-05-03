@@ -18,7 +18,8 @@
   background: #bbf7d0;
   border-radius: 50% 50% 46% 46%;
   z-index: 3;
-  box-shadow: inset 0 calc(var(--pet-size, 80px) * -0.025) calc(var(--pet-size, 80px) * 0.05) rgba(0, 0, 0, 0.04);
+  box-shadow: inset 0 calc(var(--pet-size, 80px) * -0.025)
+    calc(var(--pet-size, 80px) * 0.05) rgba(0, 0, 0, 0.04);
 }
 
 /* === 耳朵隐藏 === */
@@ -54,7 +55,8 @@
   background: var(--pet-body);
   border-radius: 50%;
   z-index: 10;
-  box-shadow: inset 0 calc(var(--pet-size, 80px) * -0.025) calc(var(--pet-size, 80px) * 0.05) rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 calc(var(--pet-size, 80px) * -0.025)
+    calc(var(--pet-size, 80px) * 0.05) rgba(0, 0, 0, 0.1);
 }
 
 .pet-shape-frog .pet-frog-eye.frog-eye-left {
@@ -132,7 +134,8 @@
   height: calc(var(--pet-size, 80px) * 0.125);
   border-radius: 50% 50% 30% 30%;
   background: var(--pet-body);
-  box-shadow: inset 0 calc(var(--pet-size, 80px) * -0.025) calc(var(--pet-size, 80px) * 0.0375) rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 calc(var(--pet-size, 80px) * -0.025)
+    calc(var(--pet-size, 80px) * 0.0375) rgba(0, 0, 0, 0.1);
 }
 
 /* ====== 蛙眼动画 ====== */
@@ -234,10 +237,12 @@
     transform: translateY(0) scaleY(1);
   }
   20% {
-    transform: translateY(calc(var(--pet-size, 80px) * 0.025)) scaleY(0.9) scaleX(1.1);
+    transform: translateY(calc(var(--pet-size, 80px) * 0.025)) scaleY(0.9)
+      scaleX(1.1);
   }
   50% {
-    transform: translateY(calc(var(--pet-size, 80px) * -0.1875)) scaleY(1.1) scaleX(0.95);
+    transform: translateY(calc(var(--pet-size, 80px) * -0.1875)) scaleY(1.1)
+      scaleX(0.95);
   }
 }
 
@@ -365,10 +370,12 @@
 
 @keyframes frog-eye-spin {
   0% {
-    transform: translate(-50%, -50%) rotate(0deg) translateX(calc(var(--pet-size, 80px) * 0.025));
+    transform: translate(-50%, -50%) rotate(0deg)
+      translateX(calc(var(--pet-size, 80px) * 0.025));
   }
   100% {
-    transform: translate(-50%, -50%) rotate(360deg) translateX(calc(var(--pet-size, 80px) * 0.025));
+    transform: translate(-50%, -50%) rotate(360deg)
+      translateX(calc(var(--pet-size, 80px) * 0.025));
   }
 }
 

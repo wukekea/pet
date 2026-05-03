@@ -133,7 +133,8 @@
 }
 
 .pet-left .ear-left {
-  transform: rotate(-15deg) translateX(calc(var(--pet-size, 80px) * -0.025)) translateY(calc(var(--pet-size, 80px) * -0.025));
+  transform: rotate(-15deg) translateX(calc(var(--pet-size, 80px) * -0.025))
+    translateY(calc(var(--pet-size, 80px) * -0.025));
 }
 
 .pet-left .ear-right {
@@ -196,7 +197,8 @@
 }
 
 .pet-right .ear-right {
-  transform: rotate(15deg) translateX(calc(var(--pet-size, 80px) * 0.025)) translateY(calc(var(--pet-size, 80px) * -0.025));
+  transform: rotate(15deg) translateX(calc(var(--pet-size, 80px) * 0.025))
+    translateY(calc(var(--pet-size, 80px) * -0.025));
 }
 
 /* 向右转时：左手在前 */
@@ -265,14 +267,16 @@
     transform: translateX(calc(var(--pet-size, 80px) * -0.025)) translateY(0);
   }
   50% {
-    transform: translateX(calc(var(--pet-size, 80px) * -0.05)) translateY(calc(var(--pet-size, 80px) * -0.0375));
+    transform: translateX(calc(var(--pet-size, 80px) * -0.05))
+      translateY(calc(var(--pet-size, 80px) * -0.0375));
   }
 }
 
 @keyframes leg-walk-left-back {
   0%,
   100% {
-    transform: translateX(calc(var(--pet-size, 80px) * 0.0375)) translateY(calc(var(--pet-size, 80px) * -0.0375));
+    transform: translateX(calc(var(--pet-size, 80px) * 0.0375))
+      translateY(calc(var(--pet-size, 80px) * -0.0375));
   }
   50% {
     transform: translateX(calc(var(--pet-size, 80px) * 0.0375)) translateY(0);
@@ -285,14 +289,16 @@
     transform: translateX(calc(var(--pet-size, 80px) * 0.025)) translateY(0);
   }
   50% {
-    transform: translateX(calc(var(--pet-size, 80px) * 0.05)) translateY(calc(var(--pet-size, 80px) * -0.0375));
+    transform: translateX(calc(var(--pet-size, 80px) * 0.05))
+      translateY(calc(var(--pet-size, 80px) * -0.0375));
   }
 }
 
 @keyframes leg-walk-right-back {
   0%,
   100% {
-    transform: translateX(calc(var(--pet-size, 80px) * -0.0375)) translateY(calc(var(--pet-size, 80px) * -0.0375));
+    transform: translateX(calc(var(--pet-size, 80px) * -0.0375))
+      translateY(calc(var(--pet-size, 80px) * -0.0375));
   }
   50% {
     transform: translateX(calc(var(--pet-size, 80px) * -0.0375)) translateY(0);
@@ -628,7 +634,8 @@
   bottom: calc(var(--pet-size, 80px) * -0.0625);
   width: calc(var(--pet-size, 80px) * 0.175);
   height: calc(var(--pet-size, 80px) * 0.15);
-  border-radius: calc(var(--pet-size, 80px) * 0.125) calc(var(--pet-size, 80px) * 0.125) 50% 50%;
+  border-radius: calc(var(--pet-size, 80px) * 0.125)
+    calc(var(--pet-size, 80px) * 0.125) 50% 50%;
   background: var(--pet-body);
   box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -1246,17 +1253,20 @@
 }
 
 .pet-thinking .arm-left {
-  transform: rotate(30deg) translateX(calc(var(--pet-size, 80px) * 0.0625)) translateY(calc(var(--pet-size, 80px) * -0.1));
+  transform: rotate(30deg) translateX(calc(var(--pet-size, 80px) * 0.0625))
+    translateY(calc(var(--pet-size, 80px) * -0.1));
   animation: thinking-chin 2s ease-in-out infinite;
 }
 
 @keyframes thinking-chin {
   0%,
   100% {
-    transform: rotate(30deg) translateX(calc(var(--pet-size, 80px) * 0.0625)) translateY(calc(var(--pet-size, 80px) * -0.1));
+    transform: rotate(30deg) translateX(calc(var(--pet-size, 80px) * 0.0625))
+      translateY(calc(var(--pet-size, 80px) * -0.1));
   }
   50% {
-    transform: rotate(50deg) translateX(calc(var(--pet-size, 80px) * 0.0625)) translateY(calc(var(--pet-size, 80px) * -0.1));
+    transform: rotate(50deg) translateX(calc(var(--pet-size, 80px) * 0.0625))
+      translateY(calc(var(--pet-size, 80px) * -0.1));
   }
 }
 
@@ -1382,10 +1392,12 @@
 @keyframes wave-hand {
   0%,
   100% {
-    transform: rotate(120deg) translateY(calc(var(--pet-size, 80px) * 0.15)) translateX(calc(var(--pet-size, 80px) * -0.025));
+    transform: rotate(120deg) translateY(calc(var(--pet-size, 80px) * 0.15))
+      translateX(calc(var(--pet-size, 80px) * -0.025));
   }
   50% {
-    transform: rotate(180deg) translateY(calc(var(--pet-size, 80px) * 0.15)) translateX(calc(var(--pet-size, 80px) * -0.025));
+    transform: rotate(180deg) translateY(calc(var(--pet-size, 80px) * 0.15))
+      translateX(calc(var(--pet-size, 80px) * -0.025));
   }
 }
 
@@ -1477,7 +1489,8 @@
 }
 
 .pet-scratch .arm-left {
-  transform: rotate(190deg) translateX(calc(var(--pet-size, 80px) * -0.0625)) translateY(calc(var(--pet-size, 80px) * 0.125));
+  transform: rotate(190deg) translateX(calc(var(--pet-size, 80px) * -0.0625))
+    translateY(calc(var(--pet-size, 80px) * 0.125));
 }
 
 /* ========================================
@@ -1660,7 +1673,8 @@
 }
 
 .pet-yawn .arm-left {
-  transform: rotate(30deg) translateX(calc(var(--pet-size, 80px) * 0.0625)) translateY(calc(var(--pet-size, 80px) * -0.125));
+  transform: rotate(30deg) translateX(calc(var(--pet-size, 80px) * 0.0625))
+    translateY(calc(var(--pet-size, 80px) * -0.125));
 }
 
 .pet-yawn .arm-right {
@@ -1829,7 +1843,8 @@
     transform: rotate(30deg) translateX(calc(var(--pet-size, 80px) * 0.0625));
   }
   50% {
-    transform: rotate(50deg) translateX(calc(var(--pet-size, 80px) * 0.125)) translateY(calc(var(--pet-size, 80px) * -0.1));
+    transform: rotate(50deg) translateX(calc(var(--pet-size, 80px) * 0.125))
+      translateY(calc(var(--pet-size, 80px) * -0.1));
   }
 }
 
@@ -1839,7 +1854,8 @@
     transform: rotate(-30deg) translateX(calc(var(--pet-size, 80px) * -0.0625));
   }
   50% {
-    transform: rotate(-50deg) translateX(calc(var(--pet-size, 80px) * -0.125)) translateY(calc(var(--pet-size, 80px) * -0.1));
+    transform: rotate(-50deg) translateX(calc(var(--pet-size, 80px) * -0.125))
+      translateY(calc(var(--pet-size, 80px) * -0.1));
   }
 }
 
@@ -1938,20 +1954,24 @@
 @keyframes hold-bowl-left {
   0%,
   100% {
-    transform: rotate(45deg) translateX(calc(var(--pet-size, 80px) * 0.1)) translateY(calc(var(--pet-size, 80px) * -0.0625));
+    transform: rotate(45deg) translateX(calc(var(--pet-size, 80px) * 0.1))
+      translateY(calc(var(--pet-size, 80px) * -0.0625));
   }
   50% {
-    transform: rotate(50deg) translateX(calc(var(--pet-size, 80px) * 0.125)) translateY(calc(var(--pet-size, 80px) * -0.0375));
+    transform: rotate(50deg) translateX(calc(var(--pet-size, 80px) * 0.125))
+      translateY(calc(var(--pet-size, 80px) * -0.0375));
   }
 }
 
 @keyframes hold-bowl-right {
   0%,
   100% {
-    transform: rotate(-45deg) translateX(calc(var(--pet-size, 80px) * -0.1)) translateY(calc(var(--pet-size, 80px) * -0.0625));
+    transform: rotate(-45deg) translateX(calc(var(--pet-size, 80px) * -0.1))
+      translateY(calc(var(--pet-size, 80px) * -0.0625));
   }
   50% {
-    transform: rotate(-50deg) translateX(calc(var(--pet-size, 80px) * -0.125)) translateY(calc(var(--pet-size, 80px) * -0.0375));
+    transform: rotate(-50deg) translateX(calc(var(--pet-size, 80px) * -0.125))
+      translateY(calc(var(--pet-size, 80px) * -0.0375));
   }
 }
 
@@ -2063,20 +2083,24 @@
 @keyframes brick-carry-arm-left {
   0%,
   100% {
-    transform: rotate(60deg) translateX(calc(var(--pet-size, 80px) * 0.0625)) translateY(calc(var(--pet-size, 80px) * -0.125));
+    transform: rotate(60deg) translateX(calc(var(--pet-size, 80px) * 0.0625))
+      translateY(calc(var(--pet-size, 80px) * -0.125));
   }
   50% {
-    transform: rotate(70deg) translateX(calc(var(--pet-size, 80px) * 0.1)) translateY(calc(var(--pet-size, 80px) * -0.15));
+    transform: rotate(70deg) translateX(calc(var(--pet-size, 80px) * 0.1))
+      translateY(calc(var(--pet-size, 80px) * -0.15));
   }
 }
 
 @keyframes brick-carry-arm-right {
   0%,
   100% {
-    transform: rotate(-60deg) translateX(calc(var(--pet-size, 80px) * -0.0625)) translateY(calc(var(--pet-size, 80px) * -0.125));
+    transform: rotate(-60deg) translateX(calc(var(--pet-size, 80px) * -0.0625))
+      translateY(calc(var(--pet-size, 80px) * -0.125));
   }
   50% {
-    transform: rotate(-70deg) translateX(calc(var(--pet-size, 80px) * -0.1)) translateY(calc(var(--pet-size, 80px) * -0.15));
+    transform: rotate(-70deg) translateX(calc(var(--pet-size, 80px) * -0.1))
+      translateY(calc(var(--pet-size, 80px) * -0.15));
   }
 }
 
@@ -2256,32 +2280,40 @@
 @keyframes programmer-type-left {
   0%,
   100% {
-    transform: rotate(45deg) translateX(calc(var(--pet-size, 80px) * 0.1)) translateY(calc(var(--pet-size, 80px) * 0.0625));
+    transform: rotate(45deg) translateX(calc(var(--pet-size, 80px) * 0.1))
+      translateY(calc(var(--pet-size, 80px) * 0.0625));
   }
   25% {
-    transform: rotate(50deg) translateX(calc(var(--pet-size, 80px) * 0.1)) translateY(calc(var(--pet-size, 80px) * 0.0375));
+    transform: rotate(50deg) translateX(calc(var(--pet-size, 80px) * 0.1))
+      translateY(calc(var(--pet-size, 80px) * 0.0375));
   }
   50% {
-    transform: rotate(45deg) translateX(calc(var(--pet-size, 80px) * 0.1)) translateY(calc(var(--pet-size, 80px) * 0.0625));
+    transform: rotate(45deg) translateX(calc(var(--pet-size, 80px) * 0.1))
+      translateY(calc(var(--pet-size, 80px) * 0.0625));
   }
   75% {
-    transform: rotate(40deg) translateX(calc(var(--pet-size, 80px) * 0.1)) translateY(calc(var(--pet-size, 80px) * 0.0875));
+    transform: rotate(40deg) translateX(calc(var(--pet-size, 80px) * 0.1))
+      translateY(calc(var(--pet-size, 80px) * 0.0875));
   }
 }
 
 @keyframes programmer-type-right {
   0%,
   100% {
-    transform: rotate(-45deg) translateX(calc(var(--pet-size, 80px) * -0.1)) translateY(calc(var(--pet-size, 80px) * 0.0625));
+    transform: rotate(-45deg) translateX(calc(var(--pet-size, 80px) * -0.1))
+      translateY(calc(var(--pet-size, 80px) * 0.0625));
   }
   25% {
-    transform: rotate(-40deg) translateX(calc(var(--pet-size, 80px) * -0.1)) translateY(calc(var(--pet-size, 80px) * 0.0875));
+    transform: rotate(-40deg) translateX(calc(var(--pet-size, 80px) * -0.1))
+      translateY(calc(var(--pet-size, 80px) * 0.0875));
   }
   50% {
-    transform: rotate(-45deg) translateX(calc(var(--pet-size, 80px) * -0.1)) translateY(calc(var(--pet-size, 80px) * 0.0625));
+    transform: rotate(-45deg) translateX(calc(var(--pet-size, 80px) * -0.1))
+      translateY(calc(var(--pet-size, 80px) * 0.0625));
   }
   75% {
-    transform: rotate(-50deg) translateX(calc(var(--pet-size, 80px) * -0.1)) translateY(calc(var(--pet-size, 80px) * 0.0375));
+    transform: rotate(-50deg) translateX(calc(var(--pet-size, 80px) * -0.1))
+      translateY(calc(var(--pet-size, 80px) * 0.0375));
   }
 }
 

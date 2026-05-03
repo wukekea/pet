@@ -32,7 +32,7 @@ const speechSupported = isSpeechSupported();
 
 // 当前激活的设置分类
 const activeCategory = ref<
-  "behavior" | "appearance" | "voice" | "interaction" | "about"
+  "behavior" | "appearance" | "voice" | "interaction" | "api" | "about"
 >("behavior");
 
 // 同步语音设置到本地设置状态
@@ -107,7 +107,16 @@ const categories = [
   { key: "appearance" as const, icon: "🎨", label: "外观", color: "#f472b6" },
   { key: "voice" as const, icon: "🔊", label: "语音", color: "#60a5fa" },
   { key: "interaction" as const, icon: "✋", label: "交互", color: "#a78bfa" },
+  { key: "api" as const, icon: "🔑", label: "API", color: "#f87171" },
   { key: "about" as const, icon: "💝", label: "关于", color: "#34d399" },
+];
+
+// AI 请求格式选项
+const aiFormats = [
+  { key: "openai" as const, label: "OpenAI", desc: "GPT 系列 / 兼容格式" },
+  { key: "anthropic" as const, label: "Anthropic", desc: "Claude 系列" },
+  { key: "gemini" as const, label: "Gemini", desc: "Google Gemini" },
+  { key: "custom" as const, label: "自定义", desc: "其他格式" },
 ];
 
 // 格式化百分比
@@ -791,6 +800,178 @@ const handleVoiceToggle = () => {
                     >
                       <span class="toggle-thumb" />
                     </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- API 配置 -->
+              <div v-if="activeCategory === 'api'" class="settings-panel">
+                <div class="panel-header">
+                  <span class="panel-icon">🔑</span>
+                  <span class="panel-title" :style="{ color: textColor }"
+                    >API 配置</span
+                  >
+                </div>
+
+                <div class="settings-list">
+                  <!-- 和风天气配置 -->
+                  <div class="api-section">
+                    <div class="api-section-header">
+                      <div
+                        class="setting-icon-wrapper"
+                        style="
+                          --icon-bg: rgba(96, 165, 250, 0.15);
+                          --icon-color: #60a5fa;
+                        "
+                      >
+                        <span class="setting-icon">🌤️</span>
+                      </div>
+                      <div class="api-section-title">
+                        <span
+                          class="setting-label"
+                          :style="{ color: textColor }"
+                          >和风天气</span
+                        >
+                        <span class="setting-desc" :style="{ color: textMuted }"
+                          >用于获取实时天气信息</span
+                        >
+                      </div>
+                    </div>
+                    <div class="api-input-group">
+                      <div class="input-row">
+                        <label :style="{ color: textMuted }">API Key</label>
+                        <input
+                          v-model="settings.apiConfig.qweather.key"
+                          type="password"
+                          placeholder="请输入 API Key"
+                          class="api-key-input"
+                        />
+                      </div>
+                      <div class="input-row">
+                        <label :style="{ color: textMuted }">API Host</label>
+                        <input
+                          v-model="settings.apiConfig.qweather.host"
+                          type="text"
+                          placeholder="https://devapi.qweather.com"
+                          class="api-key-input"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 高德地图配置 -->
+                  <div class="api-section">
+                    <div class="api-section-header">
+                      <div
+                        class="setting-icon-wrapper"
+                        style="
+                          --icon-bg: rgba(52, 211, 153, 0.15);
+                          --icon-color: #34d399;
+                        "
+                      >
+                        <span class="setting-icon">📍</span>
+                      </div>
+                      <div class="api-section-title">
+                        <span
+                          class="setting-label"
+                          :style="{ color: textColor }"
+                          >高德地图</span
+                        >
+                        <span class="setting-desc" :style="{ color: textMuted }"
+                          >用于获取位置信息</span
+                        >
+                      </div>
+                    </div>
+                    <div class="api-input-group">
+                      <div class="input-row">
+                        <label :style="{ color: textMuted }">API Key</label>
+                        <input
+                          v-model="settings.apiConfig.amap.key"
+                          type="password"
+                          placeholder="请输入 API Key"
+                          class="api-key-input"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- AI 对话配置 -->
+                  <div class="api-section">
+                    <div class="api-section-header">
+                      <div
+                        class="setting-icon-wrapper"
+                        style="
+                          --icon-bg: rgba(167, 139, 250, 0.15);
+                          --icon-color: #a78bfa;
+                        "
+                      >
+                        <span class="setting-icon">🤖</span>
+                      </div>
+                      <div class="api-section-title">
+                        <span
+                          class="setting-label"
+                          :style="{ color: textColor }"
+                          >AI 对话</span
+                        >
+                        <span class="setting-desc" :style="{ color: textMuted }"
+                          >用于 AI 聊天功能</span
+                        >
+                      </div>
+                    </div>
+                    <div class="api-input-group">
+                      <div class="input-row">
+                        <label :style="{ color: textMuted }">请求格式</label>
+                        <div class="format-selector">
+                          <button
+                            v-for="fmt in aiFormats"
+                            :key="fmt.key"
+                            class="format-option"
+                            :class="{
+                              active: settings.apiConfig.ai.format === fmt.key,
+                            }"
+                            @click="settings.apiConfig.ai.format = fmt.key"
+                          >
+                            <span class="format-name">{{ fmt.label }}</span>
+                            <span class="format-desc">{{ fmt.desc }}</span>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="input-row">
+                        <label :style="{ color: textMuted }">API URL</label>
+                        <input
+                          v-model="settings.apiConfig.ai.url"
+                          type="text"
+                          placeholder="https://api.example.com/v1/chat/completions"
+                          class="api-key-input"
+                        />
+                      </div>
+                      <div class="input-row">
+                        <label :style="{ color: textMuted }">API Key</label>
+                        <input
+                          v-model="settings.apiConfig.ai.key"
+                          type="password"
+                          placeholder="请输入 API Key"
+                          class="api-key-input"
+                        />
+                      </div>
+                      <div class="input-row">
+                        <label :style="{ color: textMuted }">模型名称</label>
+                        <input
+                          v-model="settings.apiConfig.ai.model"
+                          type="text"
+                          placeholder="如: gpt-3.5-turbo, claude-3-sonnet"
+                          class="api-key-input"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 提示信息 -->
+                  <div class="api-tip" :style="{ borderColor }">
+                    <span class="tip-icon">💡</span>
+                    <span class="tip-text" :style="{ color: textMuted }"
+                      >API 配置仅存储在本地，不会上传到服务器</span
+                    >
                   </div>
                 </div>
               </div>
@@ -1540,6 +1721,173 @@ const handleVoiceToggle = () => {
 .about-footer {
   font-size: 12px;
   opacity: 0.7;
+}
+
+/* API Key 输入框 */
+.input-wrapper {
+  width: 100%;
+  padding: 0 4px;
+}
+
+.api-key-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid v-bind(borderColor);
+  border-radius: 12px;
+  background: v-bind(cardBg);
+  color: v-bind(textColor);
+  font-size: 13px;
+  font-family: monospace;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.api-key-input::placeholder {
+  color: v-bind(textMuted);
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+.api-key-input:focus {
+  border-color: #f87171;
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.1);
+}
+
+/* API 配置区域 */
+.api-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: v-bind(cardBg);
+  border-radius: 18px;
+  border: 2px solid v-bind(borderColor);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.api-section:hover {
+  border-color: rgba(245, 166, 35, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* 和风天气区块 - 蓝色边框 */
+.api-section:nth-child(1) {
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+.api-section:nth-child(1):hover {
+  border-color: rgba(96, 165, 250, 0.6);
+}
+
+/* 高德地图区块 - 绿色边框 */
+.api-section:nth-child(2) {
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+.api-section:nth-child(2):hover {
+  border-color: rgba(52, 211, 153, 0.6);
+}
+
+/* AI 对话区块 - 紫色边框 */
+.api-section:nth-child(3) {
+  border-color: rgba(167, 139, 250, 0.3);
+}
+
+.api-section:nth-child(3):hover {
+  border-color: rgba(167, 139, 250, 0.6);
+}
+
+.api-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.api-section-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.api-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-row label {
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+/* 请求格式选择器 */
+.format-selector {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.format-option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 2px solid v-bind(borderColor);
+  border-radius: 12px;
+  background: v-bind(cardBg);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.format-option:hover {
+  border-color: rgba(167, 139, 250, 0.4);
+  transform: translateY(-1px);
+}
+
+.format-option.active {
+  border-color: #a78bfa;
+  background: rgba(167, 139, 250, 0.1);
+}
+
+.format-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: v-bind(textColor);
+}
+
+.format-desc {
+  font-size: 10px;
+  color: v-bind(textMuted);
+}
+
+/* API 提示信息 */
+.api-tip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 2px dashed;
+  margin-top: 8px;
+}
+
+.api-tip .tip-icon {
+  font-size: 16px;
+}
+
+.api-tip .tip-text {
+  font-size: 12px;
 }
 
 /* 动画 */
