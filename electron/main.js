@@ -11,12 +11,16 @@ import {
 import path from "path";
 import { fileURLToPath } from "url";
 import { setupEdgeTTSIPC } from "./edgeTTS-ipc.js";
+import { setupWhisperIPC } from "./whisperIPC.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // 启用地理位置 API（使用 Google 服务）
 app.commandLine.appendSwitch("enable-features", "Geolocation");
+
+// 启用 Web Speech API
+app.commandLine.appendSwitch("enable-speech-dispatcher");
 
 let mainWindow = null;
 let tray = null;
@@ -86,12 +90,15 @@ app.whenReady().then(() => {
   createWindow();
   createTray();
   setupEdgeTTSIPC(); // 设置 Edge TTS IPC
+  setupWhisperIPC(); // 设置 Whisper 语音识别 IPC
 
   // 自动授权定位权限
   session.defaultSession.setPermissionRequestHandler(
     (webContents, permission, callback) => {
       if (permission === "geolocation") {
         callback(true); // 自动允许定位
+      } else if (permission === "media" || permission === "microphone") {
+        callback(true); // 自动允许麦克风
       } else {
         callback(false);
       }

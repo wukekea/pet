@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { ref, computed, nextTick, watch } from "vue";
+import { ref, computed, nextTick, watch, onUnmounted } from "vue";
 import { isChatPanelOpen, llmConfig } from "../composables/sharedState";
 import { sendMessage } from "../composables/llmService";
 import type { ChatMessage } from "../composables/llmService";
 import { isDark } from "../composables/theme";
 import { speak, speechEnabled } from "../composables/speech";
+import {
+  isRecording,
+  isSupported as isSpeechRecognitionSupported,
+  toggleNativeRecording,
+  cleanupNativeRecorder,
+  recordingError as recognitionError,
+  checkNativeSpeechSupport,
+} from "../composables/nativeSpeechRecognition";
 
 // 消息历史
 const MAX_HISTORY = 50;
@@ -93,6 +101,59 @@ function clearHistory() {
   messages.value = [];
   saveHistory();
 }
+
+// 语音输入
+async function handleVoiceToggle() {
+  console.log(
+    "[ChatPanel] 语音按钮点击, 支持状态:",
+    isSpeechRecognitionSupported.value,
+  );
+
+  // 重新检查支持状态
+  if (!isSpeechRecognitionSupported.value) {
+    await checkNativeSpeechSupport();
+  }
+
+  if (!isSpeechRecognitionSupported.value) {
+    error.value = "本地语音识别未就绪，请检查依赖安装";
+    setTimeout(() => (error.value = ""), 5000);
+    return;
+  }
+
+  try {
+    const recording = await toggleNativeRecording((text, isFinal) => {
+      console.log("[ChatPanel] 识别结果:", text, "是否最终:", isFinal);
+      if (isFinal) {
+        inputText.value = text;
+      } else {
+        inputText.value = "聆听中...";
+      }
+    });
+
+    console.log("[ChatPanel] 录音状态:", recording ? "开始" : "停止");
+
+    if (recording) {
+      inputText.value = "聆听中...";
+    }
+
+    if (!recording) {
+      // 停止录音时，如果识别出错，显示错误
+      if (recognitionError.value) {
+        error.value = recognitionError.value;
+        setTimeout(() => (error.value = ""), 3000);
+      }
+    }
+  } catch (err) {
+    console.error("[ChatPanel] 语音输入错误:", err);
+    error.value = err instanceof Error ? err.message : "语音输入启动失败";
+    setTimeout(() => (error.value = ""), 5000);
+  }
+}
+
+// 组件卸载时清理
+onUnmounted(() => {
+  cleanupNativeRecorder();
+});
 
 // 面板拖拽
 const panelPos = ref({ x: 0, y: 0 });
@@ -359,12 +420,45 @@ const cssVars = computed(() => ({
 
         <!-- 输入区域 -->
         <div class="input-area">
+          <!-- 语音输入按钮 -->
+          <button
+            class="voice-btn"
+            :class="{ recording: isRecording }"
+            :disabled="isLoading"
+            @click="handleVoiceToggle"
+            @mousedown.stop
+            title="语音输入"
+          >
+            <svg
+              v-if="!isRecording"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"
+              />
+              <path
+                d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"
+              />
+            </svg>
+            <svg
+              v-else
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+            </svg>
+          </button>
           <input
             ref="inputRef"
             v-model="inputText"
             class="chat-input"
-            placeholder="说点什么…"
-            :disabled="isLoading"
+            :placeholder="isRecording ? '正在聆听…' : '说点什么…'"
+            :disabled="isLoading || isRecording"
             @keydown.enter.prevent="handleSend"
             @mousedown.stop
           />
@@ -898,6 +992,51 @@ const cssVars = computed(() => ({
 
 .chat-input:disabled {
   opacity: 0.6;
+}
+
+/* 语音输入按钮 */
+.voice-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: none;
+  background: var(--input-bg);
+  color: var(--text-sub);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid var(--input-border);
+}
+
+.voice-btn:not(:disabled):hover {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  transform: scale(1.1);
+}
+
+.voice-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.voice-btn.recording {
+  background: linear-gradient(135deg, #f43f5e, #e11d48);
+  color: white;
+  border-color: transparent;
+  animation: recording-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes recording-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(244, 63, 94, 0);
+  }
 }
 
 .send-btn {

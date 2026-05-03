@@ -23,4 +23,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   },
   speakWithEdgeTTS: (text) => ipcRenderer.invoke("speak-with-edge-tts", text),
   stopEdgeTTS: () => ipcRenderer.send("stop-edge-tts"),
+  // 本地语音识别 (Whisper)
+  speechCheckStatus: () => ipcRenderer.invoke("speech:check-status"),
+  speechStart: () => ipcRenderer.invoke("speech:start"),
+  speechStop: () => ipcRenderer.invoke("speech:stop"),
 });

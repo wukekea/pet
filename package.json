@@ -15,7 +15,9 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.92.0",
     "edge-tts": "^1.0.1",
+    "node-record-lpcm16": "^1.0.1",
     "vue": "^3.4.21"
   },
   "devDependencies": {
@@ -52,7 +54,10 @@
     "mac": {
       "target": "dmg",
       "icon": "public/icon.icns",
-      "identity": null
+      "identity": null,
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "桌面宠物需要使用麦克风进行语音输入，以便您可以通过语音与 AI 对话。"
+      }
     },
     "linux": {
       "target": "AppImage",
