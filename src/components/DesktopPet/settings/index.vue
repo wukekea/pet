@@ -1609,16 +1609,32 @@ const copyCommand = async (cmd: string) => {
 
 .custom-slider {
   width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  background: v-bind(borderColor);
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(245, 166, 35, 0.3);
   outline: none;
   -webkit-appearance: none;
+  appearance: none;
   margin: 8px 0;
+  cursor: pointer;
 }
 
 .custom-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5a623, #fbd38d);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(245, 166, 35, 0.3);
+  transition: transform 0.2s ease;
+  border: 2px solid white;
+  margin-top: -8px;
+}
+
+/* Firefox 滑块 */
+.custom-slider::-moz-range-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
@@ -1629,18 +1645,52 @@ const copyCommand = async (cmd: string) => {
   border: 2px solid white;
 }
 
+/* 默认颜色轨道 - 必须放在 accent 和 green 之前 */
+.custom-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(245, 166, 35, 0.3);
+}
+
+.custom-slider::-moz-range-track {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(245, 166, 35, 0.3);
+  border: none;
+}
+
 .custom-slider::-webkit-slider-thumb:hover {
   transform: scale(1.1);
 }
 
+/* accent 颜色滑块和轨道 */
 .custom-slider.accent::-webkit-slider-thumb {
   background: linear-gradient(135deg, #60a5fa, #93c5fd);
   box-shadow: 0 2px 6px rgba(96, 165, 250, 0.3);
 }
 
+.custom-slider.accent::-webkit-slider-runnable-track {
+  background: rgba(96, 165, 250, 0.3);
+}
+
+.custom-slider.accent::-moz-range-track {
+  background: rgba(96, 165, 250, 0.3);
+}
+
+/* green 颜色滑块和轨道 */
 .custom-slider.green::-webkit-slider-thumb {
   background: linear-gradient(135deg, #34d399, #6ee7b7);
   box-shadow: 0 2px 6px rgba(52, 211, 153, 0.3);
+}
+
+.custom-slider.green::-webkit-slider-runnable-track {
+  background: rgba(52, 211, 153, 0.3);
+}
+
+.custom-slider.green::-moz-range-track {
+  background: rgba(52, 211, 153, 0.3);
 }
 
 .custom-slider:disabled {
