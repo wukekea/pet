@@ -2011,41 +2011,39 @@ const copyCommand = async (cmd: string) => {
   padding: 16px;
   background: v-bind(cardBg);
   border-radius: 18px;
-  border: 2px solid v-bind(borderColor);
+  border: 2px solid;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
 }
 
-.api-section:hover {
-  border-color: rgba(245, 166, 35, 0.4);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
 /* 和风天气区块 - 蓝色边框 */
 .api-section:nth-child(1) {
-  border-color: rgba(96, 165, 250, 0.3);
+  border-color: rgba(96, 165, 250, 0.5);
 }
 
 .api-section:nth-child(1):hover {
-  border-color: rgba(96, 165, 250, 0.6);
+  border-color: rgba(96, 165, 250, 0.8);
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.15);
 }
 
 /* 高德地图区块 - 绿色边框 */
 .api-section:nth-child(2) {
-  border-color: rgba(52, 211, 153, 0.3);
+  border-color: rgba(52, 211, 153, 0.5);
 }
 
 .api-section:nth-child(2):hover {
-  border-color: rgba(52, 211, 153, 0.6);
+  border-color: rgba(52, 211, 153, 0.8);
+  box-shadow: 0 4px 12px rgba(52, 211, 153, 0.15);
 }
 
 /* AI 对话区块 - 紫色边框 */
 .api-section:nth-child(3) {
-  border-color: rgba(167, 139, 250, 0.3);
+  border-color: rgba(167, 139, 250, 0.5);
 }
 
 .api-section:nth-child(3):hover {
-  border-color: rgba(167, 139, 250, 0.6);
+  border-color: rgba(167, 139, 250, 0.8);
+  box-shadow: 0 4px 12px rgba(167, 139, 250, 0.15);
 }
 
 .api-section-header {
