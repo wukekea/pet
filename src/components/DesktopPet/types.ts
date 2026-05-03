@@ -265,6 +265,14 @@ declare global {
         data?: Record<string, unknown>;
         message?: string;
       }>;
+      // Edge TTS
+      initEdgeTTS: (
+        callback: (status: string, message: string) => void,
+      ) => Promise<boolean>;
+      speakWithEdgeTTS: (
+        text: string,
+      ) => Promise<{ success: boolean; error?: string }>;
+      stopEdgeTTS: () => void;
     };
   }
 }

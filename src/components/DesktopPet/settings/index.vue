@@ -3,11 +3,17 @@ import { computed } from "vue";
 import { isDark } from "../composables/theme";
 import {
   speechEnabled,
+  speechEngine,
   speechRate,
   speechPitch,
   speechVolume,
   isSpeechSupported,
+  isEdgeReady,
+  isEdgeLoading,
+  edgeStatus,
   toggleSpeech,
+  switchEngine,
+  type SpeechEngine,
 } from "../composables/speech";
 
 defineProps<{
@@ -60,6 +66,17 @@ const testSpeech = () => {
   import("../composables/speech").then(({ speak }) => {
     speak("你好，我是你的桌面宠物！");
   });
+};
+
+// 切换语音引擎
+const handleSwitchEngine = async (engine: SpeechEngine) => {
+  if (engine === speechEngine.value) return;
+  const success = await switchEngine(engine);
+  if (!success && engine === "edge") {
+    alert(
+      "Edge TTS 初始化失败，请检查网络连接或安装 edge-tts: pip3 install edge-tts",
+    );
+  }
 };
 </script>
 
@@ -117,6 +134,54 @@ const testSpeech = () => {
                   >
                     <span class="toggle-slider"></span>
                   </button>
+                </div>
+
+                <!-- 语音引擎选择 -->
+                <div class="setting-row" :class="{ disabled: !speechEnabled }">
+                  <div class="setting-info">
+                    <span class="setting-label" :style="{ color: textColor }"
+                      >语音引擎</span
+                    >
+                    <span class="setting-desc" :style="{ color: descColor }">{{
+                      speechEngine === "browser"
+                        ? "浏览器内置（免费）"
+                        : "Edge TTS（高质量在线）"
+                    }}</span>
+                  </div>
+                  <div class="engine-select">
+                    <button
+                      class="engine-btn"
+                      :class="{ active: speechEngine === 'browser' }"
+                      @click="handleSwitchEngine('browser')"
+                      :disabled="!speechEnabled"
+                    >
+                      浏览器
+                    </button>
+                    <button
+                      class="engine-btn"
+                      :class="{ active: speechEngine === 'edge' }"
+                      @click="handleSwitchEngine('edge')"
+                      :disabled="!speechEnabled || isEdgeLoading"
+                    >
+                      {{ isEdgeLoading ? "加载中..." : "Edge" }}
+                    </button>
+                  </div>
+                  <div
+                    v-if="edgeStatus && speechEngine === 'edge'"
+                    class="edge-status"
+                    :style="{ color: descColor }"
+                  >
+                    {{ edgeStatus }}
+                  </div>
+                  <div
+                    v-if="
+                      speechEngine === 'edge' && !isEdgeReady && !isEdgeLoading
+                    "
+                    class="edge-hint"
+                    :style="{ color: descColor }"
+                  >
+                    需要网络连接
+                  </div>
                 </div>
 
                 <!-- 语速设置 -->
@@ -397,6 +462,47 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 input[type="range"]:disabled {
   opacity: 0.5;
+}
+
+/* 引擎选择 */
+.engine-select {
+  display: flex;
+  gap: 8px;
+}
+
+.engine-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid v-bind(borderColor);
+  background: transparent;
+  color: v-bind(textColor);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.engine-btn:hover:not(:disabled) {
+  background: v-bind(borderColor);
+}
+
+.engine-btn.active {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: white;
+  border-color: transparent;
+}
+
+.engine-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.edge-status,
+.edge-hint {
+  font-size: 11px;
+  text-align: center;
+  margin-top: 4px;
 }
 
 /* 测试按钮 */

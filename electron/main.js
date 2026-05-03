@@ -10,6 +10,7 @@ import {
 } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
+import { setupEdgeTTSIPC } from "./edgeTTS-ipc.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -84,6 +85,7 @@ function createTray() {
 app.whenReady().then(() => {
   createWindow();
   createTray();
+  setupEdgeTTSIPC(); // 设置 Edge TTS IPC
 
   // 自动授权定位权限
   session.defaultSession.setPermissionRequestHandler(
