@@ -41,8 +41,6 @@ class EdgeTTS {
         this.tmpFile,
       ];
 
-      console.log("启动 edge-tts:", args);
-
       // 停止之前的播放
       this.stop();
 
@@ -52,9 +50,7 @@ class EdgeTTS {
       let errorOutput = "";
 
       this.currentProcess.stderr.on("data", (data) => {
-        const str = data.toString();
-        errorOutput += str;
-        console.log("edge-tts stderr:", str);
+        errorOutput += data.toString();
       });
 
       this.currentProcess.on("error", (err) => {
