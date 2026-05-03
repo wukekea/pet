@@ -216,17 +216,18 @@ curl -L "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin
 
 ### 文件说明
 
-| 文件/依赖 | 作用 | 大小 |
-|-----------|------|------|
-| sox | 录制麦克风音频 | ~2.5MB |
-| whisper-cli | 语音识别程序 | ~10MB |
-| ggml-base.bin | 语音识别模型 | ~150MB |
+| 文件/依赖     | 作用           | 大小   |
+| ------------- | -------------- | ------ |
+| sox           | 录制麦克风音频 | ~2.5MB |
+| whisper-cli   | 语音识别程序   | ~10MB  |
+| ggml-base.bin | 语音识别模型   | ~150MB |
 
 ### 故障排查
 
 如果语音输入无法使用：
 
 1. **检查依赖安装**
+
    ```bash
    which sox          # 应输出路径
    which whisper-cli  # 应输出路径

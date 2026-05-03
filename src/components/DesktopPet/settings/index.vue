@@ -18,6 +18,14 @@ import {
   switchEngine,
   type SpeechEngine,
 } from "../composables/speech";
+import {
+  speechInputEnabled,
+  speechInputStatus,
+  isSpeechInputReady,
+  isCheckingStatus,
+  toggleSpeechInput,
+  checkSpeechInputDependencies,
+} from "../composables/speechInputSettings";
 
 defineProps<{
   visible: boolean;
@@ -171,6 +179,29 @@ const handleVoiceToggle = () => {
   settings.value.voiceEnabled = newValue;
   if (newValue !== speechEnabled.value) {
     toggleSpeech();
+  }
+};
+
+// 语音输入
+const copiedCmd = ref("");
+
+const handleSpeechInputToggle = async () => {
+  const enabled = await toggleSpeechInput();
+  if (!enabled && !isSpeechInputReady.value) {
+    // 依赖未就绪，展开依赖列表提示用户
+    await checkSpeechInputDependencies();
+  }
+};
+
+const copyCommand = async (cmd: string) => {
+  try {
+    await navigator.clipboard.writeText(cmd);
+    copiedCmd.value = cmd;
+    setTimeout(() => {
+      copiedCmd.value = "";
+    }, 2000);
+  } catch (err) {
+    console.error("复制失败:", err);
   }
 };
 </script>
@@ -715,6 +746,164 @@ const handleVoiceToggle = () => {
                     <span class="btn-icon">🎤</span>
                     <span class="btn-text">测试语音</span>
                   </button>
+
+                  <!-- 分隔线 -->
+                  <div class="settings-divider" :style="{ borderColor }"></div>
+
+                  <!-- 语音输入设置 -->
+                  <div class="speech-input-section">
+                    <div class="setting-item">
+                      <div class="setting-main">
+                        <div
+                          class="setting-icon-wrapper"
+                          style="
+                            --icon-bg: rgba(139, 92, 246, 0.15);
+                            --icon-color: #8b5cf6;
+                          "
+                        >
+                          <span class="setting-icon">🎙️</span>
+                        </div>
+                        <div class="setting-info">
+                          <span
+                            class="setting-label"
+                            :style="{ color: textColor }"
+                            >语音输入</span
+                          >
+                          <span
+                            class="setting-desc"
+                            :style="{ color: textMuted }"
+                            >在 AI 对话中使用语音输入文字</span
+                          >
+                        </div>
+                      </div>
+                      <div class="setting-status">
+                        <span
+                          v-if="isSpeechInputReady"
+                          class="status-badge ready"
+                          >已就绪</span
+                        >
+                        <span v-else class="status-badge not-ready"
+                          >未就绪</span
+                        >
+                        <button
+                          class="toggle-switch purple"
+                          :class="{ active: speechInputEnabled }"
+                          :disabled="isCheckingStatus"
+                          @click="handleSpeechInputToggle"
+                        >
+                          <span class="toggle-thumb" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- 依赖状态展示 -->
+                    <div
+                      v-if="!isSpeechInputReady"
+                      class="dependencies-panel"
+                      :style="{ background: cardBg }"
+                    >
+                      <div class="panel-title-row">
+                        <span :style="{ color: textMuted }"
+                          >需要安装以下依赖：</span
+                        >
+                        <button
+                          class="refresh-btn"
+                          :disabled="isCheckingStatus"
+                          @click="checkSpeechInputDependencies"
+                        >
+                          <span
+                            class="refresh-icon"
+                            :class="{ spinning: isCheckingStatus }"
+                            >🔄</span
+                          >
+                          <span>刷新</span>
+                        </button>
+                      </div>
+
+                      <div class="dependency-list">
+                        <div
+                          v-for="dep in [
+                            {
+                              key: 'sox',
+                              name: 'sox',
+                              desc: '音频录制工具',
+                              installed: speechInputStatus.soxInstalled,
+                              cmd: 'brew install sox',
+                            },
+                            {
+                              key: 'whisper',
+                              name: 'whisper-cpp',
+                              desc: '语音识别引擎',
+                              installed: speechInputStatus.whisperInstalled,
+                              cmd: 'brew install whisper-cpp',
+                            },
+                            {
+                              key: 'model',
+                              name: 'ggml-base.bin',
+                              desc: '语音识别模型 (~150MB)',
+                              installed: speechInputStatus.modelExists,
+                              cmd: 'curl -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin -o ~/.whisper-models/ggml-base.bin',
+                            },
+                          ]"
+                          :key="dep.key"
+                          class="dependency-item"
+                          :class="{ installed: dep.installed }"
+                        >
+                          <div class="dep-status">
+                            <span class="status-icon">
+                              {{ dep.installed ? "✅" : "❌" }}
+                            </span>
+                          </div>
+                          <div class="dep-info">
+                            <div class="dep-name-row">
+                              <span
+                                class="dep-name"
+                                :style="{ color: textColor }"
+                                >{{ dep.name }}</span
+                              >
+                              <span
+                                class="dep-desc"
+                                :style="{ color: textMuted }"
+                                >{{ dep.desc }}</span
+                              >
+                            </div>
+                            <div
+                              v-if="!dep.installed"
+                              class="dep-command"
+                              :style="{ background: modalBg }"
+                            >
+                              <code :style="{ color: themeColors.primary }">{{
+                                dep.cmd
+                              }}</code>
+                              <button
+                                class="copy-btn"
+                                @click="copyCommand(dep.cmd)"
+                              >
+                                <span v-if="copiedCmd === dep.cmd">✓</span>
+                                <span v-else>📋</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="help-text" :style="{ color: textMuted }">
+                        <p>💡 安装完成后点击刷新按钮检测</p>
+                        <p>🔒 语音输入使用本地模型，无需联网，保护隐私</p>
+                      </div>
+                    </div>
+
+                    <!-- 已就绪提示 -->
+                    <div
+                      v-else-if="speechInputEnabled"
+                      class="ready-tip"
+                      :style="{ color: themeColors.primary }"
+                    >
+                      <span
+                        >✨ 语音输入已启用，在 AI 对话中点击麦克风即可使用</span
+                      >
+                    </div>
+                  </div>
                 </div>
 
                 <div v-else class="unsupported-tip" :style="{ borderColor }">
@@ -1897,6 +2086,208 @@ const handleVoiceToggle = () => {
 
 .api-tip .tip-text {
   font-size: 12px;
+}
+
+/* 语音输入设置 */
+.settings-divider {
+  height: 1px;
+  margin: 16px 0;
+  border: none;
+  background: v-bind(borderColor);
+}
+
+.speech-input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.setting-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.status-badge.ready {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+
+.status-badge.not-ready {
+  background: rgba(156, 163, 175, 0.15);
+  color: #9ca3af;
+}
+
+.toggle-switch.purple.active {
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+}
+
+.dependencies-panel {
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid v-bind(borderColor);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  background: v-bind(borderColor);
+  color: v-bind(textColor);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: v-bind(themeColors.primary);
+  color: white;
+}
+
+.refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.refresh-icon {
+  font-size: 12px;
+  transition: transform 0.5s ease;
+}
+
+.refresh-icon.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.dependency-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dependency-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: v-bind(modalBg);
+  border: 1px solid v-bind(borderColor);
+  transition: all 0.2s ease;
+}
+
+.dependency-item.installed {
+  opacity: 0.6;
+  background: rgba(52, 211, 153, 0.05);
+  border-color: rgba(52, 211, 153, 0.2);
+}
+
+.dep-status {
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.status-icon {
+  font-size: 14px;
+}
+
+.dep-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dep-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dep-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dep-desc {
+  font-size: 11px;
+}
+
+.dep-command {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 11px;
+  overflow: hidden;
+}
+
+.dep-command code {
+  flex: 1;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.copy-btn {
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background: v-bind(cardBg);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+  background: v-bind(themeColors.primary);
+}
+
+.help-text {
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.help-text p {
+  margin: 4px 0;
+}
+
+.ready-tip {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(52, 211, 153, 0.1);
+  font-size: 12px;
+  text-align: center;
 }
 
 /* 动画 */
