@@ -12,6 +12,7 @@ import {
   WORK_REST_DURATION,
   UNINTERRUPTIBLE_STATES,
 } from "../constants";
+import { moveSpeedFactor, settings } from "./settings";
 import {
   workBusyMessages,
   eatingBusyMessages,
@@ -274,8 +275,12 @@ export async function changeState(newState: PetState, skipDialogue = false) {
           const currentMood = moodLevel.value;
           const random = Math.random();
 
-          if (random < 0.1 && !scheduleEnabled.value) {
-            // 只有未启用作息时才允许随机睡眠
+          if (
+            random < 0.1 &&
+            !scheduleEnabled.value &&
+            settings.value.autoSleep
+          ) {
+            // 只有未启用作息且开启自动睡眠时才允许随机睡眠
             changeState("sleeping");
           } else if (currentMood === "good" && random < 0.3) {
             // 心情好时倾向开心表情
@@ -415,8 +420,10 @@ export function animate() {
     const dx = targetPosition.value.x - position.value.x;
     const dy = targetPosition.value.y - position.value.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    if (distance > WALK_SPEED) {
-      const ratio = WALK_SPEED / distance;
+    // 应用移动速度设置
+    const effectiveSpeed = WALK_SPEED * moveSpeedFactor.value;
+    if (distance > effectiveSpeed) {
+      const ratio = effectiveSpeed / distance;
       const moveX = dx * ratio;
       const moveY = dy * ratio;
       position.value.x += moveX;
@@ -458,6 +465,12 @@ export function stopAnimationLoop() {
 // 点击宠物
 export function handlePetClick() {
   if (isDragging.value) return;
+  // 如果关闭了点击反应，只记录但不改变状态
+  if (!settings.value.clickReaction) {
+    recordClick();
+    addInteractionExperience();
+    return;
+  }
   // 记录点击互动
   recordClick();
   // 互动经验

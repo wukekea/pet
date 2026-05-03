@@ -21,11 +21,14 @@
 /* 容器转向动画 */
 .pet-container {
   position: absolute;
-  width: 80px;
-  height: 80px;
+  width: var(--pet-size, 80px);
+  height: var(--pet-size, 80px);
   pointer-events: auto;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    width 0.3s ease,
+    height 0.3s ease;
   will-change: left, top;
 }
 
@@ -352,8 +355,8 @@
    ======================================== */
 .pet-body {
   position: relative;
-  width: 70px;
-  height: 70px;
+  width: calc(var(--pet-size, 80px) * 0.875);
+  height: calc(var(--pet-size, 80px) * 0.875);
   border-radius: 50%;
   background: var(--pet-body);
   box-shadow:

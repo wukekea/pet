@@ -61,6 +61,12 @@ import SettingsModal from "./settings/index.vue";
 import { randomPick } from "./utils/random";
 import { initSpeech } from "./composables/speech";
 import {
+  initSettings,
+  settings,
+  petSizePixels,
+  opacityValue,
+} from "./composables/settings";
+import {
   scheduleModal,
   statsModal,
   attributeModal,
@@ -257,6 +263,9 @@ onMounted(async () => {
   // 初始化屏幕尺寸
   await initScreenSize();
 
+  // 初始化设置（在主题之前，因为设置中包含主题）
+  initSettings();
+
   // 初始化主题
   initTheme();
 
@@ -315,9 +324,16 @@ const onCoinGainComplete = () => {
       `pet-${petDirection}`,
       `pet-shape-${currentPetShape}`,
     ]"
+    :style="{
+      '--pet-opacity': opacityValue,
+    }"
   >
     <!-- 脚印 -->
-    <Footprints :footprints="footprints" :color="petColors.footprint" />
+    <Footprints
+      v-if="settings.showFootprints"
+      :footprints="footprints"
+      :color="petColors.footprint"
+    />
 
     <!-- 宠物容器 -->
     <div
@@ -326,6 +342,8 @@ const onCoinGainComplete = () => {
       :style="{
         left: `${position.x}px`,
         top: `${position.y}px`,
+        '--pet-size': `${petSizePixels}px`,
+        opacity: opacityValue,
       }"
       @mousedown="handleDragStart"
       @click="onPetClick"

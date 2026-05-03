@@ -42,9 +42,31 @@ export function toggleDarkMode() {
 
 // 初始化主题（从 localStorage 恢复）
 export function initTheme() {
-  const savedMode = localStorage.getItem("pet-theme-mode") as ThemeMode | null;
-  if (savedMode && ["system", "light", "dark"].includes(savedMode)) {
-    themeMode.value = savedMode;
+  // 优先从新的设置存储中读取
+  const savedSettings = localStorage.getItem("pet-settings");
+  if (savedSettings) {
+    try {
+      const parsed = JSON.parse(savedSettings);
+      if (parsed.theme && ["system", "light", "dark"].includes(parsed.theme)) {
+        themeMode.value = parsed.theme;
+      }
+    } catch {
+      // 解析失败，尝试旧格式
+      const savedMode = localStorage.getItem(
+        "pet-theme-mode",
+      ) as ThemeMode | null;
+      if (savedMode && ["system", "light", "dark"].includes(savedMode)) {
+        themeMode.value = savedMode;
+      }
+    }
+  } else {
+    // 兼容旧格式
+    const savedMode = localStorage.getItem(
+      "pet-theme-mode",
+    ) as ThemeMode | null;
+    if (savedMode && ["system", "light", "dark"].includes(savedMode)) {
+      themeMode.value = savedMode;
+    }
   }
   updateTheme();
 
