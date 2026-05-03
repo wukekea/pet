@@ -1971,8 +1971,7 @@ const copyCommand = async (cmd: string) => {
 .api-key-input {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid
-    v-bind(isDark ? "rgba(255, 255, 255, 0.3)": "rgba(0, 0, 0, 0.2)");
+  border: 2px solid rgba(150, 150, 150, 0.4);
   border-radius: 12px;
   background: v-bind(isDark ? "rgba(0, 0, 0, 0.2)": "rgba(255, 255, 255, 0.9)");
   color: v-bind(textColor);
@@ -1980,10 +1979,6 @@ const copyCommand = async (cmd: string) => {
   font-family: monospace;
   transition: all 0.2s ease;
   outline: none;
-  /* 上下内阴影让边框四边都明显 */
-  box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.08),
-    inset 0 -1px 2px rgba(255, 255, 255, 0.5);
 }
 
 .api-key-input::placeholder {
@@ -1995,12 +1990,37 @@ const copyCommand = async (cmd: string) => {
 }
 
 .api-key-input:focus {
-  border-color: #f87171;
-  box-shadow:
-    0 0 0 3px rgba(248, 113, 113, 0.15),
-    inset 0 2px 4px rgba(0, 0, 0, 0.05),
-    inset 0 -1px 2px rgba(255, 255, 255, 0.3);
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
   background: v-bind(modalBg);
+}
+
+/* 不同卡片区域的输入框边框颜色 */
+.api-section:nth-child(1) .api-key-input {
+  border-color: rgba(96, 165, 250, 0.4);
+}
+
+.api-section:nth-child(1) .api-key-input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+}
+
+.api-section:nth-child(2) .api-key-input {
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+.api-section:nth-child(2) .api-key-input:focus {
+  border-color: #34d399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2);
+}
+
+.api-section:nth-child(3) .api-key-input {
+  border-color: rgba(167, 139, 250, 0.4);
+}
+
+.api-section:nth-child(3) .api-key-input:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
 }
 
 /* API 配置区域 */
