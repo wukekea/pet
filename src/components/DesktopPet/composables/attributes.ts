@@ -774,6 +774,8 @@ function handleVisibilityChange(): void {
 
 // 启动计时器
 function startTimers(): void {
+  // 防止重复启动
+  if (tickTimer) return;
   // 每秒 tick
   tickTimer = setInterval(tick, 1000);
 }

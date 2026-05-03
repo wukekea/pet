@@ -182,12 +182,34 @@ export function toggleSpeech(): boolean {
   return speechEnabled.value;
 }
 
+// 清理函数引用
+let speechCleanupFn: (() => void) | null = null;
+
+// 清理语音监听
+export function cleanupSpeech(): void {
+  if (speechCleanupFn) {
+    speechCleanupFn();
+    speechCleanupFn = null;
+  }
+}
+
 export function initSpeech(): void {
   if (!isSpeechSupported()) return;
+
+  // 清理之前的监听
+  cleanupSpeech();
 
   updateVoiceCache();
 
   window.speechSynthesis.addEventListener("voiceschanged", updateVoiceCache);
+
+  // 保存清理函数
+  speechCleanupFn = () => {
+    window.speechSynthesis.removeEventListener(
+      "voiceschanged",
+      updateVoiceCache,
+    );
+  };
 
   // 如果设置是 Edge，尝试初始化
   if (speechEngine.value === "edge") {

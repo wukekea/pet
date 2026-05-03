@@ -24,7 +24,7 @@ import {
   cleanupPet,
 } from "./composables/petController";
 import { footprints } from "./composables/footprints";
-import { isDark, initTheme } from "./composables/theme";
+import { isDark, initTheme, cleanupTheme } from "./composables/theme";
 import { initStats, cleanupStats } from "./composables/stats";
 import { initPetShape } from "./composables/petShapeStorage";
 import { getShapeConfig, getShapeComponent } from "./shapes";
@@ -59,7 +59,7 @@ import WarehouseModal from "./warehouse/index.vue";
 import ChatPanel from "./ChatPanel/index.vue";
 import SettingsModal from "./settings/index.vue";
 import { randomPick } from "./utils/random";
-import { initSpeech } from "./composables/speech";
+import { initSpeech, cleanupSpeech } from "./composables/speech";
 import {
   initSettings,
   settings,
@@ -286,6 +286,13 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   cleanupPet();
   cleanupStats();
+  cleanupTheme();
+  cleanupSpeech();
+  // 清理点击定时器
+  if (clickTimer) {
+    clearTimeout(clickTimer);
+    clickTimer = null;
+  }
 });
 
 // 暴露方法供外部调用

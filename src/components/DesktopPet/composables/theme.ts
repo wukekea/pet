@@ -3,6 +3,9 @@ import { ref } from "vue";
 // 主题模式类型
 export type ThemeMode = "system" | "light" | "dark";
 
+// 清理函数引用
+let themeCleanupFn: (() => void) | null = null;
+
 // 当前主题模式（默认跟随系统）
 export const themeMode = ref<ThemeMode>("system");
 
@@ -40,8 +43,19 @@ export function toggleDarkMode() {
   setThemeMode(isDark.value ? "light" : "dark");
 }
 
+// 清理主题监听
+export function cleanupTheme(): void {
+  if (themeCleanupFn) {
+    themeCleanupFn();
+    themeCleanupFn = null;
+  }
+}
+
 // 初始化主题（从 localStorage 恢复）
 export function initTheme() {
+  // 清理之前的监听
+  cleanupTheme();
+
   // 优先从新的设置存储中读取
   const savedSettings = localStorage.getItem("pet-settings");
   if (savedSettings) {
@@ -78,4 +92,9 @@ export function initTheme() {
     }
   };
   mediaQuery.addEventListener("change", handleChange);
+
+  // 保存清理函数
+  themeCleanupFn = () => {
+    mediaQuery.removeEventListener("change", handleChange);
+  };
 }
