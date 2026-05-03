@@ -1013,7 +1013,7 @@ const handleVoiceToggle = () => {
                       </span>
                     </button>
                     <a
-                      href="https://github.com/your-repo/pet"
+                      href="https://github.com/wukekea/pet"
                       target="_blank"
                       class="about-btn secondary"
                     >
