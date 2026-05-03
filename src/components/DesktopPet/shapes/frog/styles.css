@@ -3,22 +3,22 @@
 /* === 身体（扁平圆润） === */
 .pet-shape-frog .pet-body {
   border-radius: 50% 50% 48% 48%;
-  height: 62px;
-  margin-top: 4px;
+  height: calc(var(--pet-size, 80px) * 0.775);
+  margin-top: calc(var(--pet-size, 80px) * 0.05);
 }
 
 /* === 浅绿色肚皮 === */
 .pet-shape-frog .pet-belly {
   position: absolute;
-  top: 22px;
+  top: calc(var(--pet-size, 80px) * 0.275);
   left: 50%;
   transform: translateX(-50%);
-  width: 46px;
-  height: 36px;
+  width: calc(var(--pet-size, 80px) * 0.575);
+  height: calc(var(--pet-size, 80px) * 0.45);
   background: #bbf7d0;
   border-radius: 50% 50% 46% 46%;
   z-index: 3;
-  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: inset 0 calc(var(--pet-size, 80px) * -0.025) calc(var(--pet-size, 80px) * 0.05) rgba(0, 0, 0, 0.04);
 }
 
 /* === 耳朵隐藏 === */
@@ -33,10 +33,10 @@
 /* 右耳保留为蝴蝶结锚点 */
 .pet-shape-frog .pet-ear.ear-right {
   position: absolute;
-  top: -8px;
-  right: 8px;
-  width: 10px;
-  height: 10px;
+  top: calc(var(--pet-size, 80px) * -0.1);
+  right: calc(var(--pet-size, 80px) * 0.1);
+  width: calc(var(--pet-size, 80px) * 0.125);
+  height: calc(var(--pet-size, 80px) * 0.125);
   transform: none;
 }
 
@@ -48,30 +48,30 @@
 /* === 蛙眼（突出在头顶） === */
 .pet-shape-frog .pet-frog-eye {
   position: absolute;
-  top: -10px;
-  width: 22px;
-  height: 22px;
+  top: calc(var(--pet-size, 80px) * -0.125);
+  width: calc(var(--pet-size, 80px) * 0.275);
+  height: calc(var(--pet-size, 80px) * 0.275);
   background: var(--pet-body);
   border-radius: 50%;
   z-index: 10;
-  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 calc(var(--pet-size, 80px) * -0.025) calc(var(--pet-size, 80px) * 0.05) rgba(0, 0, 0, 0.1);
 }
 
 .pet-shape-frog .pet-frog-eye.frog-eye-left {
-  left: 8px;
+  left: calc(var(--pet-size, 80px) * 0.1);
 }
 
 .pet-shape-frog .pet-frog-eye.frog-eye-right {
-  right: 8px;
+  right: calc(var(--pet-size, 80px) * 0.1);
 }
 
 .pet-shape-frog .frog-eyeball {
   position: absolute;
-  top: 4px;
+  top: calc(var(--pet-size, 80px) * 0.05);
   left: 50%;
   transform: translateX(-50%);
-  width: 14px;
-  height: 14px;
+  width: calc(var(--pet-size, 80px) * 0.175);
+  height: calc(var(--pet-size, 80px) * 0.175);
   background: #ffffff;
   border-radius: 50%;
   overflow: hidden;
@@ -82,18 +82,18 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 8px;
-  height: 8px;
+  width: calc(var(--pet-size, 80px) * 0.1);
+  height: calc(var(--pet-size, 80px) * 0.1);
   background: #1c1917;
   border-radius: 50%;
 }
 
 .pet-shape-frog .frog-eye-shine {
   position: absolute;
-  top: 3px;
-  right: 3px;
-  width: 4px;
-  height: 4px;
+  top: calc(var(--pet-size, 80px) * 0.0375);
+  right: calc(var(--pet-size, 80px) * 0.0375);
+  width: calc(var(--pet-size, 80px) * 0.05);
+  height: calc(var(--pet-size, 80px) * 0.05);
   background: #ffffff;
   border-radius: 50%;
   z-index: 2;
@@ -106,12 +106,12 @@
 
 /* === 宽嘴巴 === */
 .pet-shape-frog .pet-mouth .mouth-smile {
-  width: 24px;
-  height: 8px;
+  width: calc(var(--pet-size, 80px) * 0.3);
+  height: calc(var(--pet-size, 80px) * 0.1);
   border: none;
-  border-bottom: 2.5px solid currentColor;
+  border-bottom: calc(var(--pet-size, 80px) * 0.03125) solid currentColor;
   border-radius: 0 0 50% 50%;
-  top: 44px;
+  top: calc(var(--pet-size, 80px) * 0.55);
 }
 
 /* === 腮红隐藏（青蛙用鼓腮替代） === */
@@ -121,18 +121,18 @@
 
 /* === 前腿（短粗） === */
 .pet-shape-frog .pet-arm {
-  width: 14px;
-  height: 16px;
+  width: calc(var(--pet-size, 80px) * 0.175);
+  height: calc(var(--pet-size, 80px) * 0.2);
   border-radius: 50% 50% 40% 40%;
 }
 
 /* === 后腿（蹲坐宽腿） === */
 .pet-shape-frog .pet-leg {
-  width: 18px;
-  height: 10px;
+  width: calc(var(--pet-size, 80px) * 0.225);
+  height: calc(var(--pet-size, 80px) * 0.125);
   border-radius: 50% 50% 30% 30%;
   background: var(--pet-body);
-  box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 calc(var(--pet-size, 80px) * -0.025) calc(var(--pet-size, 80px) * 0.0375) rgba(0, 0, 0, 0.1);
 }
 
 /* ====== 蛙眼动画 ====== */
@@ -149,7 +149,7 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-1px);
+    transform: translateY(calc(var(--pet-size, 80px) * -0.0125));
   }
 }
 
@@ -164,60 +164,60 @@
     transform: translateY(0);
   }
   100% {
-    transform: translateY(-3px);
+    transform: translateY(calc(var(--pet-size, 80px) * -0.0375));
   }
 }
 
 /* 睡觉时眼睛缩下（闭眼） */
 .pet-sleeping .pet-shape-frog .frog-eyeball,
 .pet-shape-frog.pet-sleeping .frog-eyeball {
-  height: 3px;
-  top: 10px;
+  height: calc(var(--pet-size, 80px) * 0.0375);
+  top: calc(var(--pet-size, 80px) * 0.125);
   overflow: hidden;
 }
 
 /* 困倦时眼睛半闭 */
 .pet-sleepy .pet-shape-frog .frog-eyeball,
 .pet-shape-frog.pet-sleepy .frog-eyeball {
-  height: 8px;
-  top: 8px;
+  height: calc(var(--pet-size, 80px) * 0.1);
+  top: calc(var(--pet-size, 80px) * 0.1);
   overflow: hidden;
 }
 
 /* 哈欠时眼睛半闭 */
 .pet-yawn .pet-shape-frog .frog-eyeball,
 .pet-shape-frog.pet-yawn .frog-eyeball {
-  height: 6px;
-  top: 9px;
+  height: calc(var(--pet-size, 80px) * 0.075);
+  top: calc(var(--pet-size, 80px) * 0.1125);
   overflow: hidden;
 }
 
 /* 害怕时眼睛睁大 */
 .pet-scared .pet-shape-frog .frog-eyeball,
 .pet-shape-frog.pet-scared .frog-eyeball {
-  width: 16px;
-  height: 16px;
-  top: 2px;
+  width: calc(var(--pet-size, 80px) * 0.2);
+  height: calc(var(--pet-size, 80px) * 0.2);
+  top: calc(var(--pet-size, 80px) * 0.025);
 }
 
 .pet-scared .pet-shape-frog .frog-pupil,
 .pet-shape-frog.pet-scared .frog-pupil {
-  width: 5px;
-  height: 5px;
+  width: calc(var(--pet-size, 80px) * 0.0625);
+  height: calc(var(--pet-size, 80px) * 0.0625);
 }
 
 /* 生气时瞳孔缩小 */
 .pet-angry .pet-shape-frog .frog-pupil,
 .pet-shape-frog.pet-angry .frog-pupil {
-  width: 5px;
-  height: 5px;
+  width: calc(var(--pet-size, 80px) * 0.0625);
+  height: calc(var(--pet-size, 80px) * 0.0625);
 }
 
 /* 得意时眼睛眯起 */
 .pet-smug .pet-shape-frog .frog-eyeball,
 .pet-shape-frog.pet-smug .frog-eyeball {
-  height: 7px;
-  top: 8px;
+  height: calc(var(--pet-size, 80px) * 0.0875);
+  top: calc(var(--pet-size, 80px) * 0.1);
   overflow: hidden;
 }
 
@@ -234,10 +234,10 @@
     transform: translateY(0) scaleY(1);
   }
   20% {
-    transform: translateY(2px) scaleY(0.9) scaleX(1.1);
+    transform: translateY(calc(var(--pet-size, 80px) * 0.025)) scaleY(0.9) scaleX(1.1);
   }
   50% {
-    transform: translateY(-15px) scaleY(1.1) scaleX(0.95);
+    transform: translateY(calc(var(--pet-size, 80px) * -0.1875)) scaleY(1.1) scaleX(0.95);
   }
 }
 
@@ -253,7 +253,7 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-3px);
+    transform: translateY(calc(var(--pet-size, 80px) * -0.0375));
   }
 }
 
@@ -269,7 +269,7 @@
     transform: translateY(0);
   }
   100% {
-    transform: translateY(-1px);
+    transform: translateY(calc(var(--pet-size, 80px) * -0.0125));
   }
 }
 
@@ -278,28 +278,28 @@
 /* 吃东西时嘴巴大张（吞食） */
 .pet-eating .pet-shape-frog .pet-mouth .mouth-smile,
 .pet-shape-frog.pet-eating .pet-mouth .mouth-smile {
-  width: 28px;
-  height: 12px;
+  width: calc(var(--pet-size, 80px) * 0.35);
+  height: calc(var(--pet-size, 80px) * 0.15);
   animation: frog-eat 0.5s ease-in-out infinite;
 }
 
 @keyframes frog-eat {
   0%,
   100% {
-    width: 28px;
-    height: 12px;
+    width: calc(var(--pet-size, 80px) * 0.35);
+    height: calc(var(--pet-size, 80px) * 0.15);
   }
   50% {
-    width: 24px;
-    height: 8px;
+    width: calc(var(--pet-size, 80px) * 0.3);
+    height: calc(var(--pet-size, 80px) * 0.1);
   }
 }
 
 /* 洗澡时眼睛眯起享受 */
 .pet-bathing .pet-shape-frog .frog-eyeball,
 .pet-shape-frog.pet-bathing .frog-eyeball {
-  height: 8px;
-  top: 8px;
+  height: calc(var(--pet-size, 80px) * 0.1);
+  top: calc(var(--pet-size, 80px) * 0.1);
   overflow: hidden;
 }
 
@@ -343,14 +343,14 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-3px);
+    transform: translateY(calc(var(--pet-size, 80px) * -0.0375));
   }
 }
 
 @keyframes frog-eye-dance-right {
   0%,
   100% {
-    transform: translateY(-3px);
+    transform: translateY(calc(var(--pet-size, 80px) * -0.0375));
   }
   50% {
     transform: translateY(0);
@@ -365,24 +365,24 @@
 
 @keyframes frog-eye-spin {
   0% {
-    transform: translate(-50%, -50%) rotate(0deg) translateX(2px);
+    transform: translate(-50%, -50%) rotate(0deg) translateX(calc(var(--pet-size, 80px) * 0.025));
   }
   100% {
-    transform: translate(-50%, -50%) rotate(360deg) translateX(2px);
+    transform: translate(-50%, -50%) rotate(360deg) translateX(calc(var(--pet-size, 80px) * 0.025));
   }
 }
 
 /* 窥视时只露眼睛 */
 .pet-peek .pet-shape-frog .pet-frog-eye,
 .pet-shape-frog.pet-peek .pet-frog-eye {
-  transform: translateY(-2px);
+  transform: translateY(calc(var(--pet-size, 80px) * -0.025));
 }
 
 /* 打喷嚏时眼睛闭上 */
 .pet-sneeze .pet-shape-frog .frog-eyeball,
 .pet-shape-frog.pet-sneeze .frog-eyeball {
-  height: 3px;
-  top: 10px;
+  height: calc(var(--pet-size, 80px) * 0.0375);
+  top: calc(var(--pet-size, 80px) * 0.125);
   overflow: hidden;
 }
 
@@ -394,29 +394,29 @@
 
 @keyframes frog-eye-stretch {
   0% {
-    height: 3px;
-    top: 10px;
+    height: calc(var(--pet-size, 80px) * 0.0375);
+    top: calc(var(--pet-size, 80px) * 0.125);
   }
   50%,
   100% {
-    height: 14px;
-    top: 4px;
+    height: calc(var(--pet-size, 80px) * 0.175);
+    top: calc(var(--pet-size, 80px) * 0.05);
   }
 }
 
 /* 梦游时眼睛半闭 */
 .pet-sleepwalking .pet-shape-frog .frog-eyeball,
 .pet-shape-frog.pet-sleepwalking .frog-eyeball {
-  height: 4px;
-  top: 10px;
+  height: calc(var(--pet-size, 80px) * 0.05);
+  top: calc(var(--pet-size, 80px) * 0.125);
   overflow: hidden;
 }
 
 /* 坏笑时眼睛眯起 */
 .pet-grin .pet-shape-frog .frog-eyeball,
 .pet-shape-frog.pet-grin .frog-eyeball {
-  height: 6px;
-  top: 9px;
+  height: calc(var(--pet-size, 80px) * 0.075);
+  top: calc(var(--pet-size, 80px) * 0.1125);
   overflow: hidden;
 }
 
@@ -434,10 +434,10 @@
 
 @keyframes frog-scratch {
   0% {
-    transform: translateY(-4px) rotate(-10deg);
+    transform: translateY(calc(var(--pet-size, 80px) * -0.05)) rotate(-10deg);
   }
   100% {
-    transform: translateY(-6px) rotate(5deg);
+    transform: translateY(calc(var(--pet-size, 80px) * -0.075)) rotate(5deg);
   }
 }
 

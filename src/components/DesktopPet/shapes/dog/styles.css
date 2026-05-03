@@ -3,37 +3,37 @@
 /* === 垂耳 === */
 .pet-shape-dog .pet-ear {
   position: absolute;
-  top: -2px;
-  width: 18px;
-  height: 28px;
+  top: calc(var(--pet-size, 80px) * -0.025);
+  width: calc(var(--pet-size, 80px) * 0.225);
+  height: calc(var(--pet-size, 80px) * 0.35);
   background: var(--pet-body);
   border-radius: 50% 50% 60% 60%;
   z-index: 2;
   box-shadow:
-    inset 0 -4px 6px rgba(0, 0, 0, 0.1),
-    0 2px 3px rgba(0, 0, 0, 0.05);
+    inset 0 calc(var(--pet-size, 80px) * -0.05) calc(var(--pet-size, 80px) * 0.075) rgba(0, 0, 0, 0.1),
+    0 calc(var(--pet-size, 80px) * 0.025) calc(var(--pet-size, 80px) * 0.0375) rgba(0, 0, 0, 0.05);
   transform-origin: top center;
 }
 
 .pet-shape-dog .pet-ear::before {
   content: "";
   position: absolute;
-  top: 6px;
+  top: calc(var(--pet-size, 80px) * 0.075);
   left: 50%;
   transform: translateX(-50%);
-  width: 10px;
-  height: 18px;
+  width: calc(var(--pet-size, 80px) * 0.125);
+  height: calc(var(--pet-size, 80px) * 0.225);
   background: rgba(0, 0, 0, 0.06);
   border-radius: 50% 50% 60% 60%;
 }
 
 .pet-shape-dog .pet-ear.ear-left {
-  left: -2px;
+  left: calc(var(--pet-size, 80px) * -0.025);
   transform: rotate(8deg);
 }
 
 .pet-shape-dog .pet-ear.ear-right {
-  right: -2px;
+  right: calc(var(--pet-size, 80px) * -0.025);
   transform: rotate(-8deg);
 }
 
@@ -41,59 +41,59 @@
 .pet-shape-dog .pet-nose {
   position: absolute;
   left: 50%;
-  top: 38px;
+  top: calc(var(--pet-size, 80px) * 0.475);
   transform: translateX(-50%);
-  width: 14px;
-  height: 11px;
+  width: calc(var(--pet-size, 80px) * 0.175);
+  height: calc(var(--pet-size, 80px) * 0.1375);
   background: #1c1917;
   border-radius: 50% 50% 45% 45%;
   z-index: 8;
-  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 calc(var(--pet-size, 80px) * 0.025) calc(var(--pet-size, 80px) * 0.0375) rgba(255, 255, 255, 0.15);
 }
 
 .pet-shape-dog .pet-nose::after {
   content: "";
   position: absolute;
-  top: 2px;
-  left: 3px;
-  width: 4px;
-  height: 3px;
+  top: calc(var(--pet-size, 80px) * 0.025);
+  left: calc(var(--pet-size, 80px) * 0.0375);
+  width: calc(var(--pet-size, 80px) * 0.05);
+  height: calc(var(--pet-size, 80px) * 0.0375);
   background: rgba(255, 255, 255, 0.3);
   border-radius: 50%;
 }
 
 /* === 眼睛（圆豆眼） === */
 .pet-shape-dog .pet-eyes:not(.blink) .eye {
-  width: 14px;
-  height: 14px;
+  width: calc(var(--pet-size, 80px) * 0.175);
+  height: calc(var(--pet-size, 80px) * 0.175);
   border-radius: 50%;
   background: var(--pet-eyes);
 }
 
 .pet-shape-dog .pet-eyes:not(.blink) .eye-shine {
-  width: 5px;
-  height: 5px;
-  top: 2px;
-  right: 2px;
+  width: calc(var(--pet-size, 80px) * 0.0625);
+  height: calc(var(--pet-size, 80px) * 0.0625);
+  top: calc(var(--pet-size, 80px) * 0.025);
+  right: calc(var(--pet-size, 80px) * 0.025);
 }
 
 /* === 嘴巴（微笑弧线） === */
 .pet-shape-dog .pet-mouth .mouth-smile {
-  width: 16px;
-  height: 8px;
+  width: calc(var(--pet-size, 80px) * 0.2);
+  height: calc(var(--pet-size, 80px) * 0.1);
   border: none;
-  border-bottom: 2.5px solid currentColor;
+  border-bottom: calc(var(--pet-size, 80px) * 0.03125) solid currentColor;
   border-radius: 0 0 50% 50%;
-  top: 48px;
+  top: calc(var(--pet-size, 80px) * 0.6);
 }
 
 /* === 舌头 === */
 .pet-shape-dog .pet-tongue {
   position: absolute;
   left: 50%;
-  top: 53px;
+  top: calc(var(--pet-size, 80px) * 0.6625);
   transform: translateX(-50%);
-  width: 8px;
+  width: calc(var(--pet-size, 80px) * 0.1);
   height: 0;
   background: #f87171;
   border-radius: 0 0 50% 50%;
@@ -105,43 +105,43 @@
 /* 开心时吐舌头 */
 .pet-happy .pet-shape-dog .pet-tongue,
 .pet-shape-dog.pet-happy .pet-tongue {
-  height: 10px;
+  height: calc(var(--pet-size, 80px) * 0.125);
   animation: dog-tongue-pant 0.4s ease-in-out infinite alternate;
 }
 
 /* 庆祝时也吐舌 */
 .pet-celebrate .pet-shape-dog .pet-tongue,
 .pet-shape-dog.pet-celebrate .pet-tongue {
-  height: 8px;
+  height: calc(var(--pet-size, 80px) * 0.1);
   animation: dog-tongue-pant 0.3s ease-in-out infinite alternate;
 }
 
 /* 跳跃时吐舌 */
 .pet-jumping .pet-shape-dog .pet-tongue,
 .pet-shape-dog.pet-jumping .pet-tongue {
-  height: 7px;
+  height: calc(var(--pet-size, 80px) * 0.0875);
 }
 
 /* 追逐时吐舌 */
 .pet-chase .pet-shape-dog .pet-tongue,
 .pet-shape-dog.pet-chase .pet-tongue {
-  height: 10px;
+  height: calc(var(--pet-size, 80px) * 0.125);
   animation: dog-tongue-pant 0.25s ease-in-out infinite alternate;
 }
 
 @keyframes dog-tongue-pant {
   0% {
-    height: 8px;
+    height: calc(var(--pet-size, 80px) * 0.1);
   }
   100% {
-    height: 12px;
+    height: calc(var(--pet-size, 80px) * 0.15);
   }
 }
 
 /* === 腮红 === */
 .pet-shape-dog .pet-cheek {
-  width: 10px;
-  height: 7px;
+  width: calc(var(--pet-size, 80px) * 0.125);
+  height: calc(var(--pet-size, 80px) * 0.0875);
   border-radius: 50%;
   opacity: 0.5;
 }
@@ -190,7 +190,7 @@
     transform: rotate(8deg) translateY(0);
   }
   100% {
-    transform: rotate(5deg) translateY(-2px);
+    transform: rotate(5deg) translateY(calc(var(--pet-size, 80px) * -0.025));
   }
 }
 
@@ -204,32 +204,32 @@
     transform: rotate(-8deg) translateY(0);
   }
   100% {
-    transform: rotate(-5deg) translateY(-2px);
+    transform: rotate(-5deg) translateY(calc(var(--pet-size, 80px) * -0.025));
   }
 }
 
 /* 害怕时耳朵贴紧 */
 .pet-scared .pet-shape-dog .pet-ear,
 .pet-shape-dog.pet-scared .pet-ear {
-  transform: rotate(15deg) translateY(3px);
+  transform: rotate(15deg) translateY(calc(var(--pet-size, 80px) * 0.0375));
   animation: none;
 }
 
 .pet-scared .pet-shape-dog .pet-ear.ear-right,
 .pet-shape-dog.pet-scared .pet-ear.ear-right {
-  transform: rotate(-15deg) translateY(3px);
+  transform: rotate(-15deg) translateY(calc(var(--pet-size, 80px) * 0.0375));
 }
 
 /* 警觉/生气时耳朵竖起 */
 .pet-angry .pet-shape-dog .pet-ear,
 .pet-shape-dog.pet-angry .pet-ear {
-  transform: rotate(3deg) translateY(-3px);
+  transform: rotate(3deg) translateY(calc(var(--pet-size, 80px) * -0.0375));
   animation: none;
 }
 
 .pet-angry .pet-shape-dog .pet-ear.ear-right,
 .pet-shape-dog.pet-angry .pet-ear.ear-right {
-  transform: rotate(-3deg) translateY(-3px);
+  transform: rotate(-3deg) translateY(calc(var(--pet-size, 80px) * -0.0375));
 }
 
 /* 走路时耳朵晃动 */
@@ -264,13 +264,13 @@
 /* 睡觉时耳朵完全垂下 */
 .pet-sleeping .pet-shape-dog .pet-ear,
 .pet-shape-dog.pet-sleeping .pet-ear {
-  transform: rotate(12deg) translateY(4px);
+  transform: rotate(12deg) translateY(calc(var(--pet-size, 80px) * 0.05));
   animation: none;
 }
 
 .pet-sleeping .pet-shape-dog .pet-ear.ear-right,
 .pet-shape-dog.pet-sleeping .pet-ear.ear-right {
-  transform: rotate(-12deg) translateY(4px);
+  transform: rotate(-12deg) translateY(calc(var(--pet-size, 80px) * 0.05));
 }
 
 /* ====== 状态特殊处理 ====== */
@@ -285,42 +285,42 @@
 /* 吃东西时舌头微露 */
 .pet-eating .pet-shape-dog .pet-tongue,
 .pet-shape-dog.pet-eating .pet-tongue {
-  height: 5px;
+  height: calc(var(--pet-size, 80px) * 0.0625);
   animation: dog-tongue-eat 0.5s ease-in-out infinite;
 }
 
 @keyframes dog-tongue-eat {
   0%,
   100% {
-    height: 5px;
+    height: calc(var(--pet-size, 80px) * 0.0625);
   }
   50% {
-    height: 2px;
+    height: calc(var(--pet-size, 80px) * 0.025);
   }
 }
 
 /* 思考时耳朵单侧抬 */
 .pet-thinking .pet-shape-dog .pet-ear.ear-right,
 .pet-shape-dog.pet-thinking .pet-ear.ear-right {
-  transform: rotate(-3deg) translateY(-2px);
+  transform: rotate(-3deg) translateY(calc(var(--pet-size, 80px) * -0.025));
   animation: none;
 }
 
 /* 困惑时歪头，耳朵一高一低 */
 .pet-confused .pet-shape-dog .pet-ear.ear-left,
 .pet-shape-dog.pet-confused .pet-ear.ear-left {
-  transform: rotate(5deg) translateY(-2px);
+  transform: rotate(5deg) translateY(calc(var(--pet-size, 80px) * -0.025));
 }
 
 .pet-confused .pet-shape-dog .pet-ear.ear-right,
 .pet-shape-dog.pet-confused .pet-ear.ear-right {
-  transform: rotate(-12deg) translateY(2px);
+  transform: rotate(-12deg) translateY(calc(var(--pet-size, 80px) * 0.025));
 }
 
 /* 坏笑时舌头微露 */
 .pet-grin .pet-shape-dog .pet-tongue,
 .pet-shape-dog.pet-grin .pet-tongue {
-  height: 5px;
+  height: calc(var(--pet-size, 80px) * 0.0625);
 }
 
 /* 打喷嚏时耳朵弹起 */
@@ -335,7 +335,7 @@
     transform: rotate(8deg);
   }
   50% {
-    transform: rotate(2deg) translateY(-4px);
+    transform: rotate(2deg) translateY(calc(var(--pet-size, 80px) * -0.05));
   }
 }
 
@@ -350,7 +350,7 @@
     transform: rotate(-8deg);
   }
   50% {
-    transform: rotate(-2deg) translateY(-4px);
+    transform: rotate(-2deg) translateY(calc(var(--pet-size, 80px) * -0.05));
   }
 }
 
