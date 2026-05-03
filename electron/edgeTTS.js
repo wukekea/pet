@@ -3,6 +3,9 @@ import path from "path";
 import fs from "fs";
 import os from "os";
 
+// 跟踪所有创建的临时文件，用于应用退出时清理
+const tmpFiles = new Set();
+
 class EdgeTTS {
   constructor() {
     this.isReady = true; // edge-tts 不需要初始化
@@ -19,8 +22,12 @@ class EdgeTTS {
   // 播放文本
   async speak(text, options = {}) {
     return new Promise((resolve, reject) => {
+      // 清理之前的临时文件
+      this.cleanup();
+
       // 生成临时文件路径
       this.tmpFile = path.join(os.tmpdir(), `edge-tts-${Date.now()}.mp3`);
+      tmpFiles.add(this.tmpFile);
 
       // 构建 edge-tts 命令
       // 使用中文语音：zh-CN-XiaoxiaoNeural（女声）或 zh-CN-YunxiNeural（男声）
@@ -129,9 +136,28 @@ class EdgeTTS {
   // 清理临时文件
   cleanup() {
     if (this.tmpFile && fs.existsSync(this.tmpFile)) {
-      fs.unlink(this.tmpFile, () => {});
+      try {
+        fs.unlinkSync(this.tmpFile);
+      } catch (err) {
+        // 忽略清理错误
+      }
+      tmpFiles.delete(this.tmpFile);
       this.tmpFile = null;
     }
+  }
+
+  // 清理所有临时文件（应用退出时调用）
+  static cleanupAll() {
+    for (const file of tmpFiles) {
+      if (fs.existsSync(file)) {
+        try {
+          fs.unlinkSync(file);
+        } catch (err) {
+          // 忽略清理错误
+        }
+      }
+    }
+    tmpFiles.clear();
   }
 
   // 停止播放
@@ -146,3 +172,6 @@ class EdgeTTS {
 
 // 单例实例
 export const edgeTTS = new EdgeTTS();
+
+// 导出类供静态方法使用
+export { EdgeTTS };

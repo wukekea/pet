@@ -1,8 +1,12 @@
 // Edge TTS IPC 处理
-import { ipcMain } from "electron";
-import { edgeTTS } from "./edgeTTS.js";
+import { ipcMain, app } from "electron";
+import { edgeTTS, EdgeTTS } from "./edgeTTS.js";
 
 export function setupEdgeTTSIPC() {
+  // 应用退出前清理所有临时文件
+  app.on("before-quit", () => {
+    EdgeTTS.cleanupAll();
+  });
   ipcMain.handle("init-edge-tts", async (event) => {
     const sender = event.sender;
     const result = await edgeTTS.init((status, message) => {
