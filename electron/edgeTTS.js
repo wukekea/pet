@@ -8,19 +8,141 @@ const tmpFiles = new Set();
 
 class EdgeTTS {
   constructor() {
-    this.isReady = true; // edge-tts 不需要初始化
+    this.isReady = false;
     this.currentProcess = null;
     this.tmpFile = null;
+    this.shell = false;
+    this.audioPlayer = null; // 缓存检测到的播放器
+
+    // Windows 上可能需要使用 shell 模式
+    if (os.platform() === "win32") {
+      this.shell = true;
+    }
   }
 
-  // 初始化（edge-tts 不需要，直接返回 true）
+  // 检查命令是否可用
+  async checkCommand(command, args = ["--version"], useShell = false) {
+    return new Promise((resolve) => {
+      const check = spawn(command, args, { shell: useShell });
+      check.on("close", (code) => resolve(code === 0));
+      check.on("error", () => resolve(false));
+    });
+  }
+
+  // 检测可用的音频播放器
+  async detectAudioPlayer() {
+    const platform = os.platform();
+
+    if (platform === "darwin") {
+      // macOS: 使用 afplay
+      console.log("[EdgeTTS] 使用音频播放器: afplay (macOS)");
+      return { command: "afplay", args: (file) => [file] };
+    }
+
+    if (platform === "win32") {
+      // Windows: 按优先级检测播放器
+      // 1. 检测 ffplay
+      if (await this.checkCommand("ffplay")) {
+        console.log("[EdgeTTS] 使用音频播放器: ffplay (ffmpeg)");
+        return {
+          command: "ffplay",
+          args: (file) => ["-nodisp", "-autoexit", "-loglevel", "quiet", file],
+        };
+      }
+
+      // 2. 检测 PowerShell MediaPlayer
+      const psCheck = await this.checkCommand(
+        "powershell",
+        ["-c", "Add-Type -AssemblyName PresentationCore"],
+        true,
+      );
+      if (psCheck) {
+        console.log("[EdgeTTS] 使用音频播放器: PowerShell MediaPlayer");
+        return {
+          command: "powershell",
+          args: (file) => [
+            "-c",
+            `Add-Type -AssemblyName PresentationCore; $player = New-Object System.Windows.Media.MediaPlayer; $player.Open([System.Uri]::new('${file}')); $player.Play(); Start-Sleep -Seconds 1; while($player.Position -lt $player.NaturalDuration.TimeSpan){ Start-Sleep -Milliseconds 100 }`,
+          ],
+          useShell: true,
+        };
+      }
+
+      // 3. 回退到 start 命令
+      console.log("[EdgeTTS] 使用音频播放器: cmd start (系统默认播放器)");
+      return {
+        command: "cmd",
+        args: (file) => ["/c", "start", "", file],
+        useShell: true,
+      };
+    }
+
+    // Linux: 检测 mpv 或 ffplay
+    if (await this.checkCommand("mpv")) {
+      console.log("[EdgeTTS] 使用音频播放器: mpv");
+      return { command: "mpv", args: (file) => [file, "--no-video"] };
+    }
+
+    if (await this.checkCommand("ffplay")) {
+      console.log("[EdgeTTS] 使用音频播放器: ffplay (ffmpeg)");
+      return {
+        command: "ffplay",
+        args: (file) => ["-nodisp", "-autoexit", file],
+      };
+    }
+
+    console.log("[EdgeTTS] 警告: 未找到可用的音频播放器");
+    return null;
+  }
+
+  // 检查 edge-tts 是否安装
+  async checkInstalled() {
+    const platform = os.platform();
+
+    if (platform === "win32") {
+      // Windows: 使用 python -m edge_tts --version
+      return this.checkCommand("python", ["-m", "edge_tts", "--version"], true);
+    }
+
+    // macOS/Linux: 使用 which 命令
+    return this.checkCommand("which", ["edge-tts"]);
+  }
+
+  // 初始化
   async init(onProgress) {
+    onProgress?.("checking", "正在检查语音引擎...");
+
+    const installed = await this.checkInstalled();
+    if (!installed) {
+      this.isReady = false;
+      onProgress?.(
+        "not-installed",
+        "Edge TTS 未安装，请运行: pip install edge-tts",
+      );
+      return false;
+    }
+
+    // 检测音频播放器
+    onProgress?.("checking-player", "正在检测音频播放器...");
+    this.audioPlayer = await this.detectAudioPlayer();
+
+    if (!this.audioPlayer) {
+      this.isReady = false;
+      onProgress?.("no-player", "未找到可用的音频播放器");
+      return false;
+    }
+
+    this.isReady = true;
     onProgress?.("ready", "语音引擎准备就绪");
     return true;
   }
 
   // 播放文本
   async speak(text, options = {}) {
+    if (!this.isReady || !this.audioPlayer) {
+      throw new Error("Edge TTS 未初始化或未就绪");
+    }
+
     return new Promise((resolve, reject) => {
       // 清理之前的临时文件
       this.cleanup();
@@ -30,12 +152,11 @@ class EdgeTTS {
       tmpFiles.add(this.tmpFile);
 
       // 构建 edge-tts 命令
-      // 使用中文语音：zh-CN-XiaoxiaoNeural（女声）或 zh-CN-YunxiNeural（男声）
       const voice = options.voice || "zh-CN-XiaoxiaoNeural";
-      const rate = options.rate || "+0%"; // 语速
-      const volume = options.volume || "+0%"; // 音量
+      const rate = options.rate || "+0%";
+      const volume = options.volume || "+0%";
 
-      const args = [
+      let args = [
         "--voice",
         voice,
         "--rate",
@@ -52,7 +173,13 @@ class EdgeTTS {
       this.stop();
 
       // 启动 edge-tts 进程
-      this.currentProcess = spawn("edge-tts", args);
+      let command = "edge-tts";
+      if (os.platform() === "win32") {
+        command = "python";
+        args = ["-m", "edge_tts", ...args];
+      }
+
+      this.currentProcess = spawn(command, args, { shell: this.shell });
 
       let errorOutput = "";
 
@@ -71,7 +198,6 @@ class EdgeTTS {
 
         if (code !== 0) {
           this.cleanup();
-          // 分析常见错误类型，提供友好的错误信息
           let errorMessage = `edge-tts 退出码: ${code}`;
           if (errorOutput.includes("NoAudioReceived")) {
             errorMessage =
@@ -109,29 +235,10 @@ class EdgeTTS {
 
   // 播放音频文件
   async playAudio(filePath) {
+    const { command, args, useShell = false } = this.audioPlayer;
+
     return new Promise((resolve, reject) => {
-      const platform = os.platform();
-      let command;
-      let args;
-
-      if (platform === "darwin") {
-        // macOS: 使用 afplay
-        command = "afplay";
-        args = [filePath];
-      } else if (platform === "win32") {
-        // Windows: 使用 powershell
-        command = "powershell";
-        args = [
-          "-c",
-          `(New-Object Media.SoundPlayer "${filePath}").PlaySync()`,
-        ];
-      } else {
-        // Linux: 使用 mpv 或 ffplay
-        command = "mpv";
-        args = [filePath, "--no-video"];
-      }
-
-      const player = spawn(command, args);
+      const player = spawn(command, args(filePath), { shell: useShell });
 
       player.on("close", (code) => {
         if (code !== 0) {
