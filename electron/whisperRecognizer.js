@@ -36,16 +36,44 @@ class WhisperRecognizer {
   // 检查 sox 是否安装
   async checkSox() {
     return new Promise((resolve) => {
-      const check = spawn("which", ["sox"]);
+      const platform = os.platform();
+      let command, args;
+
+      if (platform === "win32") {
+        // Windows: 使用 where 命令
+        command = "where";
+        args = ["sox"];
+      } else {
+        // macOS/Linux: 使用 which 命令
+        command = "which";
+        args = ["sox"];
+      }
+
+      const check = spawn(command, args, { shell: platform === "win32" });
       check.on("close", (code) => resolve(code === 0));
+      check.on("error", () => resolve(false));
     });
   }
 
   // 检查 whisper-cli 是否安装 (brew 安装的 whisper-cpp 提供的是 whisper-cli 命令)
   async checkWhisper() {
     return new Promise((resolve) => {
-      const check = spawn("which", ["whisper-cli"]);
+      const platform = os.platform();
+      let command, args;
+
+      if (platform === "win32") {
+        // Windows: 使用 where 命令
+        command = "where";
+        args = ["whisper-cli"];
+      } else {
+        // macOS/Linux: 使用 which 命令
+        command = "which";
+        args = ["whisper-cli"];
+      }
+
+      const check = spawn(command, args, { shell: platform === "win32" });
       check.on("close", (code) => resolve(code === 0));
+      check.on("error", () => resolve(false));
     });
   }
 
