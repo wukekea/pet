@@ -186,24 +186,56 @@ AI 对话面板支持语音输入，可以直接说话与宠物对话。
 
 语音输入需要以下依赖（仅需安装一次）：
 
-#### 1. 安装 sox（录音工具）
+#### macOS
+
+**1. 安装 sox（录音工具）**
 
 ```bash
 brew install sox
 ```
 
-#### 2. 安装 whisper-cpp（语音识别引擎）
+**2. 安装 whisper-cpp（语音识别引擎）**
 
 ```bash
 brew install whisper-cpp
 ```
 
-#### 3. 下载语音识别模型（约 150MB）
+**3. 下载语音识别模型（约 150MB）**
 
 ```bash
 mkdir -p ~/.whisper-models
 curl -L "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin" \
   -o ~/.whisper-models/ggml-base.bin
+```
+
+#### Windows
+
+**1. 安装 sox（录音工具）**
+
+- 下载 SoX 安装包：https://sourceforge.net/projects/sox/files/sox/
+- 安装时勾选"Add SoX to PATH"
+- 或使用 Chocolatey：`choco install sox`
+
+**2. 安装 whisper-cpp（语音识别引擎）**
+
+使用 Chocolatey（推荐）：
+```powershell
+choco install whisper-cpp
+```
+
+或手动安装：
+- 下载 whisper.cpp Windows 预编译版本：https://github.com/ggerganov/whisper.cpp/releases
+- 将 `whisper-cli.exe` 解压到任意目录
+- 将该目录添加到系统 PATH 环境变量
+
+**3. 下载语音识别模型（约 150MB）**
+
+```powershell
+# 在 PowerShell 中执行
+$modelDir = "$env:USERPROFILE\.whisper-models"
+New-Item -ItemType Directory -Force -Path $modelDir
+Invoke-WebRequest -Uri "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin" `
+  -OutFile "$modelDir\ggml-base.bin"
 ```
 
 ### 使用方法
@@ -228,14 +260,23 @@ curl -L "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin
 
 1. **检查依赖安装**
 
+   **macOS:**
    ```bash
    which sox          # 应输出路径
    which whisper-cli  # 应输出路径
    ls ~/.whisper-models/ggml-base.bin  # 应存在
    ```
 
+   **Windows:**
+   ```powershell
+   where sox          # 应输出路径
+   where whisper-cli  # 应输出路径
+   Test-Path "$env:USERPROFILE\.whisper-models\ggml-base.bin"  # 应返回 True
+   ```
+
 2. **检查麦克风权限**
-   - macOS: 系统设置 → 隐私与安全 → 麦克风 → 允许「桌面宠物」
+   - **macOS**: 系统设置 → 隐私与安全 → 麦克风 → 允许「桌面宠物」
+   - **Windows**: 设置 → 隐私 → 麦克风 → 允许桌面应用访问麦克风
 
 3. **重启应用**
    - 安装依赖后需要重启 Electron 应用
