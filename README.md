@@ -219,11 +219,13 @@ curl -L "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin
 **2. 安装 whisper-cpp（语音识别引擎）**
 
 使用 Chocolatey（推荐）：
+
 ```powershell
 choco install whisper-cpp
 ```
 
 或手动安装：
+
 - 下载 whisper.cpp Windows 预编译版本：https://github.com/ggerganov/whisper.cpp/releases
 - 将 `whisper-cli.exe` 解压到任意目录
 - 将该目录添加到系统 PATH 环境变量
@@ -261,6 +263,7 @@ Invoke-WebRequest -Uri "https://huggingface.co/ggerganov/whisper.cpp/resolve/mai
 1. **检查依赖安装**
 
    **macOS:**
+
    ```bash
    which sox          # 应输出路径
    which whisper-cli  # 应输出路径
@@ -268,6 +271,7 @@ Invoke-WebRequest -Uri "https://huggingface.co/ggerganov/whisper.cpp/resolve/mai
    ```
 
    **Windows:**
+
    ```powershell
    where sox          # 应输出路径
    where whisper-cli  # 应输出路径

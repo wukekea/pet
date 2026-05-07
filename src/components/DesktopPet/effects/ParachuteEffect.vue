@@ -35,50 +35,50 @@
         <!-- 左边三根 -->
         <line
           x1="25"
-          y1="50"
-          x2="75"
-          y2="160"
+          y1="45"
+          x2="90"
+          y2="180"
           stroke="url(#ropeGradient)"
           stroke-width="1.5"
         />
         <line
           x1="40"
-          y1="50"
-          x2="85"
-          y2="160"
+          y1="45"
+          x2="90"
+          y2="180"
           stroke="url(#ropeGradient)"
           stroke-width="1"
         />
         <line
           x1="60"
-          y1="50"
-          x2="95"
-          y2="160"
+          y1="45"
+          x2="90"
+          y2="180"
           stroke="url(#ropeGradient)"
           stroke-width="1"
         />
         <!-- 右边三根 -->
         <line
           x1="140"
-          y1="50"
+          y1="45"
           x2="105"
-          y2="160"
+          y2="180"
           stroke="url(#ropeGradient)"
           stroke-width="1"
         />
         <line
           x1="160"
-          y1="50"
-          x2="115"
-          y2="160"
+          y1="45"
+          x2="105"
+          y2="180"
           stroke="url(#ropeGradient)"
           stroke-width="1.5"
         />
         <line
           x1="175"
-          y1="50"
-          x2="125"
-          y2="160"
+          y1="45"
+          x2="105"
+          y2="180"
           stroke="url(#ropeGradient)"
           stroke-width="1.5"
         />
@@ -148,13 +148,6 @@
         />
       </g>
 
-      <!-- 伞绳连接点 -->
-      <circle cx="25" cy="50" r="2.5" fill="#666" />
-      <circle cx="40" cy="50" r="2" fill="#666" />
-      <circle cx="60" cy="50" r="2" fill="#666" />
-      <circle cx="140" cy="50" r="2" fill="#666" />
-      <circle cx="160" cy="50" r="2" fill="#666" />
-      <circle cx="175" cy="50" r="2.5" fill="#666" />
     </svg>
   </div>
 </template>
