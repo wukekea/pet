@@ -18,6 +18,7 @@ import {
   coinGainAmount,
   mood,
   moodLevel,
+  showParachute,
   type FoodType,
   type BathType,
   type DecorationType,
@@ -457,6 +458,15 @@ defineExpose({
               >
                 <span class="btn-icon">💰</span>
                 <span class="btn-label">金币</span>
+              </button>
+              <button
+                class="action-btn"
+                :class="{ active: showParachute }"
+                @click="showParachute = !showParachute"
+                title="降落伞"
+              >
+                <span class="btn-icon">🪂</span>
+                <span class="btn-label">降落伞</span>
               </button>
             </div>
           </div>

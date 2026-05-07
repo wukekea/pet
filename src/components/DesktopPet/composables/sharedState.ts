@@ -74,6 +74,9 @@ export const coinGainAmount = ref<number | null>(null);
 // 快捷操作面板状态
 export const quickPanelVisible = ref(false);
 
+// 降落伞效果状态（调试用）
+export const showParachute = ref(false);
+
 // 食物
 export const currentFood = ref<FoodType>("apple");
 

@@ -12,6 +12,7 @@ import {
   currentPetShape,
   coinGainAmount,
   quickPanelVisible,
+  showParachute,
   type FoodType,
 } from "./composables/sharedState";
 // 函数从 usePetState 导入
@@ -47,6 +48,7 @@ import type { BathType } from "./types";
 import WeatherBackground from "./WeatherBackground.vue";
 import WorkProgressBar from "./effects/WorkProgressBar.vue";
 import CoinGainEffects from "./effects/CoinGainEffects.vue";
+import ParachuteEffect from "./effects/ParachuteEffect.vue";
 import QuickActionPanel from "./QuickActionPanel.vue";
 import Footprints from "./footprints/index.vue";
 import DialogueBubble from "./dialogue/index.vue";
@@ -370,6 +372,9 @@ const onCoinGainComplete = () => {
 
       <!-- 状态效果组件 -->
       <component v-if="currentEffectComponent" :is="currentEffectComponent" />
+
+      <!-- 降落伞效果 -->
+      <ParachuteEffect v-if="showParachute" />
 
       <!-- 工作进度条 -->
       <WorkProgressBar v-if="showWorkProgressBar" />
