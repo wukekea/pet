@@ -19,6 +19,7 @@ import {
   mood,
   moodLevel,
   showParachute,
+  showSwing,
   type FoodType,
   type BathType,
   type DecorationType,
@@ -467,6 +468,15 @@ defineExpose({
               >
                 <span class="btn-icon">🪂</span>
                 <span class="btn-label">降落伞</span>
+              </button>
+              <button
+                class="action-btn"
+                :class="{ active: showSwing }"
+                @click="showSwing = !showSwing"
+                title="秋千"
+              >
+                <span class="btn-icon">🌳</span>
+                <span class="btn-label">秋千</span>
               </button>
             </div>
           </div>

@@ -13,6 +13,7 @@ import {
   coinGainAmount,
   quickPanelVisible,
   showParachute,
+  showSwing,
   isCharging,
   chargeProgress,
   type FoodType,
@@ -56,6 +57,7 @@ import WeatherBackground from "./WeatherBackground.vue";
 import WorkProgressBar from "./effects/WorkProgressBar.vue";
 import CoinGainEffects from "./effects/CoinGainEffects.vue";
 import ParachuteEffect from "./effects/ParachuteEffect.vue";
+import SwingEffect from "./effects/SwingEffect.vue";
 import ChargeIndicator from "./effects/ChargeIndicator.vue";
 import LaunchEffects from "./effects/LaunchEffects.vue";
 import QuickActionPanel from "./QuickActionPanel.vue";
@@ -420,7 +422,11 @@ const onPetMouseLeave = () => {
     <!-- 宠物容器 -->
     <div
       class="pet-container"
-      :class="{ 'is-dragging': isDragging, 'is-charging': isCharging }"
+      :class="{
+        'is-dragging': isDragging,
+        'is-charging': isCharging,
+        'is-swinging': showSwing,
+      }"
       :style="{
         left: `${position.x}px`,
         top: `${position.y}px`,
@@ -460,6 +466,9 @@ const onPetMouseLeave = () => {
 
       <!-- 降落伞效果 -->
       <ParachuteEffect v-if="showParachute" />
+
+      <!-- 秋千效果 -->
+      <SwingEffect v-if="showSwing" />
 
       <!-- 工作进度条 -->
       <WorkProgressBar v-if="showWorkProgressBar" />
@@ -572,6 +581,21 @@ const onPetMouseLeave = () => {
   }
   50% {
     filter: brightness(1.1);
+  }
+}
+
+/* 秋千摇摆状态样式 */
+.pet-container.is-swinging {
+  animation: swing-forward-back 3s ease-in-out infinite;
+}
+
+@keyframes swing-forward-back {
+  0%,
+  100% {
+    transform: translateY(-6px) scale(0.97);
+  }
+  50% {
+    transform: translateY(6px) scale(1.03);
   }
 }
 </style>
