@@ -140,7 +140,7 @@ const onPetDoubleClick = () => {
   handlePetDoubleClick();
   // 荡秋千时不弹出
   if (showSwing.value) return;
-  // 不可打断状态下不弹出
+  // 不可打断状态下不弹出（打工、吃东西、洗澡、发射、降落伞）
   if (UNINTERRUPTIBLE_STATES.includes(petState.value)) return;
   // 睡眠中不弹出
   if (petState.value === "sleeping" || petState.value === "sleepy") return;
@@ -154,6 +154,8 @@ const DBLCLICK_DELAY = 250;
 const onPetClick = () => {
   // 荡秋千时不响应点击
   if (showSwing.value) return;
+  // 不可打断状态时不响应点击
+  if (UNINTERRUPTIBLE_STATES.includes(petState.value)) return;
 
   if (clickTimer) {
     // 双击：取消单击，执行双击
@@ -342,8 +344,10 @@ const onCoinGainComplete = () => {
 let chargeStartPos = { x: 0, y: 0 };
 // 拖拽阈值（像素）
 const DRAG_THRESHOLD = 10;
+// 是否处于"允许拖拽检测"模式（鼠标按下后）
+let isMouseDown = false;
 
-// 处理 mousedown - 开始蓄力
+// 处理 mousedown - 开始蓄力或允许拖拽
 const onPetMouseDown = (e: MouseEvent) => {
   // 只响应左键
   if (e.button !== 0) return;
@@ -354,8 +358,14 @@ const onPetMouseDown = (e: MouseEvent) => {
   // 飞行状态中不处理
   if (isFlyingState()) return;
 
-  // 记录按下位置
+  // 记录按下位置（用于拖拽检测）
   chargeStartPos = { x: e.clientX, y: e.clientY };
+  isMouseDown = true;
+
+  // 不可打断状态时，只允许拖拽，不允许蓄力发射
+  if (UNINTERRUPTIBLE_STATES.includes(petState.value)) {
+    return;
+  }
 
   // 开始蓄力
   startCharging();
@@ -363,16 +373,20 @@ const onPetMouseDown = (e: MouseEvent) => {
 
 // 处理 mousemove - 检测是否拖拽
 const onPetMouseMove = (e: MouseEvent) => {
-  if (!isCharging.value || isDragging.value) return;
+  // 如果不是鼠标按下状态或已经在拖拽，不做处理
+  if (!isMouseDown || isDragging.value) return;
 
   // 计算移动距离
   const dx = e.clientX - chargeStartPos.x;
   const dy = e.clientY - chargeStartPos.y;
   const distance = Math.sqrt(dx * dx + dy * dy);
 
-  // 超过阈值，开始拖拽，取消蓄力
+  // 超过阈值，开始拖拽
   if (distance > DRAG_THRESHOLD) {
-    endCharging();
+    // 结束蓄力（如果正在蓄力）
+    if (isCharging.value) {
+      endCharging();
+    }
     // 创建一个模拟的 mousedown 事件来触发拖拽
     const mockEvent = {
       ...e,
@@ -389,6 +403,9 @@ const onPetMouseUp = (e: MouseEvent) => {
   // 只响应左键
   if (e.button !== 0) return;
 
+  // 重置鼠标按下状态
+  isMouseDown = false;
+
   // 如果正在蓄力，结束蓄力
   if (isCharging.value) {
     endCharging();
@@ -397,6 +414,9 @@ const onPetMouseUp = (e: MouseEvent) => {
 
 // 处理 mouseleave - 取消蓄力
 const onPetMouseLeave = () => {
+  // 重置鼠标按下状态
+  isMouseDown = false;
+
   // 如果正在蓄力，取消蓄力
   if (isCharging.value) {
     endCharging();
