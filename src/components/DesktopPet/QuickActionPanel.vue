@@ -13,6 +13,7 @@ const props = defineProps<{
   canFeed: boolean;
   canBath: boolean;
   canWork: boolean;
+  isSwinging: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -20,6 +21,7 @@ const emit = defineEmits<{
   feed: [];
   bath: [];
   work: [];
+  swing: [];
 }>();
 
 // 自动关闭计时器
@@ -82,11 +84,12 @@ function startAutoClose() {
   }, AUTO_CLOSE_DELAY);
 }
 
-function handleAction(action: "feed" | "bath" | "work") {
+function handleAction(action: "feed" | "bath" | "work" | "swing") {
   if (autoCloseTimer) clearTimeout(autoCloseTimer);
   if (action === "feed") emit("feed");
   else if (action === "bath") emit("bath");
-  else emit("work");
+  else if (action === "work") emit("work");
+  else if (action === "swing") emit("swing");
   emit("close");
 }
 
@@ -163,8 +166,8 @@ onBeforeUnmount(() => {
       <div class="action-btns">
         <button
           class="act-btn act-feed"
-          :class="{ disabled: !canFeed }"
-          :disabled="!canFeed"
+          :class="{ disabled: !canFeed || isSwinging }"
+          :disabled="!canFeed || isSwinging"
           @click.stop="handleAction('feed')"
           title="喂食"
         >
@@ -172,8 +175,8 @@ onBeforeUnmount(() => {
         </button>
         <button
           class="act-btn act-bath"
-          :class="{ disabled: !canBath }"
-          :disabled="!canBath"
+          :class="{ disabled: !canBath || isSwinging }"
+          :disabled="!canBath || isSwinging"
           @click.stop="handleAction('bath')"
           title="清洗"
         >
@@ -181,12 +184,20 @@ onBeforeUnmount(() => {
         </button>
         <button
           class="act-btn act-work"
-          :class="{ disabled: !canWork }"
-          :disabled="!canWork"
+          :class="{ disabled: !canWork || isSwinging }"
+          :disabled="!canWork || isSwinging"
           @click.stop="handleAction('work')"
           title="打工"
         >
           <span class="act-icon">💼</span>
+        </button>
+        <button
+          class="act-btn act-swing"
+          :class="{ active: isSwinging }"
+          @click.stop="handleAction('swing')"
+          :title="isSwinging ? '停止秋千' : '荡秋千'"
+        >
+          <span class="act-icon">🎠</span>
         </button>
       </div>
     </div>
@@ -362,6 +373,9 @@ onBeforeUnmount(() => {
 .act-btn:nth-child(3) {
   animation: single-btn-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.26s both;
 }
+.act-btn:nth-child(4) {
+  animation: single-btn-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.34s both;
+}
 
 /* 悬停效果 - 各按钮独立主题色 */
 .act-feed:hover:not(.disabled) {
@@ -389,6 +403,34 @@ onBeforeUnmount(() => {
     0 4px 16px rgba(111, 207, 151, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transform: scale(1.15) translateY(-2px);
+}
+
+.act-swing:hover,
+.act-swing.active {
+  border-color: rgba(255, 182, 193, 0.6);
+  background: rgba(255, 182, 193, 0.2);
+  box-shadow:
+    0 4px 16px rgba(255, 182, 193, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: scale(1.15) translateY(-2px);
+}
+
+.act-swing.active {
+  animation: swing-active-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes swing-active-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 4px 16px rgba(255, 182, 193, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 4px 24px rgba(255, 182, 193, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
 }
 
 .act-btn:active:not(.disabled) {

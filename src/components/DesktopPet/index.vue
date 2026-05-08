@@ -138,8 +138,6 @@ const canQuickWork = computed(() => {
 // 双击时显示快捷面板（覆盖原 handlePetDoubleClick）
 const onPetDoubleClick = () => {
   handlePetDoubleClick();
-  // 荡秋千时不弹出
-  if (showSwing.value) return;
   // 不可打断状态下不弹出（打工、吃东西、洗澡、发射、降落伞）
   if (UNINTERRUPTIBLE_STATES.includes(petState.value)) return;
   // 睡眠中不弹出
@@ -152,8 +150,21 @@ let clickTimer: ReturnType<typeof setTimeout> | null = null;
 const DBLCLICK_DELAY = 250;
 
 const onPetClick = () => {
-  // 荡秋千时不响应点击
-  if (showSwing.value) return;
+  // 荡秋千时只响应双击打开面板，不响应单击
+  if (showSwing.value) {
+    if (clickTimer) {
+      // 双击
+      clearTimeout(clickTimer);
+      clickTimer = null;
+      onPetDoubleClick();
+    } else {
+      clickTimer = setTimeout(() => {
+        clickTimer = null;
+        // 单击不做任何事
+      }, DBLCLICK_DELAY);
+    }
+    return;
+  }
   // 不可打断状态时不响应点击
   if (UNINTERRUPTIBLE_STATES.includes(petState.value)) return;
 
@@ -519,10 +530,12 @@ const onPetMouseLeave = () => {
         :can-feed="canFeed"
         :can-bath="canBath"
         :can-work="canQuickWork"
+        :is-swinging="showSwing"
         @close="quickPanelVisible = false"
         @feed="quickFeed"
         @bath="quickBath"
         @work="quickWork"
+        @swing="showSwing = !showSwing"
       />
     </div>
 
