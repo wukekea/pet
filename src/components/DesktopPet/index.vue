@@ -138,6 +138,8 @@ const canQuickWork = computed(() => {
 // 双击时显示快捷面板（覆盖原 handlePetDoubleClick）
 const onPetDoubleClick = () => {
   handlePetDoubleClick();
+  // 荡秋千时不弹出
+  if (showSwing.value) return;
   // 不可打断状态下不弹出
   if (UNINTERRUPTIBLE_STATES.includes(petState.value)) return;
   // 睡眠中不弹出
@@ -150,6 +152,9 @@ let clickTimer: ReturnType<typeof setTimeout> | null = null;
 const DBLCLICK_DELAY = 250;
 
 const onPetClick = () => {
+  // 荡秋千时不响应点击
+  if (showSwing.value) return;
+
   if (clickTimer) {
     // 双击：取消单击，执行双击
     clearTimeout(clickTimer);
@@ -342,6 +347,9 @@ const DRAG_THRESHOLD = 10;
 const onPetMouseDown = (e: MouseEvent) => {
   // 只响应左键
   if (e.button !== 0) return;
+
+  // 荡秋千时不处理
+  if (showSwing.value) return;
 
   // 飞行状态中不处理
   if (isFlyingState()) return;

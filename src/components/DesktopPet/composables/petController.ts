@@ -39,6 +39,7 @@ import {
   quickPanelVisible,
   moodLevel,
   isCharging,
+  showSwing,
 } from "./sharedState";
 
 import { getTimeGreeting, showCustomDialogue, showDialogue } from "./dialogue";
@@ -200,6 +201,11 @@ function smoothExitJumpAnimation(): Promise<void> {
 export async function changeState(newState: PetState, skipDialogue = false) {
   // 飞行状态不可被打断
   if (petState.value === "launching" || petState.value === "parachuting") {
+    return;
+  }
+
+  // 荡秋千状态不可被打断
+  if (showSwing.value) {
     return;
   }
 
