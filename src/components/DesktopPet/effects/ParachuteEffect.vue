@@ -32,87 +32,115 @@
 
       <!-- 伞绳组 -->
       <g class="ropes">
-        <!-- 左边三根 -->
+        <!-- 左边伞绳 - 从扇面尖端连接 -->
         <line
-          x1="25"
-          y1="45"
-          x2="90"
+          x1="10"
+          y1="85"
+          x2="100"
           y2="180"
           stroke="url(#ropeGradient)"
-          stroke-width="1.5"
+          stroke-width="1"
         />
         <line
           x1="40"
-          y1="45"
-          x2="90"
+          y1="90"
+          x2="100"
           y2="180"
           stroke="url(#ropeGradient)"
           stroke-width="1"
         />
         <line
-          x1="60"
-          y1="45"
-          x2="90"
+          x1="75"
+          y1="93"
+          x2="100"
           y2="180"
           stroke="url(#ropeGradient)"
           stroke-width="1"
         />
-        <!-- 右边三根 -->
         <line
-          x1="140"
-          y1="45"
-          x2="105"
+          x1="125"
+          y1="93"
+          x2="100"
           y2="180"
           stroke="url(#ropeGradient)"
           stroke-width="1"
         />
         <line
           x1="160"
-          y1="45"
-          x2="105"
+          y1="90"
+          x2="100"
           y2="180"
           stroke="url(#ropeGradient)"
-          stroke-width="1.5"
+          stroke-width="1"
         />
         <line
-          x1="175"
-          y1="45"
-          x2="105"
+          x1="190"
+          y1="85"
+          x2="100"
           y2="180"
           stroke="url(#ropeGradient)"
-          stroke-width="1.5"
+          stroke-width="1"
         />
       </g>
 
       <!-- 伞面 -->
       <g class="canopy">
-        <!-- 主伞面 -->
+        <!-- 主伞面 - 6扇面拼接的圆顶降落伞 -->
+        <!-- 顶部用一个大弧，底部用轻微下凹小弧形成波浪状扇面边缘 -->
+        <!-- 扇面尖端略高于凹槽，整体边缘中间低两边高 -->
         <path
-          d="M 20 50
-             Q 40 5, 100 0
-             Q 160 5, 180 50
-             Q 140 42, 100 45
-             Q 60 42, 20 50 Z"
+          d="M 10 85
+             A 90 90 0 0 1 190 85
+             Q 175 91, 160 90
+             Q 145 94, 125 93
+             Q 100 97, 75 93
+             Q 55 91, 40 90
+             Q 25 90, 10 85
+             Z"
           fill="url(#canopyGradient)"
           stroke="#333"
           stroke-width="1.5"
         />
 
-        <!-- 伞面分区线 -->
+        <!-- 伞面分区线 - 放射状扇面分割 -->
         <path
-          d="M 50 12 Q 60 30, 70 43"
+          d="M 10 85 
+          C 35 10, 85 5 100 5"
           stroke="rgba(0,0,0,0.15)"
           stroke-width="1.5"
           fill="none"
         />
         <path
-          d="M 100 5 Q 100 25, 100 45"
+          d="M 40 90 
+          C 55 20, 100 5 120 -5"
           stroke="rgba(0,0,0,0.15)"
           stroke-width="1.5"
           fill="none"
         />
         <path
-          d="M 150 12 Q 140 30, 130 43"
+          d="M 75 93 
+          C 80 25, 100 5 105 -5"
+          stroke="rgba(0,0,0,0.15)"
+          stroke-width="1.5"
+          fill="none"
+        />
+        <path
+          d="M 125 93 
+          C 120 25, 100 5 95 -5"
+          stroke="rgba(0,0,0,0.15)"
+          stroke-width="1.5"
+          fill="none"
+        />
+        <path
+          d="M 160 90 
+          C 145 20, 100 5, 80 -5"
+          stroke="rgba(0,0,0,0.15)"
+          stroke-width="1.5"
+          fill="none"
+        />
+        <path
+          d="M 190 85 
+          C 165 10, 115 5 100 5"
           stroke="rgba(0,0,0,0.15)"
           stroke-width="1.5"
           fill="none"
@@ -121,9 +149,9 @@
         <!-- 顶部透气孔 -->
         <ellipse
           cx="100"
-          cy="22"
-          rx="12"
-          ry="7"
+          cy="5"
+          rx="8"
+          ry="5"
           fill="rgba(135,206,235,0.5)"
           stroke="#333"
           stroke-width="1"
@@ -132,22 +160,21 @@
         <!-- 伞面高光 -->
         <ellipse
           cx="70"
-          cy="20"
-          rx="15"
-          ry="7"
-          fill="rgba(255,255,255,0.35)"
-          transform="rotate(-20, 70, 20)"
+          cy="35"
+          rx="18"
+          ry="12"
+          fill="rgba(255,255,255,0.3)"
+          transform="rotate(-30, 70, 35)"
         />
         <ellipse
-          cx="135"
-          cy="22"
-          rx="12"
-          ry="6"
-          fill="rgba(255,255,255,0.25)"
-          transform="rotate(15, 135, 22)"
+          cx="125"
+          cy="40"
+          rx="14"
+          ry="10"
+          fill="rgba(255,255,255,0.2)"
+          transform="rotate(25, 125, 40)"
         />
       </g>
-
     </svg>
   </div>
 </template>
