@@ -2336,67 +2336,35 @@
    LAUNCHING - 蓄力发射动画
    ======================================== */
 
-/* 蓄力时的准备动作 */
+/* 发射上升时的姿态 */
 .pet-launching .pet-body {
-  animation: launch-charge 0.3s ease-in-out infinite;
+  /* 保持正常比例，不变形 */
 }
 
-@keyframes launch-charge {
-  0%,
-  100% {
-    transform: translateY(0) scaleY(0.9);
-  }
-  50% {
-    transform: translateY(3px) scaleY(0.85);
-  }
-}
-
-/* 蓄力时眯眼 */
+/* 发射时眼睛兴奋睁开 */
 .pet-launching .eye {
-  transform: scaleY(0.3);
+  height: calc(var(--pet-size, 80px) * 0.15);
 }
 
-/* 蓄力时手臂向下用力 */
+/* 发射时嘴巴张开兴奋 */
+.pet-launching .mouth-smile {
+  width: calc(var(--pet-size, 80px) * 0.15);
+  height: calc(var(--pet-size, 80px) * 0.1);
+}
+
+/* 发射时手臂向上举起 */
 .pet-launching .arm-left {
-  transform: rotate(80deg) translateX(calc(var(--pet-size, 80px) * 0.125))
-    translateY(calc(var(--pet-size, 80px) * 0.1875));
-  animation: launch-arm-press 0.3s ease-in-out infinite;
+  transform: rotate(-60deg) translateY(calc(var(--pet-size, 80px) * -0.125));
 }
 
 .pet-launching .arm-right {
-  transform: rotate(-80deg) translateX(calc(var(--pet-size, 80px) * -0.125))
-    translateY(calc(var(--pet-size, 80px) * 0.1875));
-  animation: launch-arm-press-right 0.3s ease-in-out infinite;
+  transform: rotate(60deg) translateY(calc(var(--pet-size, 80px) * -0.125));
 }
 
-@keyframes launch-arm-press {
-  0%,
-  100% {
-    transform: rotate(80deg) translateX(calc(var(--pet-size, 80px) * 0.125))
-      translateY(calc(var(--pet-size, 80px) * 0.1875));
-  }
-  50% {
-    transform: rotate(85deg) translateX(calc(var(--pet-size, 80px) * 0.15))
-      translateY(calc(var(--pet-size, 80px) * 0.2));
-  }
-}
-
-@keyframes launch-arm-press-right {
-  0%,
-  100% {
-    transform: rotate(-80deg) translateX(calc(var(--pet-size, 80px) * -0.125))
-      translateY(calc(var(--pet-size, 80px) * 0.1875));
-  }
-  50% {
-    transform: rotate(-85deg) translateX(calc(var(--pet-size, 80px) * -0.15))
-      translateY(calc(var(--pet-size, 80px) * 0.2));
-  }
-}
-
-/* 蓄力时腿微蹲 */
+/* 发射时腿并拢 */
 .pet-launching .leg-left,
 .pet-launching .leg-right {
-  transform: translateY(calc(var(--pet-size, 80px) * 0.0375));
+  transform: translateX(0);
 }
 
 /* ========================================

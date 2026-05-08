@@ -127,14 +127,23 @@ function startLaunch(): void {
 }
 
 /**
- * 发射上升动画
+ * 发射上升动画（减速运动）
+ * 使用抛物线原理：速度随高度增加而减小
  */
 function animateRise(): void {
   // 只有在上升阶段才继续
   if (flyingPhase !== "rising") return;
 
+  // 计算当前进度（0 到 1）
+  const progress = currentLaunchHeight.value / launchTargetHeight.value;
+
+  // 速度随高度增加而减小：初始速度 * (1 - progress^2)
+  // 使用平方让减速更明显，接近顶部时速度趋近于0
+  const currentSpeed =
+    launchRiseSpeed.value * Math.max(0.1, 1 - progress * progress);
+
   // 更新高度
-  currentLaunchHeight.value += launchRiseSpeed.value;
+  currentLaunchHeight.value += currentSpeed;
 
   // 更新位置（向上移动）
   position.value = {
@@ -142,8 +151,11 @@ function animateRise(): void {
     y: launchStartPos.value.y - currentLaunchHeight.value,
   };
 
-  // 检查是否到达目标高度
-  if (currentLaunchHeight.value >= launchTargetHeight.value) {
+  // 检查是否到达目标高度（或速度已经很小）
+  if (
+    currentLaunchHeight.value >= launchTargetHeight.value ||
+    currentSpeed < 0.5
+  ) {
     // 到达最高点，切换到降落伞状态
     currentLaunchHeight.value = launchTargetHeight.value;
     startParachuting();
