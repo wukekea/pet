@@ -181,21 +181,29 @@ function startParachuting(): void {
 
 /**
  * 降落伞下落动画
+ * 摆动幅度随高度降低而减小，确保平稳落地
  */
 function animateFall(): void {
   // 只有在下落阶段才继续
   if (flyingPhase !== "falling") return;
 
+  // 计算下落进度（0 表示刚开始下落，1 表示即将落地）
+  const fallProgress = 1 - currentLaunchHeight.value / launchTargetHeight.value;
+
+  // 摆动幅度随下落进度减小，落地时幅度为 0
+  const swayMultiplier = Math.max(0, 1 - fallProgress);
+  const currentSwayAmplitude = PARACHUTE_SWAY_AMPLITUDE * swayMultiplier;
+
   // 更新摆动角度
   swayAngle += PARACHUTE_SWAY_SPEED;
-  parachuteSwayOffset.value = Math.sin(swayAngle) * PARACHUTE_SWAY_AMPLITUDE;
+  parachuteSwayOffset.value = Math.sin(swayAngle) * currentSwayAmplitude;
 
   // 更新高度（下落）
   currentLaunchHeight.value -= PARACHUTE_FALL_SPEED;
 
   // 检查是否落地
   if (currentLaunchHeight.value <= 0) {
-    // 精确落地到起始位置
+    // 精确落地到起始位置（此时摆动幅度已经为 0，不会有突变）
     currentLaunchHeight.value = 0;
     position.value = {
       x: launchStartPos.value.x,

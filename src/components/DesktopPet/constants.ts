@@ -182,5 +182,5 @@ export const CHARGE_MIN_HEIGHT = 150; // 最小飞行高度（像素）
 export const CHARGE_RISE_SPEED_BASE = 8; // 基础上升速度（像素/帧）
 export const CHARGE_RISE_SPEED_MAX = 25; // 最大上升速度（像素/帧）
 export const PARACHUTE_FALL_SPEED = 2; // 降落伞下落速度（像素/帧）
-export const PARACHUTE_SWAY_AMPLITUDE = 30; // 降落伞左右摆动幅度（像素）
-export const PARACHUTE_SWAY_SPEED = 0.03; // 降落伞摆动速度
+export const PARACHUTE_SWAY_AMPLITUDE = 60; // 降落伞左右摆动幅度（像素）
+export const PARACHUTE_SWAY_SPEED = 0.04; // 降落伞摆动速度
