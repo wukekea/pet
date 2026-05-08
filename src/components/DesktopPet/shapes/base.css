@@ -2331,3 +2331,182 @@
 .pet-programmer .leg-right {
   transform: translateY(calc(var(--pet-size, 80px) * 0.025));
 }
+
+/* ========================================
+   LAUNCHING - 蓄力发射动画
+   ======================================== */
+
+/* 蓄力时的准备动作 */
+.pet-launching .pet-body {
+  animation: launch-charge 0.3s ease-in-out infinite;
+}
+
+@keyframes launch-charge {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(0.9);
+  }
+  50% {
+    transform: translateY(3px) scaleY(0.85);
+  }
+}
+
+/* 蓄力时眯眼 */
+.pet-launching .eye {
+  transform: scaleY(0.3);
+}
+
+/* 蓄力时手臂向下用力 */
+.pet-launching .arm-left {
+  transform: rotate(80deg) translateX(calc(var(--pet-size, 80px) * 0.125))
+    translateY(calc(var(--pet-size, 80px) * 0.1875));
+  animation: launch-arm-press 0.3s ease-in-out infinite;
+}
+
+.pet-launching .arm-right {
+  transform: rotate(-80deg) translateX(calc(var(--pet-size, 80px) * -0.125))
+    translateY(calc(var(--pet-size, 80px) * 0.1875));
+  animation: launch-arm-press-right 0.3s ease-in-out infinite;
+}
+
+@keyframes launch-arm-press {
+  0%,
+  100% {
+    transform: rotate(80deg) translateX(calc(var(--pet-size, 80px) * 0.125))
+      translateY(calc(var(--pet-size, 80px) * 0.1875));
+  }
+  50% {
+    transform: rotate(85deg) translateX(calc(var(--pet-size, 80px) * 0.15))
+      translateY(calc(var(--pet-size, 80px) * 0.2));
+  }
+}
+
+@keyframes launch-arm-press-right {
+  0%,
+  100% {
+    transform: rotate(-80deg) translateX(calc(var(--pet-size, 80px) * -0.125))
+      translateY(calc(var(--pet-size, 80px) * 0.1875));
+  }
+  50% {
+    transform: rotate(-85deg) translateX(calc(var(--pet-size, 80px) * -0.15))
+      translateY(calc(var(--pet-size, 80px) * 0.2));
+  }
+}
+
+/* 蓄力时腿微蹲 */
+.pet-launching .leg-left,
+.pet-launching .leg-right {
+  transform: translateY(calc(var(--pet-size, 80px) * 0.0375));
+}
+
+/* ========================================
+   PARACHUTING - 降落伞下落动画
+   ======================================== */
+
+/* 降落伞下落时身体悬挂姿态 */
+.pet-parachuting .pet-body {
+  animation: parachute-body 3s ease-in-out infinite;
+}
+
+@keyframes parachute-body {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(5px) rotate(3deg);
+  }
+}
+
+/* 降落伞时眼睛睁开兴奋 */
+.pet-parachuting .eye {
+  height: calc(var(--pet-size, 80px) * 0.15);
+  animation: parachute-blink 2s ease-in-out infinite;
+}
+
+@keyframes parachute-blink {
+  0%,
+  45%,
+  55%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.1);
+  }
+}
+
+/* 降落伞时开心的嘴巴 */
+.pet-parachuting .mouth-smile {
+  width: calc(var(--pet-size, 80px) * 0.2);
+  height: calc(var(--pet-size, 80px) * 0.1);
+}
+
+/* 降落伞时腮红 */
+.pet-parachuting .pet-cheek {
+  opacity: 0.9;
+  width: calc(var(--pet-size, 80px) * 0.175);
+  height: calc(var(--pet-size, 80px) * 0.125);
+}
+
+/* 降落伞时手臂向上抓伞绳 */
+.pet-parachuting .arm-left {
+  animation: parachute-arm-left 3s ease-in-out infinite;
+}
+
+.pet-parachuting .arm-right {
+  animation: parachute-arm-right 3s ease-in-out infinite;
+}
+
+@keyframes parachute-arm-left {
+  0%,
+  100% {
+    transform: rotate(-60deg) translateY(calc(var(--pet-size, 80px) * -0.125))
+      translateX(calc(var(--pet-size, 80px) * 0.0625));
+  }
+  50% {
+    transform: rotate(-50deg) translateY(calc(var(--pet-size, 80px) * -0.15))
+      translateX(calc(var(--pet-size, 80px) * 0.0875));
+  }
+}
+
+@keyframes parachute-arm-right {
+  0%,
+  100% {
+    transform: rotate(60deg) translateY(calc(var(--pet-size, 80px) * -0.125))
+      translateX(calc(var(--pet-size, 80px) * -0.0625));
+  }
+  50% {
+    transform: rotate(50deg) translateY(calc(var(--pet-size, 80px) * -0.15))
+      translateX(calc(var(--pet-size, 80px) * -0.0875));
+  }
+}
+
+/* 降落伞时腿部随风摆动 */
+.pet-parachuting .leg-left {
+  animation: parachute-leg-left 2s ease-in-out infinite;
+}
+
+.pet-parachuting .leg-right {
+  animation: parachute-leg-right 2s ease-in-out infinite;
+}
+
+@keyframes parachute-leg-left {
+  0%,
+  100% {
+    transform: translateX(calc(var(--pet-size, 80px) * -0.025));
+  }
+  50% {
+    transform: translateX(calc(var(--pet-size, 80px) * 0.025));
+  }
+}
+
+@keyframes parachute-leg-right {
+  0%,
+  100% {
+    transform: translateX(calc(var(--pet-size, 80px) * 0.025));
+  }
+  50% {
+    transform: translateX(calc(var(--pet-size, 80px) * -0.025));
+  }
+}

@@ -13,17 +13,24 @@ import {
   coinGainAmount,
   quickPanelVisible,
   showParachute,
+  isCharging,
+  chargeProgress,
   type FoodType,
 } from "./composables/sharedState";
 // 函数从 usePetState 导入
 import {
-  handleDragStart,
   handlePetClick,
   handlePetDoubleClick,
+  handleDragStart,
   initScreenSize,
   initPet,
   cleanupPet,
 } from "./composables/petController";
+import {
+  startCharging,
+  endCharging,
+  isFlyingState,
+} from "./composables/launchController";
 import { footprints } from "./composables/footprints";
 import { isDark, initTheme, cleanupTheme } from "./composables/theme";
 import { initStats, cleanupStats } from "./composables/stats";
@@ -49,6 +56,8 @@ import WeatherBackground from "./WeatherBackground.vue";
 import WorkProgressBar from "./effects/WorkProgressBar.vue";
 import CoinGainEffects from "./effects/CoinGainEffects.vue";
 import ParachuteEffect from "./effects/ParachuteEffect.vue";
+import ChargeIndicator from "./effects/ChargeIndicator.vue";
+import LaunchEffects from "./effects/LaunchEffects.vue";
 import QuickActionPanel from "./QuickActionPanel.vue";
 import Footprints from "./footprints/index.vue";
 import DialogueBubble from "./dialogue/index.vue";
@@ -319,6 +328,70 @@ const openShopFromAttributes = () => {
 const onCoinGainComplete = () => {
   coinGainAmount.value = null;
 };
+
+// ===== 蓄力发射相关 =====
+
+// 记录鼠标按下的初始位置
+let chargeStartPos = { x: 0, y: 0 };
+// 拖拽阈值（像素）
+const DRAG_THRESHOLD = 10;
+
+// 处理 mousedown - 开始蓄力
+const onPetMouseDown = (e: MouseEvent) => {
+  // 只响应左键
+  if (e.button !== 0) return;
+
+  // 飞行状态中不处理
+  if (isFlyingState()) return;
+
+  // 记录按下位置
+  chargeStartPos = { x: e.clientX, y: e.clientY };
+
+  // 开始蓄力
+  startCharging();
+};
+
+// 处理 mousemove - 检测是否拖拽
+const onPetMouseMove = (e: MouseEvent) => {
+  if (!isCharging.value || isDragging.value) return;
+
+  // 计算移动距离
+  const dx = e.clientX - chargeStartPos.x;
+  const dy = e.clientY - chargeStartPos.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  // 超过阈值，开始拖拽，取消蓄力
+  if (distance > DRAG_THRESHOLD) {
+    endCharging();
+    // 创建一个模拟的 mousedown 事件来触发拖拽
+    const mockEvent = {
+      ...e,
+      button: 0,
+      clientX: chargeStartPos.x,
+      clientY: chargeStartPos.y,
+    } as MouseEvent;
+    handleDragStart(mockEvent);
+  }
+};
+
+// 处理 mouseup - 结束蓄力
+const onPetMouseUp = (e: MouseEvent) => {
+  // 只响应左键
+  if (e.button !== 0) return;
+
+  // 如果正在蓄力，结束蓄力
+  if (isCharging.value) {
+    endCharging();
+  }
+};
+
+// 处理 mouseleave - 取消蓄力
+const onPetMouseLeave = () => {
+  // 如果正在蓄力，取消蓄力
+  if (isCharging.value) {
+    endCharging();
+  }
+};
 </script>
 
 <template>
@@ -347,20 +420,26 @@ const onCoinGainComplete = () => {
     <!-- 宠物容器 -->
     <div
       class="pet-container"
-      :class="{ 'is-dragging': isDragging }"
+      :class="{ 'is-dragging': isDragging, 'is-charging': isCharging }"
       :style="{
         left: `${position.x}px`,
         top: `${position.y}px`,
         '--pet-size': `${petSizePixels}px`,
         opacity: opacityValue,
       }"
-      @mousedown="handleDragStart"
+      @mousedown="onPetMouseDown"
+      @mousemove="onPetMouseMove"
+      @mouseup="onPetMouseUp"
+      @mouseleave="onPetMouseLeave"
       @click="onPetClick"
       @contextmenu="handleContextMenu"
-      title="拖动：移动位置 | 单击：互动 | 右键：菜单"
+      title="长按：蓄力发射 | 单击：互动 | 右键：菜单"
     >
-      <!-- 阴影 -->
-      <div class="pet-shadow"></div>
+      <!-- 阴影（飞行时隐藏） -->
+      <div
+        v-if="petState !== 'launching' && petState !== 'parachuting'"
+        class="pet-shadow"
+      ></div>
 
       <!-- 形态组件 -->
       <component
@@ -372,6 +451,12 @@ const onCoinGainComplete = () => {
 
       <!-- 状态效果组件 -->
       <component v-if="currentEffectComponent" :is="currentEffectComponent" />
+
+      <!-- 蓄力指示器（蓄力进度超过10%时才显示，避免单击时闪烁） -->
+      <ChargeIndicator v-if="isCharging && chargeProgress > 0.1" />
+
+      <!-- 发射效果 -->
+      <LaunchEffects v-if="petState === 'launching'" />
 
       <!-- 降落伞效果 -->
       <ParachuteEffect v-if="showParachute" />
@@ -473,5 +558,21 @@ const onCoinGainComplete = () => {
   --pet-cheeks: v-bind("petColors.cheeks");
   --pet-shadow: v-bind("petColors.shadow");
   --pet-footprint: v-bind("petColors.footprint");
+}
+
+/* 蓄力状态样式 */
+.pet-container.is-charging {
+  cursor: wait;
+  animation: charging-pulse 0.3s ease-in-out infinite;
+}
+
+@keyframes charging-pulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.1);
+  }
 }
 </style>

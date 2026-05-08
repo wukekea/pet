@@ -189,6 +189,18 @@
   height: 360px;
   pointer-events: none;
   z-index: -1;
+  animation: parachute-appear 0.5s ease-out;
+}
+
+@keyframes parachute-appear {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
 }
 
 .parachute-svg {

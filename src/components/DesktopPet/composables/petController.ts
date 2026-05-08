@@ -38,6 +38,7 @@ import {
   workEndTime,
   quickPanelVisible,
   moodLevel,
+  isCharging,
 } from "./sharedState";
 
 import { getTimeGreeting, showCustomDialogue, showDialogue } from "./dialogue";
@@ -197,6 +198,11 @@ function smoothExitJumpAnimation(): Promise<void> {
 
 // 改变宠物状态
 export async function changeState(newState: PetState, skipDialogue = false) {
+  // 飞行状态不可被打断
+  if (petState.value === "launching" || petState.value === "parachuting") {
+    return;
+  }
+
   // 对于从跳跃类状态切换到其他状态，先平滑过渡
   const jumpStates: PetState[] = ["celebrate", "jumping", "dancing"];
   const isExitingJumpState =
@@ -465,6 +471,12 @@ export function stopAnimationLoop() {
 // 点击宠物
 export function handlePetClick() {
   if (isDragging.value) return;
+
+  // 飞行状态下不处理点击
+  if (petState.value === "launching" || petState.value === "parachuting") {
+    return;
+  }
+
   // 如果关闭了点击反应，只记录但不改变状态
   if (!settings.value.clickReaction) {
     recordClick();
@@ -523,6 +535,16 @@ let initTimer2: ReturnType<typeof setTimeout> | null = null;
 export function handleDragStart(e: MouseEvent) {
   // 只响应左键，右键点击不触发拖拽
   if (e.button !== 0) return;
+
+  // 蓄力或飞行状态下不触发拖拽
+  if (
+    petState.value === "launching" ||
+    petState.value === "parachuting" ||
+    isCharging.value
+  ) {
+    return;
+  }
+
   isDragging.value = true;
   setPassthrough(false);
   // 记录拖拽互动

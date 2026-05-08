@@ -30,7 +30,9 @@ export type PetState =
   | "eating"
   | "brickCarrying"
   | "flyerDistributing"
-  | "programmer";
+  | "programmer"
+  | "launching" // 蓄力发射
+  | "parachuting"; // 降落伞下落
 
 // 宠物朝向：front(正面), left(左转), right(右转), back(背面)
 export type PetDirection = "front" | "left" | "right" | "back";

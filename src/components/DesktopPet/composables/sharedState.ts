@@ -77,6 +77,16 @@ export const quickPanelVisible = ref(false);
 // 降落伞效果状态（调试用）
 export const showParachute = ref(false);
 
+// 蓄力发射相关状态
+export const isCharging = ref(false); // 是否正在蓄力
+export const chargeStartTime = ref<number | null>(null); // 蓄力开始时间
+export const chargeProgress = ref(0); // 蓄力进度 0-1
+export const launchStartPos = ref<PetPosition>({ x: 0, y: 0 }); // 发射起始位置
+export const launchTargetHeight = ref(0); // 发射目标高度
+export const launchRiseSpeed = ref(0); // 发射上升速度
+export const currentLaunchHeight = ref(0); // 当前飞行高度（从起始点算）
+export const parachuteSwayOffset = ref(0); // 降落伞摆动偏移
+
 // 食物
 export const currentFood = ref<FoodType>("apple");
 
