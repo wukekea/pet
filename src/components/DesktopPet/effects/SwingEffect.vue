@@ -34,36 +34,36 @@
       <g class="swing-body">
         <!-- 左绳 -->
         <line
-          x1="55"
-          y1="10"
+          x1="64"
+          y1="0"
           x2="65"
-          y2="160"
+          y2="170"
           stroke="url(#ropeGradient)"
           stroke-width="4"
           stroke-linecap="round"
         />
-        <circle cx="55" cy="10" r="5" fill="#D4A574" />
-        <circle cx="65" cy="160" r="4" fill="#C4946A" />
+        <circle cx="64" cy="0" r="5" fill="#D4A574" />
+        <circle cx="65" cy="170" r="4" fill="#C4946A" />
 
         <!-- 右绳 -->
         <line
-          x1="185"
-          y1="10"
+          x1="174"
+          y1="0"
           x2="175"
-          y2="160"
+          y2="170"
           stroke="url(#ropeGradient)"
           stroke-width="4"
           stroke-linecap="round"
         />
-        <circle cx="185" cy="10" r="5" fill="#D4A574" />
-        <circle cx="175" cy="160" r="4" fill="#C4946A" />
+        <circle cx="174" cy="0" r="5" fill="#D4A574" />
+        <circle cx="175" cy="170" r="4" fill="#C4946A" />
 
         <!-- 座板 -->
         <rect
           x="50"
-          y="160"
+          y="170"
           width="140"
-          height="18"
+          height="12"
           rx="5"
           fill="url(#woodGradient)"
         />
