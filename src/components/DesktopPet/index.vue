@@ -562,7 +562,6 @@ const onPetMouseLeave = () => {
 
 /* 蓄力状态样式 */
 .pet-container.is-charging {
-  cursor: wait;
   animation: charging-pulse 0.3s ease-in-out infinite;
 }
 
