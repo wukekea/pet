@@ -12,17 +12,21 @@ export const swingConfig = ref({
   // 摆动周期（毫秒）
   period: 3000,
   // 缩放幅度（相对于幅度的比例）
-  scaleRatio: 0.0025,
+  scaleRatio: 0.005,
   // 幅度衰减速度（每秒衰减的幅度）
   decayRate: 8,
 });
 
 // 当前秋千动画帧 ID
 let swingAnimationId: number | null = null;
-// 动画开始时间
-let swingStartTime: number = 0;
 // 上一次更新时间（用于计算衰减）
 let lastUpdateTime: number = 0;
+// 当前相位角（弧度，0 表示最高点后方，π 表示最高点前方）
+let currentPhase = 0;
+// 角速度（弧度/毫秒）
+const angularVelocity = computed(
+  () => (2 * Math.PI) / swingConfig.value.period,
+);
 
 // 当前动画状态（用于组件绑定）
 export const swingTransform = computed(() => {
@@ -47,37 +51,39 @@ function swingAnimationLoop(timestamp: number) {
     return;
   }
 
-  // 计算衰减
-  if (lastUpdateTime > 0) {
-    const deltaTime = (timestamp - lastUpdateTime) / 1000; // 转换为秒
-    // 如果幅度大于默认值，逐渐衰减
-    if (swingConfig.value.amplitude > swingConfig.value.defaultAmplitude) {
-      swingConfig.value.amplitude -= swingConfig.value.decayRate * deltaTime;
-      // 确保不低于默认值
-      if (swingConfig.value.amplitude < swingConfig.value.defaultAmplitude) {
-        swingConfig.value.amplitude = swingConfig.value.defaultAmplitude;
-      }
-    }
-  }
+  // 计算时间增量
+  const deltaTime = lastUpdateTime > 0 ? timestamp - lastUpdateTime : 16;
   lastUpdateTime = timestamp;
 
-  // 计算动画进度（0-1）
-  const elapsed = timestamp - swingStartTime;
-  const progress =
-    (elapsed % swingConfig.value.period) / swingConfig.value.period;
+  // 计算衰减
+  if (swingConfig.value.amplitude > swingConfig.value.defaultAmplitude) {
+    const decayDelta = (swingConfig.value.decayRate * deltaTime) / 1000;
+    swingConfig.value.amplitude = Math.max(
+      swingConfig.value.amplitude - decayDelta,
+      swingConfig.value.defaultAmplitude,
+    );
+  }
 
-  // 使用正弦波计算位置，配合 ease-in-out 缓动
-  // 0 -> 0.5: 向后摆动（向上）
-  // 0.5 -> 1: 向前摆动（向下）
-  const sineValue = Math.sin(progress * Math.PI * 2);
+  // 更新相位角
+  currentPhase += angularVelocity.value * deltaTime;
+  // 保持相位在 0-2π 范围内
+  if (currentPhase >= 2 * Math.PI) {
+    currentPhase -= 2 * Math.PI;
+  }
 
-  // 应用缓动让摆动更自然
-  const easedProgress = easeInOut(Math.abs(sineValue));
+  // 计算位置：
+  // phase = 0 或 2π: 最后方位置（y 最小，秋千向后）
+  // phase = π/2: 中间位置，向前运动中
+  // phase = π: 最前方位置（y 最大，秋千向前）
+  // phase = 3π/2: 中间位置，向后运动中
+  const sineValue = -Math.sin(currentPhase); // 负号：phase=0 时秋千在最后方（y 最小）
 
   // 计算垂直偏移
   const yOffset = sineValue * swingConfig.value.amplitude;
 
   // 计算缩放（模拟前后透视，随幅度变化）
+  // sineValue > 0: 秋千在前方，应该变大
+  // sineValue < 0: 秋千在后方，应该变小
   const scaleOffset =
     sineValue * swingConfig.value.amplitude * swingConfig.value.scaleRatio;
   const scale = 1 + scaleOffset;
@@ -96,7 +102,8 @@ export function startSwingAnimation() {
   // 重置幅度为默认值
   swingConfig.value.amplitude = swingConfig.value.defaultAmplitude;
   lastUpdateTime = 0;
-  swingStartTime = performance.now();
+  // 从最后方开始摆动
+  currentPhase = 0;
   swingAnimationId = requestAnimationFrame(swingAnimationLoop);
 }
 
@@ -112,15 +119,44 @@ export function stopSwingAnimation() {
 }
 
 // 推动秋千 - 点击宠物时调用
+// 推力始终向后（向屏幕后方/上方）
 export function pushSwing() {
   if (!showSwing.value) return;
 
-  // 增加摆动幅度，不超过最大值
-  const pushAmount = 15; // 每次推动增加的幅度
-  swingConfig.value.amplitude = Math.min(
-    swingConfig.value.amplitude + pushAmount,
-    swingConfig.value.maxAmplitude,
-  );
+  const pushAmount = 15;
+
+  // 计算当前运动方向：
+  // cos(currentPhase) > 0: 向前运动（从前方向后方移动，即向上）
+  // cos(currentPhase) < 0: 向后运动（从后方向前方移动，即向下）
+  // cos(currentPhase) = 0: 在最高点，速度为 0
+  const velocityDirection = Math.cos(currentPhase);
+
+  if (velocityDirection > 0) {
+    // 正在向后运动（从最前方 -> 最后方），顺势增加幅度
+    swingConfig.value.amplitude = Math.min(
+      swingConfig.value.amplitude + pushAmount,
+      swingConfig.value.maxAmplitude,
+    );
+  } else if (velocityDirection < 0) {
+    // 正在向前运动（从最后方 -> 最前方），逆势推动
+    // 先增加幅度，然后调整相位使其开始向后运动
+    swingConfig.value.amplitude = Math.min(
+      swingConfig.value.amplitude + pushAmount,
+      swingConfig.value.maxAmplitude,
+    );
+    // 将相位调整到对应位置，使秋千立即开始向后运动
+    // 当前在 sin 波的某个位置，需要"弹"到更靠后的位置
+    // 简单做法：反转相位方向
+    currentPhase = Math.PI - currentPhase;
+    if (currentPhase < 0) currentPhase += 2 * Math.PI;
+    if (currentPhase >= 2 * Math.PI) currentPhase -= 2 * Math.PI;
+  } else {
+    // 在最高点，直接增加幅度
+    swingConfig.value.amplitude = Math.min(
+      swingConfig.value.amplitude + pushAmount,
+      swingConfig.value.maxAmplitude,
+    );
+  }
 }
 
 // 更新秋千配置
