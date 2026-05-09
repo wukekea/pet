@@ -157,18 +157,20 @@ let clickTimer: ReturnType<typeof setTimeout> | null = null;
 const DBLCLICK_DELAY = 250;
 
 const onPetClick = () => {
-  // 荡秋千时：单击推动秋千，双击打开面板
+  // 荡秋千时：单击立即推动秋千，双击打开面板（推力也生效但用户不易察觉）
   if (showSwing.value) {
+    // 立即推动秋千，不等待双击判定
+    pushSwing();
     if (clickTimer) {
-      // 双击
+      // 双击：打开面板
       clearTimeout(clickTimer);
       clickTimer = null;
       onPetDoubleClick();
     } else {
+      // 首次点击：设置定时器，如果没有第二次点击则视为单击
       clickTimer = setTimeout(() => {
         clickTimer = null;
-        // 单击：推动秋千
-        pushSwing();
+        // 单击：推力已生效，无需额外操作
       }, DBLCLICK_DELAY);
     }
     return;

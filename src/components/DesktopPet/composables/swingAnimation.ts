@@ -125,38 +125,30 @@ export function pushSwing() {
 
   const pushAmount = 15;
 
-  // 计算当前运动方向：
-  // cos(currentPhase) > 0: 向前运动（从前方向后方移动，即向上）
-  // cos(currentPhase) < 0: 向后运动（从后方向前方移动，即向下）
-  // cos(currentPhase) = 0: 在最高点，速度为 0
+  // 当前位置（sineValue）：正值为前方，负值为后方
+  const currentPosition = -Math.sin(currentPhase);
+  // 当前速度方向：正值为向后运动，负值为向前运动
   const velocityDirection = Math.cos(currentPhase);
 
-  if (velocityDirection > 0) {
-    // 正在向后运动（从最前方 -> 最后方），顺势增加幅度
-    swingConfig.value.amplitude = Math.min(
-      swingConfig.value.amplitude + pushAmount,
-      swingConfig.value.maxAmplitude,
-    );
-  } else if (velocityDirection < 0) {
-    // 正在向前运动（从最后方 -> 最前方），逆势推动
-    // 先增加幅度，然后调整相位使其开始向后运动
-    swingConfig.value.amplitude = Math.min(
-      swingConfig.value.amplitude + pushAmount,
-      swingConfig.value.maxAmplitude,
-    );
-    // 将相位调整到对应位置，使秋千立即开始向后运动
-    // 当前在 sin 波的某个位置，需要"弹"到更靠后的位置
-    // 简单做法：反转相位方向
-    currentPhase = Math.PI - currentPhase;
-    if (currentPhase < 0) currentPhase += 2 * Math.PI;
-    if (currentPhase >= 2 * Math.PI) currentPhase -= 2 * Math.PI;
-  } else {
-    // 在最高点，直接增加幅度
-    swingConfig.value.amplitude = Math.min(
-      swingConfig.value.amplitude + pushAmount,
-      swingConfig.value.maxAmplitude,
-    );
+  // 增加幅度
+  const newAmplitude = Math.min(
+    swingConfig.value.amplitude + pushAmount,
+    swingConfig.value.maxAmplitude,
+  );
+
+  if (velocityDirection <= 0) {
+    // 正在向前运动或在最高点，需要反转方向
+    // 推力向后：秋千应该立即获得向后的速度
+    // 使用 acos 反推新相位，使当前位置保持不变但速度方向反转
+    // sin(-phase) = -sin(phase) = currentPosition
+    // 所以 -phase = asin(-currentPosition)
+    // 但我们需要速度方向为正（cos > 0），所以选择合适的相位分支
+    const newPhase = Math.asin(-currentPosition);
+    // 选择 cos > 0 的分支（相位在 -π/2 到 π/2 之间）
+    currentPhase = newPhase < 0 ? newPhase + 2 * Math.PI : newPhase;
   }
+
+  swingConfig.value.amplitude = newAmplitude;
 }
 
 // 更新秋千配置
