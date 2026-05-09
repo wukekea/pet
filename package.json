@@ -1,7 +1,7 @@
 {
   "name": "desktop-pet",
   "private": true,
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "桌面宠物应用",
   "author": "Claude",
   "main": "electron/main.js",
@@ -17,6 +17,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.92.0",
     "edge-tts": "^1.0.1",
+    "electron-updater": "^6.8.3",
     "node-record-lpcm16": "^1.0.1",
     "vue": "^3.4.21"
   },
@@ -33,6 +34,7 @@
   "build": {
     "appId": "com.desktop.pet",
     "productName": "桌面宠物",
+    "artifactName": "${name}-${version}-${arch}.${ext}",
     "directories": {
       "output": "release"
     },
@@ -40,6 +42,11 @@
       "dist/**/*",
       "electron/**/*"
     ],
+    "publish": {
+      "provider": "github",
+      "owner": "wukekea",
+      "repo": "pet"
+    },
     "win": {
       "target": [
         {
@@ -52,7 +59,12 @@
       "icon": "public/icon.ico"
     },
     "mac": {
-      "target": "dmg",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["arm64"]
+        }
+      ],
       "icon": "public/icon.icns",
       "identity": null,
       "extendInfo": {

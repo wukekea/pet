@@ -62,6 +62,12 @@ const version = ref("1.0.0");
 const isCheckingUpdate = ref(false);
 const hasUpdate = ref(false);
 
+// 更新状态
+const isDownloading = ref(false);
+const downloadProgress = ref(0);
+const updateDownloaded = ref(false);
+const updateError = ref("");
+
 // 更新信息类型
 interface UpdateInfo {
   success: boolean;
@@ -80,6 +86,16 @@ const updateInfo = ref<UpdateInfo | null>(null);
 const electronAPI = window.electronAPI as {
   getVersion?: () => Promise<string>;
   checkUpdate?: () => Promise<UpdateInfo>;
+  checkForUpdates?: () => Promise<UpdateInfo>;
+  downloadUpdate?: () => Promise<{ success: boolean; message?: string }>;
+  installUpdate?: () => void;
+  onUpdateAvailable?: (callback: (info: any) => void) => () => void;
+  onUpdateNotAvailable?: (callback: () => void) => () => void;
+  onUpdateDownloadProgress?: (
+    callback: (progress: { percent: number }) => void,
+  ) => () => void;
+  onUpdateDownloaded?: (callback: (info: any) => void) => () => void;
+  onUpdateError?: (callback: (message: string) => void) => () => void;
 };
 
 // 版本初始化标记
@@ -198,36 +214,128 @@ const handleSwitchEngine = async (engine: SpeechEngine) => {
 
 // 检查更新
 const checkUpdate = async () => {
-  if (!electronAPI.checkUpdate) {
-    alert("检查更新功能仅在 Electron 应用中可用");
+  // 重置状态
+  isCheckingUpdate.value = true;
+  updateInfo.value = null;
+  updateError.value = "";
+  hasUpdate.value = false;
+  updateDownloaded.value = false;
+
+  // 优先使用 electron-updater
+  if (electronAPI.checkForUpdates) {
+    try {
+      const result = await electronAPI.checkForUpdates();
+      if (result.success) {
+        hasUpdate.value = result.hasUpdate ?? false;
+        updateInfo.value = result;
+      } else {
+        // 检查失败，显示错误信息
+        let errorMsg = result.message || "检查更新失败";
+        // 友好化错误信息
+        if (
+          errorMsg.includes("cannot find latest") ||
+          errorMsg.includes("404")
+        ) {
+          errorMsg = "暂无可用更新（GitHub 上未发布新版本）";
+        }
+        updateError.value = errorMsg;
+        // 设置一个空的 updateInfo 显示当前版本
+        if (result.currentVersion) {
+          updateInfo.value = {
+            success: false,
+            currentVersion: result.currentVersion,
+            hasUpdate: false,
+          };
+        }
+      }
+    } catch (error: any) {
+      console.error("检查更新出错:", error);
+      let errorMsg = error.message || "检查更新出错";
+      // 友好化错误信息
+      if (errorMsg.includes("cannot find latest") || errorMsg.includes("404")) {
+        errorMsg = "暂无可用更新（GitHub 上未发布新版本）";
+      }
+      updateError.value = errorMsg;
+    } finally {
+      isCheckingUpdate.value = false;
+    }
     return;
   }
 
-  isCheckingUpdate.value = true;
-  updateInfo.value = null;
+  // 备用方案：使用 GitHub API
+  if (!electronAPI.checkUpdate) {
+    isCheckingUpdate.value = false;
+    updateError.value = "检查更新功能仅在打包后的应用中可用";
+    return;
+  }
 
   try {
     const result = await electronAPI.checkUpdate();
     if (result.success) {
       hasUpdate.value = result.hasUpdate ?? false;
       updateInfo.value = result;
-      if (result.hasUpdate) {
-        // 有新版本，可以提示用户
-        console.log(
-          `发现新版本 ${result.latestVersion}，当前版本 ${result.currentVersion}`,
-        );
-      }
     } else {
       console.error("检查更新失败:", result.message);
-      hasUpdate.value = false;
+      updateError.value = result.message || "检查更新失败";
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("检查更新出错:", error);
-    hasUpdate.value = false;
+    updateError.value = error.message || "检查更新出错";
   } finally {
     isCheckingUpdate.value = false;
   }
 };
+
+// 下载更新
+const downloadUpdate = async () => {
+  if (!electronAPI.downloadUpdate) return;
+
+  isDownloading.value = true;
+  downloadProgress.value = 0;
+  updateError.value = "";
+
+  try {
+    const result = await electronAPI.downloadUpdate();
+    if (!result.success) {
+      updateError.value = result.message || "下载失败";
+    }
+  } catch (error: any) {
+    console.error("下载更新出错:", error);
+    updateError.value = error.message || "下载出错";
+  } finally {
+    isDownloading.value = false;
+  }
+};
+
+// 安装更新
+const installUpdate = () => {
+  if (electronAPI.installUpdate) {
+    electronAPI.installUpdate();
+  }
+};
+
+// 监听下载进度
+if (electronAPI.onUpdateDownloadProgress) {
+  electronAPI.onUpdateDownloadProgress((progress) => {
+    downloadProgress.value = progress.percent;
+  });
+}
+
+// 监听下载完成
+if (electronAPI.onUpdateDownloaded) {
+  electronAPI.onUpdateDownloaded(() => {
+    updateDownloaded.value = true;
+    isDownloading.value = false;
+  });
+}
+
+// 监听更新错误
+if (electronAPI.onUpdateError) {
+  electronAPI.onUpdateError((message) => {
+    updateError.value = message;
+    isDownloading.value = false;
+  });
+}
 
 // 处理主题切换
 const handleThemeChange = (theme: PetSettings["theme"]) => {
@@ -1243,11 +1351,58 @@ const handleSpeechInputToggle = async () => {
 
                   <!-- 更新信息展示 -->
                   <div
-                    v-if="updateInfo && !isCheckingUpdate"
+                    v-if="(updateInfo || updateError) && !isCheckingUpdate"
                     class="update-info"
-                    :class="{ 'has-update': hasUpdate }"
+                    :class="{
+                      'has-update': hasUpdate,
+                      'is-downloading': isDownloading,
+                      'update-ready': updateDownloaded,
+                      'has-error': updateError && !hasUpdate,
+                    }"
                   >
-                    <div v-if="hasUpdate" class="update-available">
+                    <!-- 下载进度 -->
+                    <div v-if="isDownloading" class="update-downloading">
+                      <span class="update-icon">⬇️</span>
+                      <div class="download-progress">
+                        <div class="progress-bar">
+                          <div
+                            class="progress-fill"
+                            :style="{ width: `${downloadProgress}%` }"
+                          />
+                        </div>
+                        <span
+                          class="progress-text"
+                          :style="{ color: textMuted }"
+                        >
+                          下载中... {{ downloadProgress.toFixed(1) }}%
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- 下载完成，等待安装 -->
+                    <div v-else-if="updateDownloaded" class="update-ready">
+                      <span class="update-icon">✅</span>
+                      <div class="update-details">
+                        <span class="update-title" :style="{ color: textColor }"
+                          >更新已就绪</span
+                        >
+                        <span
+                          class="update-current"
+                          :style="{ color: textMuted }"
+                          >点击下方按钮重启并安装</span
+                        >
+                      </div>
+                      <button class="install-btn" @click="installUpdate">
+                        <span class="btn-icon">🔄</span>
+                        <span class="btn-text">重启安装</span>
+                      </button>
+                    </div>
+
+                    <!-- 发现新版本 -->
+                    <div
+                      v-else-if="hasUpdate && updateInfo"
+                      class="update-available"
+                    >
                       <span class="update-icon">🎉</span>
                       <div class="update-details">
                         <span class="update-title" :style="{ color: textColor }"
@@ -1259,20 +1414,36 @@ const handleSpeechInputToggle = async () => {
                           >当前版本 v{{ updateInfo.currentVersion }}</span
                         >
                       </div>
-                      <a
-                        :href="updateInfo.releaseUrl"
-                        target="_blank"
-                        class="download-btn"
-                      >
+                      <button class="download-btn" @click="downloadUpdate">
                         <span class="btn-icon">⬇️</span>
-                        <span class="btn-text">前往下载</span>
-                      </a>
+                        <span class="btn-text">立即下载</span>
+                      </button>
                     </div>
-                    <div v-else class="update-latest">
+
+                    <!-- 已是最新版本 -->
+                    <div
+                      v-else-if="updateInfo && !hasUpdate"
+                      class="update-latest"
+                    >
                       <span class="update-icon">✅</span>
                       <span class="update-message" :style="{ color: textMuted }"
                         >已是最新版本 v{{ updateInfo.currentVersion }}</span
                       >
+                    </div>
+
+                    <!-- 只有错误，没有更新信息 -->
+                    <div
+                      v-else-if="!updateInfo && updateError"
+                      class="update-error-only"
+                    >
+                      <span class="error-icon">⚠️</span>
+                      <span class="error-text">{{ updateError }}</span>
+                    </div>
+
+                    <!-- 错误信息（附加在更新信息后面） -->
+                    <div v-if="updateError && updateInfo" class="update-error">
+                      <span class="error-icon">⚠️</span>
+                      <span class="error-text">{{ updateError }}</span>
                     </div>
                   </div>
 
@@ -2120,6 +2291,105 @@ const handleSpeechInputToggle = async () => {
 
 .update-message {
   font-size: 13px;
+}
+
+/* 下载进度样式 */
+.update-downloading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.download-progress {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(52, 211, 153, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #34d399, #6ee7b7);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 11px;
+  text-align: center;
+}
+
+/* 更新就绪样式 */
+.update-ready {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.install-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f5a623, #fbd38d);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+.install-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.3);
+}
+
+.install-btn .btn-icon {
+  font-size: 12px;
+}
+
+/* 错误信息样式 */
+.update-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 8px;
+}
+
+.error-icon {
+  font-size: 14px;
+}
+
+.error-text {
+  font-size: 12px;
+  color: #ef4444;
+}
+
+/* 只有错误的样式 */
+.update-error-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.update-info.has-error {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.05);
 }
 
 /* API Key 输入框 */

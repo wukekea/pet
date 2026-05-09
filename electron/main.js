@@ -10,6 +10,8 @@ import {
 } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
+import pkg from "electron-updater";
+const { autoUpdater } = pkg;
 import { setupEdgeTTSIPC } from "./edgeTTS-ipc.js";
 import { setupWhisperIPC } from "./whisperIPC.js";
 
@@ -26,6 +28,41 @@ let mainWindow = null;
 let tray = null;
 
 const isDev = process.env.NODE_ENV === "development" || !app.isPackaged;
+
+// 配置自动更新
+autoUpdater.autoDownload = false; // 不自动下载，由用户触发
+autoUpdater.autoInstallOnAppQuit = true; // 退出时自动安装
+
+// 自动更新事件处理
+autoUpdater.on("update-available", (info) => {
+  console.log("发现新版本:", info.version);
+  mainWindow?.webContents.send("update-available", info);
+});
+
+autoUpdater.on("update-not-available", () => {
+  console.log("当前已是最新版本");
+  mainWindow?.webContents.send("update-not-available");
+});
+
+autoUpdater.on("download-progress", (progress) => {
+  console.log(`下载进度: ${progress.percent.toFixed(1)}%`);
+  mainWindow?.webContents.send("update-download-progress", {
+    percent: progress.percent,
+    transferred: progress.transferred,
+    total: progress.total,
+    bytesPerSecond: progress.bytesPerSecond,
+  });
+});
+
+autoUpdater.on("update-downloaded", (info) => {
+  console.log("更新下载完成:", info.version);
+  mainWindow?.webContents.send("update-downloaded", info);
+});
+
+autoUpdater.on("error", (error) => {
+  console.error("自动更新错误:", error);
+  mainWindow?.webContents.send("update-error", error.message);
+});
 
 function createWindow() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -104,6 +141,13 @@ app.whenReady().then(() => {
       }
     },
   );
+
+  // 生产环境下检查更新
+  if (!isDev) {
+    autoUpdater.checkForUpdates().catch((err) => {
+      console.error("检查更新失败:", err);
+    });
+  }
 });
 
 app.on("window-all-closed", () => {
@@ -218,7 +262,51 @@ ipcMain.handle("get-version", () => {
   return app.getVersion();
 });
 
-// 检查更新 - 从 GitHub API 获取最新 release
+// 检查更新（使用 electron-updater）
+ipcMain.handle("check-for-updates", async () => {
+  if (isDev) {
+    return { success: false, message: "开发模式不支持自动更新" };
+  }
+
+  try {
+    const result = await autoUpdater.checkForUpdates();
+    return {
+      success: true,
+      currentVersion: app.getVersion(),
+      latestVersion: result.updateInfo.version,
+      hasUpdate: result.updateInfo.version !== app.getVersion(),
+      releaseDate: result.updateInfo.releaseDate,
+      releaseNotes: result.updateInfo.releaseNotes,
+    };
+  } catch (error) {
+    console.error("检查更新失败:", error);
+    return { success: false, message: error.message };
+  }
+});
+
+// 下载更新
+ipcMain.handle("download-update", async () => {
+  if (isDev) {
+    return { success: false, message: "开发模式不支持自动更新" };
+  }
+
+  try {
+    await autoUpdater.downloadUpdate();
+    return { success: true };
+  } catch (error) {
+    console.error("下载更新失败:", error);
+    return { success: false, message: error.message };
+  }
+});
+
+// 安装更新（安装后重启）
+ipcMain.handle("install-update", () => {
+  if (!isDev) {
+    autoUpdater.quitAndInstall();
+  }
+});
+
+// 检查更新 - 从 GitHub API 获取最新 release（备用方案）
 ipcMain.handle("check-update", async () => {
   const currentVersion = app.getVersion();
 

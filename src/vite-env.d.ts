@@ -114,6 +114,30 @@ declare global {
         publishedAt?: string;
         message?: string;
       }>;
+      // 自动更新
+      checkForUpdates: () => Promise<{
+        success: boolean;
+        currentVersion?: string;
+        latestVersion?: string;
+        hasUpdate?: boolean;
+        releaseDate?: string;
+        releaseNotes?: string;
+        message?: string;
+      }>;
+      downloadUpdate: () => Promise<{ success: boolean; message?: string }>;
+      installUpdate: () => void;
+      onUpdateAvailable: (callback: (info: any) => void) => () => void;
+      onUpdateNotAvailable: (callback: () => void) => () => void;
+      onUpdateDownloadProgress: (
+        callback: (progress: {
+          percent: number;
+          transferred: number;
+          total: number;
+          bytesPerSecond: number;
+        }) => void,
+      ) => () => void;
+      onUpdateDownloaded: (callback: (info: any) => void) => () => void;
+      onUpdateError: (callback: (message: string) => void) => () => void;
     };
   }
 }
