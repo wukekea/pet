@@ -2528,7 +2528,7 @@
   height: calc(var(--pet-size, 80px) * 0.125);
 }
 
-/* 荡秋千时左手向上抓住左边绳子 */
+/* 荡秋千时左手自然下垂随摇摆晃动 */
 .pet-container.is-swinging .arm-left {
   animation: swing-arm-left 3s ease-in-out infinite;
 }
@@ -2536,16 +2536,14 @@
 @keyframes swing-arm-left {
   0%,
   100% {
-    transform: rotate(-70deg) translateY(calc(var(--pet-size, 80px) * -0.2))
-      translateX(calc(var(--pet-size, 80px) * 0.05));
+    transform: rotate(-10deg) translateX(calc(var(--pet-size, 80px) * -0.02));
   }
   50% {
-    transform: rotate(-60deg) translateY(calc(var(--pet-size, 80px) * -0.22))
-      translateX(calc(var(--pet-size, 80px) * 0.06));
+    transform: rotate(5deg) translateX(calc(var(--pet-size, 80px) * 0.02));
   }
 }
 
-/* 荡秋千时右手向上抓住右边绳子 */
+/* 荡秋千时右手自然下垂随摇摆晃动 */
 .pet-container.is-swinging .arm-right {
   animation: swing-arm-right 3s ease-in-out infinite;
 }
@@ -2553,12 +2551,10 @@
 @keyframes swing-arm-right {
   0%,
   100% {
-    transform: rotate(70deg) translateY(calc(var(--pet-size, 80px) * -0.2))
-      translateX(calc(var(--pet-size, 80px) * -0.05));
+    transform: rotate(10deg) translateX(calc(var(--pet-size, 80px) * 0.02));
   }
   50% {
-    transform: rotate(60deg) translateY(calc(var(--pet-size, 80px) * -0.22))
-      translateX(calc(var(--pet-size, 80px) * -0.06));
+    transform: rotate(-5deg) translateX(calc(var(--pet-size, 80px) * -0.02));
   }
 }
 
