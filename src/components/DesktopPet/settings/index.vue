@@ -234,9 +234,15 @@ const checkUpdate = async () => {
         // 友好化错误信息
         if (
           errorMsg.includes("cannot find latest") ||
-          errorMsg.includes("404")
+          errorMsg.includes("404") ||
+          errorMsg.includes("cannot parse release feed")
         ) {
-          errorMsg = "暂无可用更新（GitHub 上未发布新版本）";
+          errorMsg = "暂无可用更新";
+        } else if (
+          errorMsg.includes("network") ||
+          errorMsg.includes("ENOTFOUND")
+        ) {
+          errorMsg = "网络连接失败，请检查网络";
         }
         updateError.value = errorMsg;
         // 设置一个空的 updateInfo 显示当前版本
@@ -252,8 +258,17 @@ const checkUpdate = async () => {
       console.error("检查更新出错:", error);
       let errorMsg = error.message || "检查更新出错";
       // 友好化错误信息
-      if (errorMsg.includes("cannot find latest") || errorMsg.includes("404")) {
-        errorMsg = "暂无可用更新（GitHub 上未发布新版本）";
+      if (
+        errorMsg.includes("cannot find latest") ||
+        errorMsg.includes("404") ||
+        errorMsg.includes("cannot parse release feed")
+      ) {
+        errorMsg = "暂无可用更新";
+      } else if (
+        errorMsg.includes("network") ||
+        errorMsg.includes("ENOTFOUND")
+      ) {
+        errorMsg = "网络连接失败，请检查网络";
       }
       updateError.value = errorMsg;
     } finally {
