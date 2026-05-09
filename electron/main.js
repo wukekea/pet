@@ -212,3 +212,64 @@ ipcMain.handle("fetch-ip-location", async (event, amapKey) => {
     return { success: false, message: error.message };
   }
 });
+
+// 获取当前版本号
+ipcMain.handle("get-version", () => {
+  return app.getVersion();
+});
+
+// 检查更新 - 从 GitHub API 获取最新 release
+ipcMain.handle("check-update", async () => {
+  const currentVersion = app.getVersion();
+
+  try {
+    const response = await fetch(
+      "https://api.github.com/repos/wukekea/pet/releases/latest",
+      {
+        headers: {
+          Accept: "application/vnd.github.v3+json",
+          "User-Agent": "Desktop-Pet-App",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const release = await response.json();
+    const latestVersion = release.tag_name?.replace(/^v/, "") || "0.0.0";
+    const hasUpdate = compareVersions(latestVersion, currentVersion) > 0;
+
+    return {
+      success: true,
+      currentVersion,
+      latestVersion,
+      hasUpdate,
+      releaseUrl: release.html_url,
+      releaseNotes: release.body || "",
+      publishedAt: release.published_at,
+    };
+  } catch (error) {
+    console.error("检查更新失败:", error);
+    return {
+      success: false,
+      message: error.message,
+      currentVersion,
+    };
+  }
+});
+
+// 版本号比较函数
+function compareVersions(v1, v2) {
+  const parts1 = v1.split(".").map(Number);
+  const parts2 = v2.split(".").map(Number);
+
+  for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+    const p1 = parts1[i] || 0;
+    const p2 = parts2[i] || 0;
+    if (p1 > p2) return 1;
+    if (p1 < p2) return -1;
+  }
+  return 0;
+}

@@ -102,6 +102,18 @@ declare global {
         text?: string;
         error?: string;
       }>;
+      // 应用更新
+      getVersion: () => Promise<string>;
+      checkUpdate: () => Promise<{
+        success: boolean;
+        currentVersion: string;
+        latestVersion?: string;
+        hasUpdate?: boolean;
+        releaseUrl?: string;
+        releaseNotes?: string;
+        publishedAt?: string;
+        message?: string;
+      }>;
     };
   }
 }

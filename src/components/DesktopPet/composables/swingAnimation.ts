@@ -39,11 +39,6 @@ export const swingTransform = computed(() => {
 // 当前变换值
 const swingCurrentTransform = ref("translateY(0) scale(1)");
 
-// 缓动函数 - ease-in-out
-function easeInOut(t: number): number {
-  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-}
-
 // 秋千动画循环
 function swingAnimationLoop(timestamp: number) {
   if (!showSwing.value) {

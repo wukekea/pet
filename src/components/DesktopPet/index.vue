@@ -55,8 +55,6 @@ import {
 } from "./composables/attributeStorage";
 import {
   swingTransform,
-  swingConfig,
-  updateSwingConfig,
   pushSwing,
   startLongPressPush,
   stopLongPressPush,

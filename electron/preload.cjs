@@ -27,4 +27,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   speechCheckStatus: () => ipcRenderer.invoke("speech:check-status"),
   speechStart: () => ipcRenderer.invoke("speech:start"),
   speechStop: () => ipcRenderer.invoke("speech:stop"),
+  // 应用更新
+  getVersion: () => ipcRenderer.invoke("get-version"),
+  checkUpdate: () => ipcRenderer.invoke("check-update"),
 });

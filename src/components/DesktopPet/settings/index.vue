@@ -50,10 +50,47 @@ watch(speechEnabled, () => {
   }
 });
 
+// 监听分类切换，懒加载版本信息
+watch(activeCategory, (category) => {
+  if (category === "about") {
+    initVersion();
+  }
+});
+
 // 版本信息
-const version = "1.0.0";
+const version = ref("1.0.0");
 const isCheckingUpdate = ref(false);
 const hasUpdate = ref(false);
+
+// 更新信息类型
+interface UpdateInfo {
+  success: boolean;
+  currentVersion: string;
+  latestVersion?: string;
+  hasUpdate?: boolean;
+  releaseUrl?: string;
+  releaseNotes?: string;
+  publishedAt?: string;
+  message?: string;
+}
+
+const updateInfo = ref<UpdateInfo | null>(null);
+
+// electronAPI 类型断言
+const electronAPI = window.electronAPI as {
+  getVersion?: () => Promise<string>;
+  checkUpdate?: () => Promise<UpdateInfo>;
+};
+
+// 版本初始化标记
+let versionInitialized = false;
+
+// 初始化获取版本号（懒加载，在需要时调用）
+const initVersion = async () => {
+  if (versionInitialized || !electronAPI.getVersion) return;
+  versionInitialized = true;
+  version.value = await electronAPI.getVersion();
+};
 
 // 动态颜色主题 - 奶油糖果风格
 const themeColors = computed(() => ({
@@ -160,12 +197,36 @@ const handleSwitchEngine = async (engine: SpeechEngine) => {
 };
 
 // 检查更新
-const checkUpdate = () => {
+const checkUpdate = async () => {
+  if (!electronAPI.checkUpdate) {
+    alert("检查更新功能仅在 Electron 应用中可用");
+    return;
+  }
+
   isCheckingUpdate.value = true;
-  setTimeout(() => {
-    isCheckingUpdate.value = false;
+  updateInfo.value = null;
+
+  try {
+    const result = await electronAPI.checkUpdate();
+    if (result.success) {
+      hasUpdate.value = result.hasUpdate ?? false;
+      updateInfo.value = result;
+      if (result.hasUpdate) {
+        // 有新版本，可以提示用户
+        console.log(
+          `发现新版本 ${result.latestVersion}，当前版本 ${result.currentVersion}`,
+        );
+      }
+    } else {
+      console.error("检查更新失败:", result.message);
+      hasUpdate.value = false;
+    }
+  } catch (error) {
+    console.error("检查更新出错:", error);
     hasUpdate.value = false;
-  }, 1500);
+  } finally {
+    isCheckingUpdate.value = false;
+  }
 };
 
 // 处理主题切换
@@ -1180,6 +1241,41 @@ const handleSpeechInputToggle = async () => {
                     </a>
                   </div>
 
+                  <!-- 更新信息展示 -->
+                  <div
+                    v-if="updateInfo && !isCheckingUpdate"
+                    class="update-info"
+                    :class="{ 'has-update': hasUpdate }"
+                  >
+                    <div v-if="hasUpdate" class="update-available">
+                      <span class="update-icon">🎉</span>
+                      <div class="update-details">
+                        <span class="update-title" :style="{ color: textColor }"
+                          >发现新版本 v{{ updateInfo.latestVersion }}</span
+                        >
+                        <span
+                          class="update-current"
+                          :style="{ color: textMuted }"
+                          >当前版本 v{{ updateInfo.currentVersion }}</span
+                        >
+                      </div>
+                      <a
+                        :href="updateInfo.releaseUrl"
+                        target="_blank"
+                        class="download-btn"
+                      >
+                        <span class="btn-icon">⬇️</span>
+                        <span class="btn-text">前往下载</span>
+                      </a>
+                    </div>
+                    <div v-else class="update-latest">
+                      <span class="update-icon">✅</span>
+                      <span class="update-message" :style="{ color: textMuted }"
+                        >已是最新版本 v{{ updateInfo.currentVersion }}</span
+                      >
+                    </div>
+                  </div>
+
                   <div class="about-footer" :style="{ color: textMuted }">
                     <span>Made with 💝</span>
                   </div>
@@ -1929,6 +2025,101 @@ const handleSpeechInputToggle = async () => {
 .about-footer {
   font-size: 12px;
   opacity: 0.7;
+}
+
+/* 更新信息样式 */
+.update-info {
+  width: 100%;
+  max-width: 280px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: v-bind(cardBg);
+  border: 2px solid v-bind(borderColor);
+  animation: update-in 0.3s ease;
+}
+
+@keyframes update-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.update-info.has-update {
+  border-color: rgba(52, 211, 153, 0.5);
+  background: linear-gradient(
+    135deg,
+    rgba(52, 211, 153, 0.1),
+    rgba(52, 211, 153, 0.05)
+  );
+}
+
+.update-available {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.update-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.update-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  text-align: left;
+}
+
+.update-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.update-current {
+  font-size: 11px;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #34d399, #6ee7b7);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 211, 153, 0.3);
+}
+
+.download-btn .btn-icon {
+  font-size: 12px;
+}
+
+.update-latest {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.update-message {
+  font-size: 13px;
 }
 
 /* API Key 输入框 */
