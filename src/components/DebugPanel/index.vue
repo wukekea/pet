@@ -5,6 +5,7 @@ import {
   isWorkState,
   stopWork,
   moveToRandomPosition,
+  toggleSwing,
 } from "../DesktopPet/composables/petController";
 import {
   useAttributeRef,
@@ -476,7 +477,7 @@ defineExpose({
               <button
                 class="action-btn"
                 :class="{ active: showSwing }"
-                @click="showSwing = !showSwing"
+                @click="toggleSwing"
                 title="秋千"
               >
                 <span class="btn-icon">🌳</span>

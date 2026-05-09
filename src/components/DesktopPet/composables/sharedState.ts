@@ -80,6 +80,9 @@ export const showParachute = ref(false);
 // 秋千效果状态（调试用）
 export const showSwing = ref(false);
 
+// 是否正在移动到秋千位置
+export const isMovingToSwing = ref(false);
+
 // 蓄力发射相关状态
 export const isCharging = ref(false); // 是否正在蓄力
 export const chargeStartTime = ref<number | null>(null); // 蓄力开始时间

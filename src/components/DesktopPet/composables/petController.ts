@@ -40,6 +40,7 @@ import {
   moodLevel,
   isCharging,
   showSwing,
+  isMovingToSwing,
 } from "./sharedState";
 
 import { getTimeGreeting, showCustomDialogue, showDialogue } from "./dialogue";
@@ -138,8 +139,12 @@ export function getRandomPosition() {
 }
 
 // 直接移动到指定位置
-export function moveToPosition(targetX: number, targetY: number) {
-  if (NON_MOVING_STATES.includes(petState.value)) return;
+export function moveToPosition(
+  targetX: number,
+  targetY: number,
+  force = false,
+) {
+  if (!force && NON_MOVING_STATES.includes(petState.value)) return;
   targetPosition.value = {
     x: targetX,
     y: targetY,
@@ -158,6 +163,42 @@ export function moveToRandomPosition() {
   const randomPos = getRandomPosition();
   moveToPosition(randomPos.x, randomPos.y);
 }
+
+// 切换荡秋千
+export function toggleSwing() {
+  if (showSwing.value) {
+    // 停止荡秋千，保留当前位置
+    showSwing.value = false;
+    petState.value = "idle";
+    return;
+  }
+
+  // 开始荡秋千：先移动到合适位置，使绳子顶部在屏幕外
+  // 秋千容器高 250px，定位在宠物底部 -20px，绳子顶部在容器顶部
+  // 宠物高度约 80px，所以绳子顶部在 宠物Y + 80 + 20 - 250 = 宠物Y - 150
+  // 设置 swingY = 130 可确保绳子顶部在 Y = -20，完全在屏幕外
+  const swingY = 130;
+  const swingX = position.value.x; // 保持当前 X 坐标
+
+  // 如果已经在目标位置附近，直接开始荡秋千
+  if (Math.abs(position.value.y - swingY) < 10) {
+    showSwing.value = true;
+    petState.value = "idle";
+    return;
+  }
+
+  // 清除当前状态定时器，防止被打断
+  if (stateTimer.value) {
+    clearTimeout(stateTimer.value);
+    stateTimer.value = null;
+  }
+
+  // 标记正在移动到秋千位置
+  isMovingToSwing.value = true;
+  // 强制移动到目标位置（跳过状态检查）
+  moveToPosition(swingX, swingY, true);
+}
+
 // 平滑结束跳跃类动画（如庆祝、跳跃等）
 // 等待动画回到地面位置后再切换状态
 function smoothExitJumpAnimation(): Promise<void> {
@@ -220,6 +261,11 @@ export async function changeState(newState: PetState, skipDialogue = false) {
 
   // 荡秋千状态不可被打断
   if (showSwing.value) {
+    return;
+  }
+
+  // 移动到秋千位置过程中不可被打断
+  if (isMovingToSwing.value) {
     return;
   }
 
@@ -463,7 +509,15 @@ export function animate() {
       // 恢复正面朝向
       petDirection.value = "front";
       stopAnimationLoop();
-      changeState("idle");
+
+      // 如果是移动到秋千位置，开始荡秋千
+      if (isMovingToSwing.value) {
+        isMovingToSwing.value = false;
+        showSwing.value = true;
+        petState.value = "idle";
+      } else {
+        changeState("idle");
+      }
       return;
     }
   } else {

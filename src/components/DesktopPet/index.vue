@@ -26,6 +26,7 @@ import {
   initScreenSize,
   initPet,
   cleanupPet,
+  toggleSwing,
 } from "./composables/petController";
 import {
   startCharging,
@@ -535,7 +536,7 @@ const onPetMouseLeave = () => {
         @feed="quickFeed"
         @bath="quickBath"
         @work="quickWork"
-        @swing="showSwing = !showSwing"
+        @swing="toggleSwing"
       />
     </div>
 
