@@ -6,7 +6,7 @@ import {
   weatherDialogues,
   moodDialogues,
 } from "../dialogues";
-import { petState, isChatPanelOpen } from "./sharedState";
+import { petState, isChatPanelOpen, showSwing } from "./sharedState";
 import { isDragging, moodLevel } from "./sharedState";
 import { currentWeather, isWeatherChanging } from "./weatherState";
 import {
@@ -62,7 +62,26 @@ export function showCustomDialogue(text: string) {
   // 3秒后隐藏
   dialogueTimer.value = setTimeout(() => {
     hideDialogue();
+    // 荡秋千状态下，等待 10-15 秒后继续显示新台词
+    if (showSwing.value) {
+      const delay = 10000 + Math.random() * 5000;
+      setTimeout(() => {
+        if (showSwing.value) {
+          showSwingDialogue();
+        }
+      }, delay);
+    }
   }, 3000);
+}
+
+// 显示荡秋千台词（用于持续触发）
+function showSwingDialogue() {
+  if (isDialogueVisible.value || isDragging.value || isChatPanelOpen.value)
+    return;
+  const messages = dialogueMessages.swinging;
+  if (messages && messages.length > 0) {
+    showCustomDialogue(randomPick(messages));
+  }
 }
 
 // 显示对话气泡
@@ -70,6 +89,12 @@ export function showDialogue() {
   // 如果已经在显示、正在拖动、或 AI 聊天面板打开，不显示
   if (isDialogueVisible.value || isDragging.value || isChatPanelOpen.value)
     return;
+
+  // 荡秋千状态显示专属台词
+  if (showSwing.value) {
+    showSwingDialogue();
+    return;
+  }
 
   const currentState = petState.value;
 

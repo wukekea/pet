@@ -187,6 +187,7 @@ export function toggleSwing() {
   if (Math.abs(position.value.y - swingY) < 10) {
     showSwing.value = true;
     petState.value = "idle";
+    showDialogue();
     return;
   }
 
@@ -518,6 +519,7 @@ export function animate() {
         isMovingToSwing.value = false;
         showSwing.value = true;
         petState.value = "idle";
+        showDialogue();
       } else {
         changeState("idle");
       }
