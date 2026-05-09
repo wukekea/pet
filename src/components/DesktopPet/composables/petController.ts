@@ -631,6 +631,14 @@ export function handleDragStart(e: MouseEvent) {
     return;
   }
 
+  // 荡秋千状态下拖拽，停止荡秋千
+  if (showSwing.value) {
+    showSwing.value = false;
+    stopSwingAnimation();
+    // 恢复正面朝向
+    petDirection.value = "front";
+  }
+
   isDragging.value = true;
   setPassthrough(false);
   // 记录拖拽互动

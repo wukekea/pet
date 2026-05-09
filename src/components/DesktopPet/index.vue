@@ -360,15 +360,17 @@ const onPetMouseDown = (e: MouseEvent) => {
   // 只响应左键
   if (e.button !== 0) return;
 
-  // 荡秋千时不处理
-  if (showSwing.value) return;
-
   // 飞行状态中不处理
   if (isFlyingState()) return;
 
   // 记录按下位置（用于拖拽检测）
   chargeStartPos = { x: e.clientX, y: e.clientY };
   isMouseDown = true;
+
+  // 荡秋千时只允许拖拽，不允许蓄力发射
+  if (showSwing.value) {
+    return;
+  }
 
   // 不可打断状态时，只允许拖拽，不允许蓄力发射
   if (UNINTERRUPTIBLE_STATES.includes(petState.value)) {
