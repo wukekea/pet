@@ -169,7 +169,10 @@ export function toggleSwing() {
   if (showSwing.value) {
     // 停止荡秋千，保留当前位置
     showSwing.value = false;
-    petState.value = "idle";
+    // 恢复正面朝向
+    petDirection.value = "front";
+    // 使用 changeState 恢复正常行为
+    changeState("idle");
     return;
   }
 
