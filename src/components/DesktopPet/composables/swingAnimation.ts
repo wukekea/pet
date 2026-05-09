@@ -14,7 +14,7 @@ export const swingConfig = ref({
   // 缩放幅度（相对于幅度的比例）
   scaleRatio: 0.005,
   // 幅度衰减速度（每秒衰减的幅度）
-  decayRate: 8,
+  decayRate: 2,
 });
 
 // 当前秋千动画帧 ID
