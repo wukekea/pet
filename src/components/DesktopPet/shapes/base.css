@@ -2478,3 +2478,119 @@
     transform: translateX(calc(var(--pet-size, 80px) * -0.025));
   }
 }
+
+/* ========================================
+   SWINGING - 荡秋千动画
+   ======================================== */
+
+/* 荡秋千时身体前后摇摆 */
+.pet-container.is-swinging .pet-body {
+  animation: swing-body 3s ease-in-out infinite;
+}
+
+@keyframes swing-body {
+  0%,
+  100% {
+    transform: rotate(-3deg) translateY(0);
+  }
+  50% {
+    transform: rotate(3deg) translateY(2px);
+  }
+}
+
+/* 荡秋千时开心的眯眯眼 */
+.pet-container.is-swinging .eye {
+  height: calc(var(--pet-size, 80px) * 0.1);
+  border-radius: 0 0 50% 50%;
+  animation: swing-happy-eye 3s ease-in-out infinite;
+}
+
+@keyframes swing-happy-eye {
+  0%,
+  100% {
+    height: calc(var(--pet-size, 80px) * 0.1);
+  }
+  50% {
+    height: calc(var(--pet-size, 80px) * 0.05);
+  }
+}
+
+/* 荡秋千时开心的嘴巴 */
+.pet-container.is-swinging .mouth-smile {
+  width: calc(var(--pet-size, 80px) * 0.2);
+  height: calc(var(--pet-size, 80px) * 0.1);
+}
+
+/* 荡秋千时腮红加深 */
+.pet-container.is-swinging .pet-cheek {
+  opacity: 0.9;
+  width: calc(var(--pet-size, 80px) * 0.175);
+  height: calc(var(--pet-size, 80px) * 0.125);
+}
+
+/* 荡秋千时左手向上抓住左边绳子 */
+.pet-container.is-swinging .arm-left {
+  animation: swing-arm-left 3s ease-in-out infinite;
+}
+
+@keyframes swing-arm-left {
+  0%,
+  100% {
+    transform: rotate(-70deg) translateY(calc(var(--pet-size, 80px) * -0.2))
+      translateX(calc(var(--pet-size, 80px) * 0.05));
+  }
+  50% {
+    transform: rotate(-60deg) translateY(calc(var(--pet-size, 80px) * -0.22))
+      translateX(calc(var(--pet-size, 80px) * 0.06));
+  }
+}
+
+/* 荡秋千时右手向上抓住右边绳子 */
+.pet-container.is-swinging .arm-right {
+  animation: swing-arm-right 3s ease-in-out infinite;
+}
+
+@keyframes swing-arm-right {
+  0%,
+  100% {
+    transform: rotate(70deg) translateY(calc(var(--pet-size, 80px) * -0.2))
+      translateX(calc(var(--pet-size, 80px) * -0.05));
+  }
+  50% {
+    transform: rotate(60deg) translateY(calc(var(--pet-size, 80px) * -0.22))
+      translateX(calc(var(--pet-size, 80px) * -0.06));
+  }
+}
+
+/* 荡秋千时腿部左右摇摆 */
+.pet-container.is-swinging .leg-left {
+  animation: swing-leg-left 3s ease-in-out infinite;
+}
+
+.pet-container.is-swinging .leg-right {
+  animation: swing-leg-right 3s ease-in-out infinite;
+}
+
+@keyframes swing-leg-left {
+  0%,
+  100% {
+    transform: translateX(calc(var(--pet-size, 80px) * -0.02))
+      translateY(calc(var(--pet-size, 80px) * 0.0125));
+  }
+  50% {
+    transform: translateX(calc(var(--pet-size, 80px) * 0.02))
+      translateY(calc(var(--pet-size, 80px) * -0.0125));
+  }
+}
+
+@keyframes swing-leg-right {
+  0%,
+  100% {
+    transform: translateX(calc(var(--pet-size, 80px) * 0.02))
+      translateY(calc(var(--pet-size, 80px) * 0.0125));
+  }
+  50% {
+    transform: translateX(calc(var(--pet-size, 80px) * -0.02))
+      translateY(calc(var(--pet-size, 80px) * -0.0125));
+  }
+}
