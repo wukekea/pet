@@ -58,6 +58,8 @@ import {
   swingConfig,
   updateSwingConfig,
   pushSwing,
+  startLongPressPush,
+  stopLongPressPush,
 } from "./composables/swingAnimation";
 import type { BathType } from "./types";
 import WeatherBackground from "./WeatherBackground.vue";
@@ -367,8 +369,9 @@ const onPetMouseDown = (e: MouseEvent) => {
   chargeStartPos = { x: e.clientX, y: e.clientY };
   isMouseDown = true;
 
-  // 荡秋千时只允许拖拽，不允许蓄力发射
+  // 荡秋千时：开始长按推动
   if (showSwing.value) {
+    startLongPressPush();
     return;
   }
 
@@ -393,6 +396,10 @@ const onPetMouseMove = (e: MouseEvent) => {
 
   // 超过阈值，开始拖拽
   if (distance > DRAG_THRESHOLD) {
+    // 荡秋千时：停止长按推动，开始拖拽
+    if (showSwing.value) {
+      stopLongPressPush();
+    }
     // 结束蓄力（如果正在蓄力）
     if (isCharging.value) {
       endCharging();
@@ -420,6 +427,11 @@ const onPetMouseUp = (e: MouseEvent) => {
   if (isCharging.value) {
     endCharging();
   }
+
+  // 如果正在长按推动，停止
+  if (showSwing.value) {
+    stopLongPressPush();
+  }
 };
 
 // 处理 mouseleave - 取消蓄力
@@ -430,6 +442,11 @@ const onPetMouseLeave = () => {
   // 如果正在蓄力，取消蓄力
   if (isCharging.value) {
     endCharging();
+  }
+
+  // 如果正在长按推动，停止
+  if (showSwing.value) {
+    stopLongPressPush();
   }
 };
 </script>

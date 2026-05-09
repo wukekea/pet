@@ -113,6 +113,11 @@ export function stopSwingAnimation() {
     cancelAnimationFrame(swingAnimationId);
     swingAnimationId = null;
   }
+  // 停止长按推动
+  if (longPressInterval) {
+    clearInterval(longPressInterval);
+    longPressInterval = null;
+  }
   // 重置变换
   swingCurrentTransform.value = "translateY(0) scale(1)";
   lastUpdateTime = 0;
@@ -149,6 +154,43 @@ export function pushSwing() {
   }
 
   swingConfig.value.amplitude = newAmplitude;
+}
+
+// 长按推力定时器
+let longPressInterval: ReturnType<typeof setInterval> | null = null;
+
+// 开始长按推动
+export function startLongPressPush() {
+  if (!showSwing.value) return;
+
+  // 立即推一下
+  pushSwing();
+
+  // 清除已有的定时器
+  if (longPressInterval) {
+    clearInterval(longPressInterval);
+  }
+
+  // 每 100ms 推一次
+  longPressInterval = setInterval(() => {
+    if (
+      !showSwing.value ||
+      swingConfig.value.amplitude >= swingConfig.value.maxAmplitude
+    ) {
+      // 停止条件：秋千停止或已达最大幅度
+      stopLongPressPush();
+      return;
+    }
+    pushSwing();
+  }, 100);
+}
+
+// 停止长按推动
+export function stopLongPressPush() {
+  if (longPressInterval) {
+    clearInterval(longPressInterval);
+    longPressInterval = null;
+  }
 }
 
 // 更新秋千配置
