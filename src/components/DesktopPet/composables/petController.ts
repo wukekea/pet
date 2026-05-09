@@ -127,22 +127,36 @@ function updateDirection(dx: number, dy: number) {
   }
 }
 
-// 随机移动到新位置
-export function moveToRandomPosition() {
-  if (NON_MOVING_STATES.includes(petState.value)) return;
+// 获取随机位置
+export function getRandomPosition() {
   const maxX = screenSize.value.width - PET_SIZE;
   const maxY = screenSize.value.height - PET_SIZE - 20;
-  targetPosition.value = {
+  return {
     x: Math.random() * maxX,
     y: Math.random() * (maxY - 100) + 100,
   };
+}
+
+// 直接移动到指定位置
+export function moveToPosition(targetX: number, targetY: number) {
+  if (NON_MOVING_STATES.includes(petState.value)) return;
+  targetPosition.value = {
+    x: targetX,
+    y: targetY,
+  };
   // 根据移动方向设置朝向
-  const dx = targetPosition.value.x - position.value.x;
-  const dy = targetPosition.value.y - position.value.y;
+  const dx = targetX - position.value.x;
+  const dy = targetY - position.value.y;
   updateDirection(dx, dy);
   petState.value = "walking";
   // 启动动画循环驱动移动
   startAnimationLoop();
+}
+
+// 随机移动到新位置
+export function moveToRandomPosition() {
+  const randomPos = getRandomPosition();
+  moveToPosition(randomPos.x, randomPos.y);
 }
 // 平滑结束跳跃类动画（如庆祝、跳跃等）
 // 等待动画回到地面位置后再切换状态

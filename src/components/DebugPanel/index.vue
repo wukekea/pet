@@ -4,6 +4,7 @@ import {
   changeState,
   isWorkState,
   stopWork,
+  moveToRandomPosition,
 } from "../DesktopPet/composables/petController";
 import {
   useAttributeRef,
@@ -278,6 +279,9 @@ const triggerState = (state: PetState, food?: FoodType) => {
   }
   if (isWorkState(state)) {
     startWork(state);
+  } else if (state === "walking") {
+    // 行走状态使用 moveToRandomPosition 设置目标位置
+    moveToRandomPosition();
   } else {
     changeState(state);
   }
