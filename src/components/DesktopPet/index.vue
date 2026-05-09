@@ -53,6 +53,12 @@ import {
   BATH_CONFIGS,
   WORK_INCOME,
 } from "./composables/attributeStorage";
+import {
+  swingTransform,
+  swingConfig,
+  updateSwingConfig,
+  pushSwing,
+} from "./composables/swingAnimation";
 import type { BathType } from "./types";
 import WeatherBackground from "./WeatherBackground.vue";
 import WorkProgressBar from "./effects/WorkProgressBar.vue";
@@ -151,7 +157,7 @@ let clickTimer: ReturnType<typeof setTimeout> | null = null;
 const DBLCLICK_DELAY = 250;
 
 const onPetClick = () => {
-  // 荡秋千时只响应双击打开面板，不响应单击
+  // 荡秋千时：单击推动秋千，双击打开面板
   if (showSwing.value) {
     if (clickTimer) {
       // 双击
@@ -161,7 +167,8 @@ const onPetClick = () => {
     } else {
       clickTimer = setTimeout(() => {
         clickTimer = null;
-        // 单击不做任何事
+        // 单击：推动秋千
+        pushSwing();
       }, DBLCLICK_DELAY);
     }
     return;
@@ -472,6 +479,7 @@ const onPetMouseLeave = () => {
         top: `${position.y}px`,
         '--pet-size': `${petSizePixels}px`,
         opacity: opacityValue,
+        transform: showSwing ? swingTransform : undefined,
       }"
       @mousedown="onPetMouseDown"
       @mousemove="onPetMouseMove"
@@ -626,18 +634,8 @@ const onPetMouseLeave = () => {
   }
 }
 
-/* 秋千摇摆状态样式 */
+/* 秋千摇摆状态样式 - 现由 JavaScript 控制 */
 .pet-container.is-swinging {
-  animation: swing-forward-back 3s ease-in-out infinite;
-}
-
-@keyframes swing-forward-back {
-  0%,
-  100% {
-    transform: translateY(-6px) scale(0.97);
-  }
-  50% {
-    transform: translateY(6px) scale(1.03);
-  }
+  /* 动画由 swingAnimation.ts 控制 */
 }
 </style>

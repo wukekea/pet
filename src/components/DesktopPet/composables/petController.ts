@@ -69,6 +69,7 @@ import {
   getAffordableWorkStates,
   getWorkDurationMultiplier,
 } from "./attributes";
+import { startSwingAnimation, stopSwingAnimation } from "./swingAnimation";
 
 // 是否刚从工作状态退出（用于增加休息间隔）
 let justFinishedWork = false;
@@ -169,6 +170,8 @@ export function toggleSwing() {
   if (showSwing.value) {
     // 停止荡秋千，保留当前位置
     showSwing.value = false;
+    // 停止秋千动画
+    stopSwingAnimation();
     // 恢复正面朝向
     petDirection.value = "front";
     // 使用 changeState 恢复正常行为
@@ -186,6 +189,8 @@ export function toggleSwing() {
   // 如果已经在目标位置附近，直接开始荡秋千
   if (Math.abs(position.value.y - swingY) < 10) {
     showSwing.value = true;
+    // 启动秋千动画
+    startSwingAnimation();
     petState.value = "idle";
     showDialogue();
     return;
@@ -518,6 +523,8 @@ export function animate() {
       if (isMovingToSwing.value) {
         isMovingToSwing.value = false;
         showSwing.value = true;
+        // 启动秋千动画
+        startSwingAnimation();
         petState.value = "idle";
         showDialogue();
       } else {
