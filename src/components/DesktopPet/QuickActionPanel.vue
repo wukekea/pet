@@ -197,7 +197,11 @@ onBeforeUnmount(() => {
           @click.stop="handleAction('swing')"
           :title="isSwinging ? '停止秋千' : '荡秋千'"
         >
-          <span class="act-icon">🎠</span>
+          <span class="swing-icon">
+            <span class="swing-rope-left"></span>
+            <span class="swing-rope-right"></span>
+            <span class="swing-seat"></span>
+          </span>
         </button>
       </div>
     </div>
@@ -361,6 +365,63 @@ onBeforeUnmount(() => {
 .act-icon {
   font-size: 14px;
   line-height: 1;
+}
+
+/* 秋千图标 */
+.swing-icon {
+  position: relative;
+  width: 16px;
+  height: 14px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.swing-rope-left,
+.swing-rope-right {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 10px;
+  background: linear-gradient(180deg, #a8a29e 0%, #78716c 100%);
+  border-radius: 1px;
+}
+
+.swing-rope-left {
+  left: 3px;
+  transform: rotate(-12deg);
+}
+
+.swing-rope-right {
+  right: 3px;
+  transform: rotate(12deg);
+}
+
+.swing-seat {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 4px;
+  background: linear-gradient(180deg, #92400e 0%, #78350f 100%);
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 秋千按钮悬停时的微动画 */
+.act-swing:hover .swing-icon,
+.act-swing.active .swing-icon {
+  animation: swing-icon-sway 0.6s ease-in-out infinite;
+}
+
+@keyframes swing-icon-sway {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
 }
 
 /* 各按钮独立入场延迟 */
