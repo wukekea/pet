@@ -68,6 +68,8 @@ import {
   addInteractionExperience,
   getAffordableWorkStates,
   getWorkDurationMultiplier,
+  adjustWorkStartTime,
+  resetWorkState,
 } from "./attributes";
 import { startSwingAnimation, stopSwingAnimation } from "./swingAnimation";
 
@@ -87,6 +89,7 @@ function isUninterruptibleState(state: PetState): boolean {
 // 停止工作状态（供强制终止调用）
 export function stopWork(): void {
   justFinishedWork = true;
+  resetWorkState();
   changeState("idle");
 }
 
@@ -454,6 +457,8 @@ export async function changeState(newState: PetState, skipDialogue = false) {
               Math.floor(duration * multiplier),
             );
           }
+          // 初始化打工开始时间（每分钟结算需要）
+          adjustWorkStartTime(effectiveDuration, effectiveDuration);
         }
         // 不可打断状态：记录结束时间，支持拖拽后恢复计时
         if (isUninterruptibleState(newState)) {
@@ -719,6 +724,13 @@ function handleDragEnd() {
     if (remainingTime !== null && remainingTime > 0) {
       // 更新 workEndTime，使进度条正确同步
       workEndTime.value = Date.now() + remainingTime;
+      // 如果是打工状态，调整打工开始时间（用于每分钟结算）
+      if (isWorkState(stateBeforeDrag)) {
+        const totalDuration = STATE_DURATIONS[stateBeforeDrag] ?? 0;
+        if (totalDuration > 0) {
+          adjustWorkStartTime(totalDuration, remainingTime);
+        }
+      }
       stateTimer.value = setTimeout(() => {
         // 打工状态结束时发放工资
         if (isWorkState(petState.value)) {

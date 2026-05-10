@@ -15,7 +15,8 @@ import {
   getDecorationSlotConflict,
 } from "../composables/attributes";
 import {
-  WORK_INCOME,
+  WORK_INCOME_PER_MINUTE,
+  WORK_COMPLETION_BONUS,
   WORK_STAMINA_REQUIRED,
   getExpRequiredForLevel,
   DECORATION_CONFIGS,
@@ -128,17 +129,20 @@ const workRules: Record<string, { icon: string; text: string }[]> = {
     { icon: "⚡", text: "每 1 分钟消耗 1 体力" },
     { icon: "📉", text: "饱腹衰减加速 3 倍" },
     { icon: "📉", text: "清洁衰减加速 3 倍" },
-    { icon: "💰", text: "完成后获得 35 金币 + 35 经验" },
+    { icon: "💰", text: "每分钟获得 1 金币" },
+    { icon: "🎁", text: "打满奖励 +20 金币" },
   ],
   flyerDistributing: [
     { icon: "⏱️", text: "持续 15 分钟" },
     { icon: "⚡", text: "每 1 分钟消耗 1 体力" },
-    { icon: "💰", text: "完成后获得 10 金币 + 25 经验" },
+    { icon: "💰", text: "每分钟获得 1 金币" },
+    { icon: "🎁", text: "打满奖励 +5 金币" },
   ],
   programmer: [
     { icon: "⏱️", text: "持续 45 分钟" },
     { icon: "⚡", text: "每 1 分钟消耗 1 体力" },
-    { icon: "💰", text: "完成后获得 50 金币 + 50 经验" },
+    { icon: "💰", text: "每分钟获得 2 金币" },
+    { icon: "🎁", text: "打满奖励 +30 金币" },
   ],
 };
 
@@ -147,25 +151,29 @@ const workList = computed(() => {
   const states: {
     state: PetState;
     name: string;
-    income: number;
+    incomePerMinute: number;
+    bonus: number;
     staminaReq: number;
   }[] = [
     {
       state: "brickCarrying",
       name: "搬砖",
-      income: WORK_INCOME.brickCarrying,
+      incomePerMinute: WORK_INCOME_PER_MINUTE.brickCarrying,
+      bonus: WORK_COMPLETION_BONUS.brickCarrying,
       staminaReq: WORK_STAMINA_REQUIRED.brickCarrying,
     },
     {
       state: "flyerDistributing",
       name: "发传单",
-      income: WORK_INCOME.flyerDistributing,
+      incomePerMinute: WORK_INCOME_PER_MINUTE.flyerDistributing,
+      bonus: WORK_COMPLETION_BONUS.flyerDistributing,
       staminaReq: WORK_STAMINA_REQUIRED.flyerDistributing,
     },
     {
       state: "programmer",
       name: "写代码",
-      income: WORK_INCOME.programmer,
+      incomePerMinute: WORK_INCOME_PER_MINUTE.programmer,
+      bonus: WORK_COMPLETION_BONUS.programmer,
       staminaReq: WORK_STAMINA_REQUIRED.programmer,
     },
   ];
@@ -566,7 +574,10 @@ const close = () => {
                       </span>
                       <span class="btn-info">
                         <span class="work-name">{{ work.name }}</span>
-                        <span class="btn-cost">+💰{{ work.income }}</span>
+                        <span class="btn-cost"
+                          >+💰{{ work.incomePerMinute }}/分</span
+                        >
+                        <span class="btn-bonus">满+{{ work.bonus }}</span>
                         <span class="btn-restore"
                           >需⚡{{ work.staminaReq }}</span
                         >
@@ -1510,6 +1521,17 @@ const close = () => {
   line-height: 1;
 }
 
+.btn-bonus {
+  font-size: 9px;
+  font-weight: 600;
+  color: #8b5cf6;
+  line-height: 1;
+}
+
+.dark-mode .btn-bonus {
+  color: #a78bfa;
+}
+
 .btn-restore {
   font-size: 9px;
   color: var(--attr-label-color);
@@ -1517,6 +1539,7 @@ const close = () => {
 }
 
 .action-btn.disabled .btn-cost,
+.action-btn.disabled .btn-bonus,
 .action-btn.disabled .btn-restore {
   color: var(--action-btn-disabled-color);
 }

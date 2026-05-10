@@ -52,7 +52,8 @@ import {
   DECORATION_CONFIGS,
   DECORATION_SLOTS,
   MAX_EQUIPPED_DECORATIONS,
-  WORK_INCOME,
+  WORK_INCOME_PER_MINUTE,
+  WORK_COMPLETION_BONUS,
   WORK_EXPERIENCE,
   WORK_STAMINA_REQUIRED,
   getActiveEffects,
@@ -85,6 +86,10 @@ let cleanlinessDecayAcc = 0;
 let staminaRecoverAcc = 0;
 let staminaSleepRecoverAcc = 0;
 let healthRecoverAcc = 0;
+
+// 打工相关状态
+let workStartTime: number | null = null; // 打工开始时间
+let lastWorkIncomeMinute = 0; // 上次发放金币的分钟数
 
 // 心情更新间隔（每 10 秒计算一次）
 const MOOD_UPDATE_INTERVAL = 10;
@@ -254,6 +259,8 @@ function tick(): void {
     if (tickCount % STAMINA_WORK_DRAIN_INTERVAL === 0) {
       data.stamina = Math.max(0, data.stamina - 1);
     }
+    // 每分钟结算打工收入
+    settleWorkIncomePerMinute();
   } else if (state === "sleeping") {
     // 睡眠时体力恢复
     if (tickCount % STAMINA_SLEEP_RECOVER_INTERVAL === 0) {
@@ -617,6 +624,10 @@ export function startWork(workState: PetState): boolean {
   const requiredStamina = WORK_STAMINA_REQUIRED[workState] ?? 30;
   if (data.stamina < requiredStamina) return false;
 
+  // 记录打工开始时间
+  workStartTime = Date.now();
+  lastWorkIncomeMinute = 0;
+
   if (requestStateChange) {
     requestStateChange(workState);
   }
@@ -624,21 +635,82 @@ export function startWork(workState: PetState): boolean {
   return true;
 }
 
+// 每分钟结算打工收入
+function settleWorkIncomePerMinute(): void {
+  const state = petState.value;
+  if (!isWorkState(state)) return;
+
+  const now = Date.now();
+  if (workStartTime === null) {
+    // 如果没有开始时间，说明是恢复的打工状态，重新记录
+    workStartTime = now;
+    return;
+  }
+
+  const elapsedMinutes = Math.floor((now - workStartTime) / 60000);
+
+  // 每分钟结算一次，从第1分钟开始
+  if (elapsedMinutes > lastWorkIncomeMinute) {
+    const data = attributeData.value;
+    const effects = getActiveEffects(data.equippedDecorations);
+    const incomeBonus = 1 + (effects.workIncomeBonus ?? 0);
+    const baseIncomePerMinute = WORK_INCOME_PER_MINUTE[state] ?? 1;
+    const income = Math.floor(baseIncomePerMinute * incomeBonus);
+
+    // 补发漏掉的分钟数（通常只有1分钟）
+    for (let i = lastWorkIncomeMinute + 1; i <= elapsedMinutes; i++) {
+      data.money += income;
+    }
+
+    lastWorkIncomeMinute = elapsedMinutes;
+
+    // 触发金币增长特效
+    coinGainAmount.value = income;
+
+    debouncedSave();
+  }
+}
+
 // 打工完成回调
 export function onWorkComplete(workState: PetState): void {
   const data = attributeData.value;
-  const baseIncome = (WORK_INCOME[workState] ?? 0) + (data.level - 1);
   const effects = getActiveEffects(data.equippedDecorations);
   const incomeBonus = 1 + (effects.workIncomeBonus ?? 0);
-  const income = Math.floor(baseIncome * incomeBonus);
   const exp = WORK_EXPERIENCE[workState] ?? 0;
 
-  data.money += income;
+  // 计算打满奖励（如果完整完成了工作）
+  let completionBonus = 0;
+  if (workStartTime !== null) {
+    const elapsedMinutes = Math.floor((Date.now() - workStartTime) / 60000);
+    // 获取该工作的标准时长（分钟）
+    const requiredStamina = WORK_STAMINA_REQUIRED[workState] ?? 30;
+    // 如果工作时长达到标准，发放打满奖励
+    if (elapsedMinutes >= requiredStamina - 1) {
+      // 允许1分钟误差
+      completionBonus = Math.floor(
+        (WORK_COMPLETION_BONUS[workState] ?? 0) * incomeBonus,
+      );
+    }
+  }
+
+  // 发放打满奖励
+  if (completionBonus > 0) {
+    data.money += completionBonus;
+  }
+
+  // 增加经验
   addExperience(exp);
+
+  // 重置打工状态
+  workStartTime = null;
+  lastWorkIncomeMinute = 0;
+
   debouncedSave();
 
-  // 触发金币增长特效
-  coinGainAmount.value = income;
+  // 触发金币增长特效（显示打满奖励）
+  if (completionBonus > 0) {
+    coinGainAmount.value = completionBonus;
+  }
 }
 
 // 获取打工时长倍率（受装饰效果影响）
@@ -646,6 +718,24 @@ export function getWorkDurationMultiplier(): number {
   const data = attributeData.value;
   const effects = getActiveEffects(data.equippedDecorations);
   return 1 - (effects.workDurationReduction ?? 0);
+}
+
+// 调整打工开始时间（用于拖拽恢复后，根据剩余时间计算已工作时间）
+export function adjustWorkStartTime(
+  totalDuration: number,
+  remainingTime: number,
+): void {
+  // 根据剩余时间和总时长计算已经工作的时间
+  const elapsedMs = totalDuration - remainingTime;
+  workStartTime = Date.now() - elapsedMs;
+  // 根据已工作时间计算应该发放的分钟数
+  lastWorkIncomeMinute = Math.floor(elapsedMs / 60000);
+}
+
+// 重置打工状态（用于强制终止打工时）
+export function resetWorkState(): void {
+  workStartTime = null;
+  lastWorkIncomeMinute = 0;
 }
 
 // 带每日上限的交互经验

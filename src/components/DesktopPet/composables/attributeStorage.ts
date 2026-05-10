@@ -165,11 +165,25 @@ export const SLOT_NAMES: Record<DecorationSlot, string> = {
   hand: "手部",
 };
 
-// 打工收入
+// 打工收入（旧版，保留兼容）
 export const WORK_INCOME: Record<string, number> = {
   brickCarrying: 35,
   flyerDistributing: 10,
   programmer: 50,
+};
+
+// 每分钟金币收入
+export const WORK_INCOME_PER_MINUTE: Record<string, number> = {
+  brickCarrying: 1,
+  flyerDistributing: 1,
+  programmer: 2,
+};
+
+// 打满奖励（完整完成工作）
+export const WORK_COMPLETION_BONUS: Record<string, number> = {
+  brickCarrying: 20,
+  flyerDistributing: 5,
+  programmer: 30,
 };
 
 // 打工经验
