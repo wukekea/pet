@@ -31,7 +31,7 @@ const AUTO_CLOSE_DELAY = 3000;
 // 是否正在显示（用于动画控制）
 const isShowing = ref(false);
 
-// 属性百分比
+// 属性百分比（健康值上限固定为100，其他属性随等级增长）
 const satietyPct = computed(
   () => Math.min(100, (props.satiety / props.attributeCap) * 100) + "%",
 );
@@ -42,16 +42,16 @@ const staminaPct = computed(
   () => Math.min(100, (props.stamina / props.attributeCap) * 100) + "%",
 );
 const healthPct = computed(
-  () => Math.min(100, (props.health / props.attributeCap) * 100) + "%",
+  () => Math.min(100, (props.health / 100) * 100) + "%",
 );
 
-// 属性是否处于低值警告
+// 属性是否处于低值警告（健康值上限固定为100）
 const isSatietyLow = computed(() => props.satiety / props.attributeCap < 0.25);
 const isCleanlinesLow = computed(
   () => props.cleanliness / props.attributeCap < 0.25,
 );
 const isStaminaLow = computed(() => props.stamina / props.attributeCap < 0.25);
-const isHealthLow = computed(() => props.health / props.attributeCap < 0.25);
+const isHealthLow = computed(() => props.health / 100 < 0.25);
 
 // 通过坐标检测鼠标是否在面板交互区域内
 function isMouseOnPanel(): boolean {
