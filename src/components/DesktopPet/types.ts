@@ -93,7 +93,8 @@ export type FoodType =
   | "lollipop"
   | "riceBall"
   | "milk"
-  | "steak";
+  | "steak"
+  | "bamboo";
 
 // 沐浴露类型
 export type BathType = "soap" | "showerGel" | "bathBall" | "petShampoo";

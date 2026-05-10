@@ -8,6 +8,7 @@ import FoodLollipop from "./FoodLollipop.vue";
 import FoodRiceBall from "./FoodRiceBall.vue";
 import FoodMilk from "./FoodMilk.vue";
 import FoodSteak from "./FoodSteak.vue";
+import FoodBamboo from "./FoodBamboo.vue";
 
 const FOOD_COMPONENT_MAP: Record<FoodType, Component> = {
   apple: FoodApple,
@@ -17,6 +18,7 @@ const FOOD_COMPONENT_MAP: Record<FoodType, Component> = {
   riceBall: FoodRiceBall,
   milk: FoodMilk,
   steak: FoodSteak,
+  bamboo: FoodBamboo,
 };
 
 defineProps<{

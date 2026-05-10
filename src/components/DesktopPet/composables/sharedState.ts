@@ -108,6 +108,7 @@ export const FOOD_ICONS: Record<FoodType, string> = {
   riceBall: "🍙",
   milk: "🥛",
   steak: "🥩",
+  bamboo: "🎋",
 };
 
 // 沐浴露图标映射

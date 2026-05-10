@@ -39,6 +39,7 @@ export const FOOD_CONFIGS: Record<FoodType, FoodConfig> = {
   milk: { type: "milk", name: "牛奶", cost: 10, satietyRestore: 40 },
   cake: { type: "cake", name: "蛋糕", cost: 12, satietyRestore: 50 },
   steak: { type: "steak", name: "牛排", cost: 18, satietyRestore: 65 },
+  bamboo: { type: "bamboo", name: "竹子", cost: 15, satietyRestore: 55 },
 };
 
 // 沐浴配置
