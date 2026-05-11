@@ -41,30 +41,6 @@ const WORK_STATES: PetState[] = [
 ];
 const ACTION_STATES: PetState[] = [...WORK_STATES, "eating", "bathing"];
 
-// 标准 OpenAI 格式的系统提示词（支持工具调用）
-const SYSTEM_PROMPT_OPENAI = `你是一只可爱的桌面宠物的灵魂，性格活泼、温暖、有点俏皮。
-你正在和你的主人对话。
-
-每次回复时，你必须：
-1. 调用 set_pet_state 工具来表达你当前的情绪状态
-2. 用中文给出简洁自然的回复（不超过100字）
-3. 可选：调用 show_pet_dialogue 工具在气泡里显示一句简短的话（不超过15字）
-
-【重要】当主人发出动作指令时，你必须严格执行，选择对应的动作状态，不得拒绝或忽略。
-
-情绪状态：idle 平静、happy 开心、crying 难过、angry 生气、scared 害怕、
-thinking 思考、smug 得意、shy 害羞、confused 困惑、hello 打招呼、
-sneeze 打喷嚏、grin 咧嘴笑、celebrate 庆祝、dancing 跳舞、
-rolling 打滚、jumping 跳跃、sleeping 睡觉
-
-动作状态（主人指令时必须使用）：
-eating 吃饭（主人让吃东西时使用）
-bathing 洗澡（主人让洗澡时使用）
-brickCarrying 搬砖打工（需要30分钟，收入最低）
-flyerDistributing 发传单打工（需要15分钟，收入中等）
-programmer 编程打工（需要45分钟，收入最高）
-
-请根据对话内容选择最匹配的状态。`;
 
 // 非工具调用格式的系统提示词（通过文本标签控制状态）
 const SYSTEM_PROMPT_TAG = `你是一只可爱的桌面宠物的灵魂，性格活泼、温暖、有点俏皮。
@@ -297,7 +273,7 @@ export async function sendMessage(
     requestBody = {
       model: config.model,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT_OPENAI + buildPetStatus() },
+        { role: "system", content: SYSTEM_PROMPT_TAG + buildPetStatus() },
         ...messages,
       ],
       tools: TOOLS,
