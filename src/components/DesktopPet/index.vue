@@ -162,8 +162,6 @@ const onPetClick = () => {
     pushSwing();
     return;
   }
-  // 不可打断状态时不响应点击
-  if (UNINTERRUPTIBLE_STATES.includes(petState.value)) return;
 
   if (clickTimer) {
     // 双击：取消单击，执行双击
