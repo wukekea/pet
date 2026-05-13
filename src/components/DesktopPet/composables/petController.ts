@@ -353,6 +353,7 @@ export async function changeState(newState: PetState, skipDialogue = false) {
             "scratch",
             "celebrate",
             "peek",
+            "embarrassed",
           ];
 
           // 心情影响 idle 行为
@@ -603,6 +604,7 @@ export function handlePetClick() {
         "celebrate",
         "dancing",
         "rolling",
+        "embarrassed",
       ];
     }
     changeState(randomPick(reactions));

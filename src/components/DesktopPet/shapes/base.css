@@ -1468,6 +1468,83 @@
 }
 
 /* ========================================
+   EMBARRASSED - 尴尬动画
+   ======================================== */
+@keyframes embarrassed-tremble {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-1px) rotate(0.5deg);
+  }
+  75% {
+    transform: translateY(1px) rotate(-0.5deg);
+  }
+}
+
+.pet-embarrassed .pet-body {
+  animation: embarrassed-tremble 0.4s ease-in-out infinite;
+}
+
+/* 眼神躲闪 - 眼睛左右飘动 */
+@keyframes eyes-dodge {
+  0%,
+  100% {
+    transform: translateX(-50%) translateX(0);
+  }
+  30% {
+    transform: translateX(-50%) translateX(calc(var(--pet-size, 80px) * 0.05));
+  }
+  70% {
+    transform: translateX(-50%) translateX(calc(var(--pet-size, 80px) * -0.05));
+  }
+}
+
+.pet-embarrassed .pet-eyes {
+  animation: eyes-dodge 1.2s ease-in-out infinite;
+}
+
+.pet-embarrassed .eye {
+  height: calc(var(--pet-size, 80px) * 0.1);
+  border-radius: 50%;
+}
+
+/* 僵硬假笑 - 嘴巴横向拉伸但弧度僵硬 */
+.pet-embarrassed .mouth-smile {
+  width: calc(var(--pet-size, 80px) * 0.15);
+  height: calc(var(--pet-size, 80px) * 0.05);
+  border-radius: 0 0 100px 100px;
+  animation: awkward-smile 2s ease-in-out infinite;
+}
+
+@keyframes awkward-smile {
+  0%,
+  100% {
+    transform: translateX(-10%) translateY(20%) scaleX(1);
+  }
+  50% {
+    transform: translateX(-10%) translateY(20%) scaleX(1.15);
+  }
+}
+
+/* 脸颊微红 */
+.pet-embarrassed .pet-cheek {
+  opacity: 0.7;
+  width: calc(var(--pet-size, 80px) * 0.15);
+  height: calc(var(--pet-size, 80px) * 0.1);
+}
+
+/* 手臂不知所措 */
+.pet-embarrassed .arm-left {
+  transform: rotate(-20deg) translateX(calc(var(--pet-size, 80px) * 0.025));
+}
+
+.pet-embarrassed .arm-right {
+  transform: rotate(20deg) translateX(calc(var(--pet-size, 80px) * -0.025));
+}
+
+/* ========================================
    SCRATCH - 挠头动画
    ======================================== */
 @keyframes scratch-tilt {

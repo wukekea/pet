@@ -27,6 +27,7 @@ import EatingEffects from "./effects/EatingEffects.vue";
 import BrickCarryingEffects from "./effects/BrickCarryingEffects.vue";
 import FlyerDistributingEffects from "./effects/FlyerDistributingEffects.vue";
 import ProgrammerEffects from "./effects/ProgrammerEffects.vue";
+import EmbarrassedEffects from "./effects/EmbarrassedEffects.vue";
 
 import type { PetState } from "./types";
 
@@ -57,4 +58,5 @@ export const STATE_EFFECTS: Partial<Record<PetState, Component>> = {
   brickCarrying: BrickCarryingEffects,
   flyerDistributing: FlyerDistributingEffects,
   programmer: ProgrammerEffects,
+  embarrassed: EmbarrassedEffects,
 };

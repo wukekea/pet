@@ -194,6 +194,7 @@ const actionGroups = [
       { state: "sneeze" as PetState, label: "喷嚏", icon: "~" },
       { state: "grin" as PetState, label: "坏笑", icon: "◡" },
       { state: "scratch" as PetState, label: "挠头", icon: "?" },
+      { state: "embarrassed" as PetState, label: "尴尬", icon: "💦" },
     ],
   },
   {

@@ -31,6 +31,7 @@ export type PetState =
   | "brickCarrying"
   | "flyerDistributing"
   | "programmer"
+  | "embarrassed" // 尴尬
   | "launching" // 蓄力发射
   | "parachuting"; // 降落伞下落
 

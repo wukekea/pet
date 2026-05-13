@@ -51,6 +51,7 @@ export const STATE_DURATIONS: Partial<Record<PetState, number>> = {
   brickCarrying: 1800000, // 30分钟
   flyerDistributing: 900000, // 15分钟
   programmer: 2700000, // 45分钟
+  embarrassed: 2500, // 2.5秒
 };
 
 // 状态名称中文映射
@@ -86,6 +87,7 @@ export const STATE_NAMES: Record<string, string> = {
   brickCarrying: "搬砖",
   flyerDistributing: "发传单",
   programmer: "写代码",
+  embarrassed: "尴尬",
   launching: "蓄力发射",
   parachuting: "降落伞",
 };
@@ -119,6 +121,7 @@ export const NON_MOVING_STATES: readonly PetState[] = [
   "brickCarrying",
   "flyerDistributing",
   "programmer",
+  "embarrassed",
   "launching",
   "parachuting",
 ] as const;
