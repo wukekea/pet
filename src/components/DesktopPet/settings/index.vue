@@ -351,15 +351,18 @@ const downloadUpdate = async () => {
   isDownloading.value = true;
   downloadProgress.value = 0;
   updateError.value = "";
+  rawError.value = "";
 
   try {
     const result = await electronAPI.downloadUpdate();
     if (!result.success) {
-      updateError.value = result.message || "下载失败";
+      rawError.value = result.message || "下载失败";
+      updateError.value = "下载失败";
     }
   } catch (error: any) {
     console.error("下载更新出错:", error);
-    updateError.value = error.message || "下载出错";
+    rawError.value = error.message || "下载出错";
+    updateError.value = "下载失败";
   } finally {
     isDownloading.value = false;
   }
@@ -390,7 +393,8 @@ if (electronAPI.onUpdateDownloaded) {
 // 监听更新错误
 if (electronAPI.onUpdateError) {
   electronAPI.onUpdateError((message) => {
-    updateError.value = message;
+    rawError.value = message;
+    updateError.value = "未知错误";
     isDownloading.value = false;
   });
 }
