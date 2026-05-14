@@ -67,6 +67,8 @@ const isDownloading = ref(false);
 const downloadProgress = ref(0);
 const updateDownloaded = ref(false);
 const updateError = ref("");
+const rawError = ref(""); // 原始错误信息，用于复制
+const copySuccess = ref(false); // 复制成功状态
 
 // 更新信息类型
 interface UpdateInfo {
@@ -96,6 +98,9 @@ const electronAPI = window.electronAPI as {
   ) => () => void;
   onUpdateDownloaded?: (callback: (info: any) => void) => () => void;
   onUpdateError?: (callback: (message: string) => void) => () => void;
+  writeClipboard?: (
+    text: string,
+  ) => Promise<{ success: boolean; message?: string }>;
 };
 
 // 版本初始化标记
@@ -218,6 +223,7 @@ const checkUpdate = async () => {
   isCheckingUpdate.value = true;
   updateInfo.value = null;
   updateError.value = "";
+  rawError.value = "";
   hasUpdate.value = false;
   updateDownloaded.value = false;
 
@@ -231,20 +237,23 @@ const checkUpdate = async () => {
       } else {
         // 检查失败，显示错误信息
         let errorMsg = result.message || "检查更新失败";
+        // 保存原始错误信息
+        rawError.value = errorMsg;
         // 友好化错误信息
         if (
           errorMsg.includes("cannot find latest") ||
           errorMsg.includes("404") ||
           errorMsg.includes("cannot parse release feed")
         ) {
-          errorMsg = "暂无可用更新";
+          updateError.value = "暂无可用更新";
         } else if (
           errorMsg.includes("network") ||
           errorMsg.includes("ENOTFOUND")
         ) {
-          errorMsg = "网络连接失败，请检查网络";
+          updateError.value = "网络连接失败，请检查网络";
+        } else {
+          updateError.value = "未知错误";
         }
-        updateError.value = errorMsg;
         // 设置一个空的 updateInfo 显示当前版本
         if (result.currentVersion) {
           updateInfo.value = {
@@ -257,20 +266,23 @@ const checkUpdate = async () => {
     } catch (error: any) {
       console.error("检查更新出错:", error);
       let errorMsg = error.message || "检查更新出错";
+      // 保存原始错误信息
+      rawError.value = errorMsg;
       // 友好化错误信息
       if (
         errorMsg.includes("cannot find latest") ||
         errorMsg.includes("404") ||
         errorMsg.includes("cannot parse release feed")
       ) {
-        errorMsg = "暂无可用更新";
+        updateError.value = "暂无可用更新";
       } else if (
         errorMsg.includes("network") ||
         errorMsg.includes("ENOTFOUND")
       ) {
-        errorMsg = "网络连接失败，请检查网络";
+        updateError.value = "网络连接失败，请检查网络";
+      } else {
+        updateError.value = "未知错误";
       }
-      updateError.value = errorMsg;
     } finally {
       isCheckingUpdate.value = false;
     }
@@ -281,6 +293,7 @@ const checkUpdate = async () => {
   if (!electronAPI.checkUpdate) {
     isCheckingUpdate.value = false;
     updateError.value = "检查更新功能仅在打包后的应用中可用";
+    rawError.value = updateError.value;
     return;
   }
 
@@ -291,13 +304,43 @@ const checkUpdate = async () => {
       updateInfo.value = result;
     } else {
       console.error("检查更新失败:", result.message);
-      updateError.value = result.message || "检查更新失败";
+      rawError.value = result.message || "检查更新失败";
+      updateError.value = "未知错误";
     }
   } catch (error: any) {
     console.error("检查更新出错:", error);
-    updateError.value = error.message || "检查更新出错";
+    rawError.value = error.message || "检查更新出错";
+    updateError.value = "未知错误";
   } finally {
     isCheckingUpdate.value = false;
+  }
+};
+
+// 复制原始错误信息到剪贴板
+const copyError = async () => {
+  if (!rawError.value) return;
+  try {
+    // 优先使用 Electron API
+    if (electronAPI.writeClipboard) {
+      const result = await electronAPI.writeClipboard(rawError.value);
+      if (result.success) {
+        copySuccess.value = true;
+        setTimeout(() => {
+          copySuccess.value = false;
+        }, 2000);
+      } else {
+        console.error("复制失败:", result.message);
+      }
+    } else {
+      // 备用方案：使用 Web API
+      await navigator.clipboard.writeText(rawError.value);
+      copySuccess.value = true;
+      setTimeout(() => {
+        copySuccess.value = false;
+      }, 2000);
+    }
+  } catch (err) {
+    console.error("复制失败:", err);
   }
 };
 
@@ -1453,12 +1496,24 @@ const handleSpeechInputToggle = async () => {
                     >
                       <span class="error-icon">⚠️</span>
                       <span class="error-text">{{ updateError }}</span>
+                      <button class="copy-error-btn" @click="copyError">
+                        <span v-if="copySuccess" class="copy-icon success"
+                          >✓</span
+                        >
+                        <span v-else class="copy-icon">📋</span>
+                      </button>
                     </div>
 
                     <!-- 错误信息（附加在更新信息后面） -->
                     <div v-if="updateError && updateInfo" class="update-error">
                       <span class="error-icon">⚠️</span>
                       <span class="error-text">{{ updateError }}</span>
+                      <button class="copy-error-btn" @click="copyError">
+                        <span v-if="copySuccess" class="copy-icon success"
+                          >✓</span
+                        >
+                        <span v-else class="copy-icon">📋</span>
+                      </button>
                     </div>
                   </div>
 
@@ -2400,6 +2455,41 @@ const handleSpeechInputToggle = async () => {
   align-items: center;
   justify-content: center;
   gap: 8px;
+}
+
+/* 复制错误按钮 */
+.copy-error-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.copy-error-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.copy-error-btn .copy-icon {
+  font-size: 12px;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.copy-error-btn:hover .copy-icon {
+  opacity: 1;
+}
+
+.copy-error-btn .copy-icon.success {
+  color: #34d399;
+  opacity: 1;
 }
 
 .update-info.has-error {

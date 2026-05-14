@@ -7,6 +7,7 @@ import {
   Menu,
   nativeImage,
   session,
+  clipboard,
 } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -361,3 +362,14 @@ function compareVersions(v1, v2) {
   }
   return 0;
 }
+
+// 写入剪贴板
+ipcMain.handle("write-clipboard", (event, text) => {
+  try {
+    clipboard.writeText(text);
+    return { success: true };
+  } catch (error) {
+    console.error("写入剪贴板失败:", error);
+    return { success: false, message: error.message };
+  }
+});

@@ -60,4 +60,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.on("update-error", handler);
     return () => ipcRenderer.removeListener("update-error", handler);
   },
+  // 剪贴板
+  writeClipboard: (text) => ipcRenderer.invoke("write-clipboard", text),
 });
