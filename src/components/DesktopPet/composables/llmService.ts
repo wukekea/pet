@@ -41,7 +41,6 @@ const WORK_STATES: PetState[] = [
 ];
 const ACTION_STATES: PetState[] = [...WORK_STATES, "eating", "bathing"];
 
-
 // 非工具调用格式的系统提示词（通过文本标签控制状态）
 const SYSTEM_PROMPT_TAG = `你是一只可爱的桌面宠物的灵魂，性格活泼、温暖、有点俏皮。
 你正在和你的主人对话，请用中文简洁自然地回复（不超过100字）。

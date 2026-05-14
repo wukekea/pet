@@ -1,7 +1,7 @@
 {
   "name": "desktop-pet",
   "private": true,
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "桌面宠物应用",
   "author": "Claude",
   "main": "electron/main.js",
