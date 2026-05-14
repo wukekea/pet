@@ -1443,21 +1443,38 @@ const handleSpeechInputToggle = async () => {
 
                     <!-- 下载完成，等待安装 -->
                     <div v-else-if="updateDownloaded" class="update-ready">
-                      <span class="update-icon">✅</span>
-                      <div class="update-details">
-                        <span class="update-title" :style="{ color: textColor }"
-                          >更新已就绪</span
-                        >
-                        <span
-                          class="update-current"
-                          :style="{ color: textMuted }"
-                          >点击下方按钮重启并安装</span
-                        >
+                      <div class="update-ready-main">
+                        <span class="update-icon">✅</span>
+                        <div class="update-details">
+                          <span
+                            class="update-title"
+                            :style="{ color: textColor }"
+                            >更新已就绪</span
+                          >
+                          <span
+                            class="update-current"
+                            :style="{ color: textMuted }"
+                            >点击下方按钮重启并安装</span
+                          >
+                        </div>
+                        <button class="install-btn" @click="installUpdate">
+                          <span class="btn-icon">🔄</span>
+                          <span class="btn-text">重启安装</span>
+                        </button>
                       </div>
-                      <button class="install-btn" @click="installUpdate">
-                        <span class="btn-icon">🔄</span>
-                        <span class="btn-text">重启安装</span>
-                      </button>
+                      <div
+                        v-if="updateError"
+                        class="update-error install-error"
+                      >
+                        <span class="error-icon">⚠️</span>
+                        <span class="error-text">{{ updateError }}</span>
+                        <button class="copy-error-btn" @click="copyError">
+                          <span v-if="copySuccess" class="copy-icon success"
+                            >✓</span
+                          >
+                          <span v-else class="copy-icon">📋</span>
+                        </button>
+                      </div>
                     </div>
 
                     <!-- 发现新版本 -->
@@ -1508,8 +1525,11 @@ const handleSpeechInputToggle = async () => {
                       </button>
                     </div>
 
-                    <!-- 错误信息（附加在更新信息后面） -->
-                    <div v-if="updateError && updateInfo" class="update-error">
+                    <!-- 错误信息（附加在更新信息后面，但不在更新已就绪时显示） -->
+                    <div
+                      v-if="updateError && updateInfo && !updateDownloaded"
+                      class="update-error"
+                    >
                       <span class="error-icon">⚠️</span>
                       <span class="error-text">{{ updateError }}</span>
                       <button class="copy-error-btn" @click="copyError">
@@ -2404,8 +2424,18 @@ const handleSpeechInputToggle = async () => {
 /* 更新就绪样式 */
 .update-ready {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.update-ready-main {
+  display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.install-error {
+  margin-top: 0;
 }
 
 .install-btn {
