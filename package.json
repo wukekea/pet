@@ -74,7 +74,9 @@
         }
       ],
       "icon": "public/icon.icns",
-      "identity": null,
+      "identity": "-",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
       "extendInfo": {
         "NSMicrophoneUsageDescription": "桌面宠物需要使用麦克风进行语音输入，以便您可以通过语音与 AI 对话。"
       }
