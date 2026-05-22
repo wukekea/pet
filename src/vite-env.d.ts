@@ -109,25 +109,17 @@ declare global {
         currentVersion: string;
         latestVersion?: string;
         hasUpdate?: boolean;
+        downloadUrl?: string;
         releaseUrl?: string;
         releaseNotes?: string;
         publishedAt?: string;
         message?: string;
       }>;
-      // 自动更新
-      checkForUpdates: () => Promise<{
-        success: boolean;
-        currentVersion?: string;
-        latestVersion?: string;
-        hasUpdate?: boolean;
-        releaseDate?: string;
-        releaseNotes?: string;
-        message?: string;
-      }>;
-      downloadUpdate: () => Promise<{ success: boolean; message?: string }>;
+      downloadUpdate: (
+        downloadUrl: string,
+      ) => Promise<{ success: boolean; message?: string }>;
       installUpdate: () => void;
       onUpdateAvailable: (callback: (info: any) => void) => () => void;
-      onUpdateNotAvailable: (callback: () => void) => () => void;
       onUpdateDownloadProgress: (
         callback: (progress: {
           percent: number;

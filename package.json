@@ -1,7 +1,7 @@
 {
   "name": "desktop-pet",
   "private": true,
-  "version": "3.0.4",
+  "version": "3.0.1",
   "description": "桌面宠物应用",
   "author": "Claude",
   "main": "electron/main.js",
@@ -17,7 +17,6 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.92.0",
     "edge-tts": "^1.0.1",
-    "electron-updater": "^6.8.3",
     "node-record-lpcm16": "^1.0.1",
     "vue": "^3.4.21"
   },

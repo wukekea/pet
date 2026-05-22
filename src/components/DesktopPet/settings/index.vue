@@ -76,6 +76,7 @@ interface UpdateInfo {
   currentVersion: string;
   latestVersion?: string;
   hasUpdate?: boolean;
+  downloadUrl?: string;
   releaseUrl?: string;
   releaseNotes?: string;
   publishedAt?: string;
@@ -88,11 +89,11 @@ const updateInfo = ref<UpdateInfo | null>(null);
 const electronAPI = window.electronAPI as {
   getVersion?: () => Promise<string>;
   checkUpdate?: () => Promise<UpdateInfo>;
-  checkForUpdates?: () => Promise<UpdateInfo>;
-  downloadUpdate?: () => Promise<{ success: boolean; message?: string }>;
+  downloadUpdate?: (
+    downloadUrl: string,
+  ) => Promise<{ success: boolean; message?: string }>;
   installUpdate?: () => void;
   onUpdateAvailable?: (callback: (info: any) => void) => () => void;
-  onUpdateNotAvailable?: (callback: () => void) => () => void;
   onUpdateDownloadProgress?: (
     callback: (progress: { percent: number }) => void,
   ) => () => void;
@@ -227,69 +228,6 @@ const checkUpdate = async () => {
   hasUpdate.value = false;
   updateDownloaded.value = false;
 
-  // 优先使用 electron-updater
-  if (electronAPI.checkForUpdates) {
-    try {
-      const result = await electronAPI.checkForUpdates();
-      if (result.success) {
-        hasUpdate.value = result.hasUpdate ?? false;
-        updateInfo.value = result;
-      } else {
-        // 检查失败，显示错误信息
-        let errorMsg = result.message || "检查更新失败";
-        // 保存原始错误信息
-        rawError.value = errorMsg;
-        // 友好化错误信息
-        if (
-          errorMsg.includes("cannot find latest") ||
-          errorMsg.includes("404") ||
-          errorMsg.includes("cannot parse release feed")
-        ) {
-          updateError.value = "暂无可用更新";
-        } else if (
-          errorMsg.includes("network") ||
-          errorMsg.includes("ENOTFOUND")
-        ) {
-          updateError.value = "网络连接失败，请检查网络";
-        } else {
-          updateError.value = "未知错误";
-        }
-        // 设置一个空的 updateInfo 显示当前版本
-        if (result.currentVersion) {
-          updateInfo.value = {
-            success: false,
-            currentVersion: result.currentVersion,
-            hasUpdate: false,
-          };
-        }
-      }
-    } catch (error: any) {
-      console.error("检查更新出错:", error);
-      let errorMsg = error.message || "检查更新出错";
-      // 保存原始错误信息
-      rawError.value = errorMsg;
-      // 友好化错误信息
-      if (
-        errorMsg.includes("cannot find latest") ||
-        errorMsg.includes("404") ||
-        errorMsg.includes("cannot parse release feed")
-      ) {
-        updateError.value = "暂无可用更新";
-      } else if (
-        errorMsg.includes("network") ||
-        errorMsg.includes("ENOTFOUND")
-      ) {
-        updateError.value = "网络连接失败，请检查网络";
-      } else {
-        updateError.value = "未知错误";
-      }
-    } finally {
-      isCheckingUpdate.value = false;
-    }
-    return;
-  }
-
-  // 备用方案：使用 GitHub API
   if (!electronAPI.checkUpdate) {
     isCheckingUpdate.value = false;
     updateError.value = "检查更新功能仅在打包后的应用中可用";
@@ -305,12 +243,46 @@ const checkUpdate = async () => {
     } else {
       console.error("检查更新失败:", result.message);
       rawError.value = result.message || "检查更新失败";
-      updateError.value = "未知错误";
+      // 友好化错误信息
+      const errorMsg = result.message || "";
+      if (
+        errorMsg.includes("cannot find latest") ||
+        errorMsg.includes("404") ||
+        errorMsg.includes("cannot parse release feed")
+      ) {
+        updateError.value = "暂无可用更新";
+      } else if (
+        errorMsg.includes("network") ||
+        errorMsg.includes("ENOTFOUND")
+      ) {
+        updateError.value = "网络连接失败，请检查网络";
+      } else {
+        updateError.value = "未知错误";
+      }
+      // 保留当前版本信息
+      if (result.currentVersion) {
+        updateInfo.value = {
+          success: false,
+          currentVersion: result.currentVersion,
+          hasUpdate: false,
+        };
+      }
     }
   } catch (error: any) {
     console.error("检查更新出错:", error);
     rawError.value = error.message || "检查更新出错";
-    updateError.value = "未知错误";
+    const errorMsg = error.message || "";
+    if (
+      errorMsg.includes("cannot find latest") ||
+      errorMsg.includes("404") ||
+      errorMsg.includes("cannot parse release feed")
+    ) {
+      updateError.value = "暂无可用更新";
+    } else if (errorMsg.includes("network") || errorMsg.includes("ENOTFOUND")) {
+      updateError.value = "网络连接失败，请检查网络";
+    } else {
+      updateError.value = "未知错误";
+    }
   } finally {
     isCheckingUpdate.value = false;
   }
@@ -348,13 +320,20 @@ const copyError = async () => {
 const downloadUpdate = async () => {
   if (!electronAPI.downloadUpdate) return;
 
+  const downloadUrl = updateInfo.value?.downloadUrl;
+  if (!downloadUrl) {
+    updateError.value = "未获取到下载地址";
+    rawError.value = "缺少 downloadUrl";
+    return;
+  }
+
   isDownloading.value = true;
   downloadProgress.value = 0;
   updateError.value = "";
   rawError.value = "";
 
   try {
-    const result = await electronAPI.downloadUpdate();
+    const result = await electronAPI.downloadUpdate(downloadUrl);
     if (!result.success) {
       rawError.value = result.message || "下载失败";
       updateError.value = "下载失败";
