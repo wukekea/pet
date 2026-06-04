@@ -130,19 +130,19 @@ const workRules: Record<string, { icon: string; text: string }[]> = {
     { icon: "📉", text: "饱腹衰减加速 3 倍" },
     { icon: "📉", text: "清洁衰减加速 3 倍" },
     { icon: "💰", text: "每分钟获得 1 金币" },
-    { icon: "🎁", text: "打满奖励 +20 金币" },
+    { icon: "🎁", text: "完工奖 +20 金币" },
   ],
   flyerDistributing: [
     { icon: "⏱️", text: "持续 15 分钟" },
     { icon: "⚡", text: "每 1 分钟消耗 1 体力" },
     { icon: "💰", text: "每分钟获得 1 金币" },
-    { icon: "🎁", text: "打满奖励 +5 金币" },
+    { icon: "🎁", text: "完工奖 +5 金币" },
   ],
   programmer: [
     { icon: "⏱️", text: "持续 45 分钟" },
     { icon: "⚡", text: "每 1 分钟消耗 1 体力" },
     { icon: "💰", text: "每分钟获得 2 金币" },
-    { icon: "🎁", text: "打满奖励 +30 金币" },
+    { icon: "🎁", text: "完工奖 +30 金币" },
   ],
 };
 
@@ -577,7 +577,7 @@ const close = () => {
                         <span class="btn-cost"
                           >+💰{{ work.incomePerMinute }}/分</span
                         >
-                        <span class="btn-bonus">满+{{ work.bonus }}</span>
+                        <span class="btn-bonus">竣+{{ work.bonus }}</span>
                         <span class="btn-restore"
                           >需⚡{{ work.staminaReq }}</span
                         >
