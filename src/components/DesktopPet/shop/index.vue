@@ -2,6 +2,11 @@
 import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
 import BaseModal from "../ui/BaseModal.vue";
+import MoneyBadge from "../ui/MoneyBadge.vue";
+import TabBar from "../ui/TabBar.vue";
+import ToastNotification from "../ui/ToastNotification.vue";
+import ItemGridPanel from "../ui/ItemGridPanel.vue";
+import type { ItemGridItem } from "../ui/ItemGridPanel.vue";
 import { usePanelTheme, useAmberCardTheme } from "../composables/usePanelTheme";
 import { useToast } from "../composables/useToast";
 import {
@@ -26,7 +31,6 @@ import {
   getDecorationEffectDescription,
 } from "../composables/attributeStorage";
 import type { PetShape } from "../types";
-import DecoIcon from "../shapes/decorations/DecoIcon.vue";
 
 defineProps<{
   visible: boolean;
@@ -42,11 +46,27 @@ const attrData = useAttributeRef();
 // 当前分类 Tab
 const activeTab = ref<"food" | "bath" | "decoration" | "shape">("food");
 
+// Tab 配置（TabBar 组件数据驱动）
+const shopTabs = [
+  { key: "food", icon: "🍽️", label: "食物" },
+  { key: "bath", icon: "🛁", label: "沐浴露" },
+  { key: "decoration", icon: "💍", label: "装饰" },
+  { key: "shape", icon: "🐾", label: "形态" },
+];
+
 // 购买提示
 const { toastMessage, toastVisible, showToast } = useToast();
 
-// 当前展示的物品列表
-const currentItems = computed(() => {
+// 当前展示的物品列表（通用卡片结构 + 商店特有的价格/拥有字段）
+interface ShopItem extends ItemGridItem {
+  cost: number;
+  canAfford: boolean;
+  effectLabel: string;
+  equipped: boolean;
+  inInventory: boolean;
+}
+
+const currentItems = computed<ShopItem[]>(() => {
   const money = attrData.value.money;
   const owned = attrData.value.ownedDecorations || [];
   const equipped = attrData.value.equippedDecorations || [];
@@ -58,13 +78,14 @@ const currentItems = computed(() => {
       name: f.name,
       cost: f.cost,
       icon: FOOD_ICONS[f.type],
-      decoType: undefined as DecorationType | undefined,
+      decoType: undefined,
       canAfford: money >= f.cost,
       effectLabel: `+${f.satietyRestore}饱腹`,
       category: "food" as const,
       owned: false,
       equipped: false,
       inInventory: false,
+      disabled: money < f.cost,
     }));
   }
 
@@ -74,13 +95,14 @@ const currentItems = computed(() => {
       name: b.name,
       cost: b.cost,
       icon: BATH_ICONS[b.type],
-      decoType: undefined as DecorationType | undefined,
+      decoType: undefined,
       canAfford: money >= b.cost,
       effectLabel: `+${b.cleanlinessRestore}清洁`,
       category: "bath" as const,
       owned: false,
       equipped: false,
       inInventory: false,
+      disabled: money < b.cost,
     }));
   }
 
@@ -91,13 +113,14 @@ const currentItems = computed(() => {
       name: s.name,
       cost: s.cost,
       icon: s.icon,
-      decoType: undefined as DecorationType | undefined,
+      decoType: undefined,
       canAfford: money >= s.cost && !ownedShapes.includes(s.type),
       effectLabel: s.description,
       category: "shape" as const,
       owned: ownedShapes.includes(s.type),
-      inInventory: false,
       equipped: false,
+      inInventory: false,
+      disabled: !(money >= s.cost && !ownedShapes.includes(s.type)),
     }));
   }
 
@@ -114,10 +137,20 @@ const currentItems = computed(() => {
     owned: owned.includes(d.type) || decoInv[d.type] > 0,
     inInventory: decoInv[d.type] > 0,
     equipped: equipped.includes(d.type),
+    disabled: !(
+      money >= d.cost &&
+      !owned.includes(d.type) &&
+      !(decoInv[d.type] > 0)
+    ),
   }));
 });
 
-const handleBuy = (item: (typeof currentItems.value)[number]) => {
+// 形态 Tab 网格列数较少（卡片更大）
+const gridColumns = computed(() => (activeTab.value === "shape" ? 3 : 4));
+
+const handleBuy = (rawItem: ItemGridItem) => {
+  // 类型收窄：网格回传通用 item，实际数据由本组件构造
+  const item = rawItem as ShopItem;
   if (item.owned) return;
 
   if (item.category === "food") {
@@ -212,108 +245,35 @@ const close = () => {
   >
     <div class="modal-body">
       <!-- 金币余额 -->
-      <div class="money-section">
-        <div class="money-badge">
-          <span class="money-icon">💰</span>
-          <span class="money-amount">{{ attrData.money }}</span>
-        </div>
-      </div>
+      <MoneyBadge :amount="attrData.money" />
 
       <!-- Tab 切换 -->
-      <div class="tab-bar">
-        <button
-          class="tab-btn"
-          :class="{ active: activeTab === 'food' }"
-          @click="activeTab = 'food'"
-        >
-          <span class="tab-icon">🍽️</span>
-          <span class="tab-text">食物</span>
-          <div
-            v-if="activeTab === 'food'"
-            class="tab-indicator food-indicator"
-          ></div>
-        </button>
-        <button
-          class="tab-btn"
-          :class="{ active: activeTab === 'bath' }"
-          @click="activeTab = 'bath'"
-        >
-          <span class="tab-icon">🛁</span>
-          <span class="tab-text">沐浴露</span>
-          <div
-            v-if="activeTab === 'bath'"
-            class="tab-indicator bath-indicator"
-          ></div>
-        </button>
-        <button
-          class="tab-btn"
-          :class="{ active: activeTab === 'decoration' }"
-          @click="activeTab = 'decoration'"
-        >
-          <span class="tab-icon">💍</span>
-          <span class="tab-text">装饰</span>
-          <div
-            v-if="activeTab === 'decoration'"
-            class="tab-indicator deco-indicator"
-          ></div>
-        </button>
-        <button
-          class="tab-btn"
-          :class="{ active: activeTab === 'shape' }"
-          @click="activeTab = 'shape'"
-        >
-          <span class="tab-icon">🐾</span>
-          <span class="tab-text">形态</span>
-          <div
-            v-if="activeTab === 'shape'"
-            class="tab-indicator shape-indicator"
-          ></div>
-        </button>
-      </div>
+      <TabBar
+        :tabs="shopTabs"
+        :active="activeTab"
+        @select="(key) => (activeTab = key as typeof activeTab)"
+      />
 
       <!-- 购买提示 -->
-      <Transition name="toast-slide">
-        <div v-if="toastVisible" class="toast-notification">
-          <span class="toast-icon">🎉</span>
-          <span class="toast-text">{{ toastMessage }}</span>
-        </div>
-      </Transition>
+      <ToastNotification
+        :visible="toastVisible"
+        :message="toastMessage"
+        :color="'var(--deco-owned-color)'"
+      />
 
       <!-- 物品列表 -->
-      <div
-        class="items-grid"
-        :class="{
-          'deco-grid': activeTab === 'decoration',
-          'shape-grid': activeTab === 'shape',
-        }"
+      <ItemGridPanel
+        :items="currentItems"
+        :columns="gridColumns"
+        @click="handleBuy"
       >
-        <button
-          v-for="item in currentItems"
-          :key="item.type"
-          class="item-card"
-          :class="{
-            disabled: !item.canAfford,
-            owned: item.owned,
-            'deco-card': item.category === 'decoration',
-            'shape-card': item.category === 'shape',
-          }"
-          :disabled="!item.canAfford"
-          @click="handleBuy(item)"
-        >
-          <span class="item-icon">
-            <DecoIcon
-              v-if="item.decoType || item.category === 'bath'"
-              :type="(item.decoType || item.type) as DecorationType | BathType"
-            />
-            <template v-else>{{ item.icon }}</template>
-          </span>
-          <span class="item-name">{{ item.name }}</span>
+        <template #info="{ item }">
           <div class="item-info">
             <template v-if="item.owned">
               <span class="item-owned-badge">{{
-                item.equipped
+                (item as ShopItem).equipped
                   ? "装备中"
-                  : item.inInventory
+                  : (item as ShopItem).inInventory
                     ? "在仓库"
                     : "已拥有"
               }}</span>
@@ -325,7 +285,7 @@ const close = () => {
                   'deco-cost': item.category === 'decoration',
                   'shape-cost': item.category === 'shape',
                 }"
-                >💰{{ item.cost }}</span
+                >💰{{ (item as ShopItem).cost }}</span
               >
               <span
                 class="item-effect"
@@ -333,18 +293,18 @@ const close = () => {
                   'deco-effect': item.category === 'decoration',
                   'shape-effect': item.category === 'shape',
                 }"
-                >{{ item.effectLabel }}</span
+                >{{ (item as ShopItem).effectLabel }}</span
               >
             </template>
           </div>
-        </button>
-      </div>
+        </template>
+      </ItemGridPanel>
     </div>
   </BaseModal>
 </template>
 
 <style scoped>
-/* 内容区（骨架部分由 BaseModal 提供，此处仅保留业务样式） */
+/* 内容区（骨架/金币/Tab/Toast/卡片网格由通用组件提供） */
 .modal-body {
   padding: 0 24px 24px;
   overflow-y: auto;
@@ -352,303 +312,7 @@ const close = () => {
   position: relative;
 }
 
-/* 金币余额 */
-.money-section {
-  margin-bottom: 16px;
-}
-
-.money-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: var(--money-bg);
-  border-radius: 20px;
-  border: 1px solid rgba(251, 191, 36, 0.2);
-}
-
-.money-icon {
-  font-size: 18px;
-}
-
-.money-amount {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--money-color);
-}
-
-/* Tab 切换 */
-.tab-bar {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 16px;
-  background: var(--tab-inactive-bg);
-  padding: 4px;
-  border-radius: 14px;
-}
-
-.tab-btn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 8px 6px;
-  border: none;
-  border-radius: 11px;
-  background: transparent;
-  color: var(--tab-inactive-color);
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  font-weight: 500;
-  font-size: 13px;
-}
-
-.tab-btn.active {
-  background: var(--modal-bg);
-  color: var(--text-color);
-  font-weight: 700;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.tab-btn:not(.active):hover {
-  color: var(--text-color);
-  background: rgba(251, 191, 36, 0.06);
-}
-
-.tab-icon {
-  font-size: 14px;
-}
-
-.tab-text {
-  font-size: 13px;
-}
-
-/* Tab 下划线指示器 */
-.tab-indicator {
-  position: absolute;
-  bottom: 3px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 20px;
-  height: 3px;
-  border-radius: 2px;
-}
-
-.food-indicator {
-  background: linear-gradient(90deg, #f97316, #fb923c);
-  box-shadow: 0 0 6px rgba(249, 115, 22, 0.4);
-}
-
-.bath-indicator {
-  background: linear-gradient(90deg, #3b82f6, #60a5fa);
-  box-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
-}
-
-.deco-indicator {
-  background: linear-gradient(90deg, #a855f7, #ec4899);
-  box-shadow: 0 0 6px rgba(168, 85, 247, 0.4);
-}
-
-.shape-indicator {
-  background: linear-gradient(90deg, #10b981, #34d399);
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
-}
-
-/* 购买提示 */
-.toast-notification {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: var(--toast-bg);
-  border: 1px solid var(--toast-border);
-  border-radius: 12px;
-  box-shadow: var(--toast-shadow);
-  pointer-events: none;
-  position: absolute;
-  top: 8px;
-  left: 24px;
-  right: 24px;
-  z-index: 10;
-}
-
-.toast-icon {
-  font-size: 16px;
-}
-
-.toast-text {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--deco-owned-color);
-}
-
-.toast-slide-enter-active {
-  animation: toast-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.toast-slide-leave-active {
-  animation: toast-out 0.25s ease-in;
-}
-
-@keyframes toast-in {
-  0% {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes toast-out {
-  0% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-6px) scale(0.95);
-  }
-}
-
-/* 物品卡片网格 */
-.items-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-}
-
-.shape-grid {
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.item-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 10px 6px 8px;
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  background: var(--card-bg);
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.item-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 50%;
-  background: linear-gradient(
-    180deg,
-    rgba(251, 191, 36, 0.04) 0%,
-    transparent 100%
-  );
-  pointer-events: none;
-  border-radius: 16px 16px 0 0;
-}
-
-/* 装饰卡片紫色主题 */
-.item-card.deco-card {
-  border-color: var(--deco-card-border);
-  background: var(--deco-card-bg);
-}
-
-.item-card.deco-card::before {
-  background: linear-gradient(
-    180deg,
-    rgba(168, 85, 247, 0.06) 0%,
-    transparent 100%
-  );
-}
-
-/* 形态卡片绿色主题 */
-.item-card.shape-card {
-  border-color: var(--shape-card-border);
-  background: var(--shape-card-bg);
-}
-
-.item-card.shape-card::before {
-  background: linear-gradient(
-    180deg,
-    rgba(52, 211, 153, 0.06) 0%,
-    transparent 100%
-  );
-}
-
-.item-card:hover:not(.disabled) {
-  background: var(--card-hover-bg);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(251, 191, 36, 0.15);
-  border-color: rgba(251, 191, 36, 0.3);
-}
-
-.item-card.deco-card:hover:not(.disabled) {
-  background: var(--deco-card-hover-bg);
-  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.18);
-  border-color: rgba(168, 85, 247, 0.35);
-}
-
-.item-card.shape-card:hover:not(.disabled) {
-  background: var(--shape-card-hover-bg);
-  box-shadow: 0 6px 16px rgba(52, 211, 153, 0.18);
-  border-color: rgba(52, 211, 153, 0.35);
-}
-
-.item-card:active:not(.disabled) {
-  transform: translateY(0) scale(0.97);
-}
-
-.item-card.disabled {
-  background: var(--card-disabled-bg);
-  border-color: var(--card-disabled-border);
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-.item-card.owned {
-  opacity: 0.7;
-  cursor: default;
-}
-
-.item-card.owned:hover {
-  transform: none;
-  box-shadow: none;
-}
-
-.item-icon {
-  font-size: 20px;
-  line-height: 1;
-  position: relative;
-}
-
-.item-card:hover:not(.disabled) .item-icon {
-  transform: scale(1.15);
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.item-name {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--value-color);
-  line-height: 1;
-}
-
-.item-card.disabled .item-name {
-  color: var(--disabled-color);
-}
-
+/* 卡片信息区（价格 + 效果标签） */
 .item-info {
   display: flex;
   align-items: center;
@@ -691,8 +355,8 @@ const close = () => {
   background: rgba(52, 211, 153, 0.08);
 }
 
-.item-card.disabled .item-cost,
-.item-card.disabled .item-effect {
+.item-card.disabled :deep(.item-cost),
+.item-card.disabled :deep(.item-effect) {
   color: var(--disabled-color);
   background: transparent;
 }
@@ -706,12 +370,12 @@ const close = () => {
   letter-spacing: 0.5px;
 }
 
-.item-card.owned .item-owned-badge {
+.item-card.owned :deep(.item-owned-badge) {
   color: var(--deco-owned-color);
   background: rgba(168, 85, 247, 0.1);
 }
 
-.item-card.owned:not([disabled]) .item-owned-badge {
+.item-card.owned:not([disabled]) :deep(.item-owned-badge) {
   color: #10b981;
   background: rgba(16, 185, 129, 0.1);
 }

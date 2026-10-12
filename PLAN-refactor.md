@@ -211,7 +211,23 @@ header props + 关闭按钮 + 装饰星插槽），6 个弹窗改为传 `title` 
 **方案**：抽 `usePanelTheme(accentColor?)` composable 或全局 CSS 变量 + 根节点
 主题 class，允许各面板只声明差异色。
 
-### 7. [ ] 合并 shop / warehouse 克隆代码（~500 行）
+### 7. [x] 合并 shop / warehouse 克隆代码（~500 行）
+
+**改动记录（已完成）**：
+
+- 新增 4 个通用组件（ui/ 目录）：
+  - `MoneyBadge.vue` —— 金币余额徽章（原三份相同，attributes 面板那份
+    留待 P2-9 一并处理）
+  - `TabBar.vue` —— 分类 Tab 栏（数据驱动 + 各分类指示器配色内置）
+  - `ToastNotification.vue` —— 提示浮层（含 toast-in/out 动画）
+  - `ItemGridPanel.vue` —— 物品卡片网格（含分类配色卡片样式，
+    价格/数量等差异内容通过 #info 插槽注入）
+- shop（737→400 行）/ warehouse（692→408 行）迁移完成：
+  金币/Tab/Toast/卡片网格全部替换为通用组件，只保留各自的业务分发
+  逻辑和特有 CSS（价格标签/数量角标/空状态等）
+- 两文件不再有任何 tab-bar / item-card 重复 CSS（grep 验证 0 残留）
+- 类型安全处理：ItemGridPanel 回传通用 ItemGridItem，调用方在 handler
+  和插槽中收窄为自己的扩展类型（ShopItem/WarehouseItem）
 
 **问题**：shop 与 warehouse 是克隆关系最严重的一对：
 
