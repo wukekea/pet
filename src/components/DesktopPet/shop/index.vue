@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
 import BaseModal from "../ui/BaseModal.vue";
+import { usePanelTheme, useAmberCardTheme } from "../composables/usePanelTheme";
 import { useToast } from "../composables/useToast";
 import {
   FOOD_ICONS,
@@ -140,56 +141,17 @@ const handleBuy = (item: (typeof currentItems.value)[number]) => {
   }
 };
 
-// CSS 变量
+// CSS 变量（overlay/modal/close 底盘 + 卡片/Tab/Toast 通用系由 usePanelTheme 提供，
+// 此处仅保留商店特有的 deco/shape 系列变量）
 const cssVars = computed(() => ({
-  "--overlay-bg": isDark.value
-    ? "rgba(0, 0, 0, 0.6)"
-    : "rgba(251, 191, 36, 0.08)",
-  "--modal-bg": isDark.value
-    ? "rgba(30, 28, 20, 0.98)"
-    : "rgba(255, 255, 255, 0.98)",
-  "--modal-shadow": isDark.value
-    ? "0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(251, 191, 36, 0.2)"
-    : "0 20px 60px rgba(251, 191, 36, 0.2), 0 0 0 1px rgba(251, 191, 36, 0.1)",
-  "--modal-close-bg": isDark.value
-    ? "rgba(255, 255, 255, 0.05)"
-    : "rgba(0, 0, 0, 0.03)",
-  "--modal-close-color": "#9ca3af",
-  "--text-color": isDark.value ? "#e2e8f0" : "#374151",
+  ...usePanelTheme({
+    accent: [251, 191, 36],
+    darkModalBg: "rgba(30, 28, 20, 0.98)",
+    lightOverlayAlpha: 0.08,
+  }),
+  ...useAmberCardTheme(),
   "--label-color": isDark.value ? "#cbd5e1" : "#4b5563",
-  "--value-color": isDark.value ? "#f1f5f9" : "#1f2937",
-  "--money-color": isDark.value ? "#fbbf24" : "#d97706",
-  "--money-bg": isDark.value
-    ? "rgba(251, 191, 36, 0.1)"
-    : "rgba(251, 191, 36, 0.08)",
-  "--card-bg": isDark.value
-    ? "rgba(55, 50, 35, 0.4)"
-    : "rgba(254, 243, 199, 0.5)",
-  "--card-hover-bg": isDark.value
-    ? "rgba(65, 60, 40, 0.5)"
-    : "rgba(253, 230, 138, 0.6)",
-  "--card-border": isDark.value
-    ? "rgba(251, 191, 36, 0.12)"
-    : "rgba(251, 191, 36, 0.2)",
-  "--card-disabled-bg": isDark.value
-    ? "rgba(55, 50, 35, 0.15)"
-    : "rgba(243, 244, 246, 0.4)",
-  "--card-disabled-border": isDark.value
-    ? "rgba(75, 85, 99, 0.1)"
-    : "rgba(209, 213, 219, 0.3)",
   "--cost-color": isDark.value ? "rgba(251, 191, 36, 0.8)" : "#b45309",
-  "--effect-color": isDark.value
-    ? "rgba(251, 191, 36, 0.6)"
-    : "rgba(180, 83, 9, 0.5)",
-  "--disabled-color": isDark.value
-    ? "rgba(156, 163, 175, 0.5)"
-    : "rgba(156, 163, 175, 0.6)",
-  "--tab-inactive-color": isDark.value
-    ? "rgba(156, 163, 175, 0.6)"
-    : "rgba(107, 114, 128, 0.6)",
-  "--tab-inactive-bg": isDark.value
-    ? "rgba(55, 50, 35, 0.3)"
-    : "rgba(243, 244, 246, 0.6)",
   "--deco-card-bg": isDark.value
     ? "rgba(50, 35, 55, 0.4)"
     : "rgba(243, 232, 255, 0.5)",

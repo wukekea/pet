@@ -2,6 +2,7 @@
 import { ref, watch, computed } from "vue";
 import { isDark } from "../composables/theme";
 import BaseModal from "../ui/BaseModal.vue";
+import { usePanelTheme } from "../composables/usePanelTheme";
 import {
   getScheduleConfig,
   updateScheduleConfig,
@@ -18,15 +19,13 @@ const emit = defineEmits<{
 
 // CSS 变量 - 用于主题切换
 const cssVars = computed(() => ({
-  "--overlay-bg": isDark.value
-    ? "rgba(0, 0, 0, 0.6)"
-    : "rgba(139, 92, 246, 0.15)",
-  "--modal-bg": isDark.value
-    ? "rgba(35, 30, 55, 0.98)"
-    : "rgba(255, 255, 255, 0.98)",
-  "--modal-shadow": isDark.value
-    ? "0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(167, 139, 250, 0.2)"
-    : "0 20px 60px rgba(139, 92, 246, 0.25), 0 0 0 1px rgba(139, 92, 246, 0.1)",
+  ...usePanelTheme({
+    accent: [139, 92, 246],
+    darkModalBg: "rgba(35, 30, 55, 0.98)",
+    lightOverlayAlpha: 0.15,
+  }),
+  // 注：原 modal-shadow 浅色外阴影透明度为 0.25（其他面板为 0.2），
+  // 统一为底盘的 0.2，视觉差异极小
   "--toggle-card-bg": isDark.value
     ? "rgba(139, 92, 246, 0.1)"
     : "rgba(139, 92, 246, 0.05)",
@@ -206,172 +205,167 @@ const saveSchedule = () => {
     @close="close"
   >
     <div class="modal-body">
-            <!-- 启用开关 -->
-            <div class="toggle-card">
-              <div class="toggle-info">
-                <span class="toggle-title">自动作息</span>
-                <span class="toggle-desc">到时间自动睡觉、起床和工作</span>
-              </div>
-              <button
-                class="toggle-switch"
-                :class="{ active: scheduleConfig.enabled }"
-                @click="toggleSchedule"
-              >
-                <span class="toggle-knob"></span>
-              </button>
+      <!-- 启用开关 -->
+      <div class="toggle-card">
+        <div class="toggle-info">
+          <span class="toggle-title">自动作息</span>
+          <span class="toggle-desc">到时间自动睡觉、起床和工作</span>
+        </div>
+        <button
+          class="toggle-switch"
+          :class="{ active: scheduleConfig.enabled }"
+          @click="toggleSchedule"
+        >
+          <span class="toggle-knob"></span>
+        </button>
+      </div>
+
+      <!-- 时间段列表 -->
+      <div class="slots-section">
+        <div class="slots-header">
+          <span class="slots-title">时间段设置</span>
+          <button class="add-btn" @click="addTimeSlot">
+            <span>+</span>
+          </button>
+        </div>
+
+        <div class="slots-list">
+          <div
+            v-for="(slot, index) in scheduleConfig.slots"
+            :key="index"
+            class="slot-card"
+            :class="{
+              'is-sleep': slot.state === 'sleep',
+              'is-work': slot.state === 'work',
+            }"
+          >
+            <div class="slot-icon">
+              {{
+                slot.state === "sleep"
+                  ? "😴"
+                  : slot.state === "work"
+                    ? "💼"
+                    : "🎈"
+              }}
             </div>
-
-            <!-- 时间段列表 -->
-            <div class="slots-section">
-              <div class="slots-header">
-                <span class="slots-title">时间段设置</span>
-                <button class="add-btn" @click="addTimeSlot">
-                  <span>+</span>
-                </button>
+            <div class="slot-time-inputs">
+              <div class="time-group">
+                <div class="time-input-wrapper">
+                  <input
+                    type="text"
+                    inputmode="numeric"
+                    :value="formatTime(slot.startHour)"
+                    @input="
+                      (e) => (slot.startHour = handleTimeChange('hour', e))
+                    "
+                    class="time-input"
+                  />
+                  <div class="time-controls">
+                    <button
+                      class="time-btn time-btn-up"
+                      @click.stop="adjustTime(slot, 'startHour', 1)"
+                    >
+                      ▲
+                    </button>
+                    <button
+                      class="time-btn time-btn-down"
+                      @click.stop="adjustTime(slot, 'startHour', -1)"
+                    >
+                      ▼
+                    </button>
+                  </div>
+                </div>
+                <span class="time-colon">:</span>
+                <div class="time-input-wrapper">
+                  <input
+                    type="text"
+                    inputmode="numeric"
+                    :value="formatTime(slot.startMinute)"
+                    @input="
+                      (e) => (slot.startMinute = handleTimeChange('minute', e))
+                    "
+                    class="time-input"
+                  />
+                  <div class="time-controls">
+                    <button
+                      class="time-btn time-btn-up"
+                      @click.stop="adjustTime(slot, 'startMinute', 1)"
+                    >
+                      ▲
+                    </button>
+                    <button
+                      class="time-btn time-btn-down"
+                      @click.stop="adjustTime(slot, 'startMinute', -1)"
+                    >
+                      ▼
+                    </button>
+                  </div>
+                </div>
               </div>
-
-              <div class="slots-list">
-                <div
-                  v-for="(slot, index) in scheduleConfig.slots"
-                  :key="index"
-                  class="slot-card"
-                  :class="{
-                    'is-sleep': slot.state === 'sleep',
-                    'is-work': slot.state === 'work',
-                  }"
-                >
-                  <div class="slot-icon">
-                    {{
-                      slot.state === "sleep"
-                        ? "😴"
-                        : slot.state === "work"
-                          ? "💼"
-                          : "🎈"
-                    }}
+              <span class="time-arrow">→</span>
+              <div class="time-group">
+                <div class="time-input-wrapper">
+                  <input
+                    type="text"
+                    inputmode="numeric"
+                    :value="formatTime(slot.endHour)"
+                    @input="(e) => (slot.endHour = handleTimeChange('hour', e))"
+                    class="time-input"
+                  />
+                  <div class="time-controls">
+                    <button
+                      class="time-btn time-btn-up"
+                      @click.stop="adjustTime(slot, 'endHour', 1)"
+                    >
+                      ▲
+                    </button>
+                    <button
+                      class="time-btn time-btn-down"
+                      @click.stop="adjustTime(slot, 'endHour', -1)"
+                    >
+                      ▼
+                    </button>
                   </div>
-                  <div class="slot-time-inputs">
-                    <div class="time-group">
-                      <div class="time-input-wrapper">
-                        <input
-                          type="text"
-                          inputmode="numeric"
-                          :value="formatTime(slot.startHour)"
-                          @input="
-                            (e) =>
-                              (slot.startHour = handleTimeChange('hour', e))
-                          "
-                          class="time-input"
-                        />
-                        <div class="time-controls">
-                          <button
-                            class="time-btn time-btn-up"
-                            @click.stop="adjustTime(slot, 'startHour', 1)"
-                          >
-                            ▲
-                          </button>
-                          <button
-                            class="time-btn time-btn-down"
-                            @click.stop="adjustTime(slot, 'startHour', -1)"
-                          >
-                            ▼
-                          </button>
-                        </div>
-                      </div>
-                      <span class="time-colon">:</span>
-                      <div class="time-input-wrapper">
-                        <input
-                          type="text"
-                          inputmode="numeric"
-                          :value="formatTime(slot.startMinute)"
-                          @input="
-                            (e) =>
-                              (slot.startMinute = handleTimeChange('minute', e))
-                          "
-                          class="time-input"
-                        />
-                        <div class="time-controls">
-                          <button
-                            class="time-btn time-btn-up"
-                            @click.stop="adjustTime(slot, 'startMinute', 1)"
-                          >
-                            ▲
-                          </button>
-                          <button
-                            class="time-btn time-btn-down"
-                            @click.stop="adjustTime(slot, 'startMinute', -1)"
-                          >
-                            ▼
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <span class="time-arrow">→</span>
-                    <div class="time-group">
-                      <div class="time-input-wrapper">
-                        <input
-                          type="text"
-                          inputmode="numeric"
-                          :value="formatTime(slot.endHour)"
-                          @input="
-                            (e) => (slot.endHour = handleTimeChange('hour', e))
-                          "
-                          class="time-input"
-                        />
-                        <div class="time-controls">
-                          <button
-                            class="time-btn time-btn-up"
-                            @click.stop="adjustTime(slot, 'endHour', 1)"
-                          >
-                            ▲
-                          </button>
-                          <button
-                            class="time-btn time-btn-down"
-                            @click.stop="adjustTime(slot, 'endHour', -1)"
-                          >
-                            ▼
-                          </button>
-                        </div>
-                      </div>
-                      <span class="time-colon">:</span>
-                      <div class="time-input-wrapper">
-                        <input
-                          type="text"
-                          inputmode="numeric"
-                          :value="formatTime(slot.endMinute)"
-                          @input="
-                            (e) =>
-                              (slot.endMinute = handleTimeChange('minute', e))
-                          "
-                          class="time-input"
-                        />
-                        <div class="time-controls">
-                          <button
-                            class="time-btn time-btn-up"
-                            @click.stop="adjustTime(slot, 'endMinute', 1)"
-                          >
-                            ▲
-                          </button>
-                          <button
-                            class="time-btn time-btn-down"
-                            @click.stop="adjustTime(slot, 'endMinute', -1)"
-                          >
-                            ▼
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                </div>
+                <span class="time-colon">:</span>
+                <div class="time-input-wrapper">
+                  <input
+                    type="text"
+                    inputmode="numeric"
+                    :value="formatTime(slot.endMinute)"
+                    @input="
+                      (e) => (slot.endMinute = handleTimeChange('minute', e))
+                    "
+                    class="time-input"
+                  />
+                  <div class="time-controls">
+                    <button
+                      class="time-btn time-btn-up"
+                      @click.stop="adjustTime(slot, 'endMinute', 1)"
+                    >
+                      ▲
+                    </button>
+                    <button
+                      class="time-btn time-btn-down"
+                      @click.stop="adjustTime(slot, 'endMinute', -1)"
+                    >
+                      ▼
+                    </button>
                   </div>
-                  <select v-model="slot.state" class="state-select">
-                    <option value="sleep">睡眠</option>
-                    <option value="work">工作</option>
-                    <option value="free">闲暇</option>
-                  </select>
-                  <button class="remove-btn" @click="removeTimeSlot(index)">
-                    <span>×</span>
-                  </button>
                 </div>
               </div>
             </div>
+            <select v-model="slot.state" class="state-select">
+              <option value="sleep">睡眠</option>
+              <option value="work">工作</option>
+              <option value="free">闲暇</option>
+            </select>
+            <button class="remove-btn" @click="removeTimeSlot(index)">
+              <span>×</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="modal-footer">

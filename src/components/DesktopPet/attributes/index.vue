@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
 import BaseModal from "../ui/BaseModal.vue";
+import { usePanelTheme } from "../composables/usePanelTheme";
 import { useToast } from "../composables/useToast";
 import type { DecorationType, DecorationEffectType } from "../types";
 import {
@@ -285,19 +286,11 @@ const handleDecoClick = (type: string) => {
 
 // CSS 变量
 const cssVars = computed(() => ({
-  "--overlay-bg": isDark.value
-    ? "rgba(0, 0, 0, 0.6)"
-    : "rgba(244, 114, 182, 0.08)",
-  "--modal-bg": isDark.value
-    ? "rgba(30, 25, 40, 0.98)"
-    : "rgba(255, 255, 255, 0.98)",
-  "--modal-shadow": isDark.value
-    ? "0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(244, 114, 182, 0.2)"
-    : "0 20px 60px rgba(244, 114, 182, 0.2), 0 0 0 1px rgba(244, 114, 182, 0.1)",
-  "--modal-close-bg": isDark.value
-    ? "rgba(255, 255, 255, 0.05)"
-    : "rgba(0, 0, 0, 0.03)",
-  "--modal-close-color": "#9ca3af",
+  ...usePanelTheme({
+    accent: [244, 114, 182],
+    darkModalBg: "rgba(30, 25, 40, 0.98)",
+    lightOverlayAlpha: 0.08,
+  }),
   "--section-title-color": isDark.value ? "#e2e8f0" : "#374151",
   "--attr-label-color": isDark.value ? "#cbd5e1" : "#4b5563",
   "--attr-value-color": isDark.value ? "#f1f5f9" : "#1f2937",

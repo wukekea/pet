@@ -179,7 +179,25 @@ AI 配置更乱，存在三套互不同步的配置：
 header props + 关闭按钮 + 装饰星插槽），6 个弹窗改为传 `title` / `icon` props。
 顺带统一 overlay 的 z-index（当前 10000/10001/9998/9999 散落 40+ 处，见 P3-16）。
 
-### 6. [ ] 抽取 usePanelTheme() 主题 composable（~450 行）
+### 6. [x] 抽取 usePanelTheme() 主题 composable（缩小版方案）
+
+**改动记录（已完成，按"通用底盘 + 保留差异"缩小方案）**：
+
+- 新增 `composables/usePanelTheme.ts`：
+  - `usePanelTheme({ accent, darkModalBg, lightOverlayAlpha })` —— 生成
+    5 个弹窗共用的 overlay/modal/close 系变量，颜色从 accent RGB 推导
+  - `useAmberCardTheme()` —— shop/warehouse 完全同值的 16 个琥珀金系
+    卡片/Tab/Toast 变量
+- 迁移 5 个弹窗（shop/warehouse/stats/schedule/attributes）：
+  各自的 5 个底盘变量 + shop/warehouse 的 16 个卡片变量改为函数展开，
+  特有变量（deco/bath/shape/stats 系）原样保留在本地
+- ChatPanel/contextMenu 未迁移（变量命名体系不同，收益小风险大）
+- settings 未迁移（用 v-bind 而非 CSS 变量体系，P3-13 拆分时一并处理）
+- 一处已知微调：schedule 浅色阴影透明度 0.25→0.2（统一为底盘值，已在
+  代码注释说明）
+- 前期分析修正了原估算：五弹窗变量交集实际只有 5 个（原以为 ~20 个），
+  因为各弹窗 accent 色调不同（琥珀金/翠青/紫/粉），同名变量值大多不同；
+  真正的同值重复集中在 shop↔warehouse 这对克隆弹窗上
 
 **问题**：每个面板组件都有一大坨 `computed cssVars`，本质是 `isDark ? A : B`
 换色相，8 处各写一份：

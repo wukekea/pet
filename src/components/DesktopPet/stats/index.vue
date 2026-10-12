@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import { isDark } from "../composables/theme";
 import BaseModal from "../ui/BaseModal.vue";
+import { usePanelTheme } from "../composables/usePanelTheme";
 import {
   useStatsRef,
   resetStats as resetStatsData,
@@ -19,19 +20,10 @@ const emit = defineEmits<{
 
 // CSS 变量 - 用于主题切换
 const cssVars = computed(() => ({
-  "--overlay-bg": isDark.value
-    ? "rgba(0, 0, 0, 0.6)"
-    : "rgba(16, 185, 129, 0.1)",
-  "--modal-bg": isDark.value
-    ? "rgba(30, 35, 40, 0.98)"
-    : "rgba(255, 255, 255, 0.98)",
-  "--modal-shadow": isDark.value
-    ? "0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(16, 185, 129, 0.2)"
-    : "0 20px 60px rgba(16, 185, 129, 0.2), 0 0 0 1px rgba(16, 185, 129, 0.1)",
-  "--modal-close-bg": isDark.value
-    ? "rgba(255, 255, 255, 0.05)"
-    : "rgba(0, 0, 0, 0.03)",
-  "--modal-close-color": "#9ca3af",
+  ...usePanelTheme({
+    accent: [16, 185, 129],
+    darkModalBg: "rgba(30, 35, 40, 0.98)",
+  }),
   "--stats-info-bg": isDark.value
     ? "rgba(16, 185, 129, 0.1)"
     : "rgba(16, 185, 129, 0.05)",
@@ -146,176 +138,163 @@ const getStateBarWidth = (count: number) => {
     @close="close"
   >
     <div class="modal-body">
-            <!-- 统计日期信息 -->
-            <div class="stats-info-bar">
-              <span class="stats-date">
-                📅 统计开始：{{
-                  new Date(statsData.startDate).toLocaleDateString()
-                }}
-              </span>
-              <span class="stats-days">
-                已陪伴 {{ getStatsDays(statsData.startDate) }} 天
-              </span>
+      <!-- 统计日期信息 -->
+      <div class="stats-info-bar">
+        <span class="stats-date">
+          📅 统计开始：{{ new Date(statsData.startDate).toLocaleDateString() }}
+        </span>
+        <span class="stats-days">
+          已陪伴 {{ getStatsDays(statsData.startDate) }} 天
+        </span>
+      </div>
+
+      <!-- 核心数据卡片 -->
+      <div class="stats-cards">
+        <!-- 连续使用 -->
+        <div class="stat-card streak-card">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-content">
+            <div class="stat-value">{{ statsData.streakDays }}</div>
+            <div class="stat-label">连续使用</div>
+          </div>
+        </div>
+
+        <!-- 总陪伴时长 -->
+        <div class="stat-card duration-card">
+          <div class="stat-icon">⏱️</div>
+          <div class="stat-content">
+            <div class="stat-value">
+              {{ formatDuration(statsData.totalDuration) }}
             </div>
+            <div class="stat-label">总陪伴时长</div>
+          </div>
+        </div>
 
-            <!-- 核心数据卡片 -->
-            <div class="stats-cards">
-              <!-- 连续使用 -->
-              <div class="stat-card streak-card">
-                <div class="stat-icon">🔥</div>
-                <div class="stat-content">
-                  <div class="stat-value">{{ statsData.streakDays }}</div>
-                  <div class="stat-label">连续使用</div>
-                </div>
-              </div>
-
-              <!-- 总陪伴时长 -->
-              <div class="stat-card duration-card">
-                <div class="stat-icon">⏱️</div>
-                <div class="stat-content">
-                  <div class="stat-value">
-                    {{ formatDuration(statsData.totalDuration) }}
-                  </div>
-                  <div class="stat-label">总陪伴时长</div>
-                </div>
-              </div>
-
-              <!-- 今日时长 -->
-              <div class="stat-card today-card">
-                <div class="stat-icon">🌟</div>
-                <div class="stat-content">
-                  <div class="stat-value">
-                    {{ formatDuration(statsData.todayDuration) }}
-                  </div>
-                  <div class="stat-label">今日陪伴</div>
-                </div>
-              </div>
-
-              <!-- 启动次数 -->
-              <div class="stat-card launch-card">
-                <div class="stat-icon">🚀</div>
-                <div class="stat-content">
-                  <div class="stat-value">{{ statsData.launchCount }}</div>
-                  <div class="stat-label">启动次数</div>
-                </div>
-              </div>
+        <!-- 今日时长 -->
+        <div class="stat-card today-card">
+          <div class="stat-icon">🌟</div>
+          <div class="stat-content">
+            <div class="stat-value">
+              {{ formatDuration(statsData.todayDuration) }}
             </div>
+            <div class="stat-label">今日陪伴</div>
+          </div>
+        </div>
 
-            <!-- 互动统计 -->
-            <div class="stats-section">
-              <div class="section-title">
-                <span class="section-icon">🎮</span>
-                互动统计
-              </div>
-              <div class="interactions-grid">
-                <div class="interaction-item">
-                  <span class="interaction-icon">👆</span>
-                  <span class="interaction-label">点击</span>
-                  <span class="interaction-value">{{
-                    statsData.interactions.click
-                  }}</span>
-                </div>
-                <div class="interaction-item">
-                  <span class="interaction-icon">✋</span>
-                  <span class="interaction-label">拖拽</span>
-                  <span class="interaction-value">{{
-                    statsData.interactions.drag
-                  }}</span>
-                </div>
-              </div>
-              <div class="interactions-total">
-                总互动次数：<span class="total-value">{{
-                  statsData.interactions.click + statsData.interactions.drag
-                }}</span>
-              </div>
-            </div>
+        <!-- 启动次数 -->
+        <div class="stat-card launch-card">
+          <div class="stat-icon">🚀</div>
+          <div class="stat-content">
+            <div class="stat-value">{{ statsData.launchCount }}</div>
+            <div class="stat-label">启动次数</div>
+          </div>
+        </div>
+      </div>
 
-            <!-- 状态触发统计 -->
-            <div
-              class="stats-section"
-              v-if="Object.keys(filteredStateCounts).length > 0"
-            >
-              <div class="section-title">
-                <span class="section-icon">🎭</span>
-                状态触发
-              </div>
-              <div class="state-list">
-                <div
-                  v-for="(count, state) in filteredStateCounts"
-                  :key="state"
-                  class="state-item"
-                >
-                  <span class="state-name">{{
-                    STATE_NAMES[state] || state
-                  }}</span>
-                  <div class="state-bar-bg">
-                    <div
-                      class="state-bar"
-                      :style="{ width: getStateBarWidth(count as number) }"
-                    ></div>
-                  </div>
-                  <span class="state-count">{{ count }}</span>
-                </div>
-              </div>
+      <!-- 互动统计 -->
+      <div class="stats-section">
+        <div class="section-title">
+          <span class="section-icon">🎮</span>
+          互动统计
+        </div>
+        <div class="interactions-grid">
+          <div class="interaction-item">
+            <span class="interaction-icon">👆</span>
+            <span class="interaction-label">点击</span>
+            <span class="interaction-value">{{
+              statsData.interactions.click
+            }}</span>
+          </div>
+          <div class="interaction-item">
+            <span class="interaction-icon">✋</span>
+            <span class="interaction-label">拖拽</span>
+            <span class="interaction-value">{{
+              statsData.interactions.drag
+            }}</span>
+          </div>
+        </div>
+        <div class="interactions-total">
+          总互动次数：<span class="total-value">{{
+            statsData.interactions.click + statsData.interactions.drag
+          }}</span>
+        </div>
+      </div>
+
+      <!-- 状态触发统计 -->
+      <div
+        class="stats-section"
+        v-if="Object.keys(filteredStateCounts).length > 0"
+      >
+        <div class="section-title">
+          <span class="section-icon">🎭</span>
+          状态触发
+        </div>
+        <div class="state-list">
+          <div
+            v-for="(count, state) in filteredStateCounts"
+            :key="state"
+            class="state-item"
+          >
+            <span class="state-name">{{ STATE_NAMES[state] || state }}</span>
+            <div class="state-bar-bg">
+              <div
+                class="state-bar"
+                :style="{ width: getStateBarWidth(count as number) }"
+              ></div>
             </div>
+            <span class="state-count">{{ count }}</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="modal-footer">
       <button class="btn btn-reset" @click="resetStats">
         <span>🔄</span> 重置数据
       </button>
-      <button class="btn btn-save" @click="close">
-        <span>✓</span> 关闭
-      </button>
+      <button class="btn btn-save" @click="close"><span>✓</span> 关闭</button>
     </div>
   </BaseModal>
 
-    <!-- 重置确认弹窗 -->
-    <Transition name="confirm-pop">
-      <div
-        v-if="resetConfirmVisible"
-        class="confirm-overlay"
-        :style="cssVars"
-        @click="cancelResetStats"
-      >
-        <div
-          class="confirm-dialog"
-          :class="{ 'dark-mode': isDark }"
-          @click.stop
-        >
-          <!-- 警告图标区域 -->
-          <div class="confirm-icon-wrapper">
-            <div class="confirm-icon-circle">
-              <span class="confirm-icon">⚠️</span>
-            </div>
-            <div class="icon-pulse"></div>
+  <!-- 重置确认弹窗 -->
+  <Transition name="confirm-pop">
+    <div
+      v-if="resetConfirmVisible"
+      class="confirm-overlay"
+      :style="cssVars"
+      @click="cancelResetStats"
+    >
+      <div class="confirm-dialog" :class="{ 'dark-mode': isDark }" @click.stop>
+        <!-- 警告图标区域 -->
+        <div class="confirm-icon-wrapper">
+          <div class="confirm-icon-circle">
+            <span class="confirm-icon">⚠️</span>
           </div>
+          <div class="icon-pulse"></div>
+        </div>
 
-          <!-- 文字内容 -->
-          <div class="confirm-content">
-            <h3 class="confirm-title">确认重置</h3>
-            <p class="confirm-message">
-              确定要重置所有统计数据吗？
-              <br />
-              <span class="confirm-warning">此操作不可撤销</span>
-            </p>
-          </div>
+        <!-- 文字内容 -->
+        <div class="confirm-content">
+          <h3 class="confirm-title">确认重置</h3>
+          <p class="confirm-message">
+            确定要重置所有统计数据吗？
+            <br />
+            <span class="confirm-warning">此操作不可撤销</span>
+          </p>
+        </div>
 
-          <!-- 按钮区域 -->
-          <div class="confirm-buttons">
-            <button
-              class="confirm-btn confirm-cancel"
-              @click="cancelResetStats"
-            >
-              取消
-            </button>
-            <button class="confirm-btn confirm-ok" @click="confirmResetStats">
-              确认重置
-            </button>
-          </div>
+        <!-- 按钮区域 -->
+        <div class="confirm-buttons">
+          <button class="confirm-btn confirm-cancel" @click="cancelResetStats">
+            取消
+          </button>
+          <button class="confirm-btn confirm-ok" @click="confirmResetStats">
+            确认重置
+          </button>
         </div>
       </div>
-    </Transition>
+    </div>
+  </Transition>
 </template>
 
 <style scoped>
