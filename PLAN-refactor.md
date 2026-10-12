@@ -242,7 +242,7 @@ header props + 关闭按钮 + 装饰星插槽），6 个弹窗改为传 `title` 
 **方案**：抽 `ItemGridPanel` + `TabBar` 组件，shop/warehouse 只保留各自的业务
 分发逻辑。
 
-### 8. [ ] 消除规则文案与数值的双源（防止漂移）
+### 8. [x] 消除规则文案与数值的双源（防止漂移）
 
 **问题**：
 
@@ -254,7 +254,18 @@ WORK_COMPLETION_BONUS` 数值表重复——**改数值平衡时 tooltip 文案�
 
 **方案**：规则文案改为模板字符串从常量生成。
 
-### 9. [ ] 抽取通用 UI 小组件（~250 行）
+### 9. [x] 抽取通用 UI 小组件（~250 行）
+
+**改动记录（已完成）**：
+
+- `MoneyBadge.vue`：P2-7 顺带完成
+- `ConfirmDialog.vue`：stats 私有的重置确认弹窗（约 200 行模板+CSS）抽出，
+  支持 title/message/warning/icon/按钮文字 props + 主题变量注入
+- AttributeBar **未抽组件**（动手前评估：attributes 面板是大条带 tooltip、
+  QuickActionPanel 是迷你条、stats 是状态统计条——三者视觉与业务均不同，
+  强行合并会造出全是 if 的组件）；改为抽 `useAttributePercent.ts` composable：
+  统一 `Math.min(100, v/cap*100)` 换算与低值判断（"健康上限固定 100"规则
+  单点化），QuickActionPanel 全套接入、attributes 面板接入 attrPercent
 
 - [ ] `MoneyBadge.vue`：金币余额展示 `money-section > money-badge > money-icon(💰) +
 money-amount` 在 attributes:449-454、shop:267-272、warehouse:273-278 三份相同

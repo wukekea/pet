@@ -30,6 +30,8 @@ import {
   SHAPE_SHOP_CONFIGS,
 } from "../composables/attributeStorage";
 import { currentPetShape, savePetShape } from "../composables/petShapeStorage";
+import { attributeRules, workRules } from "../composables/attributeRules";
+import { attrPercent } from "../composables/useAttributePercent";
 import DecoIcon from "../shapes/decorations/DecoIcon.vue";
 import { HEALTH_CAP, MAX_LEVEL } from "../constants";
 import type { PetState, PetShape } from "../types";
@@ -60,7 +62,7 @@ const expRequired = computed(() =>
   getExpRequiredForLevel(attrData.value.level),
 );
 
-// 属性条配置
+// 属性条配置（规则文案由 attributeRules 从数值常量生成）
 const attributeBars = computed(() => [
   {
     key: "satiety" as const,
@@ -69,11 +71,7 @@ const attributeBars = computed(() => [
     value: attrData.value.satiety,
     cap: attrCap.value,
     color: "orange",
-    rules: [
-      { icon: "📉", text: "每 5 分钟 -1" },
-      { icon: "⚠️", text: "低于 30 时健康下降" },
-      { icon: "🍽️", text: "低于 30 时自动吃饭" },
-    ],
+    rules: attributeRules.satiety,
   },
   {
     key: "cleanliness" as const,
@@ -82,11 +80,7 @@ const attributeBars = computed(() => [
     value: attrData.value.cleanliness,
     cap: attrCap.value,
     color: "blue",
-    rules: [
-      { icon: "📉", text: "每 8 分钟 -1" },
-      { icon: "⚠️", text: "低于 30 时健康下降" },
-      { icon: "🚿", text: "低于 30 时自动洗澡" },
-    ],
+    rules: attributeRules.cleanliness,
   },
   {
     key: "stamina" as const,
@@ -95,13 +89,7 @@ const attributeBars = computed(() => [
     value: attrData.value.stamina,
     cap: attrCap.value,
     color: "green",
-    rules: [
-      { icon: "📉", text: "打工时每 1 分钟 -1" },
-      { icon: "📈", text: "平时每 30 秒 +1" },
-      { icon: "😴", text: "睡眠时每 10 秒 +1" },
-      { icon: "💤", text: "为 0 时强制睡觉" },
-      { icon: "💼", text: "打工需最低体力 15~45" },
-    ],
+    rules: attributeRules.stamina,
   },
   {
     key: "health" as const,
@@ -110,43 +98,13 @@ const attributeBars = computed(() => [
     value: attrData.value.health,
     cap: HEALTH_CAP,
     color: "red",
-    rules: [
-      { icon: "📉", text: "饥饿时每 3 分钟 -1" },
-      { icon: "📉", text: "脏时每 5 分钟 -1" },
-      { icon: "📈", text: "正常时每 3 分钟 +1" },
-      { icon: "🔒", text: "上限固定 100" },
-      { icon: "🐾", text: "影响宠物行为表现" },
-    ],
+    rules: attributeRules.health,
   },
 ]);
 
 // 悬浮提示状态
 const hoveredAttr = ref<string | null>(null);
 const hoveredWork = ref<string | null>(null);
-
-// 打工提示规则
-const workRules: Record<string, { icon: string; text: string }[]> = {
-  brickCarrying: [
-    { icon: "⏱️", text: "持续 30 分钟" },
-    { icon: "⚡", text: "每 1 分钟消耗 1 体力" },
-    { icon: "📉", text: "饱腹衰减加速 3 倍" },
-    { icon: "📉", text: "清洁衰减加速 3 倍" },
-    { icon: "💰", text: "每分钟获得 1 金币" },
-    { icon: "🎁", text: "完工奖 +20 金币" },
-  ],
-  flyerDistributing: [
-    { icon: "⏱️", text: "持续 15 分钟" },
-    { icon: "⚡", text: "每 1 分钟消耗 1 体力" },
-    { icon: "💰", text: "每分钟获得 1 金币" },
-    { icon: "🎁", text: "完工奖 +5 金币" },
-  ],
-  programmer: [
-    { icon: "⏱️", text: "持续 45 分钟" },
-    { icon: "⚡", text: "每 1 分钟消耗 1 体力" },
-    { icon: "💰", text: "每分钟获得 2 金币" },
-    { icon: "🎁", text: "完工奖 +30 金币" },
-  ],
-};
 
 // 工作列表
 const workList = computed(() => {
@@ -395,7 +353,7 @@ const close = () => {
               class="attr-bar-fill"
               :class="`bar-${bar.color}`"
               :style="{
-                width: Math.min(100, (bar.value / bar.cap) * 100) + '%',
+                width: attrPercent(bar.value, bar.cap) + '%',
               }"
             ></div>
           </div>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // 快捷操作面板 - 双击宠物后显示属性概览和快捷操作按钮
-import { ref, watch, onBeforeUnmount, computed } from "vue";
+import { ref, watch, onBeforeUnmount, computed, toRef } from "vue";
 import { mousePosition } from "./composables/sharedState";
+import { useAttributePercent } from "./composables/useAttributePercent";
 
 const props = defineProps<{
   visible: boolean;
@@ -31,27 +32,26 @@ const AUTO_CLOSE_DELAY = 3000;
 // 是否正在显示（用于动画控制）
 const isShowing = ref(false);
 
-// 属性百分比（健康值上限固定为100，其他属性随等级增长）
-const satietyPct = computed(
-  () => Math.min(100, (props.satiety / props.attributeCap) * 100) + "%",
+// 属性百分比与低值警告（换算规则统一在 useAttributePercent）
+const {
+  satietyPct,
+  cleanlinessPct,
+  staminaPct,
+  healthPct,
+  isSatietyLow,
+  isCleanlinessLow: isCleanlinesLow,
+  isStaminaLow,
+  isHealthLow,
+} = useAttributePercent(
+  // props 单值转聚合对象（保持响应式）
+  computed(() => ({
+    satiety: props.satiety,
+    cleanliness: props.cleanliness,
+    stamina: props.stamina,
+    health: props.health,
+  })),
+  toRef(props, "attributeCap"),
 );
-const cleanlinessPct = computed(
-  () => Math.min(100, (props.cleanliness / props.attributeCap) * 100) + "%",
-);
-const staminaPct = computed(
-  () => Math.min(100, (props.stamina / props.attributeCap) * 100) + "%",
-);
-const healthPct = computed(
-  () => Math.min(100, (props.health / 100) * 100) + "%",
-);
-
-// 属性是否处于低值警告（健康值上限固定为100）
-const isSatietyLow = computed(() => props.satiety / props.attributeCap < 0.25);
-const isCleanlinesLow = computed(
-  () => props.cleanliness / props.attributeCap < 0.25,
-);
-const isStaminaLow = computed(() => props.stamina / props.attributeCap < 0.25);
-const isHealthLow = computed(() => props.health / 100 < 0.25);
 
 // 通过坐标检测鼠标是否在面板交互区域内
 function isMouseOnPanel(): boolean {
@@ -129,7 +129,7 @@ onBeforeUnmount(() => {
           <div class="attr-track">
             <div
               class="attr-fill attr-satiety"
-              :style="{ width: satietyPct }"
+              :style="{ width: satietyPct + '%' }"
             ></div>
           </div>
         </div>
@@ -138,7 +138,7 @@ onBeforeUnmount(() => {
           <div class="attr-track">
             <div
               class="attr-fill attr-cleanliness"
-              :style="{ width: cleanlinessPct }"
+              :style="{ width: cleanlinessPct + '%' }"
             ></div>
           </div>
         </div>
@@ -147,7 +147,7 @@ onBeforeUnmount(() => {
           <div class="attr-track">
             <div
               class="attr-fill attr-stamina"
-              :style="{ width: staminaPct }"
+              :style="{ width: staminaPct + '%' }"
             ></div>
           </div>
         </div>
@@ -156,7 +156,7 @@ onBeforeUnmount(() => {
           <div class="attr-track">
             <div
               class="attr-fill attr-health"
-              :style="{ width: healthPct }"
+              :style="{ width: healthPct + '%' }"
             ></div>
           </div>
         </div>
