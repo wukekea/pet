@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { isDark } from "../composables/theme";
+import BaseModal from "../ui/BaseModal.vue";
 import {
   settings,
   updateSetting,
@@ -171,6 +172,15 @@ const borderColor = computed(() =>
   isDark.value ? themeColors.value.borderDark : themeColors.value.borderLight,
 );
 
+// BaseModal 的主题 CSS 变量（替代原 settings-overlay/settings-modal 的内联样式）
+const settingsCssVars = computed(() => ({
+  "--overlay-bg": "rgba(0, 0, 0, 0.4)",
+  "--modal-bg": modalBg.value,
+  "--modal-shadow": modalShadow.value,
+  "--modal-close-bg": borderColor.value,
+  "--modal-close-color": textMuted.value,
+}));
+
 // 分类配置
 const categories = [
   { key: "behavior" as const, icon: "🐾", label: "行为", color: "#f5a623" },
@@ -217,11 +227,6 @@ const formatPercent = (val: number) => `${val}%`;
 // 关闭弹窗
 const closeModal = () => {
   emit("close");
-};
-
-// 点击遮罩层关闭
-const handleOverlayClick = () => {
-  closeModal();
 };
 
 // 测试语音
@@ -428,1284 +433,1041 @@ const handleSpeechInputToggle = async () => {
 </script>
 
 <template>
-  <Teleport to="body">
-    <Transition name="fade">
-      <div
-        v-if="visible"
-        class="settings-overlay"
-        @mousedown.stop="handleOverlayClick"
+  <BaseModal
+    :visible="visible"
+    title="设置"
+    icon="⚙️"
+    :decor-emojis="['🌟', '✨', '🍬', '🌸']"
+    :width="400"
+    :height="520"
+    :border-radius="28"
+    :css-vars="settingsCssVars"
+    @close="closeModal"
+  >
+    <!-- 分类标签栏 -->
+    <div class="category-tabs">
+      <button
+        v-for="cat in categories"
+        :key="cat.key"
+        class="tab-btn"
+        :class="{ active: activeCategory === cat.key }"
+        :style="{
+          '--tab-color': cat.color,
+        }"
+        @click="activeCategory = cat.key"
       >
-        <Transition name="modal-pop">
-          <div
-            v-if="visible"
-            class="settings-modal"
-            :style="{
-              background: modalBg,
-              boxShadow: modalShadow,
-            }"
-            @mousedown.stop
-          >
-            <!-- 装饰元素 -->
-            <div class="modal-decor">
-              <span class="decor-item decor-1">🌟</span>
-              <span class="decor-item decor-2">✨</span>
-              <span class="decor-item decor-3">🍬</span>
-              <span class="decor-item decor-4">🌸</span>
-            </div>
+        <span class="tab-icon">{{ cat.icon }}</span>
+        <span class="tab-label">{{ cat.label }}</span>
+        <div v-if="activeCategory === cat.key" class="tab-indicator" />
+      </button>
+    </div>
 
-            <!-- 头部 -->
-            <div class="modal-header">
-              <div class="header-title">
-                <span class="title-icon">⚙️</span>
-                <span class="title-text" :style="{ color: textColor }"
-                  >设置</span
+    <!-- 内容区 -->
+    <div class="modal-content">
+      <!-- 宠物行为设置 -->
+      <div v-if="activeCategory === 'behavior'" class="settings-panel">
+        <div class="panel-header">
+          <span class="panel-icon">🐾</span>
+          <span class="panel-title" :style="{ color: textColor }"
+            >宠物行为</span
+          >
+        </div>
+
+        <div class="settings-list">
+          <!-- 开机自启动 -->
+          <div class="setting-item">
+            <div class="setting-main">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(245, 166, 35, 0.15);
+                  --icon-color: #f5a623;
+                "
+              >
+                <span class="setting-icon">🚀</span>
+              </div>
+              <div class="setting-info">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >开机自启动</span
+                >
+                <span class="setting-desc" :style="{ color: textMuted }"
+                  >系统启动时自动运行宠物</span
                 >
               </div>
-              <button class="close-btn" @click="closeModal">
-                <span class="close-icon">✕</span>
-              </button>
             </div>
+            <button
+              class="toggle-switch"
+              :class="{ active: settings.autoStart }"
+              @click="settings.autoStart = !settings.autoStart"
+            >
+              <span class="toggle-thumb" />
+            </button>
+          </div>
 
-            <!-- 分类标签栏 -->
-            <div class="category-tabs">
-              <button
-                v-for="cat in categories"
-                :key="cat.key"
-                class="tab-btn"
-                :class="{ active: activeCategory === cat.key }"
-                :style="{
-                  '--tab-color': cat.color,
-                }"
-                @click="activeCategory = cat.key"
+          <!-- 宠物大小 -->
+          <div class="setting-item">
+            <div class="setting-main">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(244, 114, 182, 0.15);
+                  --icon-color: #f472b6;
+                "
               >
-                <span class="tab-icon">{{ cat.icon }}</span>
-                <span class="tab-label">{{ cat.label }}</span>
-                <div v-if="activeCategory === cat.key" class="tab-indicator" />
-              </button>
+                <span class="setting-icon">📐</span>
+              </div>
+              <div class="setting-info">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >宠物大小</span
+                >
+                <span
+                  class="setting-value"
+                  :style="{ color: themeColors.primary }"
+                  >{{ formatPercent(settings.petSize) }}</span
+                >
+              </div>
             </div>
-
-            <!-- 内容区 -->
-            <div class="modal-content">
-              <!-- 宠物行为设置 -->
-              <div v-if="activeCategory === 'behavior'" class="settings-panel">
-                <div class="panel-header">
-                  <span class="panel-icon">🐾</span>
-                  <span class="panel-title" :style="{ color: textColor }"
-                    >宠物行为</span
-                  >
-                </div>
-
-                <div class="settings-list">
-                  <!-- 开机自启动 -->
-                  <div class="setting-item">
-                    <div class="setting-main">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(245, 166, 35, 0.15);
-                          --icon-color: #f5a623;
-                        "
-                      >
-                        <span class="setting-icon">🚀</span>
-                      </div>
-                      <div class="setting-info">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >开机自启动</span
-                        >
-                        <span class="setting-desc" :style="{ color: textMuted }"
-                          >系统启动时自动运行宠物</span
-                        >
-                      </div>
-                    </div>
-                    <button
-                      class="toggle-switch"
-                      :class="{ active: settings.autoStart }"
-                      @click="settings.autoStart = !settings.autoStart"
-                    >
-                      <span class="toggle-thumb" />
-                    </button>
-                  </div>
-
-                  <!-- 宠物大小 -->
-                  <div class="setting-item">
-                    <div class="setting-main">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(244, 114, 182, 0.15);
-                          --icon-color: #f472b6;
-                        "
-                      >
-                        <span class="setting-icon">📐</span>
-                      </div>
-                      <div class="setting-info">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >宠物大小</span
-                        >
-                        <span
-                          class="setting-value"
-                          :style="{ color: themeColors.primary }"
-                          >{{ formatPercent(settings.petSize) }}</span
-                        >
-                      </div>
-                    </div>
-                    <div class="slider-wrapper">
-                      <input
-                        v-model.number="settings.petSize"
-                        type="range"
-                        min="50"
-                        max="150"
-                        class="custom-slider"
-                      />
-                      <div class="slider-marks">
-                        <span>小</span>
-                        <span>中</span>
-                        <span>大</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- 移动速度 -->
-                  <div class="setting-item">
-                    <div class="setting-main">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(96, 165, 250, 0.15);
-                          --icon-color: #60a5fa;
-                        "
-                      >
-                        <span class="setting-icon">⚡</span>
-                      </div>
-                      <div class="setting-info">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >移动速度</span
-                        >
-                        <span
-                          class="setting-value"
-                          :style="{ color: themeColors.accent }"
-                          >{{ formatPercent(settings.moveSpeed) }}</span
-                        >
-                      </div>
-                    </div>
-                    <div class="slider-wrapper">
-                      <input
-                        v-model.number="settings.moveSpeed"
-                        type="range"
-                        min="20"
-                        max="100"
-                        class="custom-slider accent"
-                      />
-                      <div class="slider-marks">
-                        <span>慢</span>
-                        <span>中</span>
-                        <span>快</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- 自动睡眠 -->
-                  <div class="setting-item">
-                    <div class="setting-main">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(167, 139, 250, 0.15);
-                          --icon-color: #a78bfa;
-                        "
-                      >
-                        <span class="setting-icon">💤</span>
-                      </div>
-                      <div class="setting-info">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >自动睡眠</span
-                        >
-                        <span class="setting-desc" :style="{ color: textMuted }"
-                          >闲置时自动进入睡眠状态</span
-                        >
-                      </div>
-                    </div>
-                    <button
-                      class="toggle-switch"
-                      :class="{ active: settings.autoSleep }"
-                      @click="settings.autoSleep = !settings.autoSleep"
-                    >
-                      <span class="toggle-thumb" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 外观设置 -->
-              <div
-                v-if="activeCategory === 'appearance'"
-                class="settings-panel"
-              >
-                <div class="panel-header">
-                  <span class="panel-icon">🎨</span>
-                  <span class="panel-title" :style="{ color: textColor }"
-                    >外观设置</span
-                  >
-                </div>
-
-                <div class="settings-list">
-                  <!-- 主题选择 -->
-                  <div class="setting-item vertical">
-                    <div class="setting-main">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(245, 166, 35, 0.15);
-                          --icon-color: #f5a623;
-                        "
-                      >
-                        <span class="setting-icon">🌈</span>
-                      </div>
-                      <div class="setting-info">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >主题模式</span
-                        >
-                      </div>
-                    </div>
-                    <div class="theme-selector">
-                      <button
-                        class="theme-option"
-                        :class="{ active: settings.theme === 'system' }"
-                        @click="handleThemeChange('system')"
-                      >
-                        <span class="theme-icon">💻</span>
-                        <span class="theme-label">跟随系统</span>
-                      </button>
-                      <button
-                        class="theme-option"
-                        :class="{ active: settings.theme === 'light' }"
-                        @click="handleThemeChange('light')"
-                      >
-                        <span class="theme-icon">☀️</span>
-                        <span class="theme-label">浅色</span>
-                      </button>
-                      <button
-                        class="theme-option"
-                        :class="{ active: settings.theme === 'dark' }"
-                        @click="handleThemeChange('dark')"
-                      >
-                        <span class="theme-icon">🌙</span>
-                        <span class="theme-label">深色</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- 透明度 -->
-                  <div class="setting-item">
-                    <div class="setting-main">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(96, 165, 250, 0.15);
-                          --icon-color: #60a5fa;
-                        "
-                      >
-                        <span class="setting-icon">👻</span>
-                      </div>
-                      <div class="setting-info">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >透明度</span
-                        >
-                        <span
-                          class="setting-value"
-                          :style="{ color: themeColors.accent }"
-                          >{{ formatPercent(settings.opacity) }}</span
-                        >
-                      </div>
-                    </div>
-                    <div class="slider-wrapper">
-                      <input
-                        v-model.number="settings.opacity"
-                        type="range"
-                        min="30"
-                        max="100"
-                        class="custom-slider accent"
-                      />
-                    </div>
-                  </div>
-
-                  <!-- 脚印轨迹 -->
-                  <div class="setting-item">
-                    <div class="setting-main">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(244, 114, 182, 0.15);
-                          --icon-color: #f472b6;
-                        "
-                      >
-                        <span class="setting-icon">👣</span>
-                      </div>
-                      <div class="setting-info">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >脚印轨迹</span
-                        >
-                        <span class="setting-desc" :style="{ color: textMuted }"
-                          >移动时显示可爱的脚印</span
-                        >
-                      </div>
-                    </div>
-                    <button
-                      class="toggle-switch pink"
-                      :class="{ active: settings.showFootprints }"
-                      @click="
-                        settings.showFootprints = !settings.showFootprints
-                      "
-                    >
-                      <span class="toggle-thumb" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 语音设置 -->
-              <div v-if="activeCategory === 'voice'" class="settings-panel">
-                <div class="panel-header">
-                  <span class="panel-icon">🔊</span>
-                  <span class="panel-title" :style="{ color: textColor }"
-                    >语音设置</span
-                  >
-                </div>
-
-                <div v-if="speechSupported" class="settings-list">
-                  <!-- 语音开关 -->
-                  <div class="setting-item">
-                    <div class="setting-main">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(96, 165, 250, 0.15);
-                          --icon-color: #60a5fa;
-                        "
-                      >
-                        <span class="setting-icon">🎵</span>
-                      </div>
-                      <div class="setting-info">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >启用语音</span
-                        >
-                        <span class="setting-desc" :style="{ color: textMuted }"
-                          >宠物说话时播放语音</span
-                        >
-                      </div>
-                    </div>
-                    <button
-                      class="toggle-switch blue"
-                      :class="{ active: settings.voiceEnabled }"
-                      @click="handleVoiceToggle"
-                    >
-                      <span class="toggle-thumb" />
-                    </button>
-                  </div>
-
-                  <!-- 语音引擎 -->
-                  <div
-                    class="setting-item vertical"
-                    :class="{ disabled: !settings.voiceEnabled }"
-                  >
-                    <div class="setting-main">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(167, 139, 250, 0.15);
-                          --icon-color: #a78bfa;
-                        "
-                      >
-                        <span class="setting-icon">🔧</span>
-                      </div>
-                      <div class="setting-info">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >语音引擎</span
-                        >
-                      </div>
-                    </div>
-                    <div class="engine-selector">
-                      <button
-                        class="engine-option"
-                        :class="{ active: speechEngine === 'browser' }"
-                        :disabled="!settings.voiceEnabled"
-                        @click="handleSwitchEngine('browser')"
-                      >
-                        <span class="engine-name">浏览器内置</span>
-                        <span class="engine-desc">免费，无需网络</span>
-                      </button>
-                      <button
-                        class="engine-option"
-                        :class="{ active: speechEngine === 'edge' }"
-                        :disabled="!settings.voiceEnabled || isEdgeLoading"
-                        @click="handleSwitchEngine('edge')"
-                      >
-                        <span class="engine-name">Edge TTS</span>
-                        <span class="engine-desc">高质量，需网络</span>
-                      </button>
-                    </div>
-                    <div
-                      v-if="edgeStatus && speechEngine === 'edge'"
-                      class="engine-status"
-                      :style="{ color: textMuted }"
-                    >
-                      {{ edgeStatus }}
-                    </div>
-                  </div>
-
-                  <!-- 音量 -->
-                  <div
-                    class="setting-item"
-                    :class="{ disabled: !settings.voiceEnabled }"
-                  >
-                    <div class="setting-main">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(245, 166, 35, 0.15);
-                          --icon-color: #f5a623;
-                        "
-                      >
-                        <span class="setting-icon">🔊</span>
-                      </div>
-                      <div class="setting-info">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >音量</span
-                        >
-                        <span
-                          class="setting-value"
-                          :style="{ color: themeColors.primary }"
-                          >{{ formatPercent(speechVolume * 100) }}</span
-                        >
-                      </div>
-                    </div>
-                    <div class="slider-wrapper">
-                      <input
-                        v-model.number="speechVolume"
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.1"
-                        :disabled="!settings.voiceEnabled"
-                        class="custom-slider"
-                      />
-                    </div>
-                  </div>
-
-                  <!-- 语速 -->
-                  <div
-                    class="setting-item"
-                    :class="{ disabled: !settings.voiceEnabled }"
-                  >
-                    <div class="setting-main">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(52, 211, 153, 0.15);
-                          --icon-color: #34d399;
-                        "
-                      >
-                        <span class="setting-icon">🚀</span>
-                      </div>
-                      <div class="setting-info">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >语速</span
-                        >
-                        <span
-                          class="setting-value"
-                          :style="{ color: '#34d399' }"
-                          >{{ formatPercent(speechRate * 100) }}</span
-                        >
-                      </div>
-                    </div>
-                    <div class="slider-wrapper">
-                      <input
-                        v-model.number="speechRate"
-                        type="range"
-                        min="0.5"
-                        max="1.5"
-                        step="0.1"
-                        :disabled="!settings.voiceEnabled"
-                        class="custom-slider green"
-                      />
-                      <div class="slider-marks">
-                        <span>慢</span>
-                        <span>中</span>
-                        <span>快</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- 测试按钮 -->
-                  <button
-                    class="test-voice-btn"
-                    :disabled="!settings.voiceEnabled"
-                    @click="testSpeech"
-                  >
-                    <span class="btn-icon">🎤</span>
-                    <span class="btn-text">测试语音</span>
-                  </button>
-                </div>
-
-                <div v-else class="unsupported-tip" :style="{ borderColor }">
-                  <span class="tip-icon">⚠️</span>
-                  <span class="tip-text" :style="{ color: textMuted }"
-                    >您的浏览器不支持语音合成功能</span
-                  >
-                </div>
-              </div>
-
-              <!-- 交互设置 -->
-              <div
-                v-if="activeCategory === 'interaction'"
-                class="settings-panel"
-              >
-                <div class="panel-header">
-                  <span class="panel-icon">✋</span>
-                  <span class="panel-title" :style="{ color: textColor }"
-                    >交互设置</span
-                  >
-                </div>
-
-                <div class="settings-list">
-                  <!-- 点击反应 -->
-                  <div class="setting-item">
-                    <div class="setting-main">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(245, 166, 35, 0.15);
-                          --icon-color: #f5a623;
-                        "
-                      >
-                        <span class="setting-icon">👆</span>
-                      </div>
-                      <div class="setting-info">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >点击反应</span
-                        >
-                        <span class="setting-desc" :style="{ color: textMuted }"
-                          >点击宠物时触发互动</span
-                        >
-                      </div>
-                    </div>
-                    <button
-                      class="toggle-switch"
-                      :class="{ active: settings.clickReaction }"
-                      @click="settings.clickReaction = !settings.clickReaction"
-                    >
-                      <span class="toggle-thumb" />
-                    </button>
-                  </div>
-
-                  <!-- 拖拽音效 -->
-                  <div class="setting-item">
-                    <div class="setting-main">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(244, 114, 182, 0.15);
-                          --icon-color: #f472b6;
-                        "
-                      >
-                        <span class="setting-icon">🎶</span>
-                      </div>
-                      <div class="setting-info">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >拖拽音效</span
-                        >
-                        <span class="setting-desc" :style="{ color: textMuted }"
-                          >拖拽宠物时播放音效</span
-                        >
-                      </div>
-                    </div>
-                    <button
-                      class="toggle-switch pink"
-                      :class="{ active: settings.dragSound }"
-                      @click="settings.dragSound = !settings.dragSound"
-                    >
-                      <span class="toggle-thumb" />
-                    </button>
-                  </div>
-
-                  <!-- 分隔线 -->
-                  <div class="settings-divider" :style="{ borderColor }"></div>
-
-                  <!-- 语音输入设置 -->
-                  <div class="speech-input-section">
-                    <div class="setting-item">
-                      <div class="setting-main">
-                        <div
-                          class="setting-icon-wrapper"
-                          style="
-                            --icon-bg: rgba(139, 92, 246, 0.15);
-                            --icon-color: #8b5cf6;
-                          "
-                        >
-                          <span class="setting-icon">🎙️</span>
-                        </div>
-                        <div class="setting-info">
-                          <span
-                            class="setting-label"
-                            :style="{ color: textColor }"
-                            >语音输入</span
-                          >
-                          <span
-                            class="setting-desc"
-                            :style="{ color: textMuted }"
-                            >在 AI 对话中使用语音输入文字</span
-                          >
-                        </div>
-                      </div>
-                      <div class="setting-status">
-                        <span
-                          v-if="isSpeechInputReady"
-                          class="status-badge ready"
-                          >已就绪</span
-                        >
-                        <span v-else class="status-badge not-ready"
-                          >未就绪</span
-                        >
-                        <button
-                          class="toggle-switch purple"
-                          :class="{ active: speechInputEnabled }"
-                          :disabled="isCheckingStatus"
-                          @click="handleSpeechInputToggle"
-                        >
-                          <span class="toggle-thumb" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <!-- 依赖状态展示 -->
-                    <div
-                      v-if="!isSpeechInputReady"
-                      class="dependencies-panel"
-                      :style="{ background: cardBg }"
-                    >
-                      <div class="panel-title-row">
-                        <div class="panel-title-left">
-                          <span class="panel-icon-small">📦</span>
-                          <span :style="{ color: textColor }">依赖检测</span>
-                        </div>
-                        <button
-                          class="refresh-btn"
-                          :disabled="isCheckingStatus"
-                          @click="checkSpeechInputDependencies"
-                        >
-                          <span
-                            class="refresh-icon"
-                            :class="{ spinning: isCheckingStatus }"
-                            >🔄</span
-                          >
-                          <span>刷新</span>
-                        </button>
-                      </div>
-
-                      <div class="dependency-list">
-                        <div
-                          v-for="dep in [
-                            {
-                              key: 'sox',
-                              name: 'sox',
-                              desc: '音频录制工具',
-                              installed: speechInputStatus.soxInstalled,
-                            },
-                            {
-                              key: 'whisper',
-                              name: 'whisper-cpp',
-                              desc: '语音识别引擎',
-                              installed: speechInputStatus.whisperInstalled,
-                            },
-                            {
-                              key: 'model',
-                              name: 'ggml-base.bin',
-                              desc: '语音识别模型 (~150MB)',
-                              installed: speechInputStatus.modelExists,
-                            },
-                          ]"
-                          :key="dep.key"
-                          class="dependency-item"
-                          :class="{ installed: dep.installed }"
-                        >
-                          <div class="dep-status">
-                            <span class="status-icon">
-                              {{ dep.installed ? "✅" : "❌" }}
-                            </span>
-                          </div>
-                          <div class="dep-info">
-                            <div class="dep-name-row">
-                              <span
-                                class="dep-name"
-                                :style="{ color: textColor }"
-                                >{{ dep.name }}</span
-                              >
-                              <span
-                                class="dep-desc"
-                                :style="{ color: textMuted }"
-                                >{{ dep.desc }}</span
-                              >
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="help-text" :style="{ color: textMuted }">
-                        <p>💡 安装完成后点击刷新按钮检测</p>
-                        <p>🔒 语音输入使用本地模型，无需联网，保护隐私</p>
-                      </div>
-                    </div>
-
-                    <!-- 已就绪提示 -->
-                    <div
-                      v-else-if="speechInputEnabled"
-                      class="ready-tip"
-                      :style="{ color: themeColors.primary }"
-                    >
-                      <span class="ready-icon">✨</span>
-                      <span class="ready-text"
-                        >语音输入已启用，在 AI 对话中点击麦克风即可使用</span
-                      >
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- API 配置 -->
-              <div v-if="activeCategory === 'api'" class="settings-panel">
-                <div class="panel-header">
-                  <span class="panel-icon">🔑</span>
-                  <span class="panel-title" :style="{ color: textColor }"
-                    >API 配置</span
-                  >
-                </div>
-
-                <div class="settings-list">
-                  <!-- 和风天气配置 -->
-                  <div class="api-section">
-                    <div class="api-section-header">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(96, 165, 250, 0.15);
-                          --icon-color: #60a5fa;
-                        "
-                      >
-                        <span class="setting-icon">🌤️</span>
-                      </div>
-                      <div class="api-section-title">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >和风天气</span
-                        >
-                        <span class="setting-desc" :style="{ color: textMuted }"
-                          >用于获取实时天气信息</span
-                        >
-                      </div>
-                    </div>
-                    <div class="api-input-group">
-                      <div class="input-row">
-                        <label :style="{ color: textMuted }">API Key</label>
-                        <input
-                          v-model="apiConfig.qweather.key"
-                          type="password"
-                          placeholder="请输入 API Key"
-                          class="api-key-input"
-                        />
-                      </div>
-                      <div class="input-row">
-                        <label :style="{ color: textMuted }">API Host</label>
-                        <input
-                          v-model="apiConfig.qweather.host"
-                          type="text"
-                          placeholder="devapi.qweather.com"
-                          class="api-key-input"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- 高德地图配置 -->
-                  <div class="api-section">
-                    <div class="api-section-header">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(52, 211, 153, 0.15);
-                          --icon-color: #34d399;
-                        "
-                      >
-                        <span class="setting-icon">📍</span>
-                      </div>
-                      <div class="api-section-title">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >高德地图</span
-                        >
-                        <span class="setting-desc" :style="{ color: textMuted }"
-                          >用于获取位置信息</span
-                        >
-                      </div>
-                    </div>
-                    <div class="api-input-group">
-                      <div class="input-row">
-                        <label :style="{ color: textMuted }">API Key</label>
-                        <input
-                          v-model="apiConfig.amap.key"
-                          type="password"
-                          placeholder="请输入 API Key"
-                          class="api-key-input"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- AI 对话配置 -->
-                  <div class="api-section">
-                    <div class="api-section-header">
-                      <div
-                        class="setting-icon-wrapper"
-                        style="
-                          --icon-bg: rgba(167, 139, 250, 0.15);
-                          --icon-color: #a78bfa;
-                        "
-                      >
-                        <span class="setting-icon">🤖</span>
-                      </div>
-                      <div class="api-section-title">
-                        <span
-                          class="setting-label"
-                          :style="{ color: textColor }"
-                          >AI 对话</span
-                        >
-                        <span class="setting-desc" :style="{ color: textMuted }"
-                          >用于 AI 聊天功能</span
-                        >
-                      </div>
-                    </div>
-                    <div class="api-input-group">
-                      <div class="input-row">
-                        <label :style="{ color: textMuted }">请求格式</label>
-                        <div class="format-selector">
-                          <button
-                            v-for="fmt in aiFormats"
-                            :key="fmt.key"
-                            class="format-option"
-                            :class="{
-                              active: apiConfig.ai.format === fmt.key,
-                            }"
-                            @click="apiConfig.ai.format = fmt.key"
-                          >
-                            <span class="format-name">{{ fmt.label }}</span>
-                            <span class="format-desc">{{ fmt.desc }}</span>
-                          </button>
-                        </div>
-                      </div>
-                      <div class="input-row">
-                        <label :style="{ color: textMuted }">API URL</label>
-                        <input
-                          v-model="apiConfig.ai.url"
-                          type="text"
-                          placeholder="https://api.openai.com/v1/chat/completions"
-                          class="api-key-input"
-                        />
-                      </div>
-                      <div class="input-row">
-                        <label :style="{ color: textMuted }">API Key</label>
-                        <input
-                          v-model="apiConfig.ai.key"
-                          type="password"
-                          placeholder="请输入 API Key"
-                          class="api-key-input"
-                        />
-                      </div>
-                      <div class="input-row">
-                        <label :style="{ color: textMuted }">模型名称</label>
-                        <input
-                          v-model="apiConfig.ai.model"
-                          type="text"
-                          placeholder="如: gpt-4o-mini, glm-4"
-                          class="api-key-input"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- 提示信息 -->
-                  <div class="api-tip" :style="{ borderColor }">
-                    <span class="tip-icon">💡</span>
-                    <span class="tip-text" :style="{ color: textMuted }">
-                      API
-                      配置仅存储在本地，不会上传到服务器。天气与定位配置保存后
-                      重启应用生效
-                    </span>
-                  </div>
-
-                  <!-- 保存按钮 -->
-                  <button
-                    class="api-save-btn"
-                    :style="{
-                      background: borderColor,
-                      color: '#fff',
-                    }"
-                    @click="saveApi"
-                  >
-                    {{ apiSaveSuccess ? "✓ 已保存" : "保存 API 配置" }}
-                  </button>
-                </div>
-              </div>
-
-              <!-- 关于 -->
-              <div v-if="activeCategory === 'about'" class="settings-panel">
-                <div class="about-content">
-                  <div class="about-logo">
-                    <div class="logo-bg">
-                      <span class="logo-icon">🐾</span>
-                    </div>
-                  </div>
-                  <h3 class="about-title" :style="{ color: textColor }">
-                    桌面宠物
-                  </h3>
-                  <p class="about-version" :style="{ color: textMuted }">
-                    版本 {{ version }}
-                  </p>
-                  <p class="about-desc" :style="{ color: textMuted }">
-                    一个可爱的桌面伴侣，陪伴你度过每一天的工作时光
-                  </p>
-
-                  <div class="about-actions">
-                    <button
-                      class="about-btn"
-                      :class="{ checking: isCheckingUpdate }"
-                      :disabled="isCheckingUpdate"
-                      @click="checkUpdate"
-                    >
-                      <span class="btn-icon">🔄</span>
-                      <span class="btn-text">
-                        {{
-                          isCheckingUpdate
-                            ? "检查中..."
-                            : hasUpdate
-                              ? "有更新可用"
-                              : "检查更新"
-                        }}
-                      </span>
-                    </button>
-                    <a
-                      href="https://github.com/wukekea/pet"
-                      target="_blank"
-                      class="about-btn secondary"
-                    >
-                      <span class="btn-icon">📖</span>
-                      <span class="btn-text">开源地址</span>
-                    </a>
-                  </div>
-
-                  <!-- 更新信息展示 -->
-                  <div
-                    v-if="(updateInfo || updateError) && !isCheckingUpdate"
-                    class="update-info"
-                    :class="{
-                      'has-update': hasUpdate,
-                      'is-downloading': isDownloading,
-                      'update-ready': updateDownloaded,
-                      'has-error': updateError && !hasUpdate,
-                    }"
-                  >
-                    <!-- 下载进度 -->
-                    <div v-if="isDownloading" class="update-downloading">
-                      <span class="update-icon">⬇️</span>
-                      <div class="download-progress">
-                        <div class="progress-bar">
-                          <div
-                            class="progress-fill"
-                            :style="{ width: `${downloadProgress}%` }"
-                          />
-                        </div>
-                        <span
-                          class="progress-text"
-                          :style="{ color: textMuted }"
-                        >
-                          下载中... {{ downloadProgress.toFixed(1) }}%
-                        </span>
-                      </div>
-                    </div>
-
-                    <!-- 下载完成，等待安装 -->
-                    <div v-else-if="updateDownloaded" class="update-ready">
-                      <div class="update-ready-main">
-                        <span class="update-icon">✅</span>
-                        <div class="update-details">
-                          <span
-                            class="update-title"
-                            :style="{ color: textColor }"
-                            >更新已就绪</span
-                          >
-                          <span
-                            class="update-current"
-                            :style="{ color: textMuted }"
-                            >点击下方按钮重启并安装</span
-                          >
-                        </div>
-                        <button class="install-btn" @click="installUpdate">
-                          <span class="btn-icon">🔄</span>
-                          <span class="btn-text">重启安装</span>
-                        </button>
-                      </div>
-                      <div
-                        v-if="updateError"
-                        class="update-error install-error"
-                      >
-                        <span class="error-icon">⚠️</span>
-                        <span class="error-text">{{ updateError }}</span>
-                        <button class="copy-error-btn" @click="copyError">
-                          <span v-if="copySuccess" class="copy-icon success"
-                            >✓</span
-                          >
-                          <span v-else class="copy-icon">📋</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    <!-- 发现新版本 -->
-                    <div
-                      v-else-if="hasUpdate && updateInfo"
-                      class="update-available"
-                    >
-                      <span class="update-icon">🎉</span>
-                      <div class="update-details">
-                        <span class="update-title" :style="{ color: textColor }"
-                          >发现新版本 v{{ updateInfo.latestVersion }}</span
-                        >
-                        <span
-                          class="update-current"
-                          :style="{ color: textMuted }"
-                          >当前版本 v{{ updateInfo.currentVersion }}</span
-                        >
-                      </div>
-                      <button class="download-btn" @click="downloadUpdate">
-                        <span class="btn-icon">⬇️</span>
-                        <span class="btn-text">立即下载</span>
-                      </button>
-                    </div>
-
-                    <!-- 已是最新版本 -->
-                    <div
-                      v-else-if="updateInfo && !hasUpdate"
-                      class="update-latest"
-                    >
-                      <span class="update-icon">✅</span>
-                      <span class="update-message" :style="{ color: textMuted }"
-                        >已是最新版本 v{{ updateInfo.currentVersion }}</span
-                      >
-                    </div>
-
-                    <!-- 只有错误，没有更新信息 -->
-                    <div
-                      v-else-if="!updateInfo && updateError"
-                      class="update-error-only"
-                    >
-                      <span class="error-icon">⚠️</span>
-                      <span class="error-text">{{ updateError }}</span>
-                      <button class="copy-error-btn" @click="copyError">
-                        <span v-if="copySuccess" class="copy-icon success"
-                          >✓</span
-                        >
-                        <span v-else class="copy-icon">📋</span>
-                      </button>
-                    </div>
-
-                    <!-- 错误信息（附加在更新信息后面，但不在更新已就绪时显示） -->
-                    <div
-                      v-if="updateError && updateInfo && !updateDownloaded"
-                      class="update-error"
-                    >
-                      <span class="error-icon">⚠️</span>
-                      <span class="error-text">{{ updateError }}</span>
-                      <button class="copy-error-btn" @click="copyError">
-                        <span v-if="copySuccess" class="copy-icon success"
-                          >✓</span
-                        >
-                        <span v-else class="copy-icon">📋</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="about-footer" :style="{ color: textMuted }">
-                    <span>Made with 💝</span>
-                  </div>
-                </div>
+            <div class="slider-wrapper">
+              <input
+                v-model.number="settings.petSize"
+                type="range"
+                min="50"
+                max="150"
+                class="custom-slider"
+              />
+              <div class="slider-marks">
+                <span>小</span>
+                <span>中</span>
+                <span>大</span>
               </div>
             </div>
           </div>
-        </Transition>
+
+          <!-- 移动速度 -->
+          <div class="setting-item">
+            <div class="setting-main">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(96, 165, 250, 0.15);
+                  --icon-color: #60a5fa;
+                "
+              >
+                <span class="setting-icon">⚡</span>
+              </div>
+              <div class="setting-info">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >移动速度</span
+                >
+                <span
+                  class="setting-value"
+                  :style="{ color: themeColors.accent }"
+                  >{{ formatPercent(settings.moveSpeed) }}</span
+                >
+              </div>
+            </div>
+            <div class="slider-wrapper">
+              <input
+                v-model.number="settings.moveSpeed"
+                type="range"
+                min="20"
+                max="100"
+                class="custom-slider accent"
+              />
+              <div class="slider-marks">
+                <span>慢</span>
+                <span>中</span>
+                <span>快</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 自动睡眠 -->
+          <div class="setting-item">
+            <div class="setting-main">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(167, 139, 250, 0.15);
+                  --icon-color: #a78bfa;
+                "
+              >
+                <span class="setting-icon">💤</span>
+              </div>
+              <div class="setting-info">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >自动睡眠</span
+                >
+                <span class="setting-desc" :style="{ color: textMuted }"
+                  >闲置时自动进入睡眠状态</span
+                >
+              </div>
+            </div>
+            <button
+              class="toggle-switch"
+              :class="{ active: settings.autoSleep }"
+              @click="settings.autoSleep = !settings.autoSleep"
+            >
+              <span class="toggle-thumb" />
+            </button>
+          </div>
+        </div>
       </div>
-    </Transition>
-  </Teleport>
+
+      <!-- 外观设置 -->
+      <div v-if="activeCategory === 'appearance'" class="settings-panel">
+        <div class="panel-header">
+          <span class="panel-icon">🎨</span>
+          <span class="panel-title" :style="{ color: textColor }"
+            >外观设置</span
+          >
+        </div>
+
+        <div class="settings-list">
+          <!-- 主题选择 -->
+          <div class="setting-item vertical">
+            <div class="setting-main">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(245, 166, 35, 0.15);
+                  --icon-color: #f5a623;
+                "
+              >
+                <span class="setting-icon">🌈</span>
+              </div>
+              <div class="setting-info">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >主题模式</span
+                >
+              </div>
+            </div>
+            <div class="theme-selector">
+              <button
+                class="theme-option"
+                :class="{ active: settings.theme === 'system' }"
+                @click="handleThemeChange('system')"
+              >
+                <span class="theme-icon">💻</span>
+                <span class="theme-label">跟随系统</span>
+              </button>
+              <button
+                class="theme-option"
+                :class="{ active: settings.theme === 'light' }"
+                @click="handleThemeChange('light')"
+              >
+                <span class="theme-icon">☀️</span>
+                <span class="theme-label">浅色</span>
+              </button>
+              <button
+                class="theme-option"
+                :class="{ active: settings.theme === 'dark' }"
+                @click="handleThemeChange('dark')"
+              >
+                <span class="theme-icon">🌙</span>
+                <span class="theme-label">深色</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 透明度 -->
+          <div class="setting-item">
+            <div class="setting-main">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(96, 165, 250, 0.15);
+                  --icon-color: #60a5fa;
+                "
+              >
+                <span class="setting-icon">👻</span>
+              </div>
+              <div class="setting-info">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >透明度</span
+                >
+                <span
+                  class="setting-value"
+                  :style="{ color: themeColors.accent }"
+                  >{{ formatPercent(settings.opacity) }}</span
+                >
+              </div>
+            </div>
+            <div class="slider-wrapper">
+              <input
+                v-model.number="settings.opacity"
+                type="range"
+                min="30"
+                max="100"
+                class="custom-slider accent"
+              />
+            </div>
+          </div>
+
+          <!-- 脚印轨迹 -->
+          <div class="setting-item">
+            <div class="setting-main">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(244, 114, 182, 0.15);
+                  --icon-color: #f472b6;
+                "
+              >
+                <span class="setting-icon">👣</span>
+              </div>
+              <div class="setting-info">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >脚印轨迹</span
+                >
+                <span class="setting-desc" :style="{ color: textMuted }"
+                  >移动时显示可爱的脚印</span
+                >
+              </div>
+            </div>
+            <button
+              class="toggle-switch pink"
+              :class="{ active: settings.showFootprints }"
+              @click="settings.showFootprints = !settings.showFootprints"
+            >
+              <span class="toggle-thumb" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 语音设置 -->
+      <div v-if="activeCategory === 'voice'" class="settings-panel">
+        <div class="panel-header">
+          <span class="panel-icon">🔊</span>
+          <span class="panel-title" :style="{ color: textColor }"
+            >语音设置</span
+          >
+        </div>
+
+        <div v-if="speechSupported" class="settings-list">
+          <!-- 语音开关 -->
+          <div class="setting-item">
+            <div class="setting-main">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(96, 165, 250, 0.15);
+                  --icon-color: #60a5fa;
+                "
+              >
+                <span class="setting-icon">🎵</span>
+              </div>
+              <div class="setting-info">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >启用语音</span
+                >
+                <span class="setting-desc" :style="{ color: textMuted }"
+                  >宠物说话时播放语音</span
+                >
+              </div>
+            </div>
+            <button
+              class="toggle-switch blue"
+              :class="{ active: settings.voiceEnabled }"
+              @click="handleVoiceToggle"
+            >
+              <span class="toggle-thumb" />
+            </button>
+          </div>
+
+          <!-- 语音引擎 -->
+          <div
+            class="setting-item vertical"
+            :class="{ disabled: !settings.voiceEnabled }"
+          >
+            <div class="setting-main">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(167, 139, 250, 0.15);
+                  --icon-color: #a78bfa;
+                "
+              >
+                <span class="setting-icon">🔧</span>
+              </div>
+              <div class="setting-info">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >语音引擎</span
+                >
+              </div>
+            </div>
+            <div class="engine-selector">
+              <button
+                class="engine-option"
+                :class="{ active: speechEngine === 'browser' }"
+                :disabled="!settings.voiceEnabled"
+                @click="handleSwitchEngine('browser')"
+              >
+                <span class="engine-name">浏览器内置</span>
+                <span class="engine-desc">免费，无需网络</span>
+              </button>
+              <button
+                class="engine-option"
+                :class="{ active: speechEngine === 'edge' }"
+                :disabled="!settings.voiceEnabled || isEdgeLoading"
+                @click="handleSwitchEngine('edge')"
+              >
+                <span class="engine-name">Edge TTS</span>
+                <span class="engine-desc">高质量，需网络</span>
+              </button>
+            </div>
+            <div
+              v-if="edgeStatus && speechEngine === 'edge'"
+              class="engine-status"
+              :style="{ color: textMuted }"
+            >
+              {{ edgeStatus }}
+            </div>
+          </div>
+
+          <!-- 音量 -->
+          <div
+            class="setting-item"
+            :class="{ disabled: !settings.voiceEnabled }"
+          >
+            <div class="setting-main">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(245, 166, 35, 0.15);
+                  --icon-color: #f5a623;
+                "
+              >
+                <span class="setting-icon">🔊</span>
+              </div>
+              <div class="setting-info">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >音量</span
+                >
+                <span
+                  class="setting-value"
+                  :style="{ color: themeColors.primary }"
+                  >{{ formatPercent(speechVolume * 100) }}</span
+                >
+              </div>
+            </div>
+            <div class="slider-wrapper">
+              <input
+                v-model.number="speechVolume"
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                :disabled="!settings.voiceEnabled"
+                class="custom-slider"
+              />
+            </div>
+          </div>
+
+          <!-- 语速 -->
+          <div
+            class="setting-item"
+            :class="{ disabled: !settings.voiceEnabled }"
+          >
+            <div class="setting-main">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(52, 211, 153, 0.15);
+                  --icon-color: #34d399;
+                "
+              >
+                <span class="setting-icon">🚀</span>
+              </div>
+              <div class="setting-info">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >语速</span
+                >
+                <span class="setting-value" :style="{ color: '#34d399' }">{{
+                  formatPercent(speechRate * 100)
+                }}</span>
+              </div>
+            </div>
+            <div class="slider-wrapper">
+              <input
+                v-model.number="speechRate"
+                type="range"
+                min="0.5"
+                max="1.5"
+                step="0.1"
+                :disabled="!settings.voiceEnabled"
+                class="custom-slider green"
+              />
+              <div class="slider-marks">
+                <span>慢</span>
+                <span>中</span>
+                <span>快</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 测试按钮 -->
+          <button
+            class="test-voice-btn"
+            :disabled="!settings.voiceEnabled"
+            @click="testSpeech"
+          >
+            <span class="btn-icon">🎤</span>
+            <span class="btn-text">测试语音</span>
+          </button>
+        </div>
+
+        <div v-else class="unsupported-tip" :style="{ borderColor }">
+          <span class="tip-icon">⚠️</span>
+          <span class="tip-text" :style="{ color: textMuted }"
+            >您的浏览器不支持语音合成功能</span
+          >
+        </div>
+      </div>
+
+      <!-- 交互设置 -->
+      <div v-if="activeCategory === 'interaction'" class="settings-panel">
+        <div class="panel-header">
+          <span class="panel-icon">✋</span>
+          <span class="panel-title" :style="{ color: textColor }"
+            >交互设置</span
+          >
+        </div>
+
+        <div class="settings-list">
+          <!-- 点击反应 -->
+          <div class="setting-item">
+            <div class="setting-main">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(245, 166, 35, 0.15);
+                  --icon-color: #f5a623;
+                "
+              >
+                <span class="setting-icon">👆</span>
+              </div>
+              <div class="setting-info">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >点击反应</span
+                >
+                <span class="setting-desc" :style="{ color: textMuted }"
+                  >点击宠物时触发互动</span
+                >
+              </div>
+            </div>
+            <button
+              class="toggle-switch"
+              :class="{ active: settings.clickReaction }"
+              @click="settings.clickReaction = !settings.clickReaction"
+            >
+              <span class="toggle-thumb" />
+            </button>
+          </div>
+
+          <!-- 拖拽音效 -->
+          <div class="setting-item">
+            <div class="setting-main">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(244, 114, 182, 0.15);
+                  --icon-color: #f472b6;
+                "
+              >
+                <span class="setting-icon">🎶</span>
+              </div>
+              <div class="setting-info">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >拖拽音效</span
+                >
+                <span class="setting-desc" :style="{ color: textMuted }"
+                  >拖拽宠物时播放音效</span
+                >
+              </div>
+            </div>
+            <button
+              class="toggle-switch pink"
+              :class="{ active: settings.dragSound }"
+              @click="settings.dragSound = !settings.dragSound"
+            >
+              <span class="toggle-thumb" />
+            </button>
+          </div>
+
+          <!-- 分隔线 -->
+          <div class="settings-divider" :style="{ borderColor }"></div>
+
+          <!-- 语音输入设置 -->
+          <div class="speech-input-section">
+            <div class="setting-item">
+              <div class="setting-main">
+                <div
+                  class="setting-icon-wrapper"
+                  style="
+                    --icon-bg: rgba(139, 92, 246, 0.15);
+                    --icon-color: #8b5cf6;
+                  "
+                >
+                  <span class="setting-icon">🎙️</span>
+                </div>
+                <div class="setting-info">
+                  <span class="setting-label" :style="{ color: textColor }"
+                    >语音输入</span
+                  >
+                  <span class="setting-desc" :style="{ color: textMuted }"
+                    >在 AI 对话中使用语音输入文字</span
+                  >
+                </div>
+              </div>
+              <div class="setting-status">
+                <span v-if="isSpeechInputReady" class="status-badge ready"
+                  >已就绪</span
+                >
+                <span v-else class="status-badge not-ready">未就绪</span>
+                <button
+                  class="toggle-switch purple"
+                  :class="{ active: speechInputEnabled }"
+                  :disabled="isCheckingStatus"
+                  @click="handleSpeechInputToggle"
+                >
+                  <span class="toggle-thumb" />
+                </button>
+              </div>
+            </div>
+
+            <!-- 依赖状态展示 -->
+            <div
+              v-if="!isSpeechInputReady"
+              class="dependencies-panel"
+              :style="{ background: cardBg }"
+            >
+              <div class="panel-title-row">
+                <div class="panel-title-left">
+                  <span class="panel-icon-small">📦</span>
+                  <span :style="{ color: textColor }">依赖检测</span>
+                </div>
+                <button
+                  class="refresh-btn"
+                  :disabled="isCheckingStatus"
+                  @click="checkSpeechInputDependencies"
+                >
+                  <span
+                    class="refresh-icon"
+                    :class="{ spinning: isCheckingStatus }"
+                    >🔄</span
+                  >
+                  <span>刷新</span>
+                </button>
+              </div>
+
+              <div class="dependency-list">
+                <div
+                  v-for="dep in [
+                    {
+                      key: 'sox',
+                      name: 'sox',
+                      desc: '音频录制工具',
+                      installed: speechInputStatus.soxInstalled,
+                    },
+                    {
+                      key: 'whisper',
+                      name: 'whisper-cpp',
+                      desc: '语音识别引擎',
+                      installed: speechInputStatus.whisperInstalled,
+                    },
+                    {
+                      key: 'model',
+                      name: 'ggml-base.bin',
+                      desc: '语音识别模型 (~150MB)',
+                      installed: speechInputStatus.modelExists,
+                    },
+                  ]"
+                  :key="dep.key"
+                  class="dependency-item"
+                  :class="{ installed: dep.installed }"
+                >
+                  <div class="dep-status">
+                    <span class="status-icon">
+                      {{ dep.installed ? "✅" : "❌" }}
+                    </span>
+                  </div>
+                  <div class="dep-info">
+                    <div class="dep-name-row">
+                      <span class="dep-name" :style="{ color: textColor }">{{
+                        dep.name
+                      }}</span>
+                      <span class="dep-desc" :style="{ color: textMuted }">{{
+                        dep.desc
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="help-text" :style="{ color: textMuted }">
+                <p>💡 安装完成后点击刷新按钮检测</p>
+                <p>🔒 语音输入使用本地模型，无需联网，保护隐私</p>
+              </div>
+            </div>
+
+            <!-- 已就绪提示 -->
+            <div
+              v-else-if="speechInputEnabled"
+              class="ready-tip"
+              :style="{ color: themeColors.primary }"
+            >
+              <span class="ready-icon">✨</span>
+              <span class="ready-text"
+                >语音输入已启用，在 AI 对话中点击麦克风即可使用</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API 配置 -->
+      <div v-if="activeCategory === 'api'" class="settings-panel">
+        <div class="panel-header">
+          <span class="panel-icon">🔑</span>
+          <span class="panel-title" :style="{ color: textColor }"
+            >API 配置</span
+          >
+        </div>
+
+        <div class="settings-list">
+          <!-- 和风天气配置 -->
+          <div class="api-section">
+            <div class="api-section-header">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(96, 165, 250, 0.15);
+                  --icon-color: #60a5fa;
+                "
+              >
+                <span class="setting-icon">🌤️</span>
+              </div>
+              <div class="api-section-title">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >和风天气</span
+                >
+                <span class="setting-desc" :style="{ color: textMuted }"
+                  >用于获取实时天气信息</span
+                >
+              </div>
+            </div>
+            <div class="api-input-group">
+              <div class="input-row">
+                <label :style="{ color: textMuted }">API Key</label>
+                <input
+                  v-model="apiConfig.qweather.key"
+                  type="password"
+                  placeholder="请输入 API Key"
+                  class="api-key-input"
+                />
+              </div>
+              <div class="input-row">
+                <label :style="{ color: textMuted }">API Host</label>
+                <input
+                  v-model="apiConfig.qweather.host"
+                  type="text"
+                  placeholder="devapi.qweather.com"
+                  class="api-key-input"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- 高德地图配置 -->
+          <div class="api-section">
+            <div class="api-section-header">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(52, 211, 153, 0.15);
+                  --icon-color: #34d399;
+                "
+              >
+                <span class="setting-icon">📍</span>
+              </div>
+              <div class="api-section-title">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >高德地图</span
+                >
+                <span class="setting-desc" :style="{ color: textMuted }"
+                  >用于获取位置信息</span
+                >
+              </div>
+            </div>
+            <div class="api-input-group">
+              <div class="input-row">
+                <label :style="{ color: textMuted }">API Key</label>
+                <input
+                  v-model="apiConfig.amap.key"
+                  type="password"
+                  placeholder="请输入 API Key"
+                  class="api-key-input"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- AI 对话配置 -->
+          <div class="api-section">
+            <div class="api-section-header">
+              <div
+                class="setting-icon-wrapper"
+                style="
+                  --icon-bg: rgba(167, 139, 250, 0.15);
+                  --icon-color: #a78bfa;
+                "
+              >
+                <span class="setting-icon">🤖</span>
+              </div>
+              <div class="api-section-title">
+                <span class="setting-label" :style="{ color: textColor }"
+                  >AI 对话</span
+                >
+                <span class="setting-desc" :style="{ color: textMuted }"
+                  >用于 AI 聊天功能</span
+                >
+              </div>
+            </div>
+            <div class="api-input-group">
+              <div class="input-row">
+                <label :style="{ color: textMuted }">请求格式</label>
+                <div class="format-selector">
+                  <button
+                    v-for="fmt in aiFormats"
+                    :key="fmt.key"
+                    class="format-option"
+                    :class="{
+                      active: apiConfig.ai.format === fmt.key,
+                    }"
+                    @click="apiConfig.ai.format = fmt.key"
+                  >
+                    <span class="format-name">{{ fmt.label }}</span>
+                    <span class="format-desc">{{ fmt.desc }}</span>
+                  </button>
+                </div>
+              </div>
+              <div class="input-row">
+                <label :style="{ color: textMuted }">API URL</label>
+                <input
+                  v-model="apiConfig.ai.url"
+                  type="text"
+                  placeholder="https://api.openai.com/v1/chat/completions"
+                  class="api-key-input"
+                />
+              </div>
+              <div class="input-row">
+                <label :style="{ color: textMuted }">API Key</label>
+                <input
+                  v-model="apiConfig.ai.key"
+                  type="password"
+                  placeholder="请输入 API Key"
+                  class="api-key-input"
+                />
+              </div>
+              <div class="input-row">
+                <label :style="{ color: textMuted }">模型名称</label>
+                <input
+                  v-model="apiConfig.ai.model"
+                  type="text"
+                  placeholder="如: gpt-4o-mini, glm-4"
+                  class="api-key-input"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- 提示信息 -->
+          <div class="api-tip" :style="{ borderColor }">
+            <span class="tip-icon">💡</span>
+            <span class="tip-text" :style="{ color: textMuted }">
+              API 配置仅存储在本地，不会上传到服务器。天气与定位配置保存后
+              重启应用生效
+            </span>
+          </div>
+
+          <!-- 保存按钮 -->
+          <button
+            class="api-save-btn"
+            :style="{
+              background: borderColor,
+              color: '#fff',
+            }"
+            @click="saveApi"
+          >
+            {{ apiSaveSuccess ? "✓ 已保存" : "保存 API 配置" }}
+          </button>
+        </div>
+      </div>
+
+      <!-- 关于 -->
+      <div v-if="activeCategory === 'about'" class="settings-panel">
+        <div class="about-content">
+          <div class="about-logo">
+            <div class="logo-bg">
+              <span class="logo-icon">🐾</span>
+            </div>
+          </div>
+          <h3 class="about-title" :style="{ color: textColor }">桌面宠物</h3>
+          <p class="about-version" :style="{ color: textMuted }">
+            版本 {{ version }}
+          </p>
+          <p class="about-desc" :style="{ color: textMuted }">
+            一个可爱的桌面伴侣，陪伴你度过每一天的工作时光
+          </p>
+
+          <div class="about-actions">
+            <button
+              class="about-btn"
+              :class="{ checking: isCheckingUpdate }"
+              :disabled="isCheckingUpdate"
+              @click="checkUpdate"
+            >
+              <span class="btn-icon">🔄</span>
+              <span class="btn-text">
+                {{
+                  isCheckingUpdate
+                    ? "检查中..."
+                    : hasUpdate
+                      ? "有更新可用"
+                      : "检查更新"
+                }}
+              </span>
+            </button>
+            <a
+              href="https://github.com/wukekea/pet"
+              target="_blank"
+              class="about-btn secondary"
+            >
+              <span class="btn-icon">📖</span>
+              <span class="btn-text">开源地址</span>
+            </a>
+          </div>
+
+          <!-- 更新信息展示 -->
+          <div
+            v-if="(updateInfo || updateError) && !isCheckingUpdate"
+            class="update-info"
+            :class="{
+              'has-update': hasUpdate,
+              'is-downloading': isDownloading,
+              'update-ready': updateDownloaded,
+              'has-error': updateError && !hasUpdate,
+            }"
+          >
+            <!-- 下载进度 -->
+            <div v-if="isDownloading" class="update-downloading">
+              <span class="update-icon">⬇️</span>
+              <div class="download-progress">
+                <div class="progress-bar">
+                  <div
+                    class="progress-fill"
+                    :style="{ width: `${downloadProgress}%` }"
+                  />
+                </div>
+                <span class="progress-text" :style="{ color: textMuted }">
+                  下载中... {{ downloadProgress.toFixed(1) }}%
+                </span>
+              </div>
+            </div>
+
+            <!-- 下载完成，等待安装 -->
+            <div v-else-if="updateDownloaded" class="update-ready">
+              <div class="update-ready-main">
+                <span class="update-icon">✅</span>
+                <div class="update-details">
+                  <span class="update-title" :style="{ color: textColor }"
+                    >更新已就绪</span
+                  >
+                  <span class="update-current" :style="{ color: textMuted }"
+                    >点击下方按钮重启并安装</span
+                  >
+                </div>
+                <button class="install-btn" @click="installUpdate">
+                  <span class="btn-icon">🔄</span>
+                  <span class="btn-text">重启安装</span>
+                </button>
+              </div>
+              <div v-if="updateError" class="update-error install-error">
+                <span class="error-icon">⚠️</span>
+                <span class="error-text">{{ updateError }}</span>
+                <button class="copy-error-btn" @click="copyError">
+                  <span v-if="copySuccess" class="copy-icon success">✓</span>
+                  <span v-else class="copy-icon">📋</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 发现新版本 -->
+            <div v-else-if="hasUpdate && updateInfo" class="update-available">
+              <span class="update-icon">🎉</span>
+              <div class="update-details">
+                <span class="update-title" :style="{ color: textColor }"
+                  >发现新版本 v{{ updateInfo.latestVersion }}</span
+                >
+                <span class="update-current" :style="{ color: textMuted }"
+                  >当前版本 v{{ updateInfo.currentVersion }}</span
+                >
+              </div>
+              <button class="download-btn" @click="downloadUpdate">
+                <span class="btn-icon">⬇️</span>
+                <span class="btn-text">立即下载</span>
+              </button>
+            </div>
+
+            <!-- 已是最新版本 -->
+            <div v-else-if="updateInfo && !hasUpdate" class="update-latest">
+              <span class="update-icon">✅</span>
+              <span class="update-message" :style="{ color: textMuted }"
+                >已是最新版本 v{{ updateInfo.currentVersion }}</span
+              >
+            </div>
+
+            <!-- 只有错误，没有更新信息 -->
+            <div
+              v-else-if="!updateInfo && updateError"
+              class="update-error-only"
+            >
+              <span class="error-icon">⚠️</span>
+              <span class="error-text">{{ updateError }}</span>
+              <button class="copy-error-btn" @click="copyError">
+                <span v-if="copySuccess" class="copy-icon success">✓</span>
+                <span v-else class="copy-icon">📋</span>
+              </button>
+            </div>
+
+            <!-- 错误信息（附加在更新信息后面，但不在更新已就绪时显示） -->
+            <div
+              v-if="updateError && updateInfo && !updateDownloaded"
+              class="update-error"
+            >
+              <span class="error-icon">⚠️</span>
+              <span class="error-text">{{ updateError }}</span>
+              <button class="copy-error-btn" @click="copyError">
+                <span v-if="copySuccess" class="copy-icon success">✓</span>
+                <span v-else class="copy-icon">📋</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="about-footer" :style="{ color: textMuted }">
+            <span>Made with 💝</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </BaseModal>
 </template>
 
 <style scoped>
-/* 遮罩层 */
-.settings-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  pointer-events: auto !important;
-}
-
-/* 弹窗主体 */
-.settings-modal {
-  width: 400px;
-  max-width: 90vw;
-  height: 520px;
-  max-height: 85vh;
-  border-radius: 28px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  pointer-events: auto !important;
-}
-
-/* 装饰元素 */
-.modal-decor {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.decor-item {
-  position: absolute;
-  font-size: 20px;
-  opacity: 0.3;
-  animation: float 3s ease-in-out infinite;
-}
-
-.decor-1 {
-  top: 30px;
-  right: 80px;
-  animation-delay: 0s;
-}
-
-.decor-2 {
-  top: 60px;
-  right: 40px;
-  animation-delay: 0.5s;
-}
-
-.decor-3 {
-  top: 100px;
-  right: 70px;
-  animation-delay: 1s;
-}
-
-.decor-4 {
-  top: 50px;
-  right: 100px;
-  animation-delay: 1.5s;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 0.2;
-  }
-  50% {
-    transform: translateY(-10px) rotate(5deg);
-    opacity: 0.4;
-  }
-}
-
-/* 头部 */
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px 12px;
-  flex-shrink: 0;
-}
-
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.title-icon {
-  font-size: 22px;
-}
-
-.title-text {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.close-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: none;
-  background: v-bind(borderColor);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.close-icon {
-  font-size: 14px;
-  color: v-bind(textMuted);
-  transition: all 0.2s ease;
-}
-
-.close-btn:hover {
-  background: rgba(239, 68, 68, 0.15);
-  transform: rotate(90deg);
-}
-
-.close-btn:hover .close-icon {
-  color: #ef4444;
-}
-
+/* 骨架部分（遮罩/主体/装饰/头部/关闭按钮）由 BaseModal 提供，
+   此处仅保留业务样式 */
 /* 分类标签栏 */
 .category-tabs {
   display: flex;
@@ -2971,7 +2733,7 @@ const handleSpeechInputToggle = async () => {
   text-align: center;
 }
 
-/* 动画 */
+/* 动画（弹窗骨架动画由 BaseModal 提供） */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;
@@ -2980,35 +2742,5 @@ const handleSpeechInputToggle = async () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}
-
-.modal-pop-enter-active {
-  animation: modal-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.modal-pop-leave-active {
-  animation: modal-pop-out 0.2s ease-in;
-}
-
-@keyframes modal-pop-in {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes modal-pop-out {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.95);
-  }
 }
 </style>

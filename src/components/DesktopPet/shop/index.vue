@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
+import BaseModal from "../ui/BaseModal.vue";
 import { useToast } from "../composables/useToast";
 import {
   FOOD_ICONS,
@@ -236,298 +237,152 @@ const close = () => {
 </script>
 
 <template>
-  <Teleport to="body">
-    <Transition name="modal-pop">
-      <div
-        v-if="visible"
-        class="shop-modal-overlay"
-        :style="cssVars"
-        @click="close"
-      >
-        <div class="shop-modal" :class="{ 'dark-mode': isDark }" @click.stop>
-          <!-- 装饰元素 -->
-          <div class="modal-decor">
-            <span class="decor-star star-1">🪙</span>
-            <span class="decor-star star-2">✨</span>
-            <span class="decor-star star-3">💫</span>
-          </div>
-
-          <div class="modal-header">
-            <div class="header-title">
-              <span class="title-icon">🛒</span>
-              <span class="title-text shop-title">商店</span>
-            </div>
-            <button class="modal-close" @click="close">
-              <span>✕</span>
-            </button>
-          </div>
-
-          <div class="modal-body">
-            <!-- 金币余额 -->
-            <div class="money-section">
-              <div class="money-badge">
-                <span class="money-icon">💰</span>
-                <span class="money-amount">{{ attrData.money }}</span>
-              </div>
-            </div>
-
-            <!-- Tab 切换 -->
-            <div class="tab-bar">
-              <button
-                class="tab-btn"
-                :class="{ active: activeTab === 'food' }"
-                @click="activeTab = 'food'"
-              >
-                <span class="tab-icon">🍽️</span>
-                <span class="tab-text">食物</span>
-                <div
-                  v-if="activeTab === 'food'"
-                  class="tab-indicator food-indicator"
-                ></div>
-              </button>
-              <button
-                class="tab-btn"
-                :class="{ active: activeTab === 'bath' }"
-                @click="activeTab = 'bath'"
-              >
-                <span class="tab-icon">🛁</span>
-                <span class="tab-text">沐浴露</span>
-                <div
-                  v-if="activeTab === 'bath'"
-                  class="tab-indicator bath-indicator"
-                ></div>
-              </button>
-              <button
-                class="tab-btn"
-                :class="{ active: activeTab === 'decoration' }"
-                @click="activeTab = 'decoration'"
-              >
-                <span class="tab-icon">💍</span>
-                <span class="tab-text">装饰</span>
-                <div
-                  v-if="activeTab === 'decoration'"
-                  class="tab-indicator deco-indicator"
-                ></div>
-              </button>
-              <button
-                class="tab-btn"
-                :class="{ active: activeTab === 'shape' }"
-                @click="activeTab = 'shape'"
-              >
-                <span class="tab-icon">🐾</span>
-                <span class="tab-text">形态</span>
-                <div
-                  v-if="activeTab === 'shape'"
-                  class="tab-indicator shape-indicator"
-                ></div>
-              </button>
-            </div>
-
-            <!-- 购买提示 -->
-            <Transition name="toast-slide">
-              <div v-if="toastVisible" class="toast-notification">
-                <span class="toast-icon">🎉</span>
-                <span class="toast-text">{{ toastMessage }}</span>
-              </div>
-            </Transition>
-
-            <!-- 物品列表 -->
-            <div
-              class="items-grid"
-              :class="{
-                'deco-grid': activeTab === 'decoration',
-                'shape-grid': activeTab === 'shape',
-              }"
-            >
-              <button
-                v-for="item in currentItems"
-                :key="item.type"
-                class="item-card"
-                :class="{
-                  disabled: !item.canAfford,
-                  owned: item.owned,
-                  'deco-card': item.category === 'decoration',
-                  'shape-card': item.category === 'shape',
-                }"
-                :disabled="!item.canAfford"
-                @click="handleBuy(item)"
-              >
-                <span class="item-icon">
-                  <DecoIcon
-                    v-if="item.decoType || item.category === 'bath'"
-                    :type="
-                      (item.decoType || item.type) as DecorationType | BathType
-                    "
-                  />
-                  <template v-else>{{ item.icon }}</template>
-                </span>
-                <span class="item-name">{{ item.name }}</span>
-                <div class="item-info">
-                  <template v-if="item.owned">
-                    <span class="item-owned-badge">{{
-                      item.equipped
-                        ? "装备中"
-                        : item.inInventory
-                          ? "在仓库"
-                          : "已拥有"
-                    }}</span>
-                  </template>
-                  <template v-else>
-                    <span
-                      class="item-cost"
-                      :class="{
-                        'deco-cost': item.category === 'decoration',
-                        'shape-cost': item.category === 'shape',
-                      }"
-                      >💰{{ item.cost }}</span
-                    >
-                    <span
-                      class="item-effect"
-                      :class="{
-                        'deco-effect': item.category === 'decoration',
-                        'shape-effect': item.category === 'shape',
-                      }"
-                      >{{ item.effectLabel }}</span
-                    >
-                  </template>
-                </div>
-              </button>
-            </div>
-          </div>
+  <BaseModal
+    :visible="visible"
+    title="商店"
+    icon="🛒"
+    :decor-emojis="['🪙', '✨', '💫']"
+    :width="380"
+    :height="560"
+    title-gradient="linear-gradient(135deg, #fbbf24, #f59e0b)"
+    :css-vars="cssVars"
+    @close="close"
+  >
+    <div class="modal-body">
+      <!-- 金币余额 -->
+      <div class="money-section">
+        <div class="money-badge">
+          <span class="money-icon">💰</span>
+          <span class="money-amount">{{ attrData.money }}</span>
         </div>
       </div>
-    </Transition>
-  </Teleport>
+
+      <!-- Tab 切换 -->
+      <div class="tab-bar">
+        <button
+          class="tab-btn"
+          :class="{ active: activeTab === 'food' }"
+          @click="activeTab = 'food'"
+        >
+          <span class="tab-icon">🍽️</span>
+          <span class="tab-text">食物</span>
+          <div
+            v-if="activeTab === 'food'"
+            class="tab-indicator food-indicator"
+          ></div>
+        </button>
+        <button
+          class="tab-btn"
+          :class="{ active: activeTab === 'bath' }"
+          @click="activeTab = 'bath'"
+        >
+          <span class="tab-icon">🛁</span>
+          <span class="tab-text">沐浴露</span>
+          <div
+            v-if="activeTab === 'bath'"
+            class="tab-indicator bath-indicator"
+          ></div>
+        </button>
+        <button
+          class="tab-btn"
+          :class="{ active: activeTab === 'decoration' }"
+          @click="activeTab = 'decoration'"
+        >
+          <span class="tab-icon">💍</span>
+          <span class="tab-text">装饰</span>
+          <div
+            v-if="activeTab === 'decoration'"
+            class="tab-indicator deco-indicator"
+          ></div>
+        </button>
+        <button
+          class="tab-btn"
+          :class="{ active: activeTab === 'shape' }"
+          @click="activeTab = 'shape'"
+        >
+          <span class="tab-icon">🐾</span>
+          <span class="tab-text">形态</span>
+          <div
+            v-if="activeTab === 'shape'"
+            class="tab-indicator shape-indicator"
+          ></div>
+        </button>
+      </div>
+
+      <!-- 购买提示 -->
+      <Transition name="toast-slide">
+        <div v-if="toastVisible" class="toast-notification">
+          <span class="toast-icon">🎉</span>
+          <span class="toast-text">{{ toastMessage }}</span>
+        </div>
+      </Transition>
+
+      <!-- 物品列表 -->
+      <div
+        class="items-grid"
+        :class="{
+          'deco-grid': activeTab === 'decoration',
+          'shape-grid': activeTab === 'shape',
+        }"
+      >
+        <button
+          v-for="item in currentItems"
+          :key="item.type"
+          class="item-card"
+          :class="{
+            disabled: !item.canAfford,
+            owned: item.owned,
+            'deco-card': item.category === 'decoration',
+            'shape-card': item.category === 'shape',
+          }"
+          :disabled="!item.canAfford"
+          @click="handleBuy(item)"
+        >
+          <span class="item-icon">
+            <DecoIcon
+              v-if="item.decoType || item.category === 'bath'"
+              :type="(item.decoType || item.type) as DecorationType | BathType"
+            />
+            <template v-else>{{ item.icon }}</template>
+          </span>
+          <span class="item-name">{{ item.name }}</span>
+          <div class="item-info">
+            <template v-if="item.owned">
+              <span class="item-owned-badge">{{
+                item.equipped
+                  ? "装备中"
+                  : item.inInventory
+                    ? "在仓库"
+                    : "已拥有"
+              }}</span>
+            </template>
+            <template v-else>
+              <span
+                class="item-cost"
+                :class="{
+                  'deco-cost': item.category === 'decoration',
+                  'shape-cost': item.category === 'shape',
+                }"
+                >💰{{ item.cost }}</span
+              >
+              <span
+                class="item-effect"
+                :class="{
+                  'deco-effect': item.category === 'decoration',
+                  'shape-effect': item.category === 'shape',
+                }"
+                >{{ item.effectLabel }}</span
+              >
+            </template>
+          </div>
+        </button>
+      </div>
+    </div>
+  </BaseModal>
 </template>
 
 <style scoped>
-.shop-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--overlay-bg);
-  backdrop-filter: blur(8px);
-  pointer-events: auto !important;
-}
-
-.shop-modal {
-  width: 380px;
-  max-width: 90vw;
-  height: 560px;
-  border-radius: 24px;
-  background: var(--modal-bg);
-  box-shadow: var(--modal-shadow);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  pointer-events: auto !important;
-}
-
-/* 装饰元素 */
-.modal-decor {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.decor-star {
-  position: absolute;
-  font-size: 16px;
-  opacity: 0.4;
-  animation: twinkle 2s ease-in-out infinite;
-}
-
-.star-1 {
-  top: 20px;
-  right: 60px;
-  animation-delay: 0s;
-}
-
-.star-2 {
-  top: 40px;
-  right: 20px;
-  animation-delay: 0.5s;
-}
-
-.star-3 {
-  top: 60px;
-  right: 80px;
-  animation-delay: 1s;
-}
-
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.2);
-  }
-}
-
-/* 头部 */
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px 12px;
-  position: relative;
-}
-
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.title-icon {
-  font-size: 24px;
-}
-
-.title-text {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.shop-title {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.modal-close {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: var(--modal-close-bg);
-  color: var(--modal-close-color);
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.modal-close:hover {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  transform: rotate(90deg);
-}
-
-/* 内容区 */
+/* 内容区（骨架部分由 BaseModal 提供，此处仅保留业务样式） */
 .modal-body {
   padding: 0 24px 24px;
   overflow-y: auto;
@@ -897,33 +752,6 @@ const close = () => {
 .item-card.owned:not([disabled]) .item-owned-badge {
   color: #10b981;
   background: rgba(16, 185, 129, 0.1);
-}
-
-/* 弹窗动画 */
-.modal-pop-enter-active {
-  animation: modal-pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.modal-pop-leave-active {
-  animation: modal-pop-out 0.2s ease-in;
-}
-
-@keyframes modal-pop-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes modal-pop-out {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
 }
 
 /* 滚动条 */

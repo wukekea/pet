@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
+import BaseModal from "../ui/BaseModal.vue";
 import { useToast } from "../composables/useToast";
 import type { DecorationType, DecorationEffectType } from "../types";
 import {
@@ -338,414 +339,257 @@ const close = () => {
 </script>
 
 <template>
-  <Teleport to="body">
-    <Transition name="modal-pop">
-      <div
-        v-if="visible"
-        class="attr-modal-overlay"
-        :style="cssVars"
-        @click="close"
-      >
-        <div class="attr-modal" :class="{ 'dark-mode': isDark }" @click.stop>
-          <!-- 装饰元素 -->
-          <div class="modal-decor">
-            <span class="decor-star star-1">💖</span>
-            <span class="decor-star star-2">✨</span>
-            <span class="decor-star star-3">🌟</span>
+  <BaseModal
+    :visible="visible"
+    title="宠物属性"
+    icon="💖"
+    :decor-emojis="['💖', '✨', '🌟']"
+    :width="360"
+    :max-height="80"
+    title-gradient="linear-gradient(135deg, #f472b6, #fb923c)"
+    :css-vars="cssVars"
+    @close="close"
+  >
+    <div class="modal-body">
+      <!-- 等级与经验 -->
+      <div class="level-section">
+        <div class="level-row">
+          <div class="level-badge">
+            <span class="level-icon">⭐</span>
+            <span class="level-number">Lv.{{ attrData.level }}</span>
           </div>
+          <div class="cap-hint">
+            属性上限 <span class="cap-value">{{ attrCap }}</span>
+          </div>
+        </div>
+        <div class="exp-bar-wrapper" v-if="attrData.level < MAX_LEVEL">
+          <div class="exp-bar-bg">
+            <div
+              class="exp-bar-fill"
+              :style="{ width: expPercent + '%' }"
+            ></div>
+          </div>
+          <span class="exp-text">
+            {{ attrData.experience }} / {{ expRequired }}
+          </span>
+        </div>
+        <div class="max-level-hint" v-else>✦ 满级 ✦</div>
+        <div class="daily-exp-hint">
+          今日互动经验 {{ dailyInteraction.earned }}/{{ dailyInteraction.cap }}
+        </div>
+      </div>
 
-          <div class="modal-header">
-            <div class="header-title">
-              <span class="title-icon">💖</span>
-              <span class="title-text attr-title">宠物属性</span>
+      <!-- 属性条 -->
+      <div class="attributes-section">
+        <div
+          v-for="bar in attributeBars"
+          :key="bar.key"
+          class="attr-item"
+          :class="{ 'attr-warning': bar.value < 30 }"
+          @mouseenter="hoveredAttr = bar.key"
+          @mouseleave="hoveredAttr = null"
+        >
+          <div class="attr-header">
+            <span class="attr-icon">{{ bar.icon }}</span>
+            <span class="attr-name">{{ bar.name }}</span>
+            <span class="attr-value">
+              {{ bar.value }}<span class="attr-cap">/{{ bar.cap }}</span>
+            </span>
+            <span class="attr-info-icon">ⓘ</span>
+          </div>
+          <div class="attr-bar-bg">
+            <div
+              class="attr-bar-fill"
+              :class="`bar-${bar.color}`"
+              :style="{
+                width: Math.min(100, (bar.value / bar.cap) * 100) + '%',
+              }"
+            ></div>
+          </div>
+          <!-- 悬浮提示 -->
+          <Transition name="tooltip-fade">
+            <div
+              v-if="hoveredAttr === bar.key"
+              class="attr-tooltip"
+              :class="`tooltip-${bar.color}`"
+            >
+              <div class="tooltip-title">{{ bar.icon }} {{ bar.name }}规则</div>
+              <div v-for="(rule, i) in bar.rules" :key="i" class="tooltip-rule">
+                <span class="rule-icon">{{ rule.icon }}</span>
+                <span class="rule-text">{{ rule.text }}</span>
+              </div>
             </div>
-            <button class="modal-close" @click="close">
-              <span>✕</span>
+          </Transition>
+        </div>
+      </div>
+
+      <!-- 金币 -->
+      <div class="money-section">
+        <div class="money-badge">
+          <span class="money-icon">💰</span>
+          <span class="money-amount">{{ attrData.money }}</span>
+        </div>
+      </div>
+
+      <!-- 我的形态 -->
+      <div class="shape-section">
+        <div class="shape-header">
+          <span class="shape-title">🐾 我的形态</span>
+          <button class="deco-shop-link" @click="handleOpenShop">
+            去商店 ›
+          </button>
+        </div>
+        <div class="shape-grid">
+          <button
+            v-for="shape in ownedShapeList"
+            :key="shape.type"
+            class="shape-item"
+            :class="{ active: currentPetShape === shape.type }"
+            @click="handleShapeSwitch(shape.type)"
+          >
+            <span class="shape-item-icon">{{ shape.icon }}</span>
+            <span class="shape-item-name">{{ shape.name }}</span>
+            <span
+              class="shape-item-badge"
+              :class="
+                currentPetShape === shape.type
+                  ? 'badge-active'
+                  : 'badge-inactive'
+              "
+            >
+              {{ currentPetShape === shape.type ? "使用中" : "切换" }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 我的装饰 -->
+      <div class="deco-section">
+        <div class="deco-header">
+          <span class="deco-title">💍 我的装饰</span>
+          <button class="deco-shop-link" @click="handleOpenShop">
+            去商店 ›
+          </button>
+        </div>
+
+        <!-- 提示 -->
+        <Transition name="toast-slide">
+          <div v-if="decoToastVisible" class="deco-toast">
+            <span>{{ decoToast }}</span>
+          </div>
+        </Transition>
+
+        <template v-if="ownedDecoList.length > 0">
+          <div class="deco-grid">
+            <button
+              v-for="item in ownedDecoList"
+              :key="item!.type"
+              class="deco-item"
+              :class="{ equipped: item!.isEquipped }"
+              @click="handleDecoClick(item!.type)"
+            >
+              <span class="deco-item-icon"
+                ><DecoIcon :type="item!.type as DecorationType"
+              /></span>
+              <span class="deco-item-name">{{ item!.name }}</span>
+              <span
+                class="deco-item-badge"
+                :class="item!.isEquipped ? 'badge-equipped' : 'badge-equip'"
+              >
+                {{ item!.isEquipped ? "已装备" : item!.slotName }}
+              </span>
             </button>
           </div>
+        </template>
+        <div v-else class="deco-empty">还没有装饰，去商店看看吧</div>
 
-          <div class="modal-body">
-            <!-- 等级与经验 -->
-            <div class="level-section">
-              <div class="level-row">
-                <div class="level-badge">
-                  <span class="level-icon">⭐</span>
-                  <span class="level-number">Lv.{{ attrData.level }}</span>
-                </div>
-                <div class="cap-hint">
-                  属性上限 <span class="cap-value">{{ attrCap }}</span>
-                </div>
-              </div>
-              <div class="exp-bar-wrapper" v-if="attrData.level < MAX_LEVEL">
-                <div class="exp-bar-bg">
-                  <div
-                    class="exp-bar-fill"
-                    :style="{ width: expPercent + '%' }"
-                  ></div>
-                </div>
-                <span class="exp-text">
-                  {{ attrData.experience }} / {{ expRequired }}
-                </span>
-              </div>
-              <div class="max-level-hint" v-else>✦ 满级 ✦</div>
-              <div class="daily-exp-hint">
-                今日互动经验 {{ dailyInteraction.earned }}/{{
-                  dailyInteraction.cap
-                }}
-              </div>
-            </div>
+        <!-- 装饰效果汇总 -->
+        <div v-if="activeEffectsList.length > 0" class="active-effects">
+          <div class="effects-title">✨ 装饰效果</div>
+          <div class="effects-list">
+            <span
+              v-for="effect in activeEffectsList"
+              :key="effect.name"
+              class="effect-tag"
+            >
+              {{ effect.name }}{{ effect.value }}
+            </span>
+          </div>
+        </div>
+      </div>
 
-            <!-- 属性条 -->
-            <div class="attributes-section">
-              <div
-                v-for="bar in attributeBars"
-                :key="bar.key"
-                class="attr-item"
-                :class="{ 'attr-warning': bar.value < 30 }"
-                @mouseenter="hoveredAttr = bar.key"
-                @mouseleave="hoveredAttr = null"
+      <!-- 操作区域 -->
+      <div class="actions-section">
+        <!-- 打工 -->
+        <div class="action-group">
+          <div class="action-label">
+            <span>💼 打工</span>
+          </div>
+          <div class="work-grid">
+            <div
+              v-for="work in workList"
+              :key="work.state"
+              class="work-btn-wrapper"
+              @mouseenter="hoveredWork = work.state"
+              @mouseleave="hoveredWork = null"
+            >
+              <button
+                class="action-btn work-btn"
+                :class="{ disabled: !work.canStart }"
+                :disabled="!work.canStart"
+                @click="handleWork(work.state)"
               >
-                <div class="attr-header">
-                  <span class="attr-icon">{{ bar.icon }}</span>
-                  <span class="attr-name">{{ bar.name }}</span>
-                  <span class="attr-value">
-                    {{ bar.value }}<span class="attr-cap">/{{ bar.cap }}</span>
-                  </span>
-                  <span class="attr-info-icon">ⓘ</span>
-                </div>
-                <div class="attr-bar-bg">
-                  <div
-                    class="attr-bar-fill"
-                    :class="`bar-${bar.color}`"
-                    :style="{
-                      width: Math.min(100, (bar.value / bar.cap) * 100) + '%',
-                    }"
-                  ></div>
-                </div>
-                <!-- 悬浮提示 -->
-                <Transition name="tooltip-fade">
-                  <div
-                    v-if="hoveredAttr === bar.key"
-                    class="attr-tooltip"
-                    :class="`tooltip-${bar.color}`"
-                  >
-                    <div class="tooltip-title">
-                      {{ bar.icon }} {{ bar.name }}规则
-                    </div>
-                    <div
-                      v-for="(rule, i) in bar.rules"
-                      :key="i"
-                      class="tooltip-rule"
-                    >
-                      <span class="rule-icon">{{ rule.icon }}</span>
-                      <span class="rule-text">{{ rule.text }}</span>
-                    </div>
-                  </div>
-                </Transition>
-              </div>
-            </div>
-
-            <!-- 金币 -->
-            <div class="money-section">
-              <div class="money-badge">
-                <span class="money-icon">💰</span>
-                <span class="money-amount">{{ attrData.money }}</span>
-              </div>
-            </div>
-
-            <!-- 我的形态 -->
-            <div class="shape-section">
-              <div class="shape-header">
-                <span class="shape-title">🐾 我的形态</span>
-                <button class="deco-shop-link" @click="handleOpenShop">
-                  去商店 ›
-                </button>
-              </div>
-              <div class="shape-grid">
-                <button
-                  v-for="shape in ownedShapeList"
-                  :key="shape.type"
-                  class="shape-item"
-                  :class="{ active: currentPetShape === shape.type }"
-                  @click="handleShapeSwitch(shape.type)"
+                <span class="btn-emoji">
+                  {{
+                    work.state === "brickCarrying"
+                      ? "🧱"
+                      : work.state === "flyerDistributing"
+                        ? "📢"
+                        : "💻"
+                  }}
+                </span>
+                <span class="btn-info">
+                  <span class="work-name">{{ work.name }}</span>
+                  <span class="btn-cost">+💰{{ work.incomePerMinute }}/分</span>
+                  <span class="btn-bonus">竣+{{ work.bonus }}</span>
+                  <span class="btn-restore">需⚡{{ work.staminaReq }}</span>
+                </span>
+              </button>
+              <Transition name="tooltip-fade">
+                <div
+                  v-if="hoveredWork === work.state && workRules[work.state]"
+                  class="work-tooltip"
                 >
-                  <span class="shape-item-icon">{{ shape.icon }}</span>
-                  <span class="shape-item-name">{{ shape.name }}</span>
-                  <span
-                    class="shape-item-badge"
-                    :class="
-                      currentPetShape === shape.type
-                        ? 'badge-active'
-                        : 'badge-inactive'
-                    "
+                  <div class="tooltip-title tooltip-title-purple">
+                    {{
+                      work.state === "brickCarrying"
+                        ? "🧱"
+                        : work.state === "flyerDistributing"
+                          ? "📢"
+                          : "💻"
+                    }}
+                    {{ work.name }}规则
+                  </div>
+                  <div
+                    v-for="(rule, i) in workRules[work.state]"
+                    :key="i"
+                    class="tooltip-rule"
                   >
-                    {{ currentPetShape === shape.type ? "使用中" : "切换" }}
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            <!-- 我的装饰 -->
-            <div class="deco-section">
-              <div class="deco-header">
-                <span class="deco-title">💍 我的装饰</span>
-                <button class="deco-shop-link" @click="handleOpenShop">
-                  去商店 ›
-                </button>
-              </div>
-
-              <!-- 提示 -->
-              <Transition name="toast-slide">
-                <div v-if="decoToastVisible" class="deco-toast">
-                  <span>{{ decoToast }}</span>
+                    <span class="rule-icon">{{ rule.icon }}</span>
+                    <span class="rule-text">{{ rule.text }}</span>
+                  </div>
                 </div>
               </Transition>
-
-              <template v-if="ownedDecoList.length > 0">
-                <div class="deco-grid">
-                  <button
-                    v-for="item in ownedDecoList"
-                    :key="item!.type"
-                    class="deco-item"
-                    :class="{ equipped: item!.isEquipped }"
-                    @click="handleDecoClick(item!.type)"
-                  >
-                    <span class="deco-item-icon"
-                      ><DecoIcon :type="item!.type as DecorationType"
-                    /></span>
-                    <span class="deco-item-name">{{ item!.name }}</span>
-                    <span
-                      class="deco-item-badge"
-                      :class="
-                        item!.isEquipped ? 'badge-equipped' : 'badge-equip'
-                      "
-                    >
-                      {{ item!.isEquipped ? "已装备" : item!.slotName }}
-                    </span>
-                  </button>
-                </div>
-              </template>
-              <div v-else class="deco-empty">还没有装饰，去商店看看吧</div>
-
-              <!-- 装饰效果汇总 -->
-              <div v-if="activeEffectsList.length > 0" class="active-effects">
-                <div class="effects-title">✨ 装饰效果</div>
-                <div class="effects-list">
-                  <span
-                    v-for="effect in activeEffectsList"
-                    :key="effect.name"
-                    class="effect-tag"
-                  >
-                    {{ effect.name }}{{ effect.value }}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <!-- 操作区域 -->
-            <div class="actions-section">
-              <!-- 打工 -->
-              <div class="action-group">
-                <div class="action-label">
-                  <span>💼 打工</span>
-                </div>
-                <div class="work-grid">
-                  <div
-                    v-for="work in workList"
-                    :key="work.state"
-                    class="work-btn-wrapper"
-                    @mouseenter="hoveredWork = work.state"
-                    @mouseleave="hoveredWork = null"
-                  >
-                    <button
-                      class="action-btn work-btn"
-                      :class="{ disabled: !work.canStart }"
-                      :disabled="!work.canStart"
-                      @click="handleWork(work.state)"
-                    >
-                      <span class="btn-emoji">
-                        {{
-                          work.state === "brickCarrying"
-                            ? "🧱"
-                            : work.state === "flyerDistributing"
-                              ? "📢"
-                              : "💻"
-                        }}
-                      </span>
-                      <span class="btn-info">
-                        <span class="work-name">{{ work.name }}</span>
-                        <span class="btn-cost"
-                          >+💰{{ work.incomePerMinute }}/分</span
-                        >
-                        <span class="btn-bonus">竣+{{ work.bonus }}</span>
-                        <span class="btn-restore"
-                          >需⚡{{ work.staminaReq }}</span
-                        >
-                      </span>
-                    </button>
-                    <Transition name="tooltip-fade">
-                      <div
-                        v-if="
-                          hoveredWork === work.state && workRules[work.state]
-                        "
-                        class="work-tooltip"
-                      >
-                        <div class="tooltip-title tooltip-title-purple">
-                          {{
-                            work.state === "brickCarrying"
-                              ? "🧱"
-                              : work.state === "flyerDistributing"
-                                ? "📢"
-                                : "💻"
-                          }}
-                          {{ work.name }}规则
-                        </div>
-                        <div
-                          v-for="(rule, i) in workRules[work.state]"
-                          :key="i"
-                          class="tooltip-rule"
-                        >
-                          <span class="rule-icon">{{ rule.icon }}</span>
-                          <span class="rule-text">{{ rule.text }}</span>
-                        </div>
-                      </div>
-                    </Transition>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </div>
-    </Transition>
-  </Teleport>
+    </div>
+  </BaseModal>
 </template>
 
 <style scoped>
-.attr-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--overlay-bg);
-  backdrop-filter: blur(8px);
-  pointer-events: auto !important;
-}
-
-.attr-modal {
-  width: 360px;
-  max-width: 90vw;
-  max-height: 80vh;
-  border-radius: 24px;
-  background: var(--modal-bg);
-  box-shadow: var(--modal-shadow);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  pointer-events: auto !important;
-}
-
-.modal-decor {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.decor-star {
-  position: absolute;
-  font-size: 16px;
-  opacity: 0.4;
-  animation: twinkle 2s ease-in-out infinite;
-}
-
-.star-1 {
-  top: 20px;
-  right: 60px;
-  animation-delay: 0s;
-}
-
-.star-2 {
-  top: 40px;
-  right: 20px;
-  animation-delay: 0.5s;
-}
-
-.star-3 {
-  top: 60px;
-  right: 80px;
-  animation-delay: 1s;
-}
-
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.2);
-  }
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px 12px;
-  position: relative;
-}
-
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.title-icon {
-  font-size: 24px;
-}
-
-.title-text {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.attr-title {
-  background: linear-gradient(135deg, #f472b6, #fb923c);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.modal-close {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: var(--modal-close-bg);
-  color: var(--modal-close-color);
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.modal-close:hover {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  transform: rotate(90deg);
-}
-
+/* 骨架部分由 BaseModal 提供，此处仅保留业务样式 */
 .modal-body {
   padding: 0 20px 20px;
   overflow-y: auto;
@@ -1566,33 +1410,6 @@ const close = () => {
 
 .work-btn.disabled .work-name {
   color: var(--action-btn-disabled-color);
-}
-
-/* 动画 */
-.modal-pop-enter-active {
-  animation: modal-pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.modal-pop-leave-active {
-  animation: modal-pop-out 0.2s ease-in;
-}
-
-@keyframes modal-pop-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes modal-pop-out {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
 }
 
 /* 滚动条 */

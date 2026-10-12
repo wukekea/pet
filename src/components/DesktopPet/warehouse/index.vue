@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
+import BaseModal from "../ui/BaseModal.vue";
 import { useToast } from "../composables/useToast";
 import {
   FOOD_ICONS,
@@ -238,295 +239,144 @@ const close = () => {
 </script>
 
 <template>
-  <Teleport to="body">
-    <Transition name="modal-pop">
-      <div
-        v-if="visible"
-        class="warehouse-modal-overlay"
-        :style="cssVars"
-        @click="close"
-      >
-        <div
-          class="warehouse-modal"
-          :class="{ 'dark-mode': isDark }"
-          @click.stop
-        >
-          <!-- 装饰元素 -->
-          <div class="modal-decor">
-            <span class="decor-star star-1">📦</span>
-            <span class="decor-star star-2">✨</span>
-            <span class="decor-star star-3">💫</span>
-          </div>
-
-          <div class="modal-header">
-            <div class="header-title">
-              <span class="title-icon">📦</span>
-              <span class="title-text warehouse-title">仓库</span>
-            </div>
-            <button class="modal-close" @click="close">
-              <span>✕</span>
-            </button>
-          </div>
-
-          <div class="modal-body">
-            <!-- 金币余额 -->
-            <div class="money-section">
-              <div class="money-badge">
-                <span class="money-icon">💰</span>
-                <span class="money-amount">{{ attrData.money }}</span>
-              </div>
-            </div>
-
-            <!-- Tab 切换 -->
-            <div class="tab-bar">
-              <button
-                class="tab-btn"
-                :class="{ active: activeTab === 'food' }"
-                @click="activeTab = 'food'"
-              >
-                <span class="tab-icon">🍽️</span>
-                <span class="tab-text">食物</span>
-                <div
-                  v-if="activeTab === 'food'"
-                  class="tab-indicator food-indicator"
-                ></div>
-              </button>
-              <button
-                class="tab-btn"
-                :class="{ active: activeTab === 'bath' }"
-                @click="activeTab = 'bath'"
-              >
-                <span class="tab-icon">🛁</span>
-                <span class="tab-text">沐浴露</span>
-                <div
-                  v-if="activeTab === 'bath'"
-                  class="tab-indicator bath-indicator"
-                ></div>
-              </button>
-              <button
-                class="tab-btn"
-                :class="{ active: activeTab === 'decoration' }"
-                @click="activeTab = 'decoration'"
-              >
-                <span class="tab-icon">💍</span>
-                <span class="tab-text">装饰</span>
-                <div
-                  v-if="activeTab === 'decoration'"
-                  class="tab-indicator deco-indicator"
-                ></div>
-              </button>
-            </div>
-
-            <!-- 使用提示 -->
-            <Transition name="toast-slide">
-              <div v-if="toastVisible" class="toast-notification">
-                <span class="toast-icon">🎉</span>
-                <span class="toast-text">{{ toastMessage }}</span>
-              </div>
-            </Transition>
-
-            <!-- 空状态 -->
-            <div v-if="!hasAnyInventory" class="empty-state">
-              <span class="empty-icon">📭</span>
-              <span class="empty-text">仓库空空如也，去商店看看吧</span>
-            </div>
-
-            <!-- 物品列表 -->
-            <template v-else>
-              <div v-if="currentItems.length === 0" class="tab-empty">
-                <span class="tab-empty-text">当前分类没有库存</span>
-              </div>
-              <div v-else class="items-grid">
-                <button
-                  v-for="item in currentItems"
-                  :key="item.type"
-                  class="item-card"
-                  :class="{
-                    disabled:
-                      item.count <= 0 &&
-                      !('alreadyOwned' in item && item.alreadyOwned),
-                    'bath-card': item.category === 'bath',
-                    'deco-card': item.category === 'decoration',
-                  }"
-                  :disabled="
-                    item.count <= 0 &&
-                    !('alreadyOwned' in item && item.alreadyOwned)
-                  "
-                  @click="handleItemClick(item)"
-                >
-                  <span class="item-icon">
-                    <DecoIcon
-                      v-if="item.decoType || item.category === 'bath'"
-                      :type="
-                        (item.decoType || item.type) as
-                          | DecorationType
-                          | BathType
-                      "
-                    />
-                    <template v-else>{{ item.icon }}</template>
-                  </span>
-                  <span class="item-name">{{ item.name }}</span>
-                  <template v-if="'alreadyOwned' in item && item.alreadyOwned">
-                    <span class="item-owned-badge">{{
-                      item.isEquipped ? "装备中" : "已拥有"
-                    }}</span>
-                  </template>
-                  <template v-else>
-                    <span
-                      class="item-count"
-                      :class="{
-                        'bath-count': item.category === 'bath',
-                        'deco-count': item.category === 'decoration',
-                      }"
-                      >×{{ item.count }}</span
-                    >
-                  </template>
-                  <span
-                    class="item-effect"
-                    :class="{
-                      'bath-effect': item.category === 'bath',
-                      'deco-effect': item.category === 'decoration',
-                    }"
-                    >{{ item.effectLabel }}</span
-                  >
-                </button>
-              </div>
-            </template>
-          </div>
+  <BaseModal
+    :visible="visible"
+    title="仓库"
+    icon="📦"
+    :decor-emojis="['📦', '✨', '💫']"
+    :width="380"
+    :height="560"
+    title-gradient="linear-gradient(135deg, #f59e0b, #d97706)"
+    :css-vars="cssVars"
+    @close="close"
+  >
+    <div class="modal-body">
+      <!-- 金币余额 -->
+      <div class="money-section">
+        <div class="money-badge">
+          <span class="money-icon">💰</span>
+          <span class="money-amount">{{ attrData.money }}</span>
         </div>
       </div>
-    </Transition>
-  </Teleport>
+
+      <!-- Tab 切换 -->
+      <div class="tab-bar">
+        <button
+          class="tab-btn"
+          :class="{ active: activeTab === 'food' }"
+          @click="activeTab = 'food'"
+        >
+          <span class="tab-icon">🍽️</span>
+          <span class="tab-text">食物</span>
+          <div
+            v-if="activeTab === 'food'"
+            class="tab-indicator food-indicator"
+          ></div>
+        </button>
+        <button
+          class="tab-btn"
+          :class="{ active: activeTab === 'bath' }"
+          @click="activeTab = 'bath'"
+        >
+          <span class="tab-icon">🛁</span>
+          <span class="tab-text">沐浴露</span>
+          <div
+            v-if="activeTab === 'bath'"
+            class="tab-indicator bath-indicator"
+          ></div>
+        </button>
+        <button
+          class="tab-btn"
+          :class="{ active: activeTab === 'decoration' }"
+          @click="activeTab = 'decoration'"
+        >
+          <span class="tab-icon">💍</span>
+          <span class="tab-text">装饰</span>
+          <div
+            v-if="activeTab === 'decoration'"
+            class="tab-indicator deco-indicator"
+          ></div>
+        </button>
+      </div>
+
+      <!-- 使用提示 -->
+      <Transition name="toast-slide">
+        <div v-if="toastVisible" class="toast-notification">
+          <span class="toast-icon">🎉</span>
+          <span class="toast-text">{{ toastMessage }}</span>
+        </div>
+      </Transition>
+
+      <!-- 空状态 -->
+      <div v-if="!hasAnyInventory" class="empty-state">
+        <span class="empty-icon">📭</span>
+        <span class="empty-text">仓库空空如也，去商店看看吧</span>
+      </div>
+
+      <!-- 物品列表 -->
+      <template v-else>
+        <div v-if="currentItems.length === 0" class="tab-empty">
+          <span class="tab-empty-text">当前分类没有库存</span>
+        </div>
+        <div v-else class="items-grid">
+          <button
+            v-for="item in currentItems"
+            :key="item.type"
+            class="item-card"
+            :class="{
+              disabled:
+                item.count <= 0 &&
+                !('alreadyOwned' in item && item.alreadyOwned),
+              'bath-card': item.category === 'bath',
+              'deco-card': item.category === 'decoration',
+            }"
+            :disabled="
+              item.count <= 0 && !('alreadyOwned' in item && item.alreadyOwned)
+            "
+            @click="handleItemClick(item)"
+          >
+            <span class="item-icon">
+              <DecoIcon
+                v-if="item.decoType || item.category === 'bath'"
+                :type="
+                  (item.decoType || item.type) as DecorationType | BathType
+                "
+              />
+              <template v-else>{{ item.icon }}</template>
+            </span>
+            <span class="item-name">{{ item.name }}</span>
+            <template v-if="'alreadyOwned' in item && item.alreadyOwned">
+              <span class="item-owned-badge">{{
+                item.isEquipped ? "装备中" : "已拥有"
+              }}</span>
+            </template>
+            <template v-else>
+              <span
+                class="item-count"
+                :class="{
+                  'bath-count': item.category === 'bath',
+                  'deco-count': item.category === 'decoration',
+                }"
+                >×{{ item.count }}</span
+              >
+            </template>
+            <span
+              class="item-effect"
+              :class="{
+                'bath-effect': item.category === 'bath',
+                'deco-effect': item.category === 'decoration',
+              }"
+              >{{ item.effectLabel }}</span
+            >
+          </button>
+        </div>
+      </template>
+    </div>
+  </BaseModal>
 </template>
 
 <style scoped>
-.warehouse-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--overlay-bg);
-  backdrop-filter: blur(8px);
-  pointer-events: auto !important;
-}
-
-.warehouse-modal {
-  width: 380px;
-  max-width: 90vw;
-  height: 560px;
-  border-radius: 24px;
-  background: var(--modal-bg);
-  box-shadow: var(--modal-shadow);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  pointer-events: auto !important;
-}
-
-/* 装饰元素 */
-.modal-decor {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.decor-star {
-  position: absolute;
-  font-size: 16px;
-  opacity: 0.4;
-  animation: twinkle 2s ease-in-out infinite;
-}
-
-.star-1 {
-  top: 20px;
-  right: 60px;
-  animation-delay: 0s;
-}
-
-.star-2 {
-  top: 40px;
-  right: 20px;
-  animation-delay: 0.5s;
-}
-
-.star-3 {
-  top: 60px;
-  right: 80px;
-  animation-delay: 1s;
-}
-
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.2);
-  }
-}
-
-/* 头部 */
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px 12px;
-  position: relative;
-}
-
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.title-icon {
-  font-size: 24px;
-}
-
-.title-text {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.warehouse-title {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.modal-close {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: var(--modal-close-bg);
-  color: var(--modal-close-color);
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.modal-close:hover {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  transform: rotate(90deg);
-}
-
-/* 内容区 */
+/* 内容区（骨架部分由 BaseModal 提供，此处仅保留业务样式） */
 .modal-body {
   padding: 0 24px 24px;
   overflow-y: auto;
@@ -866,33 +716,6 @@ const close = () => {
   letter-spacing: 0.5px;
   color: var(--owned-badge-color);
   background: var(--owned-badge-bg);
-}
-
-/* 弹窗动画 */
-.modal-pop-enter-active {
-  animation: modal-pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.modal-pop-leave-active {
-  animation: modal-pop-out 0.2s ease-in;
-}
-
-@keyframes modal-pop-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes modal-pop-out {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
 }
 
 /* 滚动条 */

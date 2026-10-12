@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { isDark } from "../composables/theme";
+import BaseModal from "../ui/BaseModal.vue";
 import {
   useStatsRef,
   resetStats as resetStatsData,
@@ -133,33 +134,18 @@ const getStateBarWidth = (count: number) => {
 </script>
 
 <template>
-  <Teleport to="body">
-    <Transition name="modal-pop">
-      <div
-        v-if="visible"
-        class="stats-modal-overlay"
-        :style="cssVars"
-        @click="close"
-      >
-        <div class="stats-modal" :class="{ 'dark-mode': isDark }" @click.stop>
-          <!-- 装饰元素 -->
-          <div class="modal-decor">
-            <span class="decor-star star-1">📊</span>
-            <span class="decor-star star-2">✨</span>
-            <span class="decor-star star-3">🎉</span>
-          </div>
-
-          <div class="modal-header">
-            <div class="header-title">
-              <span class="title-icon">📊</span>
-              <span class="title-text stats-title">数据统计</span>
-            </div>
-            <button class="modal-close" @click="close">
-              <span>✕</span>
-            </button>
-          </div>
-
-          <div class="modal-body">
+  <BaseModal
+    :visible="visible"
+    title="数据统计"
+    icon="📊"
+    :decor-emojis="['📊', '✨', '🎉']"
+    :width="480"
+    :max-height="80"
+    title-gradient="linear-gradient(135deg, #10b981, #06b6d4)"
+    :css-vars="cssVars"
+    @close="close"
+  >
+    <div class="modal-body">
             <!-- 统计日期信息 -->
             <div class="stats-info-bar">
               <span class="stats-date">
@@ -272,19 +258,17 @@ const getStateBarWidth = (count: number) => {
                 </div>
               </div>
             </div>
-          </div>
+    </div>
 
-          <div class="modal-footer">
-            <button class="btn btn-reset" @click="resetStats">
-              <span>🔄</span> 重置数据
-            </button>
-            <button class="btn btn-save" @click="close">
-              <span>✓</span> 关闭
-            </button>
-          </div>
-        </div>
-      </div>
-    </Transition>
+    <div class="modal-footer">
+      <button class="btn btn-reset" @click="resetStats">
+        <span>🔄</span> 重置数据
+      </button>
+      <button class="btn btn-save" @click="close">
+        <span>✓</span> 关闭
+      </button>
+    </div>
+  </BaseModal>
 
     <!-- 重置确认弹窗 -->
     <Transition name="confirm-pop">
@@ -332,127 +316,10 @@ const getStateBarWidth = (count: number) => {
         </div>
       </div>
     </Transition>
-  </Teleport>
 </template>
 
 <style scoped>
-.stats-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--overlay-bg);
-  backdrop-filter: blur(8px);
-  pointer-events: auto !important;
-}
-
-.stats-modal {
-  width: 480px;
-  max-width: 90vw;
-  max-height: 80vh;
-  border-radius: 24px;
-  background: var(--modal-bg);
-  box-shadow: var(--modal-shadow);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  pointer-events: auto !important;
-}
-
-.modal-decor {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.decor-star {
-  position: absolute;
-  font-size: 16px;
-  opacity: 0.4;
-  animation: twinkle 2s ease-in-out infinite;
-}
-
-.star-1 {
-  top: 20px;
-  right: 60px;
-  animation-delay: 0s;
-}
-
-.star-2 {
-  top: 40px;
-  right: 20px;
-  animation-delay: 0.5s;
-}
-
-.star-3 {
-  top: 60px;
-  right: 80px;
-  animation-delay: 1s;
-}
-
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.2);
-  }
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px 16px;
-  position: relative;
-}
-
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.title-icon {
-  font-size: 24px;
-}
-
-.title-text {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.modal-close {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: var(--modal-close-bg);
-  color: var(--modal-close-color);
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.modal-close:hover {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  transform: rotate(90deg);
-}
-
+/* 骨架部分（overlay/装饰星/标题栏/关闭按钮）由 BaseModal 提供 */
 .modal-body {
   padding: 0 24px 20px;
   overflow-y: auto;
@@ -488,13 +355,6 @@ const getStateBarWidth = (count: number) => {
 .btn-save:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
-}
-
-.stats-title {
-  background: linear-gradient(135deg, #10b981, #06b6d4);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .stats-info-bar {
@@ -952,33 +812,6 @@ const getStateBarWidth = (count: number) => {
   100% {
     opacity: 0;
     transform: scale(0.95);
-  }
-}
-
-/* 动画 */
-.modal-pop-enter-active {
-  animation: modal-pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.modal-pop-leave-active {
-  animation: modal-pop-out 0.2s ease-in;
-}
-
-@keyframes modal-pop-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes modal-pop-out {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
   }
 }
 </style>

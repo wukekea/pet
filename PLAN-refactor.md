@@ -144,7 +144,22 @@ AI 配置更乱，存在三套互不同步的配置：
 
 ## P2 — 重复代码抽取：面板层（约 1800 行）
 
-### 5. [ ] 抽取 BaseModal.vue 通用弹窗骨架（~600 行）
+### 5. [x] 抽取 BaseModal.vue 通用弹窗骨架（~600 行）
+
+**改动记录（已完成）**：
+
+- 新增 `ui/BaseModal.vue`（282 行）：Teleport + modal-pop 进出场动画 +
+  overlay（统一 z-index: 10001，修复原 settings 10000/其他 10001 不一致）+
+  标题栏（icon/title/titleGradient props）+ 关闭按钮（hover 旋转变红）+
+  装饰星星（decorEmojis prop，支持 3-4 个）
+- 6 个弹窗全部迁移：shop / warehouse / stats / schedule / attributes /
+  settings。各弹窗通过 props 传入尺寸（width/height/maxHeight/borderRadius）
+  和主题变量（cssVars），业务内容放默认插槽
+- 6 个文件合计 -1135 行（2662 删除 / 1527 新增，其中大头是格式化 hook 重排）
+- 保留的各弹窗差异：标题渐变色、装饰 emoji、modal-body padding
+  （shop/warehouse 24px vs stats/schedule 20px vs attributes 20px 侧边距）
+- settings 弹窗变化最大：原双层 Transition（fade + modal-pop）简化为
+  BaseModal 单层；decor-item 换为通用 decor-star 样式（4 个 emoji 仍保留）
 
 **问题**：6 个弹窗（attributes / stats / shop / warehouse / schedule / settings）
 的以下部分逐字重复，只是类名前缀不同：
