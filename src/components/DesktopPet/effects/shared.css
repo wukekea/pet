@@ -53,8 +53,7 @@
   65%,
   85% {
     opacity: 1;
-    transform: translateY(var(--fx-note-rise, -10px)) rotate(5deg)
-      scale(1.1);
+    transform: translateY(var(--fx-note-rise, -10px)) rotate(5deg) scale(1.1);
   }
   100% {
     opacity: 0;

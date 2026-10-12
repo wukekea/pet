@@ -49,8 +49,7 @@ declare global {
       | null;
     onnomatch: ((this: SpeechRecognition, ev: Event) => void) | null;
     onresult:
-      | ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void)
-      | null;
+      ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void) | null;
     onsoundend: ((this: SpeechRecognition, ev: Event) => void) | null;
     onsoundstart: ((this: SpeechRecognition, ev: Event) => void) | null;
     onspeechend: ((this: SpeechRecognition, ev: Event) => void) | null;

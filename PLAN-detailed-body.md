@@ -9,6 +9,7 @@
 ### 架构：每个形态内条件渲染（v-if/v-show）
 
 不创建独立的 XxxDetailedShape.vue 组件，而是在现有 8 个形态组件内部通过 `bodyStyle` prop 区分渲染。理由：
+
 - 8 个形态共享同一套 DOM 骨架和装饰品插槽，拆分组件会导致 16 个文件维护
 - DecoBow/DecoMagicWand 嵌入在特定 DOM 节点中，拆分后每次改装饰品逻辑需改 16 处
 
@@ -50,13 +51,13 @@ pet-body（50×100px 卵形，上宽下窄）
   └── DecorationsLayer
 ```
 
-| 部位 | 简约 | 精美 |
-|------|------|------|
-| pet-body | 70×70 圆形 | 50×100 卵形 |
-| pet-head | 无 | 45×40 圆形 |
-| pet-torso | 无 | 35×45 椭圆 |
-| pet-arm | 12×20 | 10×22 |
-| pet-leg | 14×12 | 12×16 |
+| 部位      | 简约       | 精美        |
+| --------- | ---------- | ----------- |
+| pet-body  | 70×70 圆形 | 50×100 卵形 |
+| pet-head  | 无         | 45×40 圆形  |
+| pet-torso | 无         | 35×45 椭圆  |
+| pet-arm   | 12×20      | 10×22       |
+| pet-leg   | 14×12      | 12×16       |
 
 ## 实施步骤
 
@@ -87,6 +88,7 @@ pet-body（50×100px 卵形，上宽下窄）
 3. 每种形态测试核心动画
 
 形态躯干差异：
+
 - cloud：云朵圆润，底部波浪
 - cat：纤细，可加条纹
 - panda：圆胖，白色肚皮
@@ -110,18 +112,18 @@ pet-body（50×100px 卵形，上宽下窄）
 
 ## 关键文件
 
-| 文件 | 修改内容 |
-|------|---------|
-| `composables/settings.ts` | 添加 bodyStyle 字段 |
-| `settings/index.vue` | 添加外形风格切换 UI |
-| `types.ts` | 添加 BodyStyle 类型 |
-| `index.vue` | 传递 bodyStyle prop，调整容器高度 |
-| `shapes/base.css` | 精美模式基础样式+动画覆盖 |
-| `shapes/cloud/CloudShape.vue` | 第一个精美化原型 |
-| `shapes/cloud/styles.css` | cloud 精美模式覆盖 |
-| 其余 7 个 XxxShape.vue | 添加精美 DOM 结构 |
-| 其余 7 个 styles.css | 形态精美覆盖 |
-| `shapes/decoration-overrides.css` | 精美模式装饰品位置 |
+| 文件                              | 修改内容                          |
+| --------------------------------- | --------------------------------- |
+| `composables/settings.ts`         | 添加 bodyStyle 字段               |
+| `settings/index.vue`              | 添加外形风格切换 UI               |
+| `types.ts`                        | 添加 BodyStyle 类型               |
+| `index.vue`                       | 传递 bodyStyle prop，调整容器高度 |
+| `shapes/base.css`                 | 精美模式基础样式+动画覆盖         |
+| `shapes/cloud/CloudShape.vue`     | 第一个精美化原型                  |
+| `shapes/cloud/styles.css`         | cloud 精美模式覆盖                |
+| 其余 7 个 XxxShape.vue            | 添加精美 DOM 结构                 |
+| 其余 7 个 styles.css              | 形态精美覆盖                      |
+| `shapes/decoration-overrides.css` | 精美模式装饰品位置                |
 
 ## 动画适配策略
 
