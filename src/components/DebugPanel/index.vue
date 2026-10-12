@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import {
   changeState,
   isWorkState,
@@ -52,6 +52,7 @@ import {
   saveAttributeData,
 } from "../DesktopPet/composables/attributeStorage";
 import { getShapeOptions } from "../DesktopPet/shapes";
+import { randomPick } from "../DesktopPet/utils/random";
 
 // 属性数据（用于调试装饰装备）
 const attributeData = useAttributeRef();
@@ -297,6 +298,16 @@ const togglePanel = () => {
   // 打开面板时禁用穿透，关闭时恢复穿透
   setPassthrough(!isVisible.value);
 };
+
+// 调试面板打开时，进入 eating 状态随机选择食物
+// （替代原本放在 DesktopPet/index.vue 中服务调试面板的逻辑）
+const foodTypes = Object.keys(FOOD_CONFIGS) as FoodType[];
+
+watch(petState, (newState) => {
+  if (newState === "eating" && isDebugPanelOpen.value) {
+    currentFood.value = randomPick(foodTypes);
+  }
+});
 
 // 鼠标进入面板 - 禁用穿透
 const handleMouseEnter = () => {

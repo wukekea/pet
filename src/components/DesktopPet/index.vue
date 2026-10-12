@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, watch } from "vue";
+import { computed, onMounted, onBeforeUnmount } from "vue";
 // 状态变量从 sharedState 导入
 import {
   petState,
@@ -7,7 +7,6 @@ import {
   position,
   isVisible,
   isDragging,
-  isDebugPanelOpen,
   currentFood,
   currentPetShape,
   coinGainAmount,
@@ -78,7 +77,6 @@ import ShopModal from "./shop/index.vue";
 import WarehouseModal from "./warehouse/index.vue";
 import ChatPanel from "./ChatPanel/index.vue";
 import SettingsModal from "./settings/index.vue";
-import { randomPick } from "./utils/random";
 import { initSpeech, cleanupSpeech } from "./composables/speech";
 import {
   initSettings,
@@ -110,15 +108,7 @@ import "./shapes/dog/styles.css";
 import "./shapes/penguin/styles.css";
 import "./shapes/frog/styles.css";
 
-// 食物类型列表（调试面板使用）
-const foodTypes = Object.keys(FOOD_CONFIGS) as FoodType[];
-
-// 调试面板打开时，进入 eating 状态随机选择食物
-watch(petState, (newState) => {
-  if (newState === "eating" && isDebugPanelOpen.value) {
-    currentFood.value = randomPick(foodTypes);
-  }
-});
+import "./shapes/base.css";
 
 // ===== 快捷操作面板 =====
 

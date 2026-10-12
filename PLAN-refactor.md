@@ -54,7 +54,16 @@ AI 配置更乱，存在三套互不同步的配置：
 
 ## P1 — 架构性债务
 
-### 2. [ ] DebugPanel 加生产环境守卫
+### 2. [x] DebugPanel 加生产环境守卫
+
+**改动记录（已完成）**：
+
+- `App.vue`：改为 `import.meta.env.DEV` + `defineAsyncComponent` 动态导入，
+  生产构建中 DebugPanel 及其独有依赖被完整 tree-shake
+- `DesktopPet/index.vue`：移除"调试面板打开时随机选食物"的 watch 及相关
+  import（isDebugPanelOpen / randomPick / watch）
+- 该 watch 迁移至 `DebugPanel/index.vue` 内部，调试行为不变
+- DebugPanel 拖拽复用 `useDraggable()` 一项**未做**（P3-14 统一处理）
 
 **问题**：
 
