@@ -51,6 +51,7 @@ function toggleSettings() {
 }
 
 function saveConfig() {
+  // 写入 sharedState 的 llmConfig 并持久化（与设置面板走同一份存储）
   llmConfig.value = { ...editConfig.value };
   localStorage.setItem("llm-config", JSON.stringify(llmConfig.value));
   showSettings.value = false;

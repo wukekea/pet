@@ -8,6 +8,8 @@ import {
   speechVolume,
   toggleSpeech,
 } from "./speech";
+import { llmConfig, type LLMConfig } from "./sharedState";
+import { saveApiKey, saveApiHost, saveAmapKey } from "./qweatherStorage";
 
 // 设置配置接口
 export interface PetSettings {
@@ -25,25 +27,60 @@ export interface PetSettings {
   // 交互
   clickReaction: boolean;
   dragSound: boolean;
-  // API 配置
-  apiConfig: {
-    // 和风天气
-    qweather: {
-      key: string;
-      host: string;
-    };
-    // 高德地图
-    amap: {
-      key: string;
-    };
-    // AI 对话
-    ai: {
-      key: string;
-      url: string;
-      model: string;
-      format: "openai" | "anthropic" | "gemini" | "custom";
-    };
+}
+
+// API 配置接口（接通真实存储：qweatherStorage / llmConfig，
+// 不再作为 pet-settings 的一部分持久化，避免双源真相）
+export interface ApiConfig {
+  // 和风天气
+  qweather: {
+    key: string;
+    host: string;
   };
+  // 高德地图
+  amap: {
+    key: string;
+  };
+  // AI 对话（字段名与 LLMConfig 对齐）
+  ai: {
+    key: string;
+    url: string;
+    model: string;
+    format: LLMConfig["requestFormat"];
+  };
+}
+
+// 读取当前 API 配置（从各真实存储汇总，供设置面板展示）
+export function loadApiConfig(): ApiConfig {
+  return {
+    qweather: {
+      key: localStorage.getItem("qweather-api-key") ?? "",
+      host: localStorage.getItem("qweather-api-host") ?? "devapi.qweather.com",
+    },
+    amap: {
+      key: localStorage.getItem("amap-api-key") ?? "",
+    },
+    ai: {
+      key: llmConfig.value.apiKey,
+      url: llmConfig.value.baseURL,
+      model: llmConfig.value.model,
+      format: llmConfig.value.requestFormat,
+    },
+  };
+}
+
+// 保存 API 配置到各真实存储（天气/定位重启应用后生效）
+export function saveApiConfig(config: ApiConfig): void {
+  saveApiKey(config.qweather.key);
+  saveApiHost(config.qweather.host);
+  saveAmapKey(config.amap.key);
+  llmConfig.value = {
+    baseURL: config.ai.url,
+    apiKey: config.ai.key,
+    model: config.ai.model,
+    requestFormat: config.ai.format,
+  };
+  localStorage.setItem("llm-config", JSON.stringify(llmConfig.value));
 }
 
 // 默认设置
@@ -58,21 +95,6 @@ const defaultSettings: PetSettings = {
   voiceEnabled: true,
   clickReaction: true,
   dragSound: true,
-  apiConfig: {
-    qweather: {
-      key: "",
-      host: "https://devapi.qweather.com",
-    },
-    amap: {
-      key: "",
-    },
-    ai: {
-      key: "",
-      url: "",
-      model: "",
-      format: "openai" as const,
-    },
-  },
 };
 
 // 设置状态
@@ -97,23 +119,13 @@ export const opacityValue = computed(() => {
 
 // 加载设置
 export function loadSettings() {
-  console.log("[Settings] 开始加载设置...");
   try {
     const saved = localStorage.getItem("pet-settings");
-    console.log("[Settings] localStorage 原始数据:", saved);
     if (saved) {
       const parsed = JSON.parse(saved);
-      console.log("[Settings] 解析后的数据:", parsed);
+      // 旧版本曾把 apiConfig 存在 pet-settings 里（死配置），加载时剔除
+      delete parsed.apiConfig;
       settings.value = { ...defaultSettings, ...parsed };
-      console.log(
-        "[Settings] 已加载设置:",
-        JSON.parse(JSON.stringify(settings.value)),
-      );
-    } else {
-      console.log(
-        "[Settings] 没有找到保存的设置，使用默认设置:",
-        defaultSettings,
-      );
     }
   } catch (e) {
     console.error("[Settings] 加载设置失败，使用默认设置", e);
@@ -138,10 +150,6 @@ export function saveSettings() {
   try {
     const dataToSave = JSON.parse(JSON.stringify(settings.value));
     localStorage.setItem("pet-settings", JSON.stringify(dataToSave));
-    console.log("[Settings] 已保存设置:", dataToSave);
-    // 验证保存是否成功
-    const verify = localStorage.getItem("pet-settings");
-    console.log("[Settings] 验证保存结果:", verify);
   } catch (e) {
     console.error("[Settings] 保存设置失败", e);
   }
@@ -166,10 +174,6 @@ export function updateSetting<K extends keyof PetSettings>(
 }
 
 // 页面加载时立即检查 localStorage（调试用）
-console.log(
-  "[Settings] 模块加载，检查 localStorage:",
-  typeof window !== "undefined" ? localStorage.getItem("pet-settings") : "N/A",
-);
 
 // 重置设置
 export function resetSettings() {
@@ -193,14 +197,8 @@ export function resetSettingsInit() {
 
 // 初始化设置
 export function initSettings() {
-  console.log(
-    "[Settings] initSettings 被调用, isSettingsInitialized:",
-    isSettingsInitialized,
-  );
-
   // 开发模式下，如果页面重新加载，强制重新初始化
   if (isSettingsInitialized) {
-    console.log("[Settings] 设置已初始化，但强制重新加载设置");
     loadSettings();
     return;
   }
@@ -211,8 +209,7 @@ export function initSettings() {
   // 监听设置变化自动保存
   const unwatch = watch(
     settings,
-    (newVal, oldVal) => {
-      console.log("[Settings] 设置发生变化:", oldVal, "->", newVal);
+    () => {
       saveSettings();
     },
     { deep: true },

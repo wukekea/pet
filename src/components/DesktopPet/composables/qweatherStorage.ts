@@ -1,6 +1,43 @@
 const API_KEY_STORAGE_KEY = "qweather-api-key";
 const API_HOST_STORAGE_KEY = "qweather-api-host";
+const AMAP_KEY_STORAGE_KEY = "amap-api-key";
 const WEATHER_STATUS_KEY = "qweather-status";
+
+/**
+ * 保存 API Key（设置面板写入）
+ */
+export function saveApiKey(key: string): void {
+  try {
+    if (key) {
+      localStorage.setItem(API_KEY_STORAGE_KEY, key);
+    } else {
+      // 空值视为清除配置
+      localStorage.removeItem(API_KEY_STORAGE_KEY);
+    }
+  } catch (e) {
+    console.error("保存 API Key 失败:", e);
+  }
+}
+
+/**
+ * 保存 API Host（设置面板写入）
+ * 兼容带协议的输入：去除 https:// 前缀只保留域名
+ */
+export function saveApiHost(host: string): void {
+  try {
+    const normalized = host
+      .trim()
+      .replace(/^https?:\/\//, "")
+      .replace(/\/$/, "");
+    if (normalized) {
+      localStorage.setItem(API_HOST_STORAGE_KEY, normalized);
+    } else {
+      localStorage.removeItem(API_HOST_STORAGE_KEY);
+    }
+  } catch (e) {
+    console.error("保存 API Host 失败:", e);
+  }
+}
 
 /**
  * 加载 API Key
@@ -56,13 +93,31 @@ export function loadApiHost(): string {
 
 /**
  * 加载高德地图 Key（用于 IP 定位）
+ * 优先级：localStorage（设置面板写入）> 环境变量
  */
 export function loadAmapKey(): string | null {
   try {
+    const saved = localStorage.getItem(AMAP_KEY_STORAGE_KEY);
+    if (saved) return saved;
     return import.meta.env.VITE_AMAP_KEY || null;
   } catch (e) {
     console.error("加载高德 Key 失败:", e);
     return null;
+  }
+}
+
+/**
+ * 保存高德地图 Key（设置面板写入）
+ */
+export function saveAmapKey(key: string): void {
+  try {
+    if (key) {
+      localStorage.setItem(AMAP_KEY_STORAGE_KEY, key);
+    } else {
+      localStorage.removeItem(AMAP_KEY_STORAGE_KEY);
+    }
+  } catch (e) {
+    console.error("保存高德 Key 失败:", e);
   }
 }
 

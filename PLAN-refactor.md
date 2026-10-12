@@ -28,7 +28,23 @@
 
 ## P0 — 功能性 Bug
 
-### 1. [ ] 修复设置面板 API 配置死路径
+### 1. [x] 修复设置面板 API 配置死路径
+
+**改动记录（已完成，采用"接通"方案，天气/定位重启生效）**：
+
+- `qweatherStorage.ts`：新增 `saveApiKey` / `saveApiHost` / `saveAmapKey` 写入函数；
+  `loadAmapKey` 从"仅环境变量"改为"localStorage > 环境变量"；host 保存时自动
+  去除协议前缀归一化
+- `settings.ts`：`PetSettings` 移除 `apiConfig` 字段（不再持久化到 pet-settings，
+  消除双源真相）；新增独立的 `ApiConfig` 接口 + `loadApiConfig()` / `saveApiConfig()`
+  ——读取时从 qweatherStorage/llmConfig 汇总，保存时写回各真实存储；旧版本存在
+  pet-settings 里的死 apiConfig 在加载时剔除；顺带清理了 5 处调试 console.log
+- `settings/index.vue`：API 页改为独立的 `apiConfig` ref + 显式"保存 API 配置"
+  按钮（不再依赖 settings 的深度 watch 自动保存）；AI 请求格式选项从
+  openai/anthropic/gemini/custom 收敛为实际支持的 openai/weibo
+- `ChatPanel/index.vue`：确认齿轮面板与设置面板读写同一份 `llmConfig`（AI 配置
+  立即生效，因 llmService 每次请求都读 `llmConfig.value`）
+- 天气/高德配置**重启应用后生效**（天气服务在启动时读一次 key），UI 已提示
 
 **问题**：`settings/index.vue:1212-1226` 让用户填写和风天气 key/host（存入
 `pet-settings` 的 `apiConfig`），但天气服务实际读取的是

@@ -4,7 +4,10 @@ import { isDark } from "../composables/theme";
 import {
   settings,
   updateSetting,
+  loadApiConfig,
+  saveApiConfig,
   type PetSettings,
+  type ApiConfig,
 } from "../composables/settings";
 import {
   speechEnabled,
@@ -27,7 +30,7 @@ import {
   checkSpeechInputDependencies,
 } from "../composables/speechInputSettings";
 
-defineProps<{
+const props = defineProps<{
   visible: boolean;
 }>();
 
@@ -181,10 +184,32 @@ const categories = [
 // AI 请求格式选项
 const aiFormats = [
   { key: "openai" as const, label: "OpenAI", desc: "GPT 系列 / 兼容格式" },
-  { key: "anthropic" as const, label: "Anthropic", desc: "Claude 系列" },
-  { key: "gemini" as const, label: "Gemini", desc: "Google Gemini" },
-  { key: "custom" as const, label: "自定义", desc: "其他格式" },
+  { key: "weibo" as const, label: "微博代理", desc: "微博 aigc 代理格式" },
 ];
+
+// API 配置（从真实存储加载，保存时写回真实存储）
+const apiConfig = ref<ApiConfig>(loadApiConfig());
+
+// 每次打开设置弹窗时重新加载，避免显示过期快照
+// （用户可能在 ChatPanel 齿轮面板改过 AI 配置）
+watch(
+  () => props.visible,
+  (visible) => {
+    if (visible) {
+      apiConfig.value = loadApiConfig();
+    }
+  },
+);
+
+// 保存 API 配置
+const saveApi = () => {
+  saveApiConfig(apiConfig.value);
+  apiSaveSuccess.value = true;
+  setTimeout(() => (apiSaveSuccess.value = false), 2000);
+};
+
+// 保存成功提示
+const apiSaveSuccess = ref(false);
 
 // 格式化百分比
 const formatPercent = (val: number) => `${val}%`;
@@ -1209,7 +1234,7 @@ const handleSpeechInputToggle = async () => {
                       <div class="input-row">
                         <label :style="{ color: textMuted }">API Key</label>
                         <input
-                          v-model="settings.apiConfig.qweather.key"
+                          v-model="apiConfig.qweather.key"
                           type="password"
                           placeholder="请输入 API Key"
                           class="api-key-input"
@@ -1218,9 +1243,9 @@ const handleSpeechInputToggle = async () => {
                       <div class="input-row">
                         <label :style="{ color: textMuted }">API Host</label>
                         <input
-                          v-model="settings.apiConfig.qweather.host"
+                          v-model="apiConfig.qweather.host"
                           type="text"
-                          placeholder="https://devapi.qweather.com"
+                          placeholder="devapi.qweather.com"
                           class="api-key-input"
                         />
                       </div>
@@ -1254,7 +1279,7 @@ const handleSpeechInputToggle = async () => {
                       <div class="input-row">
                         <label :style="{ color: textMuted }">API Key</label>
                         <input
-                          v-model="settings.apiConfig.amap.key"
+                          v-model="apiConfig.amap.key"
                           type="password"
                           placeholder="请输入 API Key"
                           class="api-key-input"
@@ -1295,9 +1320,9 @@ const handleSpeechInputToggle = async () => {
                             :key="fmt.key"
                             class="format-option"
                             :class="{
-                              active: settings.apiConfig.ai.format === fmt.key,
+                              active: apiConfig.ai.format === fmt.key,
                             }"
-                            @click="settings.apiConfig.ai.format = fmt.key"
+                            @click="apiConfig.ai.format = fmt.key"
                           >
                             <span class="format-name">{{ fmt.label }}</span>
                             <span class="format-desc">{{ fmt.desc }}</span>
@@ -1307,16 +1332,16 @@ const handleSpeechInputToggle = async () => {
                       <div class="input-row">
                         <label :style="{ color: textMuted }">API URL</label>
                         <input
-                          v-model="settings.apiConfig.ai.url"
+                          v-model="apiConfig.ai.url"
                           type="text"
-                          placeholder="https://api.example.com/v1/chat/completions"
+                          placeholder="https://api.openai.com/v1/chat/completions"
                           class="api-key-input"
                         />
                       </div>
                       <div class="input-row">
                         <label :style="{ color: textMuted }">API Key</label>
                         <input
-                          v-model="settings.apiConfig.ai.key"
+                          v-model="apiConfig.ai.key"
                           type="password"
                           placeholder="请输入 API Key"
                           class="api-key-input"
@@ -1325,9 +1350,9 @@ const handleSpeechInputToggle = async () => {
                       <div class="input-row">
                         <label :style="{ color: textMuted }">模型名称</label>
                         <input
-                          v-model="settings.apiConfig.ai.model"
+                          v-model="apiConfig.ai.model"
                           type="text"
-                          placeholder="如: gpt-3.5-turbo, claude-3-sonnet"
+                          placeholder="如: gpt-4o-mini, glm-4"
                           class="api-key-input"
                         />
                       </div>
@@ -1337,10 +1362,24 @@ const handleSpeechInputToggle = async () => {
                   <!-- 提示信息 -->
                   <div class="api-tip" :style="{ borderColor }">
                     <span class="tip-icon">💡</span>
-                    <span class="tip-text" :style="{ color: textMuted }"
-                      >API 配置仅存储在本地，不会上传到服务器</span
-                    >
+                    <span class="tip-text" :style="{ color: textMuted }">
+                      API
+                      配置仅存储在本地，不会上传到服务器。天气与定位配置保存后
+                      重启应用生效
+                    </span>
                   </div>
+
+                  <!-- 保存按钮 -->
+                  <button
+                    class="api-save-btn"
+                    :style="{
+                      background: borderColor,
+                      color: '#fff',
+                    }"
+                    @click="saveApi"
+                  >
+                    {{ apiSaveSuccess ? "✓ 已保存" : "保存 API 配置" }}
+                  </button>
                 </div>
               </div>
 
@@ -2702,6 +2741,30 @@ const handleSpeechInputToggle = async () => {
 
 .api-tip .tip-text {
   font-size: 12px;
+}
+
+/* API 保存按钮 */
+.api-save-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.api-save-btn:hover {
+  transform: translateY(-1px);
+}
+
+.api-save-btn:active {
+  transform: translateY(0);
 }
 
 /* 语音输入设置 */
