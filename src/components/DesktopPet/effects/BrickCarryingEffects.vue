@@ -1,140 +1,80 @@
 <script setup lang="ts">
 // 搬砖效果组件 - 体力劳动动画
+// 砖头 SVG 与音符复用 icons 通用组件，重复模板用 v-for 渲染
+import BrickSvg from "./icons/BrickSvg.vue";
+import SmallBrickSvg from "./icons/SmallBrickSvg.vue";
+import SweatDropSvg from "./icons/SweatDropSvg.vue";
+import NoteSvg from "./icons/NoteSvg.vue";
+
+// 头顶搬运的三块砖：只有 delay 和 margin 差异
+const stackBricks = [{ delay: "0s" }, { delay: "0.2s" }, { delay: "0.4s" }].map(
+  (b) => ({ "--fx-delay": b.delay }),
+);
+
+// 左侧杂乱砖堆：只有旋转和位移差异
+const messyBricks = [
+  { "--fx-transform": "rotate(-15deg) translateX(-5px)" },
+  { "--fx-transform": "rotate(8deg) translateX(3px)" },
+  { "--fx-transform": "rotate(-5deg) translateX(-2px)" },
+  { "--fx-transform": "rotate(12deg) translateX(4px)" },
+  { "--fx-transform": "rotate(-8deg) translateX(-3px)" },
+];
+
+// 右侧整齐砖堆：只有 delay 差异（0.1s 步进）
+const neatBricks = Array.from({ length: 5 }, (_, i) => ({
+  "--fx-delay": `${(i + 1) * 0.1}s`,
+}));
+
+// 汗珠：位置和 delay 差异
+const sweatDrops = [
+  { top: "-15px", left: "-8px", "--fx-delay": "0s" },
+  { top: "-10px", right: "-5px", "--fx-delay": "0.7s" },
+  { top: "20px", left: "5px", "--fx-delay": "1.4s" },
+];
+
+// 努力音符：位置和 delay 差异
+const effortNotes = [
+  {
+    top: "-20px",
+    right: "-15px",
+    "--fx-delay": "0.3s",
+    "--note-color": "#FF6B6B",
+  },
+  {
+    top: "5px",
+    left: "-12px",
+    "--fx-delay": "0.9s",
+    "--note-color": "#FF8E8E",
+  },
+];
 </script>
 
 <template>
   <div class="brick-carrying-effects">
     <!-- 搬运的砖头堆 -->
     <div class="brick-stack">
-      <!-- 砖头 1 -->
-      <div class="brick brick-1">
-        <svg viewBox="0 0 40 20" class="brick-svg">
-          <rect x="2" y="2" width="36" height="16" rx="2" fill="#8B4513" />
-          <rect x="4" y="4" width="32" height="12" rx="1" fill="#A0522D" />
-          <rect
-            x="6"
-            y="6"
-            width="8"
-            height="8"
-            rx="1"
-            fill="#CD853F"
-            opacity="0.5"
-          />
-          <rect
-            x="16"
-            y="6"
-            width="8"
-            height="8"
-            rx="1"
-            fill="#CD853F"
-            opacity="0.5"
-          />
-          <rect
-            x="26"
-            y="6"
-            width="8"
-            height="8"
-            rx="1"
-            fill="#CD853F"
-            opacity="0.5"
-          />
-        </svg>
-      </div>
-      <!-- 砖头 2 -->
-      <div class="brick brick-2">
-        <svg viewBox="0 0 40 20" class="brick-svg">
-          <rect x="2" y="2" width="36" height="16" rx="2" fill="#8B4513" />
-          <rect x="4" y="4" width="32" height="12" rx="1" fill="#A0522D" />
-          <rect
-            x="6"
-            y="6"
-            width="8"
-            height="8"
-            rx="1"
-            fill="#CD853F"
-            opacity="0.5"
-          />
-          <rect
-            x="16"
-            y="6"
-            width="8"
-            height="8"
-            rx="1"
-            fill="#CD853F"
-            opacity="0.5"
-          />
-          <rect
-            x="26"
-            y="6"
-            width="8"
-            height="8"
-            rx="1"
-            fill="#CD853F"
-            opacity="0.5"
-          />
-        </svg>
-      </div>
-      <!-- 砖头 3 -->
-      <div class="brick brick-3">
-        <svg viewBox="0 0 40 20" class="brick-svg">
-          <rect x="2" y="2" width="36" height="16" rx="2" fill="#8B4513" />
-          <rect x="4" y="4" width="32" height="12" rx="1" fill="#A0522D" />
-          <rect
-            x="6"
-            y="6"
-            width="8"
-            height="8"
-            rx="1"
-            fill="#CD853F"
-            opacity="0.5"
-          />
-          <rect
-            x="16"
-            y="6"
-            width="8"
-            height="8"
-            rx="1"
-            fill="#CD853F"
-            opacity="0.5"
-          />
-          <rect
-            x="26"
-            y="6"
-            width="8"
-            height="8"
-            rx="1"
-            fill="#CD853F"
-            opacity="0.5"
-          />
-        </svg>
+      <div
+        v-for="(brick, i) in stackBricks"
+        :key="i"
+        class="brick"
+        :style="brick"
+      >
+        <BrickSvg />
       </div>
     </div>
 
     <!-- 汗珠效果 -->
-    <div class="sweat-drop sweat-1">
-      <svg viewBox="0 0 16 24" class="sweat-svg">
-        <path
-          d="M8 2 C8 2 2 8 2 14 C2 18.4 4.7 22 8 22 C11.3 22 14 18.4 14 14 C14 8 8 2 8 2Z"
-          fill="#87CEEB"
-        />
-        <ellipse cx="6" cy="10" rx="2" ry="3" fill="white" opacity="0.6" />
-      </svg>
-    </div>
-    <div class="sweat-drop sweat-2">
-      <svg viewBox="0 0 12 18" class="sweat-svg small">
-        <path
-          d="M6 2 C6 2 1.5 6 1.5 10.5 C1.5 13.8 3.5 16.5 6 16.5 C8.5 16.5 10.5 13.8 10.5 10.5 C10.5 6 6 2 6 2Z"
-          fill="#87CEEB"
-        />
-      </svg>
-    </div>
-    <div class="sweat-drop sweat-3">
-      <svg viewBox="0 0 10 15" class="sweat-svg small">
-        <path
-          d="M5 1.5 C5 1.5 1.5 4.5 1.5 8 C1.5 10.5 3 12.5 5 12.5 C7 12.5 8.5 10.5 8.5 8 C8.5 4.5 5 1.5 5 1.5Z"
-          fill="#87CEEB"
-        />
-      </svg>
+    <div
+      v-for="(sweat, i) in sweatDrops"
+      :key="i"
+      class="sweat-drop"
+      :style="sweat"
+    >
+      <SweatDropSvg
+        color="#87CEEB"
+        class="sweat-svg"
+        :class="{ small: i > 0 }"
+      />
     </div>
 
     <!-- 力量符号 -->
@@ -190,106 +130,44 @@
     </div>
 
     <!-- 努力音符 -->
-    <div class="effort-note note-1">
-      <svg viewBox="0 0 24 24" class="note-svg">
-        <path
-          d="M12 4 L12 16 M8 14 L8 18 L16 16 L16 12 L8 14Z"
-          stroke="#FF6B6B"
-          stroke-width="2"
-          fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <circle cx="6" cy="18" r="3" fill="#FF6B6B" />
-        <circle cx="14" cy="16" r="3" fill="#FF6B6B" />
-      </svg>
-    </div>
-    <div class="effort-note note-2">
-      <svg viewBox="0 0 24 24" class="note-svg">
-        <path
-          d="M12 4 L12 16 M8 14 L8 18 L16 16 L16 12 L8 14Z"
-          stroke="#FF8E8E"
-          stroke-width="2"
-          fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <circle cx="6" cy="18" r="3" fill="#FF8E8E" />
-        <circle cx="14" cy="16" r="3" fill="#FF8E8E" />
-      </svg>
+    <div
+      v-for="(note, i) in effortNotes"
+      :key="i"
+      class="effort-note"
+      :style="note"
+    >
+      <NoteSvg :color="note['--note-color']" class="note-svg" />
     </div>
 
     <!-- 左边杂乱的砖堆 -->
     <div class="messy-bricks-left">
-      <div class="messy-brick mb-1">
-        <svg viewBox="0 0 36 16" class="small-brick-svg">
-          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
-          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
-        </svg>
-      </div>
-      <div class="messy-brick mb-2">
-        <svg viewBox="0 0 36 16" class="small-brick-svg">
-          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
-          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
-        </svg>
-      </div>
-      <div class="messy-brick mb-3">
-        <svg viewBox="0 0 36 16" class="small-brick-svg">
-          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
-          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
-        </svg>
-      </div>
-      <div class="messy-brick mb-4">
-        <svg viewBox="0 0 36 16" class="small-brick-svg">
-          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
-          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
-        </svg>
-      </div>
-      <div class="messy-brick mb-5">
-        <svg viewBox="0 0 36 16" class="small-brick-svg">
-          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
-          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
-        </svg>
+      <div
+        v-for="(brick, i) in messyBricks"
+        :key="i"
+        class="messy-brick"
+        :style="brick"
+      >
+        <SmallBrickSvg />
       </div>
     </div>
 
     <!-- 右边整齐的砖堆 -->
     <div class="neat-bricks-right">
-      <div class="neat-brick nb-1">
-        <svg viewBox="0 0 36 16" class="small-brick-svg">
-          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
-          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
-        </svg>
-      </div>
-      <div class="neat-brick nb-2">
-        <svg viewBox="0 0 36 16" class="small-brick-svg">
-          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
-          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
-        </svg>
-      </div>
-      <div class="neat-brick nb-3">
-        <svg viewBox="0 0 36 16" class="small-brick-svg">
-          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
-          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
-        </svg>
-      </div>
-      <div class="neat-brick nb-4">
-        <svg viewBox="0 0 36 16" class="small-brick-svg">
-          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
-          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
-        </svg>
-      </div>
-      <div class="neat-brick nb-5">
-        <svg viewBox="0 0 36 16" class="small-brick-svg">
-          <rect x="1" y="1" width="34" height="14" rx="1" fill="#8B4513" />
-          <rect x="3" y="3" width="30" height="10" rx="1" fill="#A0522D" />
-        </svg>
+      <div
+        v-for="(brick, i) in neatBricks"
+        :key="i"
+        class="neat-brick"
+        :style="brick"
+      >
+        <SmallBrickSvg />
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .brick-carrying-effects {
   position: absolute;
   inset: -40px;
@@ -311,26 +189,27 @@
 .brick {
   position: relative;
   animation: brick-wobble 0.8s ease-in-out infinite alternate;
+  animation-delay: var(--fx-delay, 0s);
 }
 
-.brick-1 {
-  animation-delay: 0s;
+/* 前两块砖之间的叠压间距 */
+.brick + .brick {
+  margin-top: -8px;
+}
+
+.brick:nth-child(1) {
   z-index: 3;
 }
 
-.brick-2 {
-  animation-delay: 0.2s;
-  margin-top: -8px;
+.brick:nth-child(2) {
   z-index: 2;
 }
 
-.brick-3 {
-  animation-delay: 0.4s;
-  margin-top: -8px;
+.brick:nth-child(3) {
   z-index: 1;
 }
 
-.brick-svg {
+.brick :deep(.brick-svg) {
   width: 32px;
   height: 16px;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
@@ -358,26 +237,9 @@
 /* 汗珠 */
 .sweat-drop {
   position: absolute;
-  opacity: 0;
   animation: sweat-fall 2s ease-in-out infinite;
-}
-
-.sweat-1 {
-  top: -15px;
-  left: -8px;
-  animation-delay: 0s;
-}
-
-.sweat-2 {
-  top: -10px;
-  right: -5px;
-  animation-delay: 0.7s;
-}
-
-.sweat-3 {
-  top: 20px;
-  left: 5px;
-  animation-delay: 1.4s;
+  animation-delay: var(--fx-delay, 0s);
+  opacity: 0;
 }
 
 .sweat-svg {
@@ -566,18 +428,7 @@
   position: absolute;
   opacity: 0;
   animation: note-float 2s ease-in-out infinite;
-}
-
-.note-1 {
-  top: -20px;
-  right: -15px;
-  animation-delay: 0.3s;
-}
-
-.note-2 {
-  top: 5px;
-  left: -12px;
-  animation-delay: 0.9s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 .note-svg {
@@ -616,29 +467,10 @@
 
 .messy-brick {
   position: relative;
+  transform: var(--fx-transform);
 }
 
-.mb-1 {
-  transform: rotate(-15deg) translateX(-5px);
-}
-
-.mb-2 {
-  transform: rotate(8deg) translateX(3px);
-}
-
-.mb-3 {
-  transform: rotate(-5deg) translateX(-2px);
-}
-
-.mb-4 {
-  transform: rotate(12deg) translateX(4px);
-}
-
-.mb-5 {
-  transform: rotate(-8deg) translateX(-3px);
-}
-
-.small-brick-svg {
+.messy-brick :deep(.small-brick-svg) {
   width: 28px;
   height: 12px;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
@@ -656,26 +488,14 @@
 
 .neat-brick {
   position: relative;
+  animation: bricks-appear-right 2s ease-out forwards;
+  animation-delay: var(--fx-delay, 0s);
 }
 
-.nb-1 {
-  animation-delay: 0.1s;
-}
-
-.nb-2 {
-  animation-delay: 0.2s;
-}
-
-.nb-3 {
-  animation-delay: 0.3s;
-}
-
-.nb-4 {
-  animation-delay: 0.4s;
-}
-
-.nb-5 {
-  animation-delay: 0.5s;
+.neat-brick :deep(.small-brick-svg) {
+  width: 28px;
+  height: 12px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
 }
 
 @keyframes bricks-appear-left {

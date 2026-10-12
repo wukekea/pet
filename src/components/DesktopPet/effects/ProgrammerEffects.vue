@@ -1,5 +1,21 @@
 <script setup lang="ts">
 // 程序员效果组件 - 脑力劳动动画
+// Bug SVG 抽为通用组件，代码雨的 72 行手写 delay 表改用 calc() 生成
+import BugSvg from "./icons/BugSvg.vue";
+
+// 代码雨三列的字符序列
+const codeColumns: string[][] = [
+  ["0", "1", "0", "1", "1", "0", "1", "0"],
+  ["<", "/", ">", "{", "}", ";", "=", "!"],
+  ["f", "u", "n", "c", "t", "i", "o", "n"],
+];
+
+// 每列的基础 delay（列间 1s 步进）
+const columnBaseDelay = (col: number) => `${col}s`;
+
+// 列内每个字符的 delay：列内 0.3s 步进 + 列基础偏移
+const charDelay = (col: number, index: number) =>
+  `${(col * 0.2 + index * 0.3).toFixed(1)}s`;
 </script>
 
 <template>
@@ -210,35 +226,19 @@
 
     <!-- 代码雨效果 -->
     <div class="code-rain">
-      <div class="code-column column-1">
-        <span class="code-char">0</span>
-        <span class="code-char">1</span>
-        <span class="code-char">0</span>
-        <span class="code-char">1</span>
-        <span class="code-char">1</span>
-        <span class="code-char">0</span>
-        <span class="code-char">1</span>
-        <span class="code-char">0</span>
-      </div>
-      <div class="code-column column-2">
-        <span class="code-char">&lt;</span>
-        <span class="code-char">/</span>
-        <span class="code-char">&gt;</span>
-        <span class="code-char">{</span>
-        <span class="code-char">}</span>
-        <span class="code-char">;</span>
-        <span class="code-char">=</span>
-        <span class="code-char">!</span>
-      </div>
-      <div class="code-column column-3">
-        <span class="code-char">f</span>
-        <span class="code-char">u</span>
-        <span class="code-char">n</span>
-        <span class="code-char">c</span>
-        <span class="code-char">t</span>
-        <span class="code-char">i</span>
-        <span class="code-char">o</span>
-        <span class="code-char">n</span>
+      <div
+        v-for="(column, c) in codeColumns"
+        :key="c"
+        class="code-column"
+        :style="{ '--column-delay': columnBaseDelay(c) }"
+      >
+        <span
+          v-for="(char, i) in column"
+          :key="i"
+          class="code-char"
+          :style="{ '--char-delay': charDelay(c, i) }"
+          >{{ char }}</span
+        >
       </div>
     </div>
 
@@ -336,96 +336,10 @@
 
     <!-- Bug 图标 -->
     <div class="bug-icon bug-1">
-      <svg viewBox="0 0 24 24" class="bug-svg">
-        <!-- Bug 身体 -->
-        <ellipse cx="12" cy="12" rx="6" ry="5" fill="#8B4513" />
-        <ellipse cx="12" cy="10" rx="4" ry="3" fill="#A0522D" />
-        <!-- 眼睛 -->
-        <circle cx="10" cy="9" r="1.5" fill="#333" />
-        <circle cx="14" cy="9" r="1.5" fill="#333" />
-        <!-- 触角 -->
-        <path
-          d="M8 6 L6 3"
-          stroke="#8B4513"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-        <path
-          d="M16 6 L18 3"
-          stroke="#8B4513"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-        <!-- 腿 -->
-        <path
-          d="M6 10 L3 8"
-          stroke="#8B4513"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-        <path
-          d="M6 14 L3 16"
-          stroke="#8B4513"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-        <path
-          d="M18 10 L21 8"
-          stroke="#8B4513"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-        <path
-          d="M18 14 L21 16"
-          stroke="#8B4513"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-      </svg>
+      <BugSvg />
     </div>
     <div class="bug-icon bug-2">
-      <svg viewBox="0 0 24 24" class="bug-svg">
-        <ellipse cx="12" cy="12" rx="6" ry="5" fill="#8B4513" />
-        <ellipse cx="12" cy="10" rx="4" ry="3" fill="#A0522D" />
-        <circle cx="10" cy="9" r="1.5" fill="#333" />
-        <circle cx="14" cy="9" r="1.5" fill="#333" />
-        <path
-          d="M8 6 L6 3"
-          stroke="#8B4513"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-        <path
-          d="M16 6 L18 3"
-          stroke="#8B4513"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-        <path
-          d="M6 10 L3 8"
-          stroke="#8B4513"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-        <path
-          d="M6 14 L3 16"
-          stroke="#8B4513"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-        <path
-          d="M18 10 L21 8"
-          stroke="#8B4513"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-        <path
-          d="M18 14 L21 16"
-          stroke="#8B4513"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-      </svg>
+      <BugSvg />
     </div>
 
     <!-- 终端光标 -->
@@ -889,19 +803,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  animation: code-fall 3s linear infinite;
-}
-
-.column-1 {
-  animation-delay: 0s;
-}
-
-.column-2 {
-  animation-delay: 1s;
-}
-
-.column-3 {
-  animation-delay: 2s;
+  animation-delay: var(--column-delay, 0s);
 }
 
 .code-char {
@@ -910,81 +812,7 @@
   color: #00ff00;
   opacity: 0;
   animation: char-appear 3s linear infinite;
-}
-
-.column-1 .code-char:nth-child(1) {
-  animation-delay: 0s;
-}
-.column-1 .code-char:nth-child(2) {
-  animation-delay: 0.3s;
-}
-.column-1 .code-char:nth-child(3) {
-  animation-delay: 0.6s;
-}
-.column-1 .code-char:nth-child(4) {
-  animation-delay: 0.9s;
-}
-.column-1 .code-char:nth-child(5) {
-  animation-delay: 1.2s;
-}
-.column-1 .code-char:nth-child(6) {
-  animation-delay: 1.5s;
-}
-.column-1 .code-char:nth-child(7) {
-  animation-delay: 1.8s;
-}
-.column-1 .code-char:nth-child(8) {
-  animation-delay: 2.1s;
-}
-
-.column-2 .code-char:nth-child(1) {
-  animation-delay: 0.2s;
-}
-.column-2 .code-char:nth-child(2) {
-  animation-delay: 0.5s;
-}
-.column-2 .code-char:nth-child(3) {
-  animation-delay: 0.8s;
-}
-.column-2 .code-char:nth-child(4) {
-  animation-delay: 1.1s;
-}
-.column-2 .code-char:nth-child(5) {
-  animation-delay: 1.4s;
-}
-.column-2 .code-char:nth-child(6) {
-  animation-delay: 1.7s;
-}
-.column-2 .code-char:nth-child(7) {
-  animation-delay: 2s;
-}
-.column-2 .code-char:nth-child(8) {
-  animation-delay: 2.3s;
-}
-
-.column-3 .code-char:nth-child(1) {
-  animation-delay: 0.4s;
-}
-.column-3 .code-char:nth-child(2) {
-  animation-delay: 0.7s;
-}
-.column-3 .code-char:nth-child(3) {
-  animation-delay: 1s;
-}
-.column-3 .code-char:nth-child(4) {
-  animation-delay: 1.3s;
-}
-.column-3 .code-char:nth-child(5) {
-  animation-delay: 1.6s;
-}
-.column-3 .code-char:nth-child(6) {
-  animation-delay: 1.9s;
-}
-.column-3 .code-char:nth-child(7) {
-  animation-delay: 2.2s;
-}
-.column-3 .code-char:nth-child(8) {
-  animation-delay: 2.5s;
+  animation-delay: var(--char-delay, 0s);
 }
 
 @keyframes char-appear {
@@ -1080,7 +908,7 @@
   animation-delay: 1.5s;
 }
 
-.bug-svg {
+.bug-icon :deep(.bug-svg) {
   width: 16px;
   height: 16px;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));

@@ -1,5 +1,24 @@
 <script setup lang="ts">
 // 生气效果组件 - 日式动漫夸张风格
+// 火焰与锯齿各两份，只有颜色/delay 差异，用 v-for 渲染
+
+// 红色火焰粒子：颜色/位置/delay 差异
+const flames = [
+  { color: "#ef4444", top: "-18px", left: "-12px", delay: "0s", small: false },
+  {
+    color: "#f87171",
+    top: "-22px",
+    right: "-10px",
+    delay: "0.5s",
+    small: true,
+  },
+];
+
+// 锯齿状怒气：颜色/位置/delay 差异
+const zigzags = [
+  { color: "#7f1d1d", top: "-12px", left: "8px", delay: "0s", small: false },
+  { color: "#dc2626", top: "-15px", right: "6px", delay: "0.2s", small: true },
+];
 </script>
 
 <template>
@@ -24,32 +43,43 @@
     <div class="smoke smoke-3"></div>
 
     <!-- 红色火焰粒子 -->
-    <div class="flame flame-1">
-      <svg viewBox="0 0 24 24" class="flame-svg">
+    <div
+      v-for="(flame, i) in flames"
+      :key="`flame-${i}`"
+      class="flame"
+      :style="{
+        top: flame.top,
+        left: flame.left,
+        right: flame.right,
+        '--fx-delay': flame.delay,
+      }"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        class="flame-svg"
+        :class="{ small: flame.small }"
+      >
         <path
           d="M12 2C12 2 6 7 6 12C6 15.3 8.7 18 12 18C15.3 18 18 15.3 18 12C18 7 12 2 12 2Z"
-          fill="#ef4444"
-        />
-      </svg>
-    </div>
-    <div class="flame flame-2">
-      <svg viewBox="0 0 24 24" class="flame-svg small">
-        <path
-          d="M12 2C12 2 6 7 6 12C6 15.3 8.7 18 12 18C15.3 18 18 15.3 18 12C18 7 12 2 12 2Z"
-          fill="#f87171"
+          :fill="flame.color"
         />
       </svg>
     </div>
 
     <!-- 锯齿状怒气 -->
-    <div class="zigzag zigzag-1">
-      <svg viewBox="0 0 20 20" class="zigzag-svg">
-        <path d="M10 0L0 10L10 20L20 10L10 0Z" fill="#7f1d1d" />
-      </svg>
-    </div>
-    <div class="zigzag zigzag-2">
-      <svg viewBox="0 0 20 20" class="zigzag-svg small">
-        <path d="M10 0L0 10L10 20L20 10L10 0Z" fill="#dc2626" />
+    <div
+      v-for="(zig, i) in zigzags"
+      :key="`zig-${i}`"
+      class="zigzag"
+      :style="{
+        top: zig.top,
+        left: zig.left,
+        right: zig.right,
+        '--fx-delay': zig.delay,
+      }"
+    >
+      <svg viewBox="0 0 20 20" class="zigzag-svg" :class="{ small: zig.small }">
+        <path d="M10 0L0 10L10 20L20 10L10 0Z" :fill="zig.color" />
       </svg>
     </div>
   </div>
@@ -144,18 +174,7 @@
 .flame {
   position: absolute;
   animation: flame-float 1s ease-in-out infinite;
-}
-
-.flame-1 {
-  top: -18px;
-  left: -12px;
-  animation-delay: 0s;
-}
-
-.flame-2 {
-  top: -22px;
-  right: -10px;
-  animation-delay: 0.5s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 .flame-svg {
@@ -199,18 +218,7 @@
 .zigzag {
   position: absolute;
   animation: zigzag-shake 0.4s ease-in-out infinite;
-}
-
-.zigzag-1 {
-  top: -12px;
-  left: 8px;
-  animation-delay: 0s;
-}
-
-.zigzag-2 {
-  top: -15px;
-  right: 6px;
-  animation-delay: 0.2s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 .zigzag-svg {

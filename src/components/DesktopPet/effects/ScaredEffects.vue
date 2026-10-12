@@ -1,20 +1,44 @@
 <script setup lang="ts">
 // 惊吓效果组件
+// 汗滴复用通用 SweatDropSvg
+import SweatDropSvg from "./icons/SweatDropSvg.vue";
+
+// 惊叹号与闪电：各两份，只有颜色/delay 差异
+const exclaims = [
+  { color: "#ef4444", left: "-15px", delay: "0s" },
+  { color: "#dc2626", right: "-15px", delay: "0.2s" },
+];
+
+const lightnings = [
+  { color: "#fbbf24", top: "-30px", left: "-25px", delay: "0s", small: false },
+  {
+    color: "#fcd34d",
+    top: "-35px",
+    right: "-22px",
+    delay: "0.4s",
+    small: true,
+  },
+];
+
+// 汗滴：位置、颜色和 delay 差异
+const sweatDrops = [
+  { color: "#60a5fa", top: "-5px", right: "-20px", delay: "0s", small: false },
+  { color: "#93c5fd", top: "5px", right: "-28px", delay: "0.4s", small: true },
+];
 </script>
 
 <template>
   <div class="scared-effects">
     <!-- 惊叹号 -->
-    <div class="exclaim exclaim-1">
+    <div
+      v-for="(ex, i) in exclaims"
+      :key="`ex-${i}`"
+      class="exclaim"
+      :style="{ left: ex.left, right: ex.right, '--fx-delay': ex.delay }"
+    >
       <svg viewBox="0 0 24 24" class="exclaim-svg">
-        <path d="M12 2L14 14H10L12 2Z" fill="#ef4444" />
-        <circle cx="12" cy="20" r="2" fill="#ef4444" />
-      </svg>
-    </div>
-    <div class="exclaim exclaim-2">
-      <svg viewBox="0 0 24 24" class="exclaim-svg">
-        <path d="M12 2L14 14H10L12 2Z" fill="#dc2626" />
-        <circle cx="12" cy="20" r="2" fill="#dc2626" />
+        <path d="M12 2L14 14H10L12 2Z" :fill="ex.color" />
+        <circle cx="12" cy="20" r="2" :fill="ex.color" />
       </svg>
     </div>
 
@@ -25,32 +49,37 @@
     <div class="shake-line line-4"></div>
 
     <!-- 汗滴 -->
-    <div class="sweat-drop sweat-1">
-      <svg viewBox="0 0 24 24" class="sweat-svg">
-        <path
-          d="M12 2C12 2 6 10 6 15C6 18.3 8.7 21 12 21C15.3 21 18 18.3 18 15C18 10 12 2 12 2Z"
-          fill="#60a5fa"
-        />
-      </svg>
-    </div>
-    <div class="sweat-drop sweat-2">
-      <svg viewBox="0 0 24 24" class="sweat-svg small">
-        <path
-          d="M12 2C12 2 6 10 6 15C6 18.3 8.7 21 12 21C15.3 21 18 18.3 18 15C18 10 12 2 12 2Z"
-          fill="#93c5fd"
-        />
-      </svg>
+    <div
+      v-for="(sweat, i) in sweatDrops"
+      :key="`sweat-${i}`"
+      class="sweat-drop"
+      :style="{ top: sweat.top, right: sweat.right, '--fx-delay': sweat.delay }"
+    >
+      <SweatDropSvg
+        :color="sweat.color"
+        class="sweat-svg"
+        :class="{ small: sweat.small }"
+      />
     </div>
 
     <!-- 闪电 -->
-    <div class="lightning lightning-1">
-      <svg viewBox="0 0 24 24" class="lightning-svg">
-        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#fbbf24" />
-      </svg>
-    </div>
-    <div class="lightning lightning-2">
-      <svg viewBox="0 0 24 24" class="lightning-svg small">
-        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#fcd34d" />
+    <div
+      v-for="(bolt, i) in lightnings"
+      :key="`bolt-${i}`"
+      class="lightning"
+      :style="{
+        top: bolt.top,
+        left: bolt.left,
+        right: bolt.right,
+        '--fx-delay': bolt.delay,
+      }"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        class="lightning-svg"
+        :class="{ small: bolt.small }"
+      >
+        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" :fill="bolt.color" />
       </svg>
     </div>
   </div>
@@ -69,16 +98,7 @@
   position: absolute;
   top: -25px;
   animation: exclaim-pop 0.4s ease-in-out infinite;
-}
-
-.exclaim-1 {
-  left: -15px;
-  animation-delay: 0s;
-}
-
-.exclaim-2 {
-  right: -15px;
-  animation-delay: 0.2s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 .exclaim-svg {
@@ -115,6 +135,7 @@
   left: 5px;
   transform: rotate(-20deg);
   animation-delay: 0s;
+  --rotation: -20deg;
 }
 
 .line-2 {
@@ -123,6 +144,7 @@
   height: 16px;
   transform: rotate(15deg);
   animation-delay: 0.1s;
+  --rotation: 15deg;
 }
 
 .line-3 {
@@ -130,6 +152,7 @@
   right: 5px;
   transform: rotate(20deg);
   animation-delay: 0.05s;
+  --rotation: 20deg;
 }
 
 .line-4 {
@@ -138,6 +161,7 @@
   height: 14px;
   transform: rotate(-15deg);
   animation-delay: 0.15s;
+  --rotation: -15deg;
 }
 
 @keyframes line-shake {
@@ -152,35 +176,11 @@
   }
 }
 
-.line-1 {
-  --rotation: -20deg;
-}
-.line-2 {
-  --rotation: 15deg;
-}
-.line-3 {
-  --rotation: 20deg;
-}
-.line-4 {
-  --rotation: -15deg;
-}
-
 /* 汗滴 */
 .sweat-drop {
   position: absolute;
   animation: sweat-drip 1s ease-in-out infinite;
-}
-
-.sweat-1 {
-  top: -5px;
-  right: -20px;
-  animation-delay: 0s;
-}
-
-.sweat-2 {
-  top: 5px;
-  right: -28px;
-  animation-delay: 0.4s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 .sweat-svg {
@@ -213,18 +213,7 @@
 .lightning {
   position: absolute;
   animation: lightning-flash 0.8s ease-in-out infinite;
-}
-
-.lightning-1 {
-  top: -30px;
-  left: -25px;
-  animation-delay: 0s;
-}
-
-.lightning-2 {
-  top: -35px;
-  right: -22px;
-  animation-delay: 0.4s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 .lightning-svg {

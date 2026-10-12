@@ -1,6 +1,10 @@
 <script setup lang="ts">
 // 金币增长特效组件 - 打工完成后在宠物头顶显示金币收入动画
 import { ref, onMounted, onBeforeUnmount } from "vue";
+import CoinParticle from "./icons/CoinParticle.vue";
+
+// 三个小金币粒子，动画由 cp-1/2/3 class 区分
+const coinParticles = [null, null, null];
 
 const props = defineProps<{
   amount: number; // 获得的金币数量
@@ -123,45 +127,11 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- 小金币粒子 -->
-    <div class="coin-particle cp-1">
-      <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-        <circle
-          cx="8"
-          cy="8"
-          r="7"
-          fill="#ffc833"
-          stroke="#d4960a"
-          stroke-width="0.5"
-        />
-        <circle cx="8" cy="8" r="5" fill="#ffe066" />
-      </svg>
-    </div>
-    <div class="coin-particle cp-2">
-      <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-        <circle
-          cx="8"
-          cy="8"
-          r="7"
-          fill="#ffc833"
-          stroke="#d4960a"
-          stroke-width="0.5"
-        />
-        <circle cx="8" cy="8" r="5" fill="#ffe066" />
-      </svg>
-    </div>
-    <div class="coin-particle cp-3">
-      <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-        <circle
-          cx="8"
-          cy="8"
-          r="7"
-          fill="#ffc833"
-          stroke="#d4960a"
-          stroke-width="0.5"
-        />
-        <circle cx="8" cy="8" r="5" fill="#ffe066" />
-      </svg>
-    </div>
+    <CoinParticle
+      v-for="i in coinParticles.length"
+      :key="i"
+      :class="`cp-${i}`"
+    />
 
     <!-- 闪光星星 -->
     <div class="sparkle sp-1">✦</div>
@@ -277,15 +247,7 @@ onBeforeUnmount(() => {
   }
 }
 
-/* ===== 小金币粒子 ===== */
-.coin-particle {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  opacity: 0;
-  filter: drop-shadow(0 1px 3px rgba(255, 180, 0, 0.4));
-}
-
+/* ===== 小金币粒子（基础样式在 CoinParticle 组件内，此处只定义轨迹） ===== */
 .cp-1 {
   left: 50%;
   top: 30%;

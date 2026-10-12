@@ -1,33 +1,50 @@
 <script setup lang="ts">
 // 晕眩效果组件（摔倒时显示）
+// 旋转星星与十字眼复用 icons 通用组件，重复模板用 v-for 渲染
+import StarSvg from "./icons/StarSvg.vue";
+import CrossEyeSvg from "./icons/CrossEyeSvg.vue";
+
+// 旋转的星星：只有颜色/位置/delay 差异
+const spinningStars = [
+  { color: "#fbbf24", top: "-20px", left: "-30px", delay: "0s", small: false },
+  {
+    color: "#fcd34d",
+    top: "-35px",
+    left: "50%",
+    delay: "0.5s",
+    small: false,
+    center: true,
+  },
+  { color: "#fef3c7", top: "-15px", right: "-25px", delay: "1s", small: true },
+];
+
+// 十字眼：左右各一个
+const crossEyes = [
+  { top: "8px", left: "22px", delay: "0s" },
+  { top: "8px", right: "22px", delay: "0.3s" },
+];
 </script>
 
 <template>
   <div class="dizzy-effects">
     <!-- 旋转的星星 -->
-    <div class="spinning-star star-1">
-      <svg viewBox="0 0 24 24" class="star-svg">
-        <path
-          d="M12 2L14.09 9.26L22 9.27L16.54 13.97L18.09 21.5L12 17.27L5.91 21.5L7.46 13.97L2 9.27L9.91 9.26L12 2Z"
-          fill="#fbbf24"
-        />
-      </svg>
-    </div>
-    <div class="spinning-star star-2">
-      <svg viewBox="0 0 24 24" class="star-svg">
-        <path
-          d="M12 2L14.09 9.26L22 9.27L16.54 13.97L18.09 21.5L12 17.27L5.91 21.5L7.46 13.97L2 9.27L9.91 9.26L12 2Z"
-          fill="#fcd34d"
-        />
-      </svg>
-    </div>
-    <div class="spinning-star star-3">
-      <svg viewBox="0 0 24 24" class="star-svg small">
-        <path
-          d="M12 2L14.09 9.26L22 9.27L16.54 13.97L18.09 21.5L12 17.27L5.91 21.5L7.46 13.97L2 9.27L9.91 9.26L12 2Z"
-          fill="#fef3c7"
-        />
-      </svg>
+    <div
+      v-for="(star, i) in spinningStars"
+      :key="`star-${i}`"
+      class="spinning-star"
+      :class="{ centered: star.center }"
+      :style="{
+        top: star.top,
+        left: star.left,
+        right: star.right,
+        '--fx-delay': star.delay,
+      }"
+    >
+      <StarSvg
+        :color="star.color"
+        class="star-svg"
+        :class="{ small: star.small }"
+      />
     </div>
 
     <!-- 螺旋圈 -->
@@ -40,49 +57,18 @@
     <div class="dot dot-3"></div>
 
     <!-- 十字眼特效 -->
-    <div class="cross-eye cross-left">
-      <svg viewBox="0 0 20 20" class="cross-svg">
-        <line
-          x1="2"
-          y1="2"
-          x2="18"
-          y2="18"
-          stroke="#1f2937"
-          stroke-width="3"
-          stroke-linecap="round"
-        />
-        <line
-          x1="18"
-          y1="2"
-          x2="2"
-          y2="18"
-          stroke="#1f2937"
-          stroke-width="3"
-          stroke-linecap="round"
-        />
-      </svg>
-    </div>
-    <div class="cross-eye cross-right">
-      <svg viewBox="0 0 20 20" class="cross-svg">
-        <line
-          x1="2"
-          y1="2"
-          x2="18"
-          y2="18"
-          stroke="#1f2937"
-          stroke-width="3"
-          stroke-linecap="round"
-        />
-        <line
-          x1="18"
-          y1="2"
-          x2="2"
-          y2="18"
-          stroke="#1f2937"
-          stroke-width="3"
-          stroke-linecap="round"
-        />
-      </svg>
+    <div
+      v-for="(eye, i) in crossEyes"
+      :key="`eye-${i}`"
+      class="cross-eye"
+      :style="{
+        top: eye.top,
+        left: eye.left,
+        right: eye.right,
+        '--fx-delay': eye.delay,
+      }"
+    >
+      <CrossEyeSvg class="cross-svg" />
     </div>
   </div>
 </template>
@@ -100,25 +86,11 @@
   position: absolute;
   opacity: 0;
   animation: star-spin 1.5s ease-in-out infinite;
+  animation-delay: var(--fx-delay, 0s);
 }
 
-.star-1 {
-  top: -20px;
-  left: -30px;
-  animation-delay: 0s;
-}
-
-.star-2 {
-  top: -35px;
-  left: 50%;
+.spinning-star.centered {
   transform: translateX(-50%);
-  animation-delay: 0.5s;
-}
-
-.star-3 {
-  top: -15px;
-  right: -25px;
-  animation-delay: 1s;
 }
 
 .star-svg {
@@ -252,18 +224,7 @@
   position: absolute;
   opacity: 0;
   animation: cross-pop 2s ease-in-out infinite;
-}
-
-.cross-left {
-  top: 8px;
-  left: 22px;
-  animation-delay: 0s;
-}
-
-.cross-right {
-  top: 8px;
-  right: 22px;
-  animation-delay: 0.3s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 .cross-svg {

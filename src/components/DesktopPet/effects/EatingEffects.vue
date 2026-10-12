@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { currentFood } from "../composables/sharedState";
+// 吃东西效果组件 - 由父组件通过 props 传入食物类型，保持纯展示
 import FoodItem from "../foods/FoodItem.vue";
+import type { FoodType } from "../types";
+
+defineProps<{
+  foodType: FoodType;
+}>();
 </script>
 
 <template>
   <div class="eating-effects">
     <!-- 食物容器 -->
-    <FoodItem :food-type="currentFood" />
+    <FoodItem :food-type="foodType" />
 
     <!-- 心心眼 -->
     <div class="heart-eyes">

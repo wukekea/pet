@@ -1,7 +1,46 @@
 <script setup lang="ts">
 // 得意效果组件
+// 爱心/闪光星复用 icons 通用组件，音符用 NoteSvg 替代重复 SVG
 import HeartSvg from "./icons/HeartSvg.vue";
 import SparkleSvg from "./icons/SparkleSvg.vue";
+import NoteSvg from "./icons/NoteSvg.vue";
+
+// 光芒线条：旋转角度均分 + delay 步进
+const rays = Array.from({ length: 6 }, (_, i) => ({
+  angle: `${-60 + i * 30}deg`,
+  delay: `${i * 0.1}s`,
+}));
+
+// 小音符：两个颜色/位置差异
+const notes = [
+  { color: "#a78bfa", top: "-15px", left: "-30px", delay: "0s", size: "" },
+  {
+    color: "#c4b5fd",
+    top: "-25px",
+    right: "-35px",
+    delay: "1.2s",
+    size: "small",
+  },
+];
+
+// 闪光星星：三个颜色/位置/delay 差异
+const sparkles = [
+  { color: "#fef08a", top: "-35px", left: "-20px", delay: "0s", size: "" },
+  {
+    color: "#fde047",
+    top: "-45px",
+    right: "-15px",
+    delay: "0.7s",
+    size: "small",
+  },
+  {
+    color: "#fef3c7",
+    top: "-20px",
+    right: "-25px",
+    delay: "1.4s",
+    size: "tiny",
+  },
+];
 </script>
 
 <template>
@@ -30,40 +69,44 @@ import SparkleSvg from "./icons/SparkleSvg.vue";
     </div>
 
     <!-- 闪光星星 -->
-    <div class="sparkle sparkle-1">
-      <SparkleSvg color="#fef08a" class="sparkle-svg" />
-    </div>
-    <div class="sparkle sparkle-2">
-      <SparkleSvg color="#fde047" class="sparkle-svg small" />
-    </div>
-    <div class="sparkle sparkle-3">
-      <SparkleSvg color="#fef3c7" class="sparkle-svg tiny" />
+    <div
+      v-for="(sp, i) in sparkles"
+      :key="`sp-${i}`"
+      class="sparkle"
+      :style="{
+        top: sp.top,
+        left: sp.left,
+        right: sp.right,
+        '--fx-delay': sp.delay,
+      }"
+    >
+      <SparkleSvg :color="sp.color" class="sparkle-svg" :class="sp.size" />
     </div>
 
     <!-- 光芒线条 -->
-    <div class="ray ray-1"></div>
-    <div class="ray ray-2"></div>
-    <div class="ray ray-3"></div>
-    <div class="ray ray-4"></div>
-    <div class="ray ray-5"></div>
-    <div class="ray ray-6"></div>
+    <div
+      v-for="(ray, i) in rays"
+      :key="`ray-${i}`"
+      class="ray"
+      :style="{
+        transform: `translateX(-50%) rotate(${ray.angle})`,
+        '--fx-delay': ray.delay,
+      }"
+    ></div>
 
     <!-- 小音符 -->
-    <div class="note note-1">
-      <svg viewBox="0 0 24 24" class="note-svg">
-        <path
-          d="M12 3V13.55C11.06 13.22 10.04 13.29 9.12 13.8C7.88 14.5 7.29 15.95 7.71 17.25C8.13 18.55 9.39 19.39 10.75 19.39C12.55 19.39 14 17.94 14 16.14V6H18V3H12Z"
-          fill="#a78bfa"
-        />
-      </svg>
-    </div>
-    <div class="note note-2">
-      <svg viewBox="0 0 24 24" class="note-svg small">
-        <path
-          d="M12 3V13.55C11.06 13.22 10.04 13.29 9.12 13.8C7.88 14.5 7.29 15.95 7.71 17.25C8.13 18.55 9.39 19.39 10.75 19.39C12.55 19.39 14 17.94 14 16.14V6H18V3H12Z"
-          fill="#c4b5fd"
-        />
-      </svg>
+    <div
+      v-for="(note, i) in notes"
+      :key="`note-${i}`"
+      class="note"
+      :style="{
+        top: note.top,
+        left: note.left,
+        right: note.right,
+        '--fx-delay': note.delay,
+      }"
+    >
+      <NoteSvg :color="note.color" class="note-svg" :class="note.size" />
     </div>
 
     <!-- 小爱心 -->
@@ -111,24 +154,7 @@ import SparkleSvg from "./icons/SparkleSvg.vue";
   position: absolute;
   opacity: 0;
   animation: sparkle-shine 2s ease-in-out infinite;
-}
-
-.sparkle-1 {
-  top: -35px;
-  left: -20px;
-  animation-delay: 0s;
-}
-
-.sparkle-2 {
-  top: -45px;
-  right: -15px;
-  animation-delay: 0.7s;
-}
-
-.sparkle-3 {
-  top: -20px;
-  right: -25px;
-  animation-delay: 1.4s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 .sparkle-svg {
@@ -175,36 +201,7 @@ import SparkleSvg from "./icons/SparkleSvg.vue";
   border-radius: 1px;
   transform-origin: center bottom;
   animation: ray-pulse 1.5s ease-in-out infinite;
-}
-
-.ray-1 {
-  transform: translateX(-50%) rotate(-60deg);
-  animation-delay: 0s;
-}
-
-.ray-2 {
-  transform: translateX(-50%) rotate(-30deg);
-  animation-delay: 0.1s;
-}
-
-.ray-3 {
-  transform: translateX(-50%) rotate(0deg);
-  animation-delay: 0.2s;
-}
-
-.ray-4 {
-  transform: translateX(-50%) rotate(30deg);
-  animation-delay: 0.3s;
-}
-
-.ray-5 {
-  transform: translateX(-50%) rotate(60deg);
-  animation-delay: 0.4s;
-}
-
-.ray-6 {
-  transform: translateX(-50%) rotate(90deg);
-  animation-delay: 0.5s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 @keyframes ray-pulse {
@@ -224,18 +221,7 @@ import SparkleSvg from "./icons/SparkleSvg.vue";
   position: absolute;
   opacity: 0;
   animation: note-float 2.5s ease-in-out infinite;
-}
-
-.note-1 {
-  top: -15px;
-  left: -30px;
-  animation-delay: 0s;
-}
-
-.note-2 {
-  top: -25px;
-  right: -35px;
-  animation-delay: 1.2s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 .note-svg {

@@ -279,6 +279,14 @@ const currentEffectComponent = computed(() => {
   return STATE_EFFECTS[state] || null;
 });
 
+// 当前效果组件需要的 props（目前仅 eating 需要食物类型）
+const currentEffectProps = computed(() => {
+  if (petState.value === "eating") {
+    return { foodType: currentFood.value };
+  }
+  return {};
+});
+
 // 是否显示工作进度条
 const showWorkProgressBar = computed(() => {
   return WORK_STATES.includes(petState.value);
@@ -508,7 +516,11 @@ const onPetMouseLeave = () => {
       />
 
       <!-- 状态效果组件 -->
-      <component v-if="currentEffectComponent" :is="currentEffectComponent" />
+      <component
+        v-if="currentEffectComponent"
+        :is="currentEffectComponent"
+        v-bind="currentEffectProps"
+      />
 
       <!-- 蓄力指示器（蓄力进度超过10%时才显示，避免单击时闪烁） -->
       <ChargeIndicator v-if="isCharging && chargeProgress > 0.1" />

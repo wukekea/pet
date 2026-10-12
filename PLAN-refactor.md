@@ -17,12 +17,12 @@
 
 ## 优先级总览
 
-| 优先级 | 类别 | 条目数 | 说明 |
-| ------ | ---- | ------ | ---- |
-| P0 | 功能性 bug | 1 项 | 用户可感知，先修 |
-| P1 | 架构性债务 | 3 项 | 影响后续所有开发 |
-| P2 | 重复代码抽取 | 2 大块 | 面板层 + 特效层 |
-| P3 | 文件位置与收尾 | 6 项 | 低风险整理 |
+| 优先级 | 类别           | 条目数 | 说明             |
+| ------ | -------------- | ------ | ---------------- |
+| P0     | 功能性 bug     | 1 项   | 用户可感知，先修 |
+| P1     | 架构性债务     | 3 项   | 影响后续所有开发 |
+| P2     | 重复代码抽取   | 2 大块 | 面板层 + 特效层  |
+| P3     | 文件位置与收尾 | 6 项   | 低风险整理       |
 
 ---
 
@@ -37,13 +37,14 @@
 
 AI 配置更乱，存在三套互不同步的配置：
 
-| 配置 | 位置 | 字段 |
-| ---- | ---- | ---- |
-| settings API 页 `apiConfig.ai` | `settings/index.vue:1290-1334` | `url` / `format`（openai/anthropic/gemini/custom） |
-| 聊天实际用的 `llmConfig` | `sharedState.ts:151-169`，localStorage key `llm-config` | `baseURL` / `requestFormat`（openai/weibo） |
-| ChatPanel 自带面板 | `ChatPanel/index.vue:44-57` | 第三套独立表单，直接 `localStorage.setItem("llm-config", ...)` 绕过封装 |
+| 配置                           | 位置                                                    | 字段                                                                    |
+| ------------------------------ | ------------------------------------------------------- | ----------------------------------------------------------------------- |
+| settings API 页 `apiConfig.ai` | `settings/index.vue:1290-1334`                          | `url` / `format`（openai/anthropic/gemini/custom）                      |
+| 聊天实际用的 `llmConfig`       | `sharedState.ts:151-169`，localStorage key `llm-config` | `baseURL` / `requestFormat`（openai/weibo）                             |
+| ChatPanel 自带面板             | `ChatPanel/index.vue:44-57`                             | 第三套独立表单，直接 `localStorage.setItem("llm-config", ...)` 绕过封装 |
 
 **方案**（二选一）：
+
 - [ ] 将 settings 的 API 页改为直接读写 `qweatherStorage` / `llmConfig`，统一字段命名
 - [ ] 或删除 settings 的 API 页，由 ChatPanel / 天气模块各自承担配置入口
 
@@ -56,6 +57,7 @@ AI 配置更乱，存在三套互不同步的配置：
 ### 2. [ ] DebugPanel 加生产环境守卫
 
 **问题**：
+
 - `App.vue` 无条件渲染 `<DebugPanel />`，2184 行调试代码打进生产包
 - **生产环境按 Ctrl+D（`DebugPanel/index.vue:342-348`）或调 `window.toggleDebugPanel`
   就能打开调试面板，直接改存档**（`saveAttributeData` 绕过业务规则写存档，
@@ -66,6 +68,7 @@ AI 配置更乱，存在三套互不同步的配置：
   `petController.ts:628-754` 的拖拽重复且无边界 clamp
 
 **方案**：
+
 - [ ] `App.vue` 改为 `import.meta.env.DEV` 条件渲染（用动态 import 以便 tree-shake）
 - [ ] 移除 `index.vue:117-121` 中服务调试面板的逻辑，改为 DebugPanel 内部 watch
 - [ ] DebugPanel 拖拽改用抽出的 `useDraggable()`（见 P3-14）
@@ -73,6 +76,7 @@ AI 配置更乱，存在三套互不同步的配置：
 ### 3. [ ] 收敛状态机统一入口（可分小步）
 
 **问题**：
+
 - `petController.ts:268-482` 的 `changeState()` 之外存在 **11 处直接
   `petState.value = ...` 赋值**（`launchController.ts:100,174,247,265` 4 处、
   `petController.ts` 自身 7 处），全部绕过 `recordState` 统计、台词等副作用
@@ -85,16 +89,18 @@ AI 配置更乱，存在三套互不同步的配置：
   反查 CSS 动画进度决定状态切换——状态机反向耦合视图
 
 **方案**：
+
 - [ ] 消灭 11 处直接赋值，全部走 `changeState`（或给 changeState 增加"强制"参数）
 - [ ] `llmService.ts` 改用 `constants.ts` 的 WORK_STATES
 - [ ] 五张平行数组收敛为按状态定义的单一配置对象
 - [ ] 中期：拆 `petController.ts`（944 行上帝模块）为 stateMachine / drag /
-  passthrough / animation 四块
+      passthrough / animation 四块
 - [ ] （可选）动画结束回调改由组件 emit，替代 DOM 反查
 
 ### 4. [ ] 消除循环依赖与弹窗双源真相
 
 **问题**：
+
 - `attributes.ts:62` ↔ `petController.ts:63-73` 互相 import。项目曾用
   `registerAttributeCallbacks` 回调注入解环，但 `isWorkState` 一行又把环建回来
 - `useModal.ts:38-61` 每个弹窗同时维护本地 `visible` ref 和 sharedState 的
@@ -103,10 +109,11 @@ AI 配置更乱，存在三套互不同步的配置：
   拆出的，40+ 个 `export const ref` 被任意文件直接读写，数据流不可追踪
 
 **方案**：
+
 - [ ] `isWorkState` 移入 constants.ts 或 sharedState.ts 断环
 - [ ] `useModal.ts` 去掉本地 ref，只保留 sharedState 一份真相
 - [ ] （大动作，可后置）评估引入 Pinia 替代模块级单例；或至少约定新代码不直接
-  import sharedState 的 ref，统一走接口函数
+      import sharedState 的 ref，统一走接口函数
 
 ---
 
@@ -141,7 +148,7 @@ header props + 关闭按钮 + 装饰星插槽），6 个弹窗改为传 `title` 
   shop:143-230、warehouse:145-232、schedule:19-97、ChatPanel:206-244、
   contextMenu:71-100（dialogue:36-61 是内联变体）
 - 其中 shop 与 warehouse 的变量约 80% 同名同值（`--overlay-bg/--modal-bg/
-  --card-bg/--money-color/--toast-*` 等），对比 shop:144-229 与 warehouse:146-231
+--card-bg/--money-color/--toast-*` 等），对比 shop:144-229 与 warehouse:146-231
 
 **方案**：抽 `usePanelTheme(accentColor?)` composable 或全局 CSS 变量 + 根节点
 主题 class，允许各面板只声明差异色。
@@ -164,22 +171,23 @@ header props + 关闭按钮 + 装饰星插槽），6 个弹窗改为传 `title` 
 ### 8. [ ] 消除规则文案与数值的双源（防止漂移）
 
 **问题**：
+
 - `attributes/index.vue:70-118` 的属性规则文案（"每 5 分钟 -1"、"低于 30 时健康
   下降"）与 `constants.ts` 的 `SATIETY_DECAY_INTERVAL / HUNGRY_THRESHOLD` 是两套来源
 - `attributes/index.vue:126-147` 的打工规则文案（"每分钟获得 1 金币"、"完工奖
   +20 金币"）与 `attributeStorage.ts:177-188` 的 `WORK_INCOME_PER_MINUTE /
-  WORK_COMPLETION_BONUS` 数值表重复——**改数值平衡时 tooltip 文案必然漂移**
+WORK_COMPLETION_BONUS` 数值表重复——**改数值平衡时 tooltip 文案必然漂移**
 
 **方案**：规则文案改为模板字符串从常量生成。
 
 ### 9. [ ] 抽取通用 UI 小组件（~250 行）
 
 - [ ] `MoneyBadge.vue`：金币余额展示 `money-section > money-badge > money-icon(💰) +
-  money-amount` 在 attributes:449-454、shop:267-272、warehouse:273-278 三份相同
+money-amount` 在 attributes:449-454、shop:267-272、warehouse:273-278 三份相同
 - [ ] `AttributeBar.vue`：属性条渲染与 `Math.min(100, value/cap*100)` 百分比换算
-  在 attributes:62-119、QuickActionPanel:35-54、stats:129-132 三处各写一遍
+      在 attributes:62-119、QuickActionPanel:35-54、stats:129-132 三处各写一遍
 - [ ] `ConfirmDialog.vue`：stats:290-334 + 755-956 自带约 200 行的私有"重置确认"
-  二级弹窗，其他删除类操作将来会再抄一遍
+      二级弹窗，其他删除类操作将来会再抄一遍
 
 ---
 
@@ -189,7 +197,7 @@ header props + 关闭按钮 + 装饰星插槽），6 个弹窗改为传 `title` 
 > 和 CSS 层面。这些组件零 props/emits、由 `effectsMap.ts` 统一挂载，重构不影响
 > 调用方。
 
-### 10. [ ] 抽取 ParticleField 通用粒子组件（~1500-2000 行，收益最大）
+### 10. [x] 抽取 ParticleField 通用粒子组件（~1500-2000 行，收益最大）
 
 **问题**："N 连拷"模式——同一 SVG 整块复制只改 delay/位置/颜色：
 
@@ -207,7 +215,7 @@ header props + 关闭按钮 + 装饰星插槽），6 个弹窗改为传 `title` 
 `:style` 注入 `--delay/--x/--y`。`LaunchEffects.vue:33-43` 已在用这个手法渲染
 星尘，可直接推广。
 
-### 11. [ ] 扩充 icons/ 通用 SVG 库（~600-800 行）
+### 11. [x] 扩充 icons/ 通用 SVG 库（~600-800 行）
 
 **问题**：`effects/icons/` 已抽出 4 个通用 SVG（Heart/Star/Sparkle/Question），
 但以下高频图形仍各处手绘：
@@ -220,7 +228,7 @@ header props + 关闭按钮 + 装饰星插槽），6 个弹窗改为传 `title` 
 **方案**：补 SweatDropSvg / SpiralSvg / NoteSvg / StarPathSvg / BrickSvg /
 FlyerSvg / BugSvg。
 
-### 12. [ ] 建共享 keyframes.css（~400-600 行）
+### 12. [~] 建共享 keyframes.css（~400-600 行）
 
 **问题**：换名字的同一段动画跨文件重复：
 
@@ -232,13 +240,13 @@ FlyerSvg / BugSvg。
 - 同义重复："螺旋圈旋转"（Confused:152-202 vs Dizzy:165-200）、"汗滴下落"
   （4 处）、"上浮渐隐"（5 处）
 - 26/32 个文件逐字重复根容器四行样板（`position:absolute; inset; 
-  pointer-events:none; overflow:visible`）
+pointer-events:none; overflow:visible`）
 
 **方案**：建 `effects/keyframes.css` 收敛为一份，用 CSS 变量参数化时长/幅度
 （范本：`CelebrateEffects.vue:89-198` 用 `--x/--y` 让一份 keyframes 服务 6 条彩带）；
 根容器抽 `effect-layer` 工具类。
 
-### 12a. [ ] EatingEffects 纯化
+### 12a. [x] EatingEffects 纯化
 
 `EatingEffects.vue:2` 是唯一直接读 `sharedState.currentFood` 的状态特效，
 破坏"纯展示"约定——改为 props 传入（需同步调整 effectsMap 渲染通道）。
@@ -252,11 +260,11 @@ FlyerSvg / BugSvg。
 里面塞了五类东西：
 
 - [ ] **自动更新模块**（script:60-380 约 320 行 + 模板:1394-1521）：checkUpdate /
-  download / install / 进度监听 / 错误友好化，与"设置"无关，迁
-  `composables/useAutoUpdate.ts` + `settings/UpdateSection.vue`
+      download / install / 进度监听 / 错误友好化，与"设置"无关，迁
+      `composables/useAutoUpdate.ts` + `settings/UpdateSection.vue`
 - [ ] **6 个分类页拆子组件**：`settings/panels/BehaviorPanel.vue` /
-  `AppearancePanel.vue` / `VoicePanel.vue` / `InteractionPanel.vue` /
-  `ApiPanel.vue` / `AboutPanel.vue`，父组件只留 category tabs 和容器
+      `AppearancePanel.vue` / `VoicePanel.vue` / `InteractionPanel.vue` /
+      `ApiPanel.vue` / `AboutPanel.vue`，父组件只留 category tabs 和容器
 - [ ] **语音输入依赖检测 UI**（:1035-1171）随之迁入 InteractionPanel
 
 ### 14. [ ] 抽取 useDraggable() 拖拽 composable
@@ -268,10 +276,10 @@ FlyerSvg / BugSvg。
 ### 15. [ ] 数据/配置文件归位
 
 - [ ] `dialogues.ts`（1636 行纯台词数据）迁到 `src/data/dialogues.ts` 或拆
-  JSON——它不是组件，且与 `composables/dialogue.ts` 仅差一个字母极易混淆
+      JSON——它不是组件，且与 `composables/dialogue.ts` 仅差一个字母极易混淆
 - [ ] `attributeStorage.ts`（410 行）中的游戏配置表（FOOD_CONFIGS /
-  BATH_CONFIGS / DECORATION_CONFIGS / WORK_INCOME）迁到 `src/data/`，
-  存储层只留存取逻辑
+      BATH_CONFIGS / DECORATION_CONFIGS / WORK_INCOME）迁到 `src/data/`，
+      存储层只留存取逻辑
 - [ ] weatherCodeMapping.ts 所在的 config/ 目录与 data/ 目录考虑合并统一
 
 ### 16. [ ] localStorage 统一收敛
@@ -283,16 +291,16 @@ ChatPanel:55（写）两处出现；`theme.ts:60` 反向读取属于 settings �
 
 - [ ] 建 `constants/storageKeys.ts` 集中定义所有 key
 - [ ] attributeStorage / petShapeStorage / qweatherStorage / settings / theme /
-  sharedState(llm) 六处改用工厂
+      sharedState(llm) 六处改用工厂
 - [ ] 清理 console.log 残留
 
 ### 17. [ ] electron/main.js 拆分（549 行，6 类职责混装）
 
 - [ ] 更新模块（:259-408 约 150 行 + 三平台安装脚本 :411-524）拆
-  `updater-ipc.js`——照已有的 `edgeTTS-ipc.js` / `whisperIPC.js` 模式即可
+      `updater-ipc.js`——照已有的 `edgeTTS-ipc.js` / `whisperIPC.js` 模式即可
 - [ ] （安全加固）`fetch-llm`（:182-195）接受渲染进程任意 URL，加域名白名单
 - [ ] （安全加固）安装脚本 :460-469 用字符串插值拼 bash（含 `rm -rf`），改用
-  参数传递或转义
+      参数传递或转义
 
 ### 18. [ ] z-index 层级集中管理
 

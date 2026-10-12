@@ -1,0 +1,106 @@
+/* ========================================
+   特效组件共享样式层
+   - effect-layer / effect-badge 根容器工具类
+   - 跨特效组件复用的参数化 keyframes
+   注意：本文件为非 scoped 全局样式，类名统一带 fx- 前缀避免冲突
+   ======================================== */
+
+/* ===== 根容器工具类 ===== */
+
+/* 全屏扩展型特效层：覆盖宠物周围一定范围 */
+.effect-layer {
+  position: absolute;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* 徽章型特效：挂在宠物某个角落的小图标组 */
+.effect-badge {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* ===== 共享 keyframes =====
+   注意：keyframe 选择器（百分比）不支持 var()，
+   变量只能出现在声明内部 */
+
+/* 星星/闪光闪烁旋转：合并原 star-twinkle / twinkle-shine /
+   sparkle-shine / sparkle-twinkle 四份实现 */
+@keyframes fx-twinkle {
+  0%,
+  60% {
+    opacity: 0;
+    transform: scale(0.5) rotate(0deg);
+  }
+  70%,
+  90% {
+    opacity: var(--fx-show-opacity, 1);
+    transform: scale(var(--fx-show-scale, 1.2)) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) rotate(360deg);
+  }
+}
+
+/* 音符上浮：合并原 note-float 两份实现 */
+@keyframes fx-note-float {
+  0%,
+  60% {
+    opacity: 0;
+    transform: translateY(0) rotate(-10deg) scale(0.8);
+  }
+  65%,
+  85% {
+    opacity: 1;
+    transform: translateY(var(--fx-note-rise, -10px)) rotate(5deg)
+      scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(calc(var(--fx-note-rise, -10px) * 2)) rotate(15deg)
+      scale(0.9);
+  }
+}
+
+/* 光点脉冲缩放：合并原 sparkle-pop 两份实现 */
+@keyframes fx-pop {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(var(--fx-pop-scale, 1.3));
+  }
+}
+
+/* 汗滴下落：参数化下落距离 */
+@keyframes fx-sweat-drip {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(var(--fx-drip-distance, 15px)) scale(0.8);
+  }
+}
+
+/* 元素上浮渐隐：参数化上浮距离与缩放 */
+@keyframes fx-float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(var(--fx-rise, -20px)) scale(var(--fx-end-scale, 1));
+  }
+}

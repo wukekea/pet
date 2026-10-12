@@ -1,75 +1,57 @@
 <script setup lang="ts">
 // 发传单效果组件 - 主动推销动画
+// 传单 SVG 与星星复用 icons 通用组件，重复模板用 v-for 渲染
+import FlyerSvg from "./icons/FlyerSvg.vue";
+import RoundStarSvg from "./icons/RoundStarSvg.vue";
+
+// 三张飞舞传单：只有配色和位置/delay 差异
+const flyingFlyers = [
+  {
+    color: "#FF6B6B",
+    accent: "#4ECDC4",
+    top: "-30px",
+    left: "-25px",
+    delay: "0s",
+  },
+  {
+    color: "#4CAF50",
+    accent: "#FF9800",
+    top: "-20px",
+    right: "-20px",
+    delay: "1s",
+  },
+  {
+    color: "#2196F3",
+    accent: "#E91E63",
+    top: "10px",
+    left: "-30px",
+    delay: "2s",
+  },
+];
+
+// 热情星星：只有颜色和位置/delay 差异
+const excitementStars = [
+  { color: "#FFD700", top: "-25px", left: "-10px", delay: "0s" },
+  { color: "#FFA500", top: "-35px", right: "5px", delay: "0.5s" },
+  { color: "#FF6347", top: "-15px", right: "-15px", delay: "1s" },
+];
 </script>
 
 <template>
   <div class="flyer-distributing-effects">
     <!-- 飞舞的传单 -->
-    <div class="flying-flyer flyer-1">
-      <svg viewBox="0 0 40 50" class="flyer-svg">
-        <!-- 传单背景 -->
-        <rect x="2" y="2" width="36" height="46" rx="2" fill="#FFF5E6" />
-        <rect x="4" y="4" width="32" height="42" rx="1" fill="#FFFFFF" />
-        <!-- 传单内容模拟 -->
-        <rect x="7" y="8" width="26" height="8" rx="1" fill="#FF6B6B" />
-        <rect x="7" y="20" width="12" height="3" rx="1" fill="#E0E0E0" />
-        <rect x="7" y="26" width="18" height="3" rx="1" fill="#E0E0E0" />
-        <rect x="7" y="32" width="14" height="3" rx="1" fill="#E0E0E0" />
-        <rect x="7" y="38" width="10" height="4" rx="1" fill="#4ECDC4" />
-        <!-- 传单边框 -->
-        <rect
-          x="2"
-          y="2"
-          width="36"
-          height="46"
-          rx="2"
-          fill="none"
-          stroke="#FF6B6B"
-          stroke-width="2"
-        />
-      </svg>
-    </div>
-    <div class="flying-flyer flyer-2">
-      <svg viewBox="0 0 40 50" class="flyer-svg">
-        <rect x="2" y="2" width="36" height="46" rx="2" fill="#E8F5E9" />
-        <rect x="4" y="4" width="32" height="42" rx="1" fill="#FFFFFF" />
-        <rect x="7" y="8" width="26" height="8" rx="1" fill="#4CAF50" />
-        <rect x="7" y="20" width="12" height="3" rx="1" fill="#E0E0E0" />
-        <rect x="7" y="26" width="18" height="3" rx="1" fill="#E0E0E0" />
-        <rect x="7" y="32" width="14" height="3" rx="1" fill="#E0E0E0" />
-        <rect x="7" y="38" width="10" height="4" rx="1" fill="#FF9800" />
-        <rect
-          x="2"
-          y="2"
-          width="36"
-          height="46"
-          rx="2"
-          fill="none"
-          stroke="#4CAF50"
-          stroke-width="2"
-        />
-      </svg>
-    </div>
-    <div class="flying-flyer flyer-3">
-      <svg viewBox="0 0 40 50" class="flyer-svg">
-        <rect x="2" y="2" width="36" height="46" rx="2" fill="#E3F2FD" />
-        <rect x="4" y="4" width="32" height="42" rx="1" fill="#FFFFFF" />
-        <rect x="7" y="8" width="26" height="8" rx="1" fill="#2196F3" />
-        <rect x="7" y="20" width="12" height="3" rx="1" fill="#E0E0E0" />
-        <rect x="7" y="26" width="18" height="3" rx="1" fill="#E0E0E0" />
-        <rect x="7" y="32" width="14" height="3" rx="1" fill="#E0E0E0" />
-        <rect x="7" y="38" width="10" height="4" rx="1" fill="#E91E63" />
-        <rect
-          x="2"
-          y="2"
-          width="36"
-          height="46"
-          rx="2"
-          fill="none"
-          stroke="#2196F3"
-          stroke-width="2"
-        />
-      </svg>
+    <div
+      v-for="(flyer, i) in flyingFlyers"
+      :key="i"
+      class="flying-flyer"
+      :style="{
+        top: flyer.top,
+        left: flyer.left,
+        right: flyer.right,
+        '--fx-delay': flyer.delay,
+      }"
+    >
+      <FlyerSvg :color="flyer.color" :accent="flyer.accent" />
     </div>
 
     <!-- 招手手势 -->
@@ -105,29 +87,18 @@
     </div>
 
     <!-- 热情星星 -->
-    <div class="excitement-star star-1">
-      <svg viewBox="0 0 24 24" class="star-svg">
-        <path
-          d="M12 2 L14.4 8.5 L22 9 L16.5 13.5 L18.5 21 L12 16.5 L5.5 21 L7.5 13.5 L2 9 L9.6 8.5 Z"
-          fill="#FFD700"
-        />
-      </svg>
-    </div>
-    <div class="excitement-star star-2">
-      <svg viewBox="0 0 24 24" class="star-svg">
-        <path
-          d="M12 2 L14.4 8.5 L22 9 L16.5 13.5 L18.5 21 L12 16.5 L5.5 21 L7.5 13.5 L2 9 L9.6 8.5 Z"
-          fill="#FFA500"
-        />
-      </svg>
-    </div>
-    <div class="excitement-star star-3">
-      <svg viewBox="0 0 24 24" class="star-svg">
-        <path
-          d="M12 2 L14.4 8.5 L22 9 L16.5 13.5 L18.5 21 L12 16.5 L5.5 21 L7.5 13.5 L2 9 L9.6 8.5 Z"
-          fill="#FF6347"
-        />
-      </svg>
+    <div
+      v-for="(star, i) in excitementStars"
+      :key="i"
+      class="excitement-star"
+      :style="{
+        top: star.top,
+        left: star.left,
+        right: star.right,
+        '--fx-delay': star.delay,
+      }"
+    >
+      <RoundStarSvg :color="star.color" class="star-svg" />
     </div>
 
     <!-- 宣传喇叭 -->
@@ -136,7 +107,6 @@
         <!-- 竖直把手 -->
         <rect x="0" y="12" width="5" height="16" rx="2" fill="#1A1A1A" />
         <rect x="1" y="14" width="3" height="12" rx="1" fill="#2A2A2A" />
-
         <!-- 喇叭主体 -->
         <path d="M6 14 L12 10 L12 22 L6 18 Z" fill="#2A2A2A" />
         <path d="M12 10 L24 6 L24 26 L12 22 Z" fill="#3A3A3A" />
@@ -266,27 +236,10 @@
   position: absolute;
   opacity: 0;
   animation: flyer-fly 3s ease-in-out infinite;
+  animation-delay: var(--fx-delay, 0s);
 }
 
-.flyer-1 {
-  top: -30px;
-  left: -25px;
-  animation-delay: 0s;
-}
-
-.flyer-2 {
-  top: -20px;
-  right: -20px;
-  animation-delay: 1s;
-}
-
-.flyer-3 {
-  top: 10px;
-  left: -30px;
-  animation-delay: 2s;
-}
-
-.flyer-svg {
+.flying-flyer :deep(.flyer-svg) {
   width: 28px;
   height: 35px;
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.2));
@@ -365,24 +318,7 @@
   position: absolute;
   opacity: 0;
   animation: star-pop 1.5s ease-in-out infinite;
-}
-
-.star-1 {
-  top: -25px;
-  left: -10px;
-  animation-delay: 0s;
-}
-
-.star-2 {
-  top: -35px;
-  right: 5px;
-  animation-delay: 0.5s;
-}
-
-.star-3 {
-  top: -15px;
-  right: -15px;
-  animation-delay: 1s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 .star-svg {
