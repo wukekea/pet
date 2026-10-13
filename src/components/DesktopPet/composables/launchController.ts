@@ -27,6 +27,7 @@ import {
   parachuteSwayOffset,
   showParachute,
 } from "./sharedState";
+import { changeState } from "./petController";
 
 // 蓄力更新定时器
 let chargeUpdateTimer: number | null = null;
@@ -96,8 +97,8 @@ export function endCharging(): void {
     return;
   }
 
-  // 进入发射状态
-  petState.value = "launching";
+  // 进入发射状态（force：跳过飞行中不可打断守卫）
+  void changeState("launching", true, { force: true });
 
   // 计算发射参数
   const progress = chargeProgress.value;
@@ -171,7 +172,7 @@ function animateRise(): void {
  */
 function startParachuting(): void {
   flyingPhase = "falling";
-  petState.value = "parachuting";
+  void changeState("parachuting", true, { force: true });
   showParachute.value = true;
   swayAngle = 0;
 
@@ -243,8 +244,8 @@ function endParachuting(): void {
     flyingAnimationFrame = null;
   }
 
-  // 恢复空闲状态
-  petState.value = "idle";
+  // 恢复空闲状态（force：从飞行状态退出）
+  void changeState("idle", true, { force: true });
 }
 
 /**
@@ -262,7 +263,7 @@ export function cancelCharging(): void {
 
   // 只有在蓄力阶段（还没开始飞行）才重置状态
   if (flyingPhase === "idle" && petState.value === "launching") {
-    petState.value = "idle";
+    void changeState("idle", true, { force: true });
   }
 }
 

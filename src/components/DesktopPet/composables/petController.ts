@@ -155,7 +155,8 @@ export function moveToPosition(
   const dx = targetX - position.value.x;
   const dy = targetY - position.value.y;
   updateDirection(dx, dy);
-  petState.value = "walking";
+  // force：移向秋千时 isMovingToSwing 已置位，需跳过该守卫才能进入 walking
+  void changeState("walking", true, { force: true });
   // 启动动画循环驱动移动
   startAnimationLoop();
 }
@@ -192,8 +193,8 @@ export function toggleSwing() {
     showSwing.value = true;
     // 启动秋千动画
     startSwingAnimation();
-    petState.value = "idle";
-    showDialogue();
+    // 秋千就位后置 idle（showSwing 已为 true，需 force 跳过秋千守卫）
+    void changeState("idle", false, { force: true });
     return;
   }
 
@@ -263,19 +264,30 @@ function smoothExitJumpAnimation(): Promise<void> {
 }
 
 // 改变宠物状态
-export async function changeState(newState: PetState, skipDialogue = false) {
-  // 飞行状态不可被打断
-  if (petState.value === "launching" || petState.value === "parachuting") {
+// options.force：跳过"不可打断"守卫（仅限状态机内部合法跳转使用，
+// 如发射流程 launching→parachuting→idle、降落伞结束等，外部交互勿用）
+export async function changeState(
+  newState: PetState,
+  skipDialogue = false,
+  options?: { force?: boolean },
+) {
+  const force = options?.force === true;
+
+  // 飞行状态不可被打断（飞行流程内部用 force 跳转）
+  if (
+    !force &&
+    (petState.value === "launching" || petState.value === "parachuting")
+  ) {
     return;
   }
 
   // 荡秋千状态不可被打断
-  if (showSwing.value) {
+  if (!force && showSwing.value) {
     return;
   }
 
   // 移动到秋千位置过程中不可被打断
-  if (isMovingToSwing.value) {
+  if (!force && isMovingToSwing.value) {
     return;
   }
 
@@ -529,8 +541,8 @@ export function animate() {
         showSwing.value = true;
         // 启动秋千动画
         startSwingAnimation();
-        petState.value = "idle";
-        showDialogue();
+        // 秋千就位后置 idle（showSwing 已为 true，需 force 跳过秋千守卫）
+        void changeState("idle", false, { force: true });
       } else {
         changeState("idle");
       }
@@ -661,7 +673,8 @@ export function handleDragStart(e: MouseEvent) {
   }
   // 睡眠状态下拖拽时进入睡眠行走状态（手脚会动，眼睛像睡眼朦胧）
   if (petState.value === "sleeping" || petState.value === "sleepy") {
-    petState.value = "sleepwalking";
+    // 拖拽唤醒为睡眠行走（内部跳转，force）
+    void changeState("sleepwalking", true, { force: true });
   }
   // 不可打断状态下拖拽时保持当前状态，不改变
   // 其他状态下拖拽时进入行走状态
@@ -669,7 +682,8 @@ export function handleDragStart(e: MouseEvent) {
     !isUninterruptibleState(petState.value) &&
     petState.value !== "sleepwalking"
   ) {
-    petState.value = "walking";
+    // 拖拽中进入行走状态（不弹台词）
+    void changeState("walking", true, { force: true });
   }
   window.addEventListener("mousemove", handleDragging);
   window.addEventListener("mouseup", handleDragEnd);
@@ -718,6 +732,8 @@ function handleDragEnd() {
   } else if (wasUninterruptible && stateBeforeDrag) {
     // 不可打断状态下拖拽结束后恢复原来的状态
     // 使用拖拽前保存的剩余时间，确保进度条同步
+    // 【直接赋值豁免】此处需精确恢复剩余计时（adjustWorkStartTime + 重建 stateTimer），
+    // 走 changeState 会重置完整时长并重复弹台词，故直接赋值
     petState.value = stateBeforeDrag;
     const remainingTime = workRemainingBeforeDrag;
     workRemainingBeforeDrag = null;

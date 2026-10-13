@@ -98,7 +98,27 @@ AI 配置更乱，存在三套互不同步的配置：
 - [ ] 移除 `index.vue:117-121` 中服务调试面板的逻辑，改为 DebugPanel 内部 watch
 - [ ] DebugPanel 拖拽改用抽出的 `useDraggable()`（见 P3-14）
 
-### 3. [ ] 收敛状态机统一入口（可分小步）
+### 3. [x] 收敛状态机统一入口（可分小步）
+
+**改动记录（已完成）**：
+
+- `changeState` 新增第三参 `options.force`：跳过"不可打断"守卫，供状态机
+  内部合法跳转使用（发射流程 launching→parachuting→idle、秋千就位、
+  拖拽进入 sleepwalking 等）
+- 11 处直接赋值收敛为 9 处 `changeState` 调用 + 1 处豁免 + 1 处核心：
+  - launchController 4 处全部改为 `changeState(state, true, { force: true })`
+  - petController：moveToPosition/toggleSwing/animate 秋千就位/
+    handleDragStart×2 改为 changeState（含 force）
+  - **handleDragEnd 恢复不可打断状态保留直接赋值**（注释豁免）：此处需
+    精确恢复剩余计时（adjustWorkStartTime + 重建 stateTimer），走
+    changeState 会重置完整时长
+  - changeState 内部核心赋值保留（唯一写入口）
+- 修复迁移中的回归：moveToPosition 的 walking 需 force（移向秋千时
+  isMovingToSwing 已置位，会被 changeState 守卫挡住导致宠物不动）
+- 副作用一致化收益：launching/parachuting/sleepwalking 现在会正确进入
+  recordState 统计（原来直接赋值全部漏记）
+- 途中发现并解决：launchController→petController 方向 import 无环
+  （petController 不反向引用 launchController）
 
 **问题**：
 
