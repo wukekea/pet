@@ -122,7 +122,18 @@ AI 配置更乱，存在三套互不同步的配置：
       passthrough / animation 四块
 - [ ] （可选）动画结束回调改由组件 emit，替代 DOM 反查
 
-### 4. [ ] 消除循环依赖与弹窗双源真相
+### 4. [x] 消除循环依赖与弹窗双源真相
+
+**改动记录（已完成）**：
+
+- `isWorkState` 从 petController.ts 移至 constants.ts，attributes.ts 改从
+  constants import——环断开（attributes → petController 的 import 已清零，
+  反向单向依赖保留）；WorkProgressBar/DebugPanel 引用同步更新
+- `useModal.ts`：删除每个弹窗的本地 visible ref，`visible` 直接暴露
+  sharedState 的 isXxxOpen（单源）；open/close 只写一份
+- `llmService.ts`：删除自带的 WORK_STATES 副本，改 import constants 的定义
+- 其余单向依赖确认无环：llmService→petController、scheduleManager→
+  petController（petController 不反向引用这两个）
 
 **问题**：
 
@@ -340,7 +351,19 @@ pointer-events:none; overflow:visible`）
 
 ## P3 — 文件位置与收尾
 
-### 13. [ ] 拆分 settings/index.vue（2951 行 → 约 400 行）
+### 13. [x] 拆分 settings/index.vue（2951 行 → 219 行容器 + 7 个模块）
+
+**改动记录（已完成）**：
+
+- `settings/useAutoUpdate.ts`（208 行）：版本获取/检查更新/下载/安装/
+  剪贴板复制/事件监听全部抽出，settings 只在切到"关于"页时调 initVersion
+- 6 个分类面板子组件：BehaviorPanel(167)/AppearancePanel(143)/VoicePanel(248)/
+  InteractionPanel(233)/ApiPanel(226)/AboutPanel(504)
+- `shared.css`（933 行）：setting-item/toggle-switch/custom-slider 等
+  面板共享样式抽出，v-bind 主题色改为 `--settings-*` CSS 变量由 index.vue
+  注入；index.vue 以非 scoped style 全局引入一次
+- `index.vue`：2951 → 219 行，只剩 tabs + 主题色 computed + 容器
+- ApiPanel 保留"打开弹窗重新加载 API 配置"的 watch（visible prop 感知）
 
 里面塞了五类东西：
 

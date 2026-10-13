@@ -33,12 +33,8 @@ const EMOTION_STATES: PetState[] = [
   "sleeping",
 ];
 
-// 可触发的动作状态（需要特殊逻辑处理）
-const WORK_STATES: PetState[] = [
-  "brickCarrying",
-  "flyerDistributing",
-  "programmer",
-];
+// 可触发的动作状态（需要特殊逻辑处理）——统一使用 constants 的定义
+import { WORK_STATES } from "../constants";
 const ACTION_STATES: PetState[] = [...WORK_STATES, "eating", "bathing"];
 
 // 非工具调用格式的系统提示词（通过文本标签控制状态）

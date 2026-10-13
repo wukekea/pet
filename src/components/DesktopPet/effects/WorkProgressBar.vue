@@ -3,7 +3,8 @@
 import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
 import { STATE_DURATIONS, WORK_STATES } from "../constants";
 import { petState, workEndTime, isDragging } from "../composables/sharedState";
-import { isWorkState, stopWork } from "../composables/petController";
+import { stopWork } from "../composables/petController";
+import { isWorkState } from "../constants";
 
 // 工作状态类型
 type WorkState = (typeof WORK_STATES)[number];

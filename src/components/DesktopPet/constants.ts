@@ -133,6 +133,12 @@ export const WORK_STATES: readonly PetState[] = [
   "programmer",
 ] as const;
 
+// 判断是否是打工状态（放在 constants 而非 petController，
+// 避免 attributes.ts ↔ petController.ts 循环依赖）
+export function isWorkState(state: PetState): boolean {
+  return WORK_STATES.includes(state);
+}
+
 // 不可打断的状态（点击/双击不改变状态，拖拽后恢复）
 export const UNINTERRUPTIBLE_STATES: readonly PetState[] = [
   ...WORK_STATES,

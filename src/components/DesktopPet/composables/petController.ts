@@ -11,6 +11,7 @@ import {
   WORK_STATES,
   WORK_REST_DURATION,
   UNINTERRUPTIBLE_STATES,
+  isWorkState,
 } from "../constants";
 import { moveSpeedFactor, settings } from "./settings";
 import {
@@ -76,10 +77,7 @@ import { startSwingAnimation, stopSwingAnimation } from "./swingAnimation";
 // 是否刚从工作状态退出（用于增加休息间隔）
 let justFinishedWork = false;
 
-// 判断是否是打工状态
-export function isWorkState(state: PetState): boolean {
-  return WORK_STATES.includes(state);
-}
+// isWorkState 已移至 constants.ts（断循环依赖）
 
 // 判断是否是不可打断状态
 function isUninterruptibleState(state: PetState): boolean {

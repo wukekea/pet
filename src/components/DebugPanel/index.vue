@@ -2,11 +2,11 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import {
   changeState,
-  isWorkState,
   stopWork,
   moveToRandomPosition,
   toggleSwing,
 } from "../DesktopPet/composables/petController";
+import { isWorkState } from "../DesktopPet/constants";
 import {
   useAttributeRef,
   startWork,

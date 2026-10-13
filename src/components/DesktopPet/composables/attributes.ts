@@ -41,6 +41,7 @@ import {
   DAILY_ALLOWANCE,
   DAILY_ALLOWANCE_THRESHOLD,
   DAILY_INTERACTION_EXPERIENCE_CAP,
+  isWorkState,
 } from "../constants";
 import {
   loadAttributeData,
@@ -59,7 +60,6 @@ import {
   getActiveEffects,
   SHAPE_SHOP_CONFIGS,
 } from "./attributeStorage";
-import { isWorkState } from "./petController";
 import { tickStats } from "./stats";
 
 // 响应式属性数据

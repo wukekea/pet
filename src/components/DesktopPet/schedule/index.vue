@@ -199,7 +199,7 @@ const saveSchedule = () => {
     icon="🌙"
     :decor-emojis="['⭐', '✨', '🌙']"
     :width="480"
-    :height="70"
+    :max-height="70"
     title-gradient="linear-gradient(135deg, #8b5cf6, #ec4899)"
     :css-vars="cssVars"
     @close="close"
