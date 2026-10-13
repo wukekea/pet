@@ -1,5 +1,6 @@
 // 共享状态 - 避免循环依赖
 import { ref, computed } from "vue";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
 import type {
   PetDirection,
   PetPosition,
@@ -154,7 +155,7 @@ export interface LLMConfig {
 
 function loadLLMConfig(): LLMConfig {
   try {
-    const saved = localStorage.getItem("llm-config");
+    const saved = localStorage.getItem(STORAGE_KEYS.llmConfig);
     if (saved) return { requestFormat: "openai", ...JSON.parse(saved) };
   } catch {}
   return {

@@ -77,7 +77,7 @@ const emit = defineEmits<{
 .confirm-overlay {
   position: fixed;
   inset: 0;
-  z-index: 10002;
+  z-index: var(--z-confirm, 10002);
   display: flex;
   align-items: center;
   justify-content: center;

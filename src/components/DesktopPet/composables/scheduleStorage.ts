@@ -1,4 +1,5 @@
 import type { ScheduleConfig } from "../types";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { createLocalStorage } from "../utils/storage";
 
 // 默认作息配置
@@ -11,7 +12,7 @@ export const DEFAULT_SCHEDULE_CONFIG: ScheduleConfig = {
 };
 
 const scheduleStorage = createLocalStorage<ScheduleConfig>(
-  "pet-schedule-config",
+  STORAGE_KEYS.schedule,
   DEFAULT_SCHEDULE_CONFIG,
   (data): data is ScheduleConfig =>
     typeof (data as ScheduleConfig).enabled === "boolean" &&

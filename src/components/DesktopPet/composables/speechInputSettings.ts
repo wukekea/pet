@@ -1,4 +1,5 @@
 import { ref, computed } from "vue";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { createLocalStorage } from "../utils/storage";
 
 // 语音输入设置存储
@@ -7,7 +8,7 @@ interface SpeechInputSettings {
 }
 
 const storage = createLocalStorage<SpeechInputSettings>(
-  "pet-speech-input-settings",
+  STORAGE_KEYS.speechInput,
   {
     enabled: false, // 默认关闭，需要用户手动开启
   },

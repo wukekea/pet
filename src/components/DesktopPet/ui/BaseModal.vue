@@ -133,7 +133,7 @@ const titleStyle = computed(() => {
 .base-modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 10001;
+  z-index: var(--z-modal, 10001);
   display: flex;
   align-items: center;
   justify-content: center;

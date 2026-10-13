@@ -53,6 +53,7 @@ import {
 } from "../DesktopPet/composables/attributeStorage";
 import { getShapeOptions } from "../DesktopPet/shapes";
 import { randomPick } from "../DesktopPet/utils/random";
+import { useDraggable } from "../DesktopPet/composables/useDraggable";
 
 // 属性数据（用于调试装饰装备）
 const attributeData = useAttributeRef();
@@ -130,10 +131,11 @@ const debugCoinGain = () => {
 // 面板可见性
 const isVisible = ref(false);
 
-// 拖拽状态
-const isDragging = ref(false);
-const position = ref({ x: 20, y: 80 });
-const dragOffset = ref({ x: 0, y: 0 });
+// 拖拽（通用 composable）
+const { pos: position, onDragStart: handleDragStart } = useDraggable({
+  x: 20,
+  y: 80,
+});
 
 // 当前选中的状态
 const activeState = computed(() => petState.value);
@@ -320,33 +322,6 @@ const handleMouseLeave = () => {
   if (!isVisible.value) {
     setPassthrough(true);
   }
-};
-
-// 拖拽开始
-const handleDragStart = (e: MouseEvent) => {
-  isDragging.value = true;
-  dragOffset.value = {
-    x: e.clientX - position.value.x,
-    y: e.clientY - position.value.y,
-  };
-  document.addEventListener("mousemove", handleDragging);
-  document.addEventListener("mouseup", handleDragEnd);
-};
-
-// 拖拽中
-const handleDragging = (e: MouseEvent) => {
-  if (!isDragging.value) return;
-  position.value = {
-    x: e.clientX - dragOffset.value.x,
-    y: e.clientY - dragOffset.value.y,
-  };
-};
-
-// 拖拽结束
-const handleDragEnd = () => {
-  isDragging.value = false;
-  document.removeEventListener("mousemove", handleDragging);
-  document.removeEventListener("mouseup", handleDragEnd);
 };
 
 // 键盘快捷键
@@ -699,7 +674,7 @@ defineExpose({
 /* ---------- 面板容器 ---------- */
 .debug-panel {
   position: fixed;
-  z-index: 9999;
+  z-index: var(--z-debug-panel, 10003);
   width: 420px;
   height: 520px;
   display: flex;

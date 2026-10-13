@@ -1,4 +1,5 @@
 import type { StatsData } from "../types";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { getTodayString } from "../utils/date";
 import { createLocalStorage } from "../utils/storage";
 
@@ -22,7 +23,7 @@ export const DEFAULT_STATS_DATA: StatsData = {
 };
 
 const statsStorage = createLocalStorage<StatsData>(
-  "pet-stats-data",
+  STORAGE_KEYS.stats,
   DEFAULT_STATS_DATA,
   (data): data is StatsData =>
     !!(data as StatsData).startDate &&

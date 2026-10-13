@@ -1,0 +1,292 @@
+// 游戏数值与商品配置（从 attributeStorage.ts 拆出）
+// 数值平衡调整统一改这里；存储逻辑仍在 composables/attributeStorage.ts
+import type {
+  FoodType,
+  BathType,
+  DecorationType,
+  DecorationSlot,
+  DecorationEffect,
+  DecorationEffectType,
+  DecorationEffects,
+  PetShape,
+} from "@/components/DesktopPet/types";
+
+export interface FoodConfig {
+  type: FoodType;
+  name: string;
+  cost: number;
+  satietyRestore: number;
+}
+
+export const FOOD_CONFIGS: Record<FoodType, FoodConfig> = {
+  apple: { type: "apple", name: "苹果", cost: 5, satietyRestore: 25 },
+  lollipop: { type: "lollipop", name: "棒棒糖", cost: 3, satietyRestore: 15 },
+  riceBall: { type: "riceBall", name: "饭团", cost: 6, satietyRestore: 30 },
+  fish: { type: "fish", name: "小鱼", cost: 8, satietyRestore: 35 },
+  milk: { type: "milk", name: "牛奶", cost: 10, satietyRestore: 40 },
+  cake: { type: "cake", name: "蛋糕", cost: 12, satietyRestore: 50 },
+  steak: { type: "steak", name: "牛排", cost: 18, satietyRestore: 65 },
+  bamboo: { type: "bamboo", name: "竹子", cost: 15, satietyRestore: 55 },
+};
+
+// 沐浴配置
+export interface BathConfig {
+  type: BathType;
+  name: string;
+  cost: number;
+  cleanlinessRestore: number;
+}
+
+export const BATH_CONFIGS: Record<BathType, BathConfig> = {
+  soap: { type: "soap", name: "香皂", cost: 5, cleanlinessRestore: 25 },
+  showerGel: {
+    type: "showerGel",
+    name: "沐浴露",
+    cost: 10,
+    cleanlinessRestore: 45,
+  },
+  bathBall: {
+    type: "bathBall",
+    name: "浴球",
+    cost: 15,
+    cleanlinessRestore: 65,
+  },
+  petShampoo: {
+    type: "petShampoo",
+    name: "宠物香波",
+    cost: 20,
+    cleanlinessRestore: 85,
+  },
+};
+
+// 装饰配置
+export interface DecorationConfig {
+  type: DecorationType;
+  name: string;
+  cost: number;
+  description: string;
+  effects: DecorationEffect[];
+}
+
+export const DECORATION_CONFIGS: Record<DecorationType, DecorationConfig> = {
+  bow: {
+    type: "bow",
+    name: "蝴蝶结",
+    cost: 300,
+    description: "可爱的蝴蝶结",
+    effects: [{ type: "staminaRecoverBonus", value: 0.15 }],
+  },
+  scarf: {
+    type: "scarf",
+    name: "围巾",
+    cost: 480,
+    description: "温暖的小围巾",
+    effects: [{ type: "satietyDecayReduction", value: 0.2 }],
+  },
+  wreath: {
+    type: "wreath",
+    name: "花环",
+    cost: 720,
+    description: "美丽的花环",
+    effects: [{ type: "healthRecoverBonus", value: 0.25 }],
+  },
+  topHat: {
+    type: "topHat",
+    name: "礼帽",
+    cost: 900,
+    description: "优雅的礼帽",
+    effects: [{ type: "workIncomeBonus", value: 0.2 }],
+  },
+  sunglasses: {
+    type: "sunglasses",
+    name: "墨镜",
+    cost: 1080,
+    description: "酷酷的墨镜",
+    effects: [{ type: "cleanlinessDecayReduction", value: 0.25 }],
+  },
+  medal: {
+    type: "medal",
+    name: "勋章",
+    cost: 1200,
+    description: "荣誉勋章",
+    effects: [{ type: "workIncomeBonus", value: 0.3 }],
+  },
+  crown: {
+    type: "crown",
+    name: "皇冠",
+    cost: 1500,
+    description: "华丽的皇冠",
+    effects: [{ type: "allDecayReduction", value: 0.2 }],
+  },
+  magicWand: {
+    type: "magicWand",
+    name: "魔法杖",
+    cost: 1800,
+    description: "神奇的魔法杖",
+    effects: [
+      { type: "workDurationReduction", value: 0.2 },
+      { type: "workIncomeBonus", value: 0.15 },
+    ],
+  },
+};
+
+// 最大同时装备数量
+export const MAX_EQUIPPED_DECORATIONS = 3;
+
+// 装饰槽位 - 同槽位互斥
+export const DECORATION_SLOTS: Record<DecorationType, DecorationSlot> = {
+  bow: "head",
+  wreath: "head",
+  topHat: "head",
+  crown: "head",
+  sunglasses: "face",
+  scarf: "neck",
+  medal: "neck",
+  magicWand: "hand",
+};
+
+// 槽位中文名称
+export const SLOT_NAMES: Record<DecorationSlot, string> = {
+  head: "头部",
+  face: "脸部",
+  neck: "颈部",
+  hand: "手部",
+};
+
+// 打工收入（旧版，保留兼容）
+export const WORK_INCOME: Record<string, number> = {
+  brickCarrying: 35,
+  flyerDistributing: 10,
+  programmer: 50,
+};
+
+// 每分钟金币收入
+export const WORK_INCOME_PER_MINUTE: Record<string, number> = {
+  brickCarrying: 1,
+  flyerDistributing: 1,
+  programmer: 2,
+};
+
+// 打满奖励（完整完成工作）
+export const WORK_COMPLETION_BONUS: Record<string, number> = {
+  brickCarrying: 20,
+  flyerDistributing: 5,
+  programmer: 30,
+};
+
+// 打工经验
+export const WORK_EXPERIENCE: Record<string, number> = {
+  brickCarrying: 35,
+  flyerDistributing: 25,
+  programmer: 50,
+};
+
+// 打工所需体力（等于持续分钟数）
+export const WORK_STAMINA_REQUIRED: Record<string, number> = {
+  brickCarrying: 35,
+  flyerDistributing: 15,
+  programmer: 45,
+};
+
+// 初始金币
+export const STARTING_MONEY = 50;
+
+// 形态商店配置
+export interface ShapeShopConfig {
+  type: PetShape;
+  name: string;
+  icon: string;
+  cost: number;
+  description: string;
+}
+
+// cloud 是默认形态，不在商店出售；其余 7 种按价格升序排列
+export const SHAPE_SHOP_CONFIGS: Record<
+  Exclude<PetShape, "cloud">,
+  ShapeShopConfig
+> = {
+  chick: {
+    type: "chick",
+    name: "小鸡",
+    icon: "🐥",
+    cost: 200,
+    description: "活泼可爱的小鸡",
+  },
+  rabbit: {
+    type: "rabbit",
+    name: "兔子",
+    icon: "🐰",
+    cost: 350,
+    description: "软萌温柔的兔子",
+  },
+  dog: {
+    type: "dog",
+    name: "狗狗",
+    icon: "🐶",
+    cost: 500,
+    description: "忠诚活泼的狗狗",
+  },
+  cat: {
+    type: "cat",
+    name: "猫咪",
+    icon: "🐱",
+    cost: 650,
+    description: "神秘优雅的猫咪",
+  },
+  frog: {
+    type: "frog",
+    name: "青蛙",
+    icon: "🐸",
+    cost: 800,
+    description: "活跃跳跃的青蛙",
+  },
+  panda: {
+    type: "panda",
+    name: "熊猫",
+    icon: "🐼",
+    cost: 1000,
+    description: "国宝级的熊猫",
+  },
+  penguin: {
+    type: "penguin",
+    name: "企鹅",
+    icon: "🐧",
+    cost: 1200,
+    description: "优雅可爱的企鹅",
+  },
+};
+
+// 效果类型中文名称
+export const EFFECT_TYPE_NAMES: Record<DecorationEffectType, string> = {
+  staminaRecoverBonus: "体力恢复",
+  satietyDecayReduction: "饱腹衰减减缓",
+  healthRecoverBonus: "健康恢复",
+  cleanlinessDecayReduction: "清洁衰减减缓",
+  workIncomeBonus: "打工收入",
+  workDurationReduction: "打工时间缩短",
+  allDecayReduction: "全属性衰减减缓",
+};
+
+// 汇总已装备装饰的活跃效果
+export function getActiveEffects(
+  equippedDecorations: string[],
+): DecorationEffects {
+  const result: DecorationEffects = {};
+  for (const type of equippedDecorations) {
+    const config = DECORATION_CONFIGS[type as DecorationType];
+    if (!config) continue;
+    for (const effect of config.effects) {
+      result[effect.type] = (result[effect.type] ?? 0) + effect.value;
+    }
+  }
+  return result;
+}
+
+// 生成装饰效果描述文本
+export function getDecorationEffectDescription(
+  effects: DecorationEffect[],
+): string {
+  return effects
+    .map((e) => `${EFFECT_TYPE_NAMES[e.type]}+${Math.round(e.value * 100)}%`)
+    .join("，");
+}

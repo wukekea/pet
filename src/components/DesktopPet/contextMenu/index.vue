@@ -255,7 +255,7 @@ const cssVars = computed(() => ({
 .menu-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: var(--z-context-menu, 9999);
   pointer-events: auto !important;
   background: transparent;
   cursor: default;
@@ -276,7 +276,7 @@ const cssVars = computed(() => ({
    ======================================== */
 .pet-context-menu {
   position: fixed;
-  z-index: 10000;
+  z-index: var(--z-menu-backdrop, 10000);
   pointer-events: auto !important;
   transform-origin: top left;
   cursor: default;

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, watch, onUnmounted } from "vue";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
+import { useDraggable } from "../composables/useDraggable";
 import { isChatPanelOpen, llmConfig } from "../composables/sharedState";
 import { sendMessage } from "../composables/llmService";
 import type { ChatMessage } from "../composables/llmService";
@@ -18,7 +20,7 @@ import {
 const MAX_HISTORY = 50;
 function loadHistory(): ChatMessage[] {
   try {
-    const saved = localStorage.getItem("pet-chat-history");
+    const saved = localStorage.getItem(STORAGE_KEYS.chatHistory);
     if (saved) return JSON.parse(saved);
   } catch {}
   return [];
@@ -26,7 +28,7 @@ function loadHistory(): ChatMessage[] {
 const messages = ref<ChatMessage[]>(loadHistory());
 function saveHistory() {
   localStorage.setItem(
-    "pet-chat-history",
+    STORAGE_KEYS.chatHistory,
     JSON.stringify(messages.value.slice(-MAX_HISTORY)),
   );
 }
@@ -53,7 +55,7 @@ function toggleSettings() {
 function saveConfig() {
   // 写入 sharedState 的 llmConfig 并持久化（与设置面板走同一份存储）
   llmConfig.value = { ...editConfig.value };
-  localStorage.setItem("llm-config", JSON.stringify(llmConfig.value));
+  localStorage.setItem(STORAGE_KEYS.llmConfig, JSON.stringify(llmConfig.value));
   showSettings.value = false;
 }
 
@@ -156,44 +158,11 @@ onUnmounted(() => {
   cleanupNativeRecorder();
 });
 
-// 面板拖拽
-const panelPos = ref({ x: 0, y: 0 });
-const isDragging = ref(false);
-const dragStart = ref({ mx: 0, my: 0, px: 0, py: 0 });
-
-function initPosition() {
-  panelPos.value = {
-    x: window.innerWidth - 380 - 24,
-    y: window.innerHeight - 520 - 60,
-  };
-}
-initPosition();
-
-function onDragStart(e: MouseEvent) {
-  isDragging.value = true;
-  dragStart.value = {
-    mx: e.clientX,
-    my: e.clientY,
-    px: panelPos.value.x,
-    py: panelPos.value.y,
-  };
-  window.addEventListener("mousemove", onDragMove);
-  window.addEventListener("mouseup", onDragEnd);
-}
-
-function onDragMove(e: MouseEvent) {
-  if (!isDragging.value) return;
-  panelPos.value = {
-    x: dragStart.value.px + (e.clientX - dragStart.value.mx),
-    y: dragStart.value.py + (e.clientY - dragStart.value.my),
-  };
-}
-
-function onDragEnd() {
-  isDragging.value = false;
-  window.removeEventListener("mousemove", onDragMove);
-  window.removeEventListener("mouseup", onDragEnd);
-}
+// 面板拖拽（通用 composable）
+const { pos: panelPos, onDragStart } = useDraggable({
+  x: window.innerWidth - 380 - 24,
+  y: window.innerHeight - 520 - 60,
+});
 
 // 打开时聚焦输入框
 watch(isChatPanelOpen, async (v) => {
@@ -494,7 +463,7 @@ const cssVars = computed(() => ({
    ============================================================ */
 .chat-panel {
   position: fixed;
-  z-index: 9998;
+  z-index: var(--z-chat-panel, 9998);
   width: 360px;
   height: 500px;
   display: flex;

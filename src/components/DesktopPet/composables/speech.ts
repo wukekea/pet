@@ -1,4 +1,5 @@
 import { ref, watch } from "vue";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { createLocalStorage } from "../utils/storage";
 
 // 语音引擎类型
@@ -13,16 +14,13 @@ interface SpeechSettings {
   volume: number;
 }
 
-const speechStorage = createLocalStorage<SpeechSettings>(
-  "pet-speech-settings",
-  {
-    enabled: true,
-    engine: "browser", // 默认使用浏览器 TTS
-    rate: 1.0,
-    pitch: 1.0,
-    volume: 1.0,
-  },
-);
+const speechStorage = createLocalStorage<SpeechSettings>(STORAGE_KEYS.speech, {
+  enabled: true,
+  engine: "browser", // 默认使用浏览器 TTS
+  rate: 1.0,
+  pitch: 1.0,
+  volume: 1.0,
+});
 
 const savedSettings = speechStorage.load();
 

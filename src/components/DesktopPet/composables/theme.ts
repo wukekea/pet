@@ -1,4 +1,5 @@
 import { ref } from "vue";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
 
 // 主题模式类型
 export type ThemeMode = "system" | "light" | "dark";
@@ -35,7 +36,7 @@ export function setThemeMode(mode: ThemeMode) {
   themeMode.value = mode;
   updateTheme();
   // 保存到 localStorage
-  localStorage.setItem("pet-theme-mode", mode);
+  localStorage.setItem(STORAGE_KEYS.themeMode, mode);
 }
 
 // 切换深色/浅色（便捷方法）
@@ -57,7 +58,7 @@ export function initTheme() {
   cleanupTheme();
 
   // 优先从新的设置存储中读取
-  const savedSettings = localStorage.getItem("pet-settings");
+  const savedSettings = localStorage.getItem(STORAGE_KEYS.settings);
   if (savedSettings) {
     try {
       const parsed = JSON.parse(savedSettings);
@@ -67,7 +68,7 @@ export function initTheme() {
     } catch {
       // 解析失败，尝试旧格式
       const savedMode = localStorage.getItem(
-        "pet-theme-mode",
+        STORAGE_KEYS.themeMode,
       ) as ThemeMode | null;
       if (savedMode && ["system", "light", "dark"].includes(savedMode)) {
         themeMode.value = savedMode;
@@ -76,7 +77,7 @@ export function initTheme() {
   } else {
     // 兼容旧格式
     const savedMode = localStorage.getItem(
-      "pet-theme-mode",
+      STORAGE_KEYS.themeMode,
     ) as ThemeMode | null;
     if (savedMode && ["system", "light", "dark"].includes(savedMode)) {
       themeMode.value = savedMode;

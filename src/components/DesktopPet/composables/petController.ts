@@ -19,7 +19,7 @@ import {
   eatingBusyMessages,
   bathingBusyMessages,
   workScheduleTooTiredMessages,
-} from "../dialogues";
+} from "@/data/dialogues";
 import type { PetState } from "../types";
 import {
   animationFrameId,

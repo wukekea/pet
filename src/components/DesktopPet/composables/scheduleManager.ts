@@ -14,7 +14,7 @@ import { showCustomDialogue, getDreamTalk } from "./dialogue";
 import {
   workScheduleEnterMessages,
   workScheduleExitMessages,
-} from "../dialogues";
+} from "@/data/dialogues";
 import { DREAM_TALK_INTERVAL, STRETCH_DURATION } from "../constants";
 
 // 当前配置

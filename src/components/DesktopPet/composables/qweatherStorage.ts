@@ -1,7 +1,9 @@
-const API_KEY_STORAGE_KEY = "qweather-api-key";
-const API_HOST_STORAGE_KEY = "qweather-api-host";
-const AMAP_KEY_STORAGE_KEY = "amap-api-key";
-const WEATHER_STATUS_KEY = "qweather-status";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
+
+const API_KEY_STORAGE_KEY = STORAGE_KEYS.qweatherApiKey;
+const API_HOST_STORAGE_KEY = STORAGE_KEYS.qweatherApiHost;
+const AMAP_KEY_STORAGE_KEY = STORAGE_KEYS.amapKey;
+const WEATHER_STATUS_KEY = STORAGE_KEYS.qweatherStatus;
 
 /**
  * 保存 API Key（设置面板写入）

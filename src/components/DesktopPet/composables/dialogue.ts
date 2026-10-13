@@ -5,7 +5,7 @@ import {
   dreamTalkMessages,
   weatherDialogues,
   moodDialogues,
-} from "../dialogues";
+} from "@/data/dialogues";
 import { petState, isChatPanelOpen, showSwing } from "./sharedState";
 import { isDragging, moodLevel } from "./sharedState";
 import { currentWeather, isWeatherChanging } from "./weatherState";

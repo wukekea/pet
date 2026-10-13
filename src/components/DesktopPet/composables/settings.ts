@@ -1,4 +1,5 @@
 import { ref, computed, watch } from "vue";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { setThemeMode, type ThemeMode } from "./theme";
 import {
   speechEnabled,
@@ -54,11 +55,13 @@ export interface ApiConfig {
 export function loadApiConfig(): ApiConfig {
   return {
     qweather: {
-      key: localStorage.getItem("qweather-api-key") ?? "",
-      host: localStorage.getItem("qweather-api-host") ?? "devapi.qweather.com",
+      key: localStorage.getItem(STORAGE_KEYS.qweatherApiKey) ?? "",
+      host:
+        localStorage.getItem(STORAGE_KEYS.qweatherApiHost) ??
+        "devapi.qweather.com",
     },
     amap: {
-      key: localStorage.getItem("amap-api-key") ?? "",
+      key: localStorage.getItem(STORAGE_KEYS.amapKey) ?? "",
     },
     ai: {
       key: llmConfig.value.apiKey,
@@ -80,7 +83,7 @@ export function saveApiConfig(config: ApiConfig): void {
     model: config.ai.model,
     requestFormat: config.ai.format,
   };
-  localStorage.setItem("llm-config", JSON.stringify(llmConfig.value));
+  localStorage.setItem(STORAGE_KEYS.llmConfig, JSON.stringify(llmConfig.value));
 }
 
 // 默认设置
@@ -120,7 +123,7 @@ export const opacityValue = computed(() => {
 // 加载设置
 export function loadSettings() {
   try {
-    const saved = localStorage.getItem("pet-settings");
+    const saved = localStorage.getItem(STORAGE_KEYS.settings);
     if (saved) {
       const parsed = JSON.parse(saved);
       // 旧版本曾把 apiConfig 存在 pet-settings 里（死配置），加载时剔除
@@ -149,7 +152,7 @@ export function loadSettings() {
 export function saveSettings() {
   try {
     const dataToSave = JSON.parse(JSON.stringify(settings.value));
-    localStorage.setItem("pet-settings", JSON.stringify(dataToSave));
+    localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(dataToSave));
   } catch (e) {
     console.error("[Settings] 保存设置失败", e);
   }
