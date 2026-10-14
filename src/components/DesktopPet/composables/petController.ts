@@ -1,6 +1,5 @@
 import {
   IDLE_DURATION,
-  PET_SIZE,
   SLEEP_DURATION,
   STATE_DURATIONS,
   TOP_MARGIN,
@@ -13,7 +12,7 @@ import {
   UNINTERRUPTIBLE_STATES,
   isWorkState,
 } from "../constants";
-import { moveSpeedFactor, settings } from "./settings";
+import { moveSpeedFactor, settings, petSizePixels } from "./settings";
 import {
   workBusyMessages,
   eatingBusyMessages,
@@ -105,13 +104,14 @@ function showBusyDialogue(state: PetState) {
 }
 
 function isMouseOnPet(x: number, y: number): boolean {
+  const size = petSizePixels.value;
   const petX = position.value.x;
   const petY = position.value.y;
-  const petCenterX = petX + PET_SIZE / 2;
-  const petCenterY = petY + PET_SIZE / 2;
+  const petCenterX = petX + size / 2;
+  const petCenterY = petY + size / 2;
   const dx = x - petCenterX;
   const dy = y - petCenterY;
-  const radius = PET_SIZE / 2 + 15;
+  const radius = size / 2 + 15;
   // 用距离平方比较，避免 Math.sqrt
   return dx * dx + dy * dy < radius * radius;
 }
@@ -132,8 +132,8 @@ function updateDirection(dx: number, dy: number) {
 
 // 获取随机位置
 export function getRandomPosition() {
-  const maxX = screenSize.value.width - PET_SIZE;
-  const maxY = screenSize.value.height - PET_SIZE - 20;
+  const maxX = screenSize.value.width - petSizePixels.value;
+  const maxY = screenSize.value.height - petSizePixels.value - 20;
   return {
     x: Math.random() * maxX,
     y: Math.random() * (maxY - 100) + 100,
@@ -498,8 +498,10 @@ export function animate() {
   }
 
   if (petState.value === "chase") {
-    const dx = mousePosition.value.x - position.value.x - PET_SIZE / 2;
-    const dy = mousePosition.value.y - position.value.y - PET_SIZE / 2;
+    const dx =
+      mousePosition.value.x - position.value.x - petSizePixels.value / 2;
+    const dy =
+      mousePosition.value.y - position.value.y - petSizePixels.value / 2;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     if (distance > 5) {
@@ -698,8 +700,8 @@ function handleDragging(e: MouseEvent) {
   position.value = { x: newX, y: newY };
   addFootprint(position.value.x, position.value.y, petDirection.value);
   targetPosition.value = { ...position.value };
-  const maxX = screenSize.value.width - PET_SIZE;
-  const maxY = screenSize.value.height - PET_SIZE - 20;
+  const maxX = screenSize.value.width - petSizePixels.value;
+  const maxY = screenSize.value.height - petSizePixels.value - 20;
   if (position.value.x < 0) position.value.x = 0;
   if (position.value.x > maxX) position.value.x = maxX;
   if (position.value.y < TOP_MARGIN) position.value.y = TOP_MARGIN;
@@ -738,7 +740,12 @@ function handleDragEnd() {
       workEndTime.value = Date.now() + remainingTime;
       // 如果是打工状态，调整打工开始时间（用于每分钟结算）
       if (isWorkState(stateBeforeDrag)) {
-        const totalDuration = STATE_DURATIONS[stateBeforeDrag] ?? 0;
+        // 应用装饰的时长缩减倍率，与 changeState 进入打工时的 effectiveDuration 一致，
+        // 否则 workStartTime 会被回拨得偏早，每分钟结算提前多发工资
+        const multiplier = getWorkDurationMultiplier();
+        const totalDuration = Math.floor(
+          (STATE_DURATIONS[stateBeforeDrag] ?? 0) * multiplier,
+        );
         if (totalDuration > 0) {
           adjustWorkStartTime(totalDuration, remainingTime);
         }
@@ -775,8 +782,8 @@ export function togglePet() {
 // 监听窗口大小变化
 export function handleResize() {
   screenSize.value = { width: window.innerWidth, height: window.innerHeight };
-  const maxX = screenSize.value.width - PET_SIZE;
-  const maxY = screenSize.value.height - PET_SIZE - 20;
+  const maxX = screenSize.value.width - petSizePixels.value;
+  const maxY = screenSize.value.height - petSizePixels.value - 20;
   if (position.value.x > maxX) position.value.x = maxX;
   if (position.value.y > maxY) position.value.y = maxY;
 }
@@ -811,10 +818,9 @@ function isMouseInElement(
 
 // 处理鼠标移动
 export function handleMouseMove(e: MouseEvent) {
-  // mousePosition 仅 chase 状态需要，按需更新避免不必要的响应式触发
-  if (petState.value === "chase") {
-    mousePosition.value = { x: e.clientX, y: e.clientY };
-  }
+  // mousePosition 供 chase 追逐与 QuickActionPanel 的悬停检测使用，
+  // 始终更新（穿透窗口有 forward: true，事件不会丢）
+  mousePosition.value = { x: e.clientX, y: e.clientY };
   // 任意 UI 弹窗打开时，不自动控制穿透
   if (isAnyUiOpen.value) return;
 

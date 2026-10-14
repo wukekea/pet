@@ -11,53 +11,49 @@ import fs from "fs";
 // 下载的安装包路径（模块内状态）
 let updateDownloadPath = null;
 
+// 根据平台获取对应的资源下载 URL
+function getPlatformAssetUrl(assets) {
+  const platform = process.platform;
+
+  for (const asset of assets) {
+    const name = asset.name.toLowerCase();
+    if (
+      platform === "darwin" &&
+      name.endsWith(".zip") &&
+      name.includes("arm64")
+    ) {
+      return asset.browser_download_url;
+    }
+    if (platform === "win32" && name.endsWith(".exe") && name.includes("x64")) {
+      return asset.browser_download_url;
+    }
+    if (platform === "linux" && name.endsWith(".appimage")) {
+      return asset.browser_download_url;
+    }
+  }
+  return null;
+}
+
+// 版本号比较函数
+function compareVersions(v1, v2) {
+  const parts1 = v1.split(".").map(Number);
+  const parts2 = v2.split(".").map(Number);
+
+  for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+    const p1 = parts1[i] || 0;
+    const p2 = parts2[i] || 0;
+    if (p1 > p2) return 1;
+    if (p1 < p2) return -1;
+  }
+  return 0;
+}
+
 /**
  * 注册更新相关 IPC handlers
- * @param {Electron.BrowserWindow | null} getWindow 获取主窗口的函数
+ * @param {() => Electron.BrowserWindow | null} getWindow 获取主窗口的函数
  * @param {boolean} isDev 是否开发模式
  */
 export function setupUpdaterIPC(getWindow, isDev) {
-  // 根据平台获取对应的资源下载 URL
-  function getPlatformAssetUrl(assets) {
-    const platform = process.platform;
-
-    for (const asset of assets) {
-      const name = asset.name.toLowerCase();
-      if (
-        platform === "darwin" &&
-        name.endsWith(".zip") &&
-        name.includes("arm64")
-      ) {
-        return asset.browser_download_url;
-      }
-      if (
-        platform === "win32" &&
-        name.endsWith(".exe") &&
-        name.includes("x64")
-      ) {
-        return asset.browser_download_url;
-      }
-      if (platform === "linux" && name.endsWith(".appimage")) {
-        return asset.browser_download_url;
-      }
-    }
-    return null;
-  }
-
-  // 版本号比较函数
-  function compareVersions(v1, v2) {
-    const parts1 = v1.split(".").map(Number);
-    const parts2 = v2.split(".").map(Number);
-
-    for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
-      const p1 = parts1[i] || 0;
-      const p2 = parts2[i] || 0;
-      if (p1 > p2) return 1;
-      if (p1 < p2) return -1;
-    }
-    return 0;
-  }
-
   // 检查更新 - 从 GitHub API 获取最新 release
   ipcMain.handle("check-update", async () => {
     if (isDev) {
@@ -144,11 +140,23 @@ export function setupUpdaterIPC(getWindow, isDev) {
       const fileStream = fs.createWriteStream(savePath);
       const reader = response.body.getReader();
 
+      // 写流错误处理（磁盘满等），出错时中断下载流程
+      let streamError = null;
+      const streamErrorPromise = new Promise((_, reject) => {
+        fileStream.on("error", (err) => {
+          streamError = err;
+          reject(err);
+        });
+      }).catch((err) => err); // race 中已处理，避免 unhandled rejection
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        fileStream.write(Buffer.from(value));
+        // 处理背压：写入缓冲区满时等待 drain，避免大文件下载内存堆积
+        if (!fileStream.write(Buffer.from(value))) {
+          await new Promise((resolve) => fileStream.once("drain", resolve));
+        }
         downloadedBytes += value.length;
 
         const percent =
@@ -163,11 +171,14 @@ export function setupUpdaterIPC(getWindow, isDev) {
 
       fileStream.end();
 
-      // 等待文件写入完成
-      await new Promise((resolve, reject) => {
-        fileStream.on("finish", resolve);
-        fileStream.on("error", reject);
-      });
+      // 等待文件写入完成（错误监听已在写入前注册，不会漏掉写入期间的错误）
+      const result = await Promise.race([
+        new Promise((resolve) => fileStream.on("finish", () => resolve(null))),
+        streamErrorPromise,
+      ]);
+      if (result instanceof Error || streamError) {
+        throw streamError || result;
+      }
 
       updateDownloadPath = savePath;
       getWindow()?.webContents.send("update-downloaded", { version: "" });
@@ -257,8 +268,9 @@ rm -f "${zipPath}"
 
   // Windows 安装逻辑
   function installOnWindows(exePath) {
-    // 获取当前安装目录
-    const installDir = path.dirname(path.dirname(process.execPath));
+    // NSIS 布局：exe 直接位于安装目录下，dirname 一次即安装目录
+    // （macOS 的两次 dirname 是因为 .app/Contents/MacOS 三层结构，Windows 不适用）
+    const installDir = path.dirname(process.execPath);
 
     spawn(exePath, ["/S", "--updated", `/D=${installDir}`], {
       detached: true,
@@ -302,9 +314,9 @@ rm -f "${scriptPath}"
 
 /**
  * 静默检查更新（启动时调用）
- * @param {Electron.BrowserWindow | null} mainWindow
+ * @param {() => Electron.BrowserWindow | null} getWindow 获取主窗口的函数（避免窗口销毁后调用报错）
  */
-export async function checkForUpdateSilent(mainWindow) {
+export async function checkForUpdateSilent(getWindow) {
   try {
     const response = await fetch(
       "https://api.github.com/repos/wukekea/pet/releases/latest",
@@ -321,41 +333,9 @@ export async function checkForUpdateSilent(mainWindow) {
     const latestVersion = release.tag_name?.replace(/^v/, "") || "0.0.0";
     const currentVersion = app.getVersion();
 
-    const compare = (v1, v2) => {
-      const parts1 = v1.split(".").map(Number);
-      const parts2 = v2.split(".").map(Number);
-      for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
-        const p1 = parts1[i] || 0;
-        const p2 = parts2[i] || 0;
-        if (p1 > p2) return 1;
-        if (p1 < p2) return -1;
-      }
-      return 0;
-    };
-
-    if (compare(latestVersion, currentVersion) > 0) {
-      // 平台资源匹配
-      const platform = process.platform;
-      let downloadUrl = null;
-      for (const asset of release.assets || []) {
-        const name = asset.name.toLowerCase();
-        if (
-          platform === "darwin" &&
-          name.endsWith(".zip") &&
-          name.includes("arm64")
-        ) {
-          downloadUrl = asset.browser_download_url;
-        } else if (
-          platform === "win32" &&
-          name.endsWith(".exe") &&
-          name.includes("x64")
-        ) {
-          downloadUrl = asset.browser_download_url;
-        } else if (platform === "linux" && name.endsWith(".appimage")) {
-          downloadUrl = asset.browser_download_url;
-        }
-      }
-      mainWindow?.webContents.send("update-available", {
+    if (compareVersions(latestVersion, currentVersion) > 0) {
+      const downloadUrl = getPlatformAssetUrl(release.assets || []);
+      getWindow()?.webContents?.send("update-available", {
         version: latestVersion,
         downloadUrl,
       });

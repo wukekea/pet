@@ -1,12 +1,12 @@
 import { ref } from "vue";
 import type { PetDirection, Footprint, FootprintType } from "../types";
 import {
-  PET_SIZE,
   FOOTPRINT_INTERVAL,
   FOOTPRINT_LIFETIME,
   MAX_FOOTPRINTS,
 } from "../constants";
 import { currentWeather } from "./weatherState";
+import { petSizePixels } from "./settings";
 
 // 脚印状态
 export const footprints = ref<Footprint[]>([]);
@@ -64,9 +64,10 @@ export function addFootprint(x: number, y: number, direction: PetDirection) {
   lastFootprintTime.value = now;
   lastFootprintWasLeft.value = !lastFootprintWasLeft.value;
 
-  // 计算脚印位置（在宠物底部）
-  const footprintX = x + PET_SIZE / 2 + (lastFootprintWasLeft.value ? -15 : 15);
-  const footprintY = y + PET_SIZE - 5;
+  // 计算脚印位置（在宠物底部，随宠物尺寸设置缩放）
+  const size = petSizePixels.value;
+  const footprintX = x + size / 2 + (lastFootprintWasLeft.value ? -15 : 15);
+  const footprintY = y + size - 5;
 
   const newFootprint: Footprint = {
     id: footprintIdCounter++,

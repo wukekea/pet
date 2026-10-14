@@ -55,6 +55,8 @@ const {
 
 // 通过坐标检测鼠标是否在面板交互区域内
 function isMouseOnPanel(): boolean {
+  // mousePosition 由 petController 的全局 mousemove 更新（穿透窗口有 forward: true，
+  // mousemove 始终能收到），面板打开时读取即可获得最新坐标
   const mx = mousePosition.value.x;
   const my = mousePosition.value.y;
   const els = document.querySelectorAll(".attr-bars, .action-btns");

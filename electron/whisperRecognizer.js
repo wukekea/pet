@@ -93,6 +93,18 @@ class WhisperRecognizer {
     };
   }
 
+  // 清理录音临时文件（启动失败/识别结束时调用）
+  cleanupAudioFile() {
+    if (this.audioFile && fs.existsSync(this.audioFile)) {
+      try {
+        fs.unlinkSync(this.audioFile);
+      } catch {
+        // 忽略清理错误
+      }
+    }
+    this.audioFile = null;
+  }
+
   // 开始录音
   async startRecording() {
     if (this.isRecording) {
@@ -114,6 +126,7 @@ class WhisperRecognizer {
     this.audioFile = path.join(os.tmpdir(), `speech-${Date.now()}.wav`);
 
     return new Promise((resolve, reject) => {
+      let settled = false;
       // 使用 sox 录制音频
       this.recordingProcess = spawn("sox", [
         "-d", // 默认音频设备
@@ -126,18 +139,38 @@ class WhisperRecognizer {
         this.audioFile,
       ]);
 
+      const failStart = (message) => {
+        if (settled) return;
+        settled = true;
+        this.recordingProcess = null;
+        this.isRecording = false;
+        this.cleanupAudioFile();
+        reject(new Error(message));
+      };
+
       this.recordingProcess.on("error", (err) => {
-        reject(new Error(`录音启动失败: ${err.message}`));
+        failStart(`录音启动失败: ${err.message}`);
       });
 
-      // 等待进程启动
-      setTimeout(() => {
-        if (this.recordingProcess && !this.recordingProcess.killed) {
-          this.isRecording = true;
-          resolve({ success: true });
-        } else {
-          reject(new Error("录音进程未能启动"));
+      // 通过 close 事件判定 sox 是否真正开始录音：
+      // 若在启动窗口内退出（如设备被占用），走失败分支；
+      // 否则 100ms 后确认录音中。旧实现只看 !killed，
+      // sox 稍晚退出时 isRecording 仍为 true，stopRecording 永久挂起。
+      this.recordingProcess.on("close", (code) => {
+        if (!settled) {
+          failStart(
+            code === 0
+              ? "录音进程立即退出，请检查麦克风设备"
+              : "录音进程未能启动，请检查麦克风设备",
+          );
         }
+      });
+
+      setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        this.isRecording = true;
+        resolve({ success: true });
       }, 100);
     });
   }
@@ -148,11 +181,13 @@ class WhisperRecognizer {
       throw new Error("没有正在进行的录音");
     }
 
+    const process = this.recordingProcess;
+
     return new Promise((resolve, reject) => {
       // 停止录音进程
-      this.recordingProcess.kill("SIGTERM");
+      process.kill("SIGTERM");
 
-      this.recordingProcess.on("close", async () => {
+      process.on("close", async () => {
         this.recordingProcess = null;
         this.isRecording = false;
 
@@ -175,13 +210,7 @@ class WhisperRecognizer {
         } catch (err) {
           reject(err);
         } finally {
-          // 清理临时文件
-          try {
-            fs.unlinkSync(this.audioFile);
-          } catch {
-            // 忽略清理错误
-          }
-          this.audioFile = null;
+          this.cleanupAudioFile();
         }
       });
     });

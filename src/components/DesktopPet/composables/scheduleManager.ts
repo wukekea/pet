@@ -275,6 +275,12 @@ export function onSleepEnd(): void {
 
 // 启动作息监控
 export function startScheduleMonitor(): void {
+  // 先清理旧监控（updateScheduleConfig 保存时会重复调用本函数，
+  // 无此清理会导致 interval 叠加泄漏）
+  if (scheduleCheckTimerId !== null) {
+    stopScheduleMonitor();
+  }
+
   const config = getScheduleConfig();
   scheduleEnabled.value = config.enabled;
 

@@ -97,6 +97,7 @@ const defaultSettings: PetSettings = {
 export const settings = ref<PetSettings>({ ...defaultSettings });
 
 // 宠物大小像素值（基础大小 80px 的百分比）
+// 逻辑层（碰撞/边界/脚印）也读取此值，与 CSS --pet-size 保持一致
 export const petSizePixels = computed(() => {
   const baseSize = 80;
   return Math.round(baseSize * (settings.value.petSize / 100));
@@ -127,12 +128,9 @@ export function loadSettings() {
     console.error("[Settings] 加载设置失败，使用默认设置", e);
   }
 
-  // 同步语音设置
+  // 同步语音设置（与 updateSetting 的对称逻辑一致：双向对齐）
   if (settings.value.voiceEnabled !== speechEnabled.value) {
-    // 如果设置中开启但当前未开启，则开启
-    if (settings.value.voiceEnabled) {
-      toggleSpeech();
-    }
+    toggleSpeech();
   }
 
   // 同步主题设置

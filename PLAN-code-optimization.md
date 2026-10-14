@@ -16,65 +16,67 @@
 
 ---
 
-## P0：Bug 修复
+## P0：Bug 修复 ✅ 已完成（2026-10-14）
+
+修复前逐项验证了每个 bug 的真实性（确认全部成立），修复后 `vue-tsc` 与 electron 文件 `node --check` 均通过。各条目下方为修复说明。
 
 ### P0-1 中文输入法回车误发送
 
 - 位置：`src/components/DesktopPet/ChatPanel/index.vue:432`
 - 问题：`@keydown.enter.prevent="handleSend"` 未检查 `e.isComposing`。中文输入法选词时按回车确认候选词，会把未完成的拼音串直接当消息发送。
-- 修复：改为判断 `event.isComposing`，合成中不触发发送。
+- 修复 ✅：新增 `onEnterKey` 判断 `e.isComposing`，合成中不触发发送。
 
 ### P0-2 Edge TTS 无法停止播放
 
 - 位置：`electron/edgeTTS.js:241, 285-291`
 - 问题：`stop()` 只 kill 了 edge-tts 合成进程，`playAudio()` 里 spawn 的播放器进程（afplay/ffplay）是局部变量，从未被跟踪和 kill。切换语音时新旧音频重叠播放。
-- 修复：保存播放器进程引用，`stop()` 时一并 kill。
+- 修复 ✅：`playAudio` 将播放器进程保存到 `this.playerProcess`，`stop()` 一并 kill；close 回调对 `code === null`（被 kill）不视为错误。
 
 ### P0-3 Whisper 录音失败导致 IPC 永久挂起
 
 - 位置：`electron/whisperRecognizer.js:134-141`
 - 问题：`startRecording` 用 100ms 定时器 + `!process.killed` 判定成功，未验证 sox 真正开始录音。若 sox 提前退出，`stopRecording()` 里注册的 `close` 监听永不回调，渲染进程 `await` 永久 pending。
-- 修复：改为监听进程 `close` 事件判定启动成败；stop 时对已退出进程直接 resolve。
+- 修复 ✅：改为监听进程 `close` 事件判定启动成败（100ms 内退出即失败，且清理临时文件）；`stopRecording` 捕获局部进程引用，close 监听不再依赖 `this.recordingProcess` 在监听期间不被置空；抽取 `cleanupAudioFile` 统一清理。
 
 ### P0-4 voiceEnabled 设置加载不对称
 
 - 位置：`src/components/DesktopPet/composables/settings.ts:138-143`
 - 问题：`loadSettings` 中只处理"设置开但系统关"的分支，"设置关但系统开"时不处理，加载后状态不一致（`updateSetting` 是对称的）。
-- 修复：补齐对称分支。
+- 修复 ✅：补齐对称分支（`toggleSpeech()` 双向对齐，与 `updateSetting` 逻辑一致）。
 
 ### P0-5 startScheduleMonitor 重复调用导致 interval 泄漏
 
 - 位置：`src/components/DesktopPet/composables/scheduleManager.ts:42, 287`
 - 问题：`updateScheduleConfig` 在已启用时直接再调 `startScheduleMonitor()`，后者无"已在运行"守卫、也不先清旧 timer——每次保存作息配置就多挂一个每分钟 interval。
-- 修复：`startScheduleMonitor` 开头先调 `stopScheduleMonitor` 或加运行守卫。
+- 修复 ✅：`startScheduleMonitor` 开头检测到已运行时先调 `stopScheduleMonitor` 清理旧 interval。
 
 ### P0-6 宠物尺寸设置与逻辑层脱节
 
 - 位置：`settings.ts:107`（`petSizePixels` 仅影响 CSS `--pet-size`）
 - 问题：碰撞/边界/追逐/脚印全部用固定 `PET_SIZE = 80`（`petController.ts:110-114, 135, 501-502`；`footprints.ts:68-69`）。用户调整宠物大小后，鼠标命中区域、活动边界、脚印落点全部错位。
-- 修复：逻辑层统一读取响应式的 `petSizePixels`（替换 `PET_SIZE` 常量的直接使用）。
+- 修复 ✅：逻辑层统一改读响应式 `petSizePixels`（命中检测/随机位置/chase/拖拽边界/resize 边界/脚印落点），`PET_SIZE` 常量已删除（settings.ts 的 `petSizePixels` 成为唯一尺寸真相）。
 
 ### P0-7 拖拽恢复打工状态时收入结算偏差（中优先级，并入 P0）
 
 - 位置：`petController.ts:745-747`
-- 问题：`handleDragEnd` 用 `STATE_DURATIONS[stateBeforeDrag]` 原始时长调 `adjustWorkStartTime`，未算装饰的时长缩减倍率（`changeState` 里是 `effectiveDuration`）。拖拽后 `workStartTime` 被回拨得比实际早，每分钟结算可能提前多发工资。
-- 修复：恢复时应用 `getWorkDurationMultiplier()` 计算实际总时长。
+- 问题：`handleDragEnd` 用 `STATE_DURATIONS[stateBeforeDrag]` 原始时长调 `adjustWorkStartTime`，未算装饰的时长缩减倍率（`changeState` 里是 `effectiveDuration`）。拖拽后 `workStartTime` 被回拨得偏早，每分钟结算可能提前多发工资。
+- 修复 ✅：恢复时应用 `getWorkDurationMultiplier()` 计算实际总时长，与 `changeState` 进入打工时的 `effectiveDuration` 保持一致。
 
-### P0-8 其余中低优先级 Bug（一并列入）
+### P0-8 其余中低优先级 Bug（一并列入）✅ 全部修复
 
-| #   | 位置                              | 问题                                                                                                                                                      | 修复方向                                                  |
+| #   | 位置                              | 问题                                                                                                                                                      | 修复结果                                                  |
 | --- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| a   | `electron/updater-ipc.js:358`     | 静默更新 `update-available` 事件无任何监听者，结果被丢弃；`main.js:115-119` 传窗口值拷贝而非 `getWindow()` 回调，窗口销毁后抛 "Object has been destroyed" | useAutoUpdate 接入 `onUpdateAvailable`；改 getWindow 模式 |
-| b   | `electron/updater-ipc.js:261`     | Windows 安装目录 `dirname(dirname(execPath))` 多包一层，NSIS 布局下 dirname 一次即安装目录                                                                | 修正为 dirname 一次                                       |
-| c   | `ChatPanel/index.vue:168-174`     | 关闭聊天面板不停录音，麦克风持续占用；`onUnmounted` 永不触发（组件常驻）                                                                                  | watch 关闭事件时 stop 录音                                |
-| d   | `electron/updater-ipc.js:144-170` | 下载写流无背压（不等 drain）、错误不中断循环、`error` 监听在 `end()` 后才注册                                                                             | 循环中处理 write 返回值与错误                             |
-| e   | `attributeStorage.ts:117`         | 默认值浅拷贝，`foodInventory` 等嵌套对象与模块级常量共享引用                                                                                              | 改用 `structuredClone(DEFAULT_ATTRIBUTE_DATA)`            |
-| f   | `ChatPanel/index.vue:94-95`       | 错误路径 pop 后 push 回同一内容，无效操作且有竞争风险；LLM 错误提示无自动清除（语音错误有）                                                               | 保留消息不 pop；补 setTimeout 清除                        |
-| g   | `settings/ApiPanel.vue:207`       | 保存按钮 `background: borderColor` 用错变量，按钮近乎透明                                                                                                 | 改用主色 `#f5a623`                                        |
-| h   | `schedule/index.vue:129-143`      | 时间槽无校验：可保存 start==end 空槽与重叠槽，无提示                                                                                                      | 保存前校验并提示                                          |
-| i   | `attributes.ts:668, 712`          | 最后一分钟收入与完工奖先后写 `coinGainAmount` 互相覆盖                                                                                                    | 合并为一次累加后写入                                      |
-| j   | `QuickActionPanel.vue:60`         | `isMouseOnPanel` 依赖 `mousePosition`，但 petController 只在 chase 状态更新它，读到旧坐标                                                                 | 改为在 mousemove 中直接传参或事件委托                     |
-| k   | `electron/main.js`                | 无 `app.requestSingleInstanceLock()`，双开时两只宠物写同一存档互相覆盖                                                                                    | 加单实例锁                                                |
+| a   | `electron/updater-ipc.js:358`     | 静默更新 `update-available` 事件无任何监听者，结果被丢弃；`main.js:115-119` 传窗口值拷贝而非 `getWindow()` 回调，窗口销毁后抛 "Object has been destroyed" | ✅ `checkForUpdateSilent` 改为 `getWindow()` 回调模式，main.js 传 `() => mainWindow`；静默检查内部去重（复用 `compareVersions`/`getPlatformAssetUrl`）。事件监听者接入属于 P4-6 范畴（需设计提示 UI），本次先保证发送侧不再崩溃 |
+| b   | `electron/updater-ipc.js:261`     | Windows 安装目录 `dirname(dirname(execPath))` 多包一层，NSIS 布局下 dirname 一次即安装目录                                                                | ✅ 修正为 dirname 一次，附注释说明与 macOS 的区别 |
+| c   | `ChatPanel/index.vue:168-174`     | 关闭聊天面板不停录音，麦克风持续占用；`onUnmounted` 永不触发（组件常驻）                                                                                  | ✅ `watch(isChatPanelOpen)` 关闭分支调 `cleanupNativeRecorder()` |
+| d   | `electron/updater-ipc.js:144-170` | 下载写流无背压（不等 drain）、错误不中断循环、`error` 监听在 `end()` 后才注册                                                                             | ✅ 循环中处理 write 返回值等待 drain；`error` 监听在写入前注册，race finish/error，出错中断并抛出 |
+| e   | `attributeStorage.ts:117`         | 默认值浅拷贝，`foodInventory` 等嵌套对象与模块级常量共享引用                                                                                              | ✅ `loadAttributeData`/`resetAttributeData` 均改用 `structuredClone` |
+| f   | `ChatPanel/index.vue:94-95`       | 错误路径 pop 后 push 回同一内容，无效操作且有竞争风险；LLM 错误提示无自动清除（语音错误有）                                                               | ✅ 删除无效 pop/push，保留用户消息；补 5s 自动清除 |
+| g   | `settings/ApiPanel.vue:207`       | 保存按钮 `background: borderColor` 用错变量，按钮近乎透明                                                                                                 | ✅ 删除内联 style，shared.css 中补主色背景 `#f5a623` 与 hover 色 |
+| h   | `schedule/index.vue:129-143`      | 时间槽无校验：可保存 start==end 空槽与重叠槽，无提示                                                                                                      | ✅ 保存前校验 start==end 空槽并 Toast 提示（重叠槽暂不拦截，提示即可） |
+| i   | `attributes.ts:668, 712`          | 最后一分钟收入与完工奖先后写 `coinGainAmount` 互相覆盖                                                                                                    | ✅ 引入 `pendingCoinGain` 累加器，完工时合并展示；`resetWorkState` 一并清零 |
+| j   | `QuickActionPanel.vue:60`         | `isMouseOnPanel` 依赖 `mousePosition`，但 petController 只在 chase 状态更新它，读到旧坐标                                                                 | ✅ petController 的 `handleMouseMove` 改为始终更新 `mousePosition`（穿透窗口有 `forward: true`，事件不丢，无性能顾虑），并加注释说明 |
+| k   | `electron/main.js`                | 无 `app.requestSingleInstanceLock()`，双开时两只宠物写同一存档互相覆盖                                                                                    | ✅ 加单实例锁 + `second-instance` 聚焦已有窗口 |
 
 ---
 
@@ -82,20 +84,20 @@
 
 以下全部清理完毕（净删 653 行，`vue-tsc` 通过；注：`npm run lint` 因项目缺少 eslint 配置文件本身不可用，与本次清理无关）：
 
-| 位置                                          | 说明                                                                                                         |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `composables/speechRecognition.ts`（144 行）  | 全项目 0 import，与 nativeSpeechRecognition 导出同名 `isRecording`，误引入会状态串台                         |
-| `composables/mediaRecorder.ts`（175 行）      | 0 import                                                                                                     |
-| `electron/speechRecognition.js`               | `setupSpeechRecognitionIPC` 未被 main.js 调用，与 whisperRecognizer 大段重复                                 |
-| `launchController.ts` `cancelCharging`        | 0 调用，已删除                                                                                               |
-| `stats.ts` `recordDoubleClick`                | 0 调用，连带删除 `types.ts`/`statsStorage.ts` 中的 `doubleClick` 字段与 `constants.ts` 中仅它使用的健康阈值常量 |
-| `attributes.ts` `getHealthStatus`             | 0 调用，已删除                                                                                               |
-| `settings.ts` `syncSpeechSettings`            | 0 调用，连带清理未使用导入（speechEngine/speechRate/speechPitch/speechVolume）                                |
-| `DesktopPet/index.vue` 重复 import            | 与 101 行重复的 `import "./shapes/base.css"` 已删除                                                          |
-| `petController.ts` `handlePetDoubleClick`     | 空函数已删除，index.vue 的双击处理直接内联面板逻辑                                                           |
-| `electron/main.js`                            | `execFileSync, spawn, fs` 未使用导入已删除                                                                   |
-| `package.json` 依赖                           | `@anthropic-ai/sdk`、`edge-tts`、`node-record-lpcm16` 已移除（共卸载 8 个包）                                |
-| `effects/ParticleField.vue`                   | 0 使用（P2 中要么用起来要么删掉，暂留）                                                                      |
+| 位置                                         | 说明                                                                                                            |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `composables/speechRecognition.ts`（144 行） | 全项目 0 import，与 nativeSpeechRecognition 导出同名 `isRecording`，误引入会状态串台                            |
+| `composables/mediaRecorder.ts`（175 行）     | 0 import                                                                                                        |
+| `electron/speechRecognition.js`              | `setupSpeechRecognitionIPC` 未被 main.js 调用，与 whisperRecognizer 大段重复                                    |
+| `launchController.ts` `cancelCharging`       | 0 调用，已删除                                                                                                  |
+| `stats.ts` `recordDoubleClick`               | 0 调用，连带删除 `types.ts`/`statsStorage.ts` 中的 `doubleClick` 字段与 `constants.ts` 中仅它使用的健康阈值常量 |
+| `attributes.ts` `getHealthStatus`            | 0 调用，已删除                                                                                                  |
+| `settings.ts` `syncSpeechSettings`           | 0 调用，连带清理未使用导入（speechEngine/speechRate/speechPitch/speechVolume）                                  |
+| `DesktopPet/index.vue` 重复 import           | 与 101 行重复的 `import "./shapes/base.css"` 已删除                                                             |
+| `petController.ts` `handlePetDoubleClick`    | 空函数已删除，index.vue 的双击处理直接内联面板逻辑                                                              |
+| `electron/main.js`                           | `execFileSync, spawn, fs` 未使用导入已删除                                                                      |
+| `package.json` 依赖                          | `@anthropic-ai/sdk`、`edge-tts`、`node-record-lpcm16` 已移除（共卸载 8 个包）                                   |
+| `effects/ParticleField.vue`                  | 0 使用（P2 中要么用起来要么删掉，暂留）                                                                         |
 
 console.log 调试残留已清理：`ChatPanel/index.vue`（4 处）、`nativeSpeechRecognition.ts`（2 处）、`qweatherStorage.ts`（3 处）、`llmService.ts:309`（完整 LLM 响应打进生产日志）。保留的都是 `console.error`（失败场景有必要留）。
 

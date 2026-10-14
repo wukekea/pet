@@ -65,6 +65,12 @@ async function scrollToBottom() {
   messagesEnd.value?.scrollIntoView({ behavior: "smooth" });
 }
 
+// 回车发送（输入法合成中不触发，避免中文选词回车误发）
+function onEnterKey(e: KeyboardEvent) {
+  if (e.isComposing) return;
+  handleSend();
+}
+
 // 发送消息
 async function handleSend() {
   const text = inputText.value.trim();
@@ -90,9 +96,9 @@ async function handleSend() {
     }
     await scrollToBottom();
   } catch (e) {
+    // 保留用户消息（历史记录已保存，无需回滚），仅展示错误并自动清除
     error.value = e instanceof Error ? e.message : "请求失败，请检查配置";
-    messages.value.pop(); // 移除刚加入的用户消息（可选：保留）
-    messages.value.push({ role: "user", content: text }); // 重新加回
+    setTimeout(() => (error.value = ""), 5000);
   } finally {
     isLoading.value = false;
     await nextTick();
@@ -156,12 +162,14 @@ const { pos: panelPos, onDragStart } = useDraggable({
   y: window.innerHeight - 520 - 60,
 });
 
-// 打开时聚焦输入框
+// 打开时聚焦输入框；关闭时停止录音（释放麦克风，组件常驻不会触发 onUnmounted）
 watch(isChatPanelOpen, async (v) => {
   if (v) {
     await nextTick();
     inputRef.value?.focus();
     scrollToBottom();
+  } else if (isRecording.value) {
+    cleanupNativeRecorder();
   }
 });
 
@@ -421,7 +429,7 @@ const cssVars = computed(() => ({
             class="chat-input"
             :placeholder="isRecording ? '正在聆听…' : '说点什么…'"
             :disabled="isLoading || isRecording"
-            @keydown.enter.prevent="handleSend"
+            @keydown.enter.prevent="onEnterKey"
             @mousedown.stop
           />
           <button

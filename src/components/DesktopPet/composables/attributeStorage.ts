@@ -114,11 +114,18 @@ export function loadAttributeData(): AttributeData {
   } catch (e) {
     console.error("加载属性数据失败:", e);
   }
-  return { ...DEFAULT_ATTRIBUTE_DATA, lastUpdateTimestamp: Date.now() };
+  // 深拷贝避免嵌套对象（foodInventory 等）与模块级默认常量共享引用
+  return structuredClone({
+    ...DEFAULT_ATTRIBUTE_DATA,
+    lastUpdateTimestamp: Date.now(),
+  });
 }
 
 // 重置属性数据
 export function resetAttributeData(): AttributeData {
   localStorage.removeItem(STORAGE_KEY);
-  return { ...DEFAULT_ATTRIBUTE_DATA, lastUpdateTimestamp: Date.now() };
+  return structuredClone({
+    ...DEFAULT_ATTRIBUTE_DATA,
+    lastUpdateTimestamp: Date.now(),
+  });
 }

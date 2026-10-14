@@ -10,6 +10,7 @@ class EdgeTTS {
   constructor() {
     this.isReady = false;
     this.currentProcess = null;
+    this.playerProcess = null; // 正在播放音频的播放器进程
     this.tmpFile = null;
     this.shell = false;
     this.audioPlayer = null; // 缓存检测到的播放器
@@ -238,17 +239,20 @@ class EdgeTTS {
     const { command, args, useShell = false } = this.audioPlayer;
 
     return new Promise((resolve, reject) => {
-      const player = spawn(command, args(filePath), { shell: useShell });
+      // 跟踪播放器进程，stop() 时才能停止正在播放的音频
+      this.playerProcess = spawn(command, args(filePath), { shell: useShell });
 
-      player.on("close", (code) => {
-        if (code !== 0) {
+      this.playerProcess.on("close", (code) => {
+        this.playerProcess = null;
+        if (code !== 0 && code !== null) {
           reject(new Error(`播放器退出码: ${code}`));
         } else {
           resolve();
         }
       });
 
-      player.on("error", (err) => {
+      this.playerProcess.on("error", (err) => {
+        this.playerProcess = null;
         reject(err);
       });
     });
@@ -286,6 +290,11 @@ class EdgeTTS {
     if (this.currentProcess) {
       this.currentProcess.kill();
       this.currentProcess = null;
+    }
+    // 停止正在播放的音频（播放器进程）
+    if (this.playerProcess) {
+      this.playerProcess.kill();
+      this.playerProcess = null;
     }
     this.cleanup();
   }

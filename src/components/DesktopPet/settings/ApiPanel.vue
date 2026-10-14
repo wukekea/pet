@@ -199,15 +199,8 @@ watch(
         </span>
       </div>
 
-      <!-- 保存按钮 -->
-      <button
-        class="api-save-btn"
-        :style="{
-          background: borderColor,
-          color: '#fff',
-        }"
-        @click="saveApi"
-      >
+      <!-- 保存按钮（主色背景，与设置面板主题一致） -->
+      <button class="api-save-btn" @click="saveApi">
         {{ apiSaveSuccess ? "✓ 已保存" : "保存 API 配置" }}
       </button>
     </div>

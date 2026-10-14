@@ -29,6 +29,16 @@ let tray = null;
 
 const isDev = process.env.NODE_ENV === "development" || !app.isPackaged;
 
+// 单实例锁（双开存档互写问题）
+const gotTheLock = app.requestSingleInstanceLock();
+app.on("second-instance", () => {
+  // 用户尝试再次启动时，聚焦已有窗口
+  if (mainWindow) {
+    mainWindow.show();
+    mainWindow.focus();
+  }
+});
+
 // 更新状态
 
 function createWindow() {
@@ -91,6 +101,12 @@ function createTray() {
 }
 
 app.whenReady().then(() => {
+  // 单实例锁：双开会打开两只宠物，互相覆盖同一份 localStorage 存档
+  if (!gotTheLock) {
+    app.quit();
+    return;
+  }
+
   createWindow();
   createTray();
   setupEdgeTTSIPC(); // 设置 Edge TTS IPC
@@ -109,9 +125,9 @@ app.whenReady().then(() => {
     },
   );
 
-  // 生产环境下静默检查更新
+  // 生产环境下静默检查更新（传 getWindow 函数，避免窗口销毁后调用已销毁对象）
   if (!isDev) {
-    checkForUpdateSilent(mainWindow).catch((err) => {
+    checkForUpdateSilent(() => mainWindow).catch((err) => {
       console.error("静默检查更新失败:", err);
     });
   }

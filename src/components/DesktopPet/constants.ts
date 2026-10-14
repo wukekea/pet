@@ -1,5 +1,4 @@
 // 宠物配置
-export const PET_SIZE = 80;
 export const TOP_MARGIN = 60; // 宠物最小 Y 坐标，留出顶部空间
 export const JUMP_DURATION = 800;
 export const WALK_SPEED = 2; // 固定移动速度（像素/帧）

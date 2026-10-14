@@ -88,6 +88,7 @@ let healthRecoverAcc = 0;
 // 打工相关状态
 let workStartTime: number | null = null; // 打工开始时间
 let lastWorkIncomeMinute = 0; // 上次发放金币的分钟数
+let pendingCoinGain = 0; // 已结算但尚未展示的金币（等待完工时合并展示）
 
 // 心情更新间隔（每 10 秒计算一次）
 const MOOD_UPDATE_INTERVAL = 10;
@@ -662,8 +663,8 @@ function settleWorkIncomePerMinute(): void {
 
     lastWorkIncomeMinute = elapsedMinutes;
 
-    // 触发金币增长特效
-    coinGainAmount.value = income;
+    // 累加到待展示的金币特效（避免与完工奖先后写入互相覆盖）
+    pendingCoinGain += income;
 
     debouncedSave();
   }
@@ -705,9 +706,11 @@ export function onWorkComplete(workState: PetState): void {
 
   debouncedSave();
 
-  // 触发金币增长特效（显示打满奖励）
-  if (completionBonus > 0) {
-    coinGainAmount.value = completionBonus;
+  // 触发金币增长特效：最后一分钟收入与完工奖合并展示，避免互相覆盖
+  const totalGain = pendingCoinGain + completionBonus;
+  pendingCoinGain = 0;
+  if (totalGain > 0) {
+    coinGainAmount.value = totalGain;
   }
 }
 
@@ -734,6 +737,7 @@ export function adjustWorkStartTime(
 export function resetWorkState(): void {
   workStartTime = null;
   lastWorkIncomeMinute = 0;
+  pendingCoinGain = 0;
 }
 
 // 带每日上限的交互经验

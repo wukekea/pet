@@ -703,6 +703,8 @@
   border-radius: 12px;
   font-size: 14px;
   font-weight: 600;
+  color: #fff;
+  background: #f5a623;
   cursor: pointer;
   transition:
     transform 0.15s ease,
@@ -710,6 +712,7 @@
 }
 
 .api-save-btn:hover {
+  background: #d97706;
   transform: translateY(-1px);
 }
 

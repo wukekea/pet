@@ -3,6 +3,8 @@ import { ref, watch, computed } from "vue";
 import { isDark } from "../composables/theme";
 import BaseModal from "../ui/BaseModal.vue";
 import { usePanelTheme } from "../composables/usePanelTheme";
+import ToastNotification from "../ui/ToastNotification.vue";
+import { useToast } from "../composables/useToast";
 import {
   getScheduleConfig,
   updateScheduleConfig,
@@ -102,6 +104,9 @@ const scheduleConfig = ref<ScheduleConfig>({
   slots: [],
 });
 
+// 保存校验错误提示
+const { toastMessage, toastVisible, showToast } = useToast();
+
 // 监听 visible 变化，初始化配置
 watch(
   () => props.visible,
@@ -185,8 +190,26 @@ const adjustTime = (
   slot[field] = newValue;
 };
 
+// 校验时间槽：起止时间相同为空槽（isTimeInSlot 中相等时永不命中）
+function validateSlots(): string | null {
+  for (const slot of scheduleConfig.value.slots) {
+    if (
+      slot.startHour === slot.endHour &&
+      slot.startMinute === slot.endMinute
+    ) {
+      return "存在起止时间相同的时间槽，请调整后再保存";
+    }
+  }
+  return null;
+}
+
 // 保存配置
 const saveSchedule = () => {
+  const error = validateSlots();
+  if (error) {
+    showToast(error);
+    return;
+  }
   updateScheduleConfig(scheduleConfig.value);
   close();
 };
@@ -205,6 +228,13 @@ const saveSchedule = () => {
     @close="close"
   >
     <div class="modal-body">
+      <!-- 保存校验错误提示 -->
+      <ToastNotification
+        :visible="toastVisible"
+        :message="toastMessage"
+        color="#ef4444"
+      />
+
       <!-- 启用开关 -->
       <div class="toggle-card">
         <div class="toggle-info">
