@@ -1,5 +1,16 @@
 <script setup lang="ts">
 // 洗澡效果组件
+// 干净闪光星星用配置数组 + v-for 渲染（替代手写序号副本）
+
+// 闪光星星：图标/位置/字号/delay 差异
+const cleanStars = [
+  { icon: "✦", top: "-5px", left: "5px", size: 14, delay: "0s" },
+  { icon: "✧", top: "5px", right: "-2px", size: 18, delay: "0.15s" },
+  { icon: "✦", bottom: "0", left: "-5px", size: 12, delay: "0.3s" },
+  { icon: "✧", bottom: "10px", right: "0", size: 16, delay: "0.45s" },
+  { icon: "✦", top: "25px", left: "-8px", size: 10, delay: "0.2s" },
+  { icon: "✧", top: "20px", right: "-8px", size: 14, delay: "0.35s" },
+];
 </script>
 
 <template>
@@ -75,12 +86,20 @@
 
     <!-- 干净闪光星星 -->
     <div class="clean-stars">
-      <span class="star star-1">✦</span>
-      <span class="star star-2">✧</span>
-      <span class="star star-3">✦</span>
-      <span class="star star-4">✧</span>
-      <span class="star star-5">✦</span>
-      <span class="star star-6">✧</span>
+      <span
+        v-for="(star, i) in cleanStars"
+        :key="i"
+        class="star"
+        :style="{
+          top: star.top,
+          bottom: star.bottom,
+          left: star.left,
+          right: star.right,
+          fontSize: star.size + 'px',
+          '--fx-delay': star.delay,
+        }"
+        >{{ star.icon }}</span
+      >
     </div>
 
     <!-- 彩虹光环 -->
@@ -554,48 +573,12 @@
   color: #fff;
   font-size: 16px;
   animation: star-sparkle 0.6s ease-in-out infinite;
+  animation-delay: var(--fx-delay, 0s);
   text-shadow:
     0 0 8px rgba(255, 255, 255, 0.9),
     0 0 16px rgba(139, 92, 246, 0.6),
     0 0 24px rgba(167, 139, 250, 0.4);
   filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
-}
-
-.star-1 {
-  top: -5px;
-  left: 5px;
-  animation-delay: 0s;
-  font-size: 14px;
-}
-.star-2 {
-  top: 5px;
-  right: -2px;
-  animation-delay: 0.15s;
-  font-size: 18px;
-}
-.star-3 {
-  bottom: 0;
-  left: -5px;
-  animation-delay: 0.3s;
-  font-size: 12px;
-}
-.star-4 {
-  bottom: 10px;
-  right: 0;
-  animation-delay: 0.45s;
-  font-size: 16px;
-}
-.star-5 {
-  top: 25px;
-  left: -8px;
-  animation-delay: 0.2s;
-  font-size: 10px;
-}
-.star-6 {
-  top: 20px;
-  right: -8px;
-  animation-delay: 0.35s;
-  font-size: 14px;
 }
 
 @keyframes star-sparkle {

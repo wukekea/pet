@@ -6,6 +6,14 @@ import CoinParticle from "./icons/CoinParticle.vue";
 // 三个小金币粒子，动画由 cp-1/2/3 class 区分
 const coinParticles = [null, null, null];
 
+// 闪光星星：位置/字号/delay 差异（动画一致）
+const sparkles = [
+  { icon: "✦", left: "30%", top: "15%", size: 10, delay: "0.3s", dur: "0.8s" },
+  { icon: "✧", right: "28%", top: "18%", size: 10, delay: "0.5s", dur: "0.8s" },
+  { icon: "✦", left: "22%", top: "35%", size: 8, delay: "0.7s", dur: "0.7s" },
+  { icon: "✧", right: "20%", top: "32%", size: 8, delay: "0.9s", dur: "0.7s" },
+];
+
 const props = defineProps<{
   amount: number; // 获得的金币数量
 }>();
@@ -134,10 +142,20 @@ onBeforeUnmount(() => {
     />
 
     <!-- 闪光星星 -->
-    <div class="sparkle sp-1">✦</div>
-    <div class="sparkle sp-2">✧</div>
-    <div class="sparkle sp-3">✦</div>
-    <div class="sparkle sp-4">✧</div>
+    <div
+      v-for="(sp, i) in sparkles"
+      :key="`sp-${i}`"
+      class="sparkle"
+      :style="{
+        left: sp.left,
+        right: sp.right,
+        top: sp.top,
+        fontSize: sp.size + 'px',
+        animation: `sparkle-pop ${sp.dur} ease-out ${sp.delay} forwards`,
+      }"
+    >
+      {{ sp.icon }}
+    </div>
 
     <!-- 金币数量文字 -->
     <div class="coin-amount">
@@ -323,32 +341,6 @@ onBeforeUnmount(() => {
   color: #ffd700;
   opacity: 0;
   filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.8));
-}
-
-.sp-1 {
-  left: 30%;
-  top: 15%;
-  animation: sparkle-pop 0.8s ease-out 0.3s forwards;
-}
-
-.sp-2 {
-  right: 28%;
-  top: 18%;
-  animation: sparkle-pop 0.8s ease-out 0.5s forwards;
-}
-
-.sp-3 {
-  left: 22%;
-  top: 35%;
-  font-size: 8px;
-  animation: sparkle-pop 0.7s ease-out 0.7s forwards;
-}
-
-.sp-4 {
-  right: 20%;
-  top: 32%;
-  font-size: 8px;
-  animation: sparkle-pop 0.7s ease-out 0.9s forwards;
 }
 
 @keyframes sparkle-pop {

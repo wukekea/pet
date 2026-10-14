@@ -1,20 +1,68 @@
 <script setup lang="ts">
 // 疑惑效果组件
+// 问号/星星复制差异用配置数组 + v-for 渲染
 import StarSvg from "./icons/StarSvg.vue";
 import QuestionSvg from "./icons/QuestionSvg.vue";
+
+// 问号：颜色/位置/尺寸/delay 差异
+const questions = [
+  { color: "#60a5fa", top: "-30px", left: "-10px", delay: "0s", size: "" },
+  {
+    color: "#93c5fd",
+    top: "-40px",
+    left: "15px",
+    delay: "0.5s",
+    size: "small",
+  },
+  { color: "#bfdbfe", top: "-25px", right: "-15px", delay: "1s", size: "tiny" },
+];
+
+// 小星星：颜色/位置/尺寸差异
+const stars = [
+  { color: "#cbd5e1", top: "-25px", left: "5px", delay: "0.3s", size: "" },
+  {
+    color: "#e2e8f0",
+    top: "-18px",
+    right: "5px",
+    delay: "1s",
+    size: "small",
+  },
+];
+
+// 波浪线：位置/配色/delay 差异
+const wiggles = [
+  {
+    top: "-15px",
+    left: "-20px",
+    background:
+      "linear-gradient(90deg, transparent, #93c5fd 40%, transparent 70%)",
+    delay: "0s",
+  },
+  {
+    top: "-10px",
+    right: "-18px",
+    background:
+      "linear-gradient(90deg, transparent, #bfdbfe 40%, transparent 70%)",
+    delay: "0.7s",
+  },
+];
 </script>
 
 <template>
   <div class="confused-effects effect-layer">
     <!-- 问号 -->
-    <div class="question question-1">
-      <QuestionSvg color="#60a5fa" class="question-svg" />
-    </div>
-    <div class="question question-2">
-      <QuestionSvg color="#93c5fd" class="question-svg small" />
-    </div>
-    <div class="question question-3">
-      <QuestionSvg color="#bfdbfe" class="question-svg tiny" />
+    <div
+      v-for="(q, i) in questions"
+      :key="`q-${i}`"
+      class="question"
+      :style="{
+        top: q.top,
+        left: q.left,
+        right: q.right,
+        '--fx-delay': q.delay,
+      }"
+    >
+      <QuestionSvg :color="q.color" class="question-svg" :class="q.size" />
     </div>
 
     <!-- 旋转的螺旋 -->
@@ -71,16 +119,33 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
     </div>
 
     <!-- 小星星 -->
-    <div class="star star-1">
-      <StarSvg color="#cbd5e1" class="star-svg" />
-    </div>
-    <div class="star star-2">
-      <StarSvg color="#e2e8f0" class="star-svg small" />
+    <div
+      v-for="(star, i) in stars"
+      :key="`star-${i}`"
+      class="star"
+      :style="{
+        top: star.top,
+        left: star.left,
+        right: star.right,
+        '--fx-delay': star.delay,
+      }"
+    >
+      <StarSvg :color="star.color" class="star-svg" :class="star.size" />
     </div>
 
     <!-- 波浪线 -->
-    <div class="wiggle wiggle-1"></div>
-    <div class="wiggle wiggle-2"></div>
+    <div
+      v-for="(wiggle, i) in wiggles"
+      :key="`wiggle-${i}`"
+      class="wiggle"
+      :style="{
+        top: wiggle.top,
+        left: wiggle.left,
+        right: wiggle.right,
+        background: wiggle.background,
+        '--fx-delay': wiggle.delay,
+      }"
+    ></div>
   </div>
 </template>
 
@@ -96,24 +161,7 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
   position: absolute;
   opacity: 0;
   animation: question-float 2.5s ease-in-out infinite;
-}
-
-.question-1 {
-  top: -30px;
-  left: -10px;
-  animation-delay: 0s;
-}
-
-.question-2 {
-  top: -40px;
-  left: 15px;
-  animation-delay: 0.5s;
-}
-
-.question-3 {
-  top: -25px;
-  right: -15px;
-  animation-delay: 1s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 .question-svg {
@@ -268,21 +316,10 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
   position: absolute;
   opacity: 0;
   animation: fx-twinkle 2s ease-in-out infinite;
+  animation-delay: var(--fx-delay, 0s);
   /* 与原 star-twinkle 关键帧的显示幅度保持一致 */
   --fx-show-opacity: 0.7;
   --fx-show-scale: 1;
-}
-
-.star-1 {
-  top: -25px;
-  left: 5px;
-  animation-delay: 0.3s;
-}
-
-.star-2 {
-  top: -18px;
-  right: 5px;
-  animation-delay: 1s;
 }
 
 .star-svg {
@@ -303,20 +340,7 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
   border-radius: 2px;
   opacity: 0;
   animation: wiggle-wave 1.5s ease-in-out infinite;
-}
-
-.wiggle-1 {
-  top: -15px;
-  left: -20px;
-  background: linear-gradient(90deg, transparent, #93c5fd 40%, transparent 70%);
-  animation-delay: 0s;
-}
-
-.wiggle-2 {
-  top: -10px;
-  right: -18px;
-  background: linear-gradient(90deg, transparent, #bfdbfe 40%, transparent 70%);
-  animation-delay: 0.7s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 @keyframes wiggle-wave {

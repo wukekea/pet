@@ -1,26 +1,69 @@
 <script setup lang="ts">
 // 开心效果组件 - 萌系动漫风格
+// 漂浮元素用配置数组 + v-for 渲染（替代手写序号副本）
 import HeartSvg from "./icons/HeartSvg.vue";
 import StarSvg from "./icons/StarSvg.vue";
+
+// 爱心：颜色/位置/delay 差异
+const hearts = [
+  { color: "#ff6b9d", top: "0", left: "-10px", delay: "0s", small: false },
+  { color: "#ff8fab", top: "5px", right: "-12px", delay: "0.35s", small: true },
+  { color: "#ff6b9d", top: "15px", left: "-15px", delay: "0.6s", small: false },
+];
+
+// 星星：颜色/位置/delay 差异
+const stars = [
+  {
+    color: "#ffd700",
+    top: "-12px",
+    left: "50%",
+    centered: true,
+    delay: "0.2s",
+    small: false,
+  },
+  { color: "#ffe066", top: "-8px", right: "5px", delay: "0.5s", small: true },
+];
 </script>
 
 <template>
   <div class="happy-effects effect-layer">
-    <!-- 漂浮的爱心和星星 -->
-    <div class="float-item heart-1">
-      <HeartSvg color="#ff6b9d" class="heart-svg" />
+    <!-- 漂浮的爱心 -->
+    <div
+      v-for="(heart, i) in hearts"
+      :key="`heart-${i}`"
+      class="float-item"
+      :style="{
+        top: heart.top,
+        left: heart.left,
+        right: heart.right,
+        '--fx-delay': heart.delay,
+      }"
+    >
+      <HeartSvg
+        :color="heart.color"
+        class="heart-svg"
+        :class="{ small: heart.small }"
+      />
     </div>
-    <div class="float-item star-1">
-      <StarSvg color="#ffd700" class="star-svg" />
-    </div>
-    <div class="float-item heart-2">
-      <HeartSvg color="#ff8fab" class="heart-svg small" />
-    </div>
-    <div class="float-item star-2">
-      <StarSvg color="#ffe066" class="star-svg small" />
-    </div>
-    <div class="float-item heart-3">
-      <HeartSvg color="#ff6b9d" class="heart-svg" />
+
+    <!-- 漂浮的星星 -->
+    <div
+      v-for="(star, i) in stars"
+      :key="`star-${i}`"
+      class="float-item"
+      :class="{ centered: star.centered }"
+      :style="{
+        top: star.top,
+        left: star.left,
+        right: star.right,
+        '--fx-delay': star.delay,
+      }"
+    >
+      <StarSvg
+        :color="star.color"
+        class="star-svg"
+        :class="{ small: star.small }"
+      />
     </div>
   </div>
 </template>
@@ -36,6 +79,13 @@ import StarSvg from "./icons/StarSvg.vue";
   position: absolute;
   opacity: 0;
   animation: float-up 1.8s ease-out forwards;
+  animation-delay: var(--fx-delay, 0s);
+}
+
+/* star-1 原为水平居中定位 */
+.float-item.centered {
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .heart-svg,
@@ -66,38 +116,6 @@ import StarSvg from "./icons/StarSvg.vue";
   to {
     filter: drop-shadow(0 0 5px rgba(255, 215, 0, 1));
   }
-}
-
-/* 位置和延迟 */
-.heart-1 {
-  top: 0;
-  left: -10px;
-  animation-delay: 0s;
-}
-
-.star-1 {
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  animation-delay: 0.2s;
-}
-
-.heart-2 {
-  top: 5px;
-  right: -12px;
-  animation-delay: 0.35s;
-}
-
-.star-2 {
-  top: -8px;
-  right: 5px;
-  animation-delay: 0.5s;
-}
-
-.heart-3 {
-  top: 15px;
-  left: -15px;
-  animation-delay: 0.6s;
 }
 
 @keyframes float-up {

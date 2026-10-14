@@ -23,6 +23,20 @@ const crossEyes = [
   { top: "8px", left: "22px", delay: "0s" },
   { top: "8px", right: "22px", delay: "0.3s" },
 ];
+
+// 小点点：位置/颜色/尺寸/delay 差异
+const dots = [
+  { top: "-10px", left: "-5px", delay: "0s", color: "#fcd34d", size: 6 },
+  { top: "-8px", right: "-8px", delay: "0.4s", color: "#fbbf24", size: 6 },
+  {
+    top: "-25px",
+    left: "50%",
+    centered: true,
+    delay: "0.8s",
+    color: "#fef3c7",
+    size: 4,
+  },
+];
 </script>
 
 <template>
@@ -52,9 +66,21 @@ const crossEyes = [
     <div class="spiral spiral-2"></div>
 
     <!-- 小点点 -->
-    <div class="dot dot-1"></div>
-    <div class="dot dot-2"></div>
-    <div class="dot dot-3"></div>
+    <div
+      v-for="(dot, i) in dots"
+      :key="`dot-${i}`"
+      class="dot"
+      :class="{ centered: dot.centered }"
+      :style="{
+        top: dot.top,
+        left: dot.left,
+        right: dot.right,
+        width: dot.size + 'px',
+        height: dot.size + 'px',
+        background: dot.color,
+        '--fx-delay': dot.delay,
+      }"
+    ></div>
 
     <!-- 十字眼特效 -->
     <div
@@ -178,29 +204,11 @@ const crossEyes = [
   border-radius: 50%;
   background: #fcd34d;
   animation: dot-float 1.2s ease-in-out infinite;
+  animation-delay: var(--fx-delay, 0s);
 }
 
-.dot-1 {
-  top: -10px;
-  left: -5px;
-  animation-delay: 0s;
-}
-
-.dot-2 {
-  top: -8px;
-  right: -8px;
-  animation-delay: 0.4s;
-  background: #fbbf24;
-}
-
-.dot-3 {
-  top: -25px;
-  left: 50%;
+.dot.centered {
   transform: translateX(-50%);
-  animation-delay: 0.8s;
-  width: 4px;
-  height: 4px;
-  background: #fef3c7;
 }
 
 @keyframes dot-float {

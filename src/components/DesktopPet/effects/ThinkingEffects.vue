@@ -1,7 +1,14 @@
 <script setup lang="ts">
 // 思考效果组件
+// 星星点缀/省略号用配置数组 + v-for 渲染
 import SparkleSvg from "./icons/SparkleSvg.vue";
 import QuestionSvg from "./icons/QuestionSvg.vue";
+
+// 闪烁星星：颜色/位置/尺寸/delay 差异
+const sparkles = [
+  { color: "#c4b5fd", top: "-20px", left: "5px", delay: "0s", small: false },
+  { color: "#ddd6fe", top: "-35px", left: "-15px", delay: "1.2s", small: true },
+];
 </script>
 
 <template>
@@ -53,9 +60,12 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
 
     <!-- 三个点点的省略号 -->
     <div class="dots">
-      <div class="dot dot-1"></div>
-      <div class="dot dot-2"></div>
-      <div class="dot dot-3"></div>
+      <div
+        v-for="i in 3"
+        :key="i"
+        class="dot"
+        :style="{ '--fx-delay': `${(i - 1) * 0.2}s` }"
+      ></div>
     </div>
 
     <!-- 问号 -->
@@ -97,11 +107,21 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
     </div>
 
     <!-- 闪烁的星星点缀 -->
-    <div class="sparkle sparkle-1">
-      <SparkleSvg color="#c4b5fd" class="sparkle-svg" />
-    </div>
-    <div class="sparkle sparkle-2">
-      <SparkleSvg color="#ddd6fe" class="sparkle-svg small" />
+    <div
+      v-for="(sp, i) in sparkles"
+      :key="`sp-${i}`"
+      class="sparkle"
+      :style="{
+        top: sp.top,
+        left: sp.left,
+        '--fx-delay': sp.delay,
+      }"
+    >
+      <SparkleSvg
+        :color="sp.color"
+        class="sparkle-svg"
+        :class="{ small: sp.small }"
+      />
     </div>
   </div>
 </template>
@@ -188,19 +208,9 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
   background: #a78bfa;
 }
 
-.dot-1 {
+.dot {
   animation: dot-pulse 1.5s ease-in-out infinite;
-  animation-delay: 0s;
-}
-
-.dot-2 {
-  animation: dot-pulse 1.5s ease-in-out infinite;
-  animation-delay: 0.2s;
-}
-
-.dot-3 {
-  animation: dot-pulse 1.5s ease-in-out infinite;
-  animation-delay: 0.4s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 @keyframes dots-float {
@@ -305,18 +315,7 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
   position: absolute;
   opacity: 0;
   animation: fx-twinkle 2.5s ease-in-out infinite;
-}
-
-.sparkle-1 {
-  top: -20px;
-  left: 5px;
-  animation-delay: 0s;
-}
-
-.sparkle-2 {
-  top: -35px;
-  left: -15px;
-  animation-delay: 1.2s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 .sparkle-svg {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // 生气效果组件 - 日式动漫夸张风格
-// 火焰与锯齿各两份，只有颜色/delay 差异，用 v-for 渲染
+// 火焰/锯齿/烟尘均为复制差异，全部用配置数组 + v-for 渲染
 
 // 红色火焰粒子：颜色/位置/delay 差异
 const flames = [
@@ -18,6 +18,13 @@ const flames = [
 const zigzags = [
   { color: "#7f1d1d", top: "-12px", left: "8px", delay: "0s", small: false },
   { color: "#dc2626", top: "-15px", right: "6px", delay: "0.2s", small: true },
+];
+
+// 愤怒烟尘：尺寸/位置/delay 差异
+const smokes = [
+  { size: 12, top: "-15px", left: "-8px", delay: "0s" },
+  { size: 10, top: "-20px", right: "-5px", delay: "0.4s" },
+  { size: 8, top: "-10px", left: "5px", delay: "0.8s" },
 ];
 </script>
 
@@ -38,9 +45,19 @@ const zigzags = [
     </div>
 
     <!-- 愤怒烟尘 -->
-    <div class="smoke smoke-1"></div>
-    <div class="smoke smoke-2"></div>
-    <div class="smoke smoke-3"></div>
+    <div
+      v-for="(smoke, i) in smokes"
+      :key="`smoke-${i}`"
+      class="smoke"
+      :style="{
+        width: smoke.size + 'px',
+        height: smoke.size + 'px',
+        top: smoke.top,
+        left: smoke.left,
+        right: smoke.right,
+        '--fx-delay': smoke.delay,
+      }"
+    ></div>
 
     <!-- 红色火焰粒子 -->
     <div
@@ -129,30 +146,7 @@ const zigzags = [
     rgba(127, 29, 29, 0.3)
   );
   animation: smoke-rise 1.2s ease-out infinite;
-}
-
-.smoke-1 {
-  width: 12px;
-  height: 12px;
-  top: -15px;
-  left: -8px;
-  animation-delay: 0s;
-}
-
-.smoke-2 {
-  width: 10px;
-  height: 10px;
-  top: -20px;
-  right: -5px;
-  animation-delay: 0.4s;
-}
-
-.smoke-3 {
-  width: 8px;
-  height: 8px;
-  top: -10px;
-  left: 5px;
-  animation-delay: 0.8s;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 @keyframes smoke-rise {

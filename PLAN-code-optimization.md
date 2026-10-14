@@ -115,11 +115,21 @@ console.log 调试残留已清理：`ChatPanel/index.vue`（4 处）、`nativeSp
 - 判定不等价而保留（严格执行"不确定一律保留"）：HappyEffects/DizzyEffects 的 star-twinkle（drop-shadow 滤镜动画）、EatingEffects 的 heart-float-up（含旋转与起点偏移）、HappyEffects 的 float-up（非线性两段位移）、ShyEffects 的 heart-float（起点偏移）、SleepBubble 的 float-up（往返浮动）、ScaredEffects 的 sweat-drip、EmbarrassedEffects 的汗滴系列、CoinGainEffects 的 sparkle-pop（4 段带旋转）。
 - 净删 107 行，`vue-tsc` 通过。
 
-### P2-2 粒子类组件收敛为配置驱动
+### P2-2 粒子类组件收敛为配置驱动 ✅ 已完成（2026-10-14，收敛范围修正）
 
-- "配置数组 + v-for + `--fx-delay` 变量"模式已在 12 个组件中同构（Shy/Celebrate/Dizzy/Angry/Flyer/Smug/Scared/Confused/Thinking/Celebrate 等）。
-- 行动：基于（或扩展）`ParticleField.vue` 做通用 `EffectParticles` 组件，九个粒子类组件缩为"一份配置数组 + 若干独有道具"，每个文件预计从 250-350 行缩到 60-120 行。
-- 预计目录总量减 40-50%（约 3000+ 行）。
+- 原计划"基于 ParticleField 做通用组件、九个组件缩到 60-120 行"经实际评估**不可行**：这些组件的粒子组各有独特 SVG 道具、动画曲线和尺寸层级，强行抽通用组件需要大量 CSS 变量透传，复杂度反超收益（两次后台 agent 均因评估中途失败，最终改为主线程逐组件手工收敛）。
+- 实际执行（保守策略——只收敛"手写序号副本"模式，不改视觉）：
+  - HappyEffects：5 个手写 heart-1..3/star-1..2 → hearts/stars 配置数组
+  - AngryEffects：smoke-1..3 → smokes 配置数组
+  - DizzyEffects：dot-1..3 → dots 配置数组
+  - ConfusedEffects：question-1..3/star-1..2/wiggle-1..2 → questions/stars/wiggles 配置数组
+  - ThinkingEffects：dot-1..3/sparkle-1..2 → v-for 计数 + sparkles 配置数组
+  - ScaredEffects：line-1..4 → shakeLines 配置数组
+  - CoinGainEffects：sp-1..4 → sparkles 配置数组
+  - BathingEffects：star-1..6 → cleanStars 配置数组
+  - CelebrateEffects/FlyerDistributingEffects/SmugEffects/ShyEffects 等此前已是配置驱动，未动
+  - ParticleField.vue（0 使用的死代码）已删除
+- 净删 35 行（308 insertions / 343 deletions）。行数收益有限（配置数组本身占行数），核心收益是消除 `.xxx-N` 序号 class 双份维护（模板+CSS 各写一遍）。`vue-tsc` 与 prettier 通过。
 
 ### P2-3 极简徽章组件合并 ✅ 已完成（2026-10-14）
 

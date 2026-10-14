@@ -25,6 +25,20 @@ const sweatDrops = [
   { color: "#60a5fa", top: "-5px", right: "-20px", delay: "0s", small: false },
   { color: "#93c5fd", top: "5px", right: "-28px", delay: "0.4s", small: true },
 ];
+
+// 震动线条：位置/角度/高度/delay 差异
+const shakeLines = [
+  { top: "-20px", left: "5px", height: 12, rotation: "-20deg", delay: "0s" },
+  { top: "-25px", left: "20px", height: 16, rotation: "15deg", delay: "0.1s" },
+  { top: "-18px", right: "5px", height: 12, rotation: "20deg", delay: "0.05s" },
+  {
+    top: "-22px",
+    right: "20px",
+    height: 14,
+    rotation: "-15deg",
+    delay: "0.15s",
+  },
+];
 </script>
 
 <template>
@@ -43,10 +57,20 @@ const sweatDrops = [
     </div>
 
     <!-- 震动线条 -->
-    <div class="shake-line line-1"></div>
-    <div class="shake-line line-2"></div>
-    <div class="shake-line line-3"></div>
-    <div class="shake-line line-4"></div>
+    <div
+      v-for="(line, i) in shakeLines"
+      :key="`line-${i}`"
+      class="shake-line"
+      :style="{
+        top: line.top,
+        left: line.left,
+        right: line.right,
+        height: line.height + 'px',
+        transform: `rotate(${line.rotation})`,
+        '--fx-delay': line.delay,
+        '--rotation': line.rotation,
+      }"
+    ></div>
 
     <!-- 汗滴 -->
     <div
@@ -127,40 +151,7 @@ const sweatDrops = [
   background: linear-gradient(180deg, #ef4444, transparent);
   border-radius: 2px;
   animation: line-shake 0.2s ease-in-out infinite;
-}
-
-.line-1 {
-  top: -20px;
-  left: 5px;
-  transform: rotate(-20deg);
-  animation-delay: 0s;
-  --rotation: -20deg;
-}
-
-.line-2 {
-  top: -25px;
-  left: 20px;
-  height: 16px;
-  transform: rotate(15deg);
-  animation-delay: 0.1s;
-  --rotation: 15deg;
-}
-
-.line-3 {
-  top: -18px;
-  right: 5px;
-  transform: rotate(20deg);
-  animation-delay: 0.05s;
-  --rotation: 20deg;
-}
-
-.line-4 {
-  top: -22px;
-  right: 20px;
-  height: 14px;
-  transform: rotate(-15deg);
-  animation-delay: 0.15s;
-  --rotation: -15deg;
+  animation-delay: var(--fx-delay, 0s);
 }
 
 @keyframes line-shake {
