@@ -129,8 +129,8 @@ console.log 调试残留已清理：`ChatPanel/index.vue`（4 处）、`nativeSp
 
 ### P2-4 其他
 
-- `ProgrammerEffects.vue`（1058 行）：21-170 行是 18 行代码手写两遍的模板（每行 8-10 个 span 手工着色），改为 `codeLines: Token[][]` 配置数组生成，可删 ~300 行。
-- 补齐 icons/ 抽取：EmbarrassedEffects 的汗滴（与 icons/SweatDropSvg 重叠）、ThinkingEffects 的三尺寸气泡（只差半径，参数化）、AngryEffects 的火焰/锯齿。
+- `ProgrammerEffects.vue`（1058 行）✅ 已完成（2026-10-14）：手写两遍的 18 行代码模板（每行 8-10 个手工着色 span，~300 行）改为 `CODE_LINES` token 配置数组 + `scrollLines`（内容渲染两遍实现无缝滚动），v-for 生成。净删 2 行但消除了"改一行代码要同步两处"的维护负担；`code-scroll-up` 动画的 -50% 位移依赖内容恰好两遍，行为不变。`vue-tsc` 通过。
+- 补齐 icons/ 抽取：EmbarrassedEffects 的汗滴（与 icons/SweatDropSvg 重叠）、ThinkingEffects 的三尺寸气泡（只差半径，参数化）、AngryEffects 的火焰/锯齿。（待做，可与 P2-2 一起）
 
 ### 建议执行顺序
 

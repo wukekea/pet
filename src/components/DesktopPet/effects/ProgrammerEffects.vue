@@ -3,6 +3,166 @@
 // Bug SVG 抽为通用组件，代码雨的 72 行手写 delay 表改用 calc() 生成
 import BugSvg from "./icons/BugSvg.vue";
 
+// 代码滚动区的一行代码：语法着色 token 序列
+// type 对应 CSS 的 token 类名（keyword/variable/operator/function/
+// bracket/string/punctuation/type/property/number/comment）
+interface CodeToken {
+  text: string;
+  type: string;
+}
+
+// 显示屏滚动的代码内容（原手写 18 行 × 2 遍，无缝滚动需要内容重复一遍）
+const CODE_LINES: { tokens: CodeToken[]; indent?: boolean }[] = [
+  {
+    tokens: [
+      { text: "const", type: "keyword" },
+      { text: "data", type: "variable" },
+      { text: "=", type: "operator" },
+      { text: "fetch", type: "function" },
+      { text: "(", type: "bracket" },
+      { text: "'/api'", type: "string" },
+      { text: ")", type: "bracket" },
+      { text: ";", type: "punctuation" },
+    ],
+  },
+  {
+    tokens: [
+      { text: "async", type: "keyword" },
+      { text: "function", type: "keyword" },
+      { text: "process", type: "function" },
+      { text: "(", type: "bracket" },
+      { text: "items", type: "variable" },
+      { text: ")", type: "bracket" },
+      { text: "{", type: "bracket" },
+    ],
+  },
+  {
+    indent: true,
+    tokens: [
+      { text: "return", type: "keyword" },
+      { text: "items", type: "variable" },
+      { text: ".", type: "operator" },
+      { text: "map", type: "function" },
+      { text: "(", type: "bracket" },
+      { text: "x", type: "variable" },
+      { text: "=>", type: "operator" },
+      { text: "x", type: "variable" },
+      { text: "*", type: "operator" },
+      { text: "2", type: "number" },
+      { text: ")", type: "bracket" },
+      { text: ";", type: "punctuation" },
+    ],
+  },
+  { tokens: [{ text: "}", type: "bracket" }] },
+  {
+    tokens: [
+      { text: "import", type: "keyword" },
+      { text: "{", type: "bracket" },
+      { text: "ref", type: "variable" },
+      { text: ",", type: "punctuation" },
+      { text: "computed", type: "variable" },
+      { text: "}", type: "bracket" },
+      { text: "from", type: "keyword" },
+      { text: "'vue'", type: "string" },
+      { text: ";", type: "punctuation" },
+    ],
+  },
+  {
+    tokens: [
+      { text: "interface", type: "keyword" },
+      { text: "PetState", type: "type" },
+      { text: "{", type: "bracket" },
+    ],
+  },
+  {
+    indent: true,
+    tokens: [
+      { text: "name", type: "property" },
+      { text: ":", type: "punctuation" },
+      { text: "string", type: "type" },
+      { text: ";", type: "punctuation" },
+    ],
+  },
+  {
+    indent: true,
+    tokens: [
+      { text: "duration", type: "property" },
+      { text: ":", type: "punctuation" },
+      { text: "number", type: "type" },
+      { text: ";", type: "punctuation" },
+    ],
+  },
+  { tokens: [{ text: "}", type: "bracket" }] },
+  {
+    tokens: [{ text: "// Initialize pet controller", type: "comment" }],
+  },
+  {
+    tokens: [
+      { text: "export", type: "keyword" },
+      { text: "function", type: "keyword" },
+      { text: "initPet", type: "function" },
+      { text: "(", type: "bracket" },
+      { text: ")", type: "bracket" },
+      { text: "{", type: "bracket" },
+    ],
+  },
+  {
+    indent: true,
+    tokens: [
+      { text: "const", type: "keyword" },
+      { text: "pet", type: "variable" },
+      { text: "=", type: "operator" },
+      { text: "createPet", type: "function" },
+      { text: "(", type: "bracket" },
+      { text: ")", type: "bracket" },
+      { text: ";", type: "punctuation" },
+    ],
+  },
+  {
+    indent: true,
+    tokens: [
+      { text: "pet", type: "variable" },
+      { text: ".", type: "operator" },
+      { text: "startAnimation", type: "function" },
+      { text: "(", type: "bracket" },
+      { text: ")", type: "bracket" },
+      { text: ";", type: "punctuation" },
+    ],
+  },
+  { tokens: [{ text: "}", type: "bracket" }] },
+  {
+    tokens: [
+      { text: "class", type: "keyword" },
+      { text: "AnimationEngine", type: "type" },
+      { text: "{", type: "bracket" },
+    ],
+  },
+  {
+    indent: true,
+    tokens: [
+      { text: "private", type: "keyword" },
+      { text: "frames", type: "variable" },
+      { text: "=", type: "operator" },
+      { text: "0", type: "number" },
+      { text: ";", type: "punctuation" },
+    ],
+  },
+  {
+    indent: true,
+    tokens: [
+      { text: "render", type: "function" },
+      { text: "(", type: "bracket" },
+      { text: ")", type: "bracket" },
+      { text: "{", type: "bracket" },
+      { text: "}", type: "bracket" },
+    ],
+  },
+  { tokens: [{ text: "}", type: "bracket" }] },
+];
+
+// 无缝滚动：内容渲染两遍
+const scrollLines = [...CODE_LINES, ...CODE_LINES];
+
 // 代码雨三列的字符序列
 const codeColumns: string[][] = [
   ["0", "1", "0", "1", "1", "0", "1", "0"],
@@ -29,184 +189,22 @@ const charDelay = (col: number, index: number) =>
           <!-- 代码滚动区域 -->
           <div class="code-scroll-container">
             <div class="code-scroll">
-              <!-- 代码行 1 -->
-              <div class="code-line">
-                <span class="keyword">const</span>
-                <span class="variable">data</span>
-                <span class="operator">=</span>
-                <span class="function">fetch</span>
-                <span class="bracket">(</span>
-                <span class="string">'/api'</span>
-                <span class="bracket">)</span>
-                <span class="punctuation">;</span>
-              </div>
-              <!-- 代码行 2 -->
-              <div class="code-line">
-                <span class="keyword">async</span>
-                <span class="keyword">function</span>
-                <span class="function">process</span>
-                <span class="bracket">(</span>
-                <span class="variable">items</span>
-                <span class="bracket">)</span>
-                <span class="bracket">{</span>
-              </div>
-              <!-- 代码行 3 -->
-              <div class="code-line indent">
-                <span class="keyword">return</span>
-                <span class="variable">items</span>
-                <span class="operator">.</span>
-                <span class="function">map</span>
-                <span class="bracket">(</span>
-                <span class="variable">x</span>
-                <span class="operator">=></span>
-                <span class="variable">x</span>
-                <span class="operator">*</span>
-                <span class="number">2</span>
-                <span class="bracket">)</span>
-                <span class="punctuation">;</span>
-              </div>
-              <!-- 代码行 4 -->
-              <div class="code-line">
-                <span class="bracket">}</span>
-              </div>
-              <!-- 代码行 5 -->
-              <div class="code-line">
-                <span class="keyword">import</span>
-                <span class="bracket">{</span>
-                <span class="variable">ref</span>
-                <span class="punctuation">,</span>
-                <span class="variable">computed</span>
-                <span class="bracket">}</span>
-                <span class="keyword">from</span>
-                <span class="string">'vue'</span>
-                <span class="punctuation">;</span>
-              </div>
-              <!-- 代码行 6 -->
-              <div class="code-line">
-                <span class="keyword">interface</span>
-                <span class="type">PetState</span>
-                <span class="bracket">{</span>
-              </div>
-              <!-- 代码行 7 -->
-              <div class="code-line indent">
-                <span class="property">name</span>
-                <span class="punctuation">:</span>
-                <span class="type">string</span>
-                <span class="punctuation">;</span>
-              </div>
-              <!-- 代码行 8 -->
-              <div class="code-line indent">
-                <span class="property">duration</span>
-                <span class="punctuation">:</span>
-                <span class="type">number</span>
-                <span class="punctuation">;</span>
-              </div>
-              <!-- 代码行 9 -->
-              <div class="code-line">
-                <span class="bracket">}</span>
-              </div>
-              <!-- 代码行 10 -->
-              <div class="code-line">
-                <span class="comment">// Initialize pet controller</span>
-              </div>
-              <!-- 代码行 11 -->
-              <div class="code-line">
-                <span class="keyword">export</span>
-                <span class="keyword">function</span>
-                <span class="function">initPet</span>
-                <span class="bracket">(</span>
-                <span class="bracket">)</span>
-                <span class="bracket">{</span>
-              </div>
-              <!-- 代码行 12 -->
-              <div class="code-line indent">
-                <span class="keyword">const</span>
-                <span class="variable">pet</span>
-                <span class="operator">=</span>
-                <span class="function">createPet</span>
-                <span class="bracket">(</span>
-                <span class="bracket">)</span>
-                <span class="punctuation">;</span>
-              </div>
-              <!-- 代码行 13 -->
-              <div class="code-line indent">
-                <span class="variable">pet</span>
-                <span class="operator">.</span>
-                <span class="function">startAnimation</span>
-                <span class="bracket">(</span>
-                <span class="bracket">)</span>
-                <span class="punctuation">;</span>
-              </div>
-              <!-- 代码行 14 -->
-              <div class="code-line">
-                <span class="bracket">}</span>
-              </div>
-              <!-- 代码行 15 -->
-              <div class="code-line">
-                <span class="keyword">class</span>
-                <span class="type">AnimationEngine</span>
-                <span class="bracket">{</span>
-              </div>
-              <!-- 代码行 16 -->
-              <div class="code-line indent">
-                <span class="keyword">private</span>
-                <span class="variable">frames</span>
-                <span class="operator">=</span>
-                <span class="number">0</span>
-                <span class="punctuation">;</span>
-              </div>
-              <!-- 代码行 17 -->
-              <div class="code-line indent">
-                <span class="function">render</span>
-                <span class="bracket">(</span>
-                <span class="bracket">)</span>
-                <span class="bracket">{</span>
-                <span class="bracket">}</span>
-              </div>
-              <!-- 代码行 18 -->
-              <div class="code-line">
-                <span class="bracket">}</span>
-              </div>
-              <!-- 重复代码行用于无缝滚动 -->
-              <div class="code-line">
-                <span class="keyword">const</span>
-                <span class="variable">data</span>
-                <span class="operator">=</span>
-                <span class="function">fetch</span>
-                <span class="bracket">(</span>
-                <span class="string">'/api'</span>
-                <span class="bracket">)</span>
-                <span class="punctuation">;</span>
-              </div>
-              <div class="code-line">
-                <span class="keyword">async</span>
-                <span class="keyword">function</span>
-                <span class="function">process</span>
-                <span class="bracket">(</span>
-                <span class="variable">items</span>
-                <span class="bracket">)</span>
-                <span class="bracket">{</span>
-              </div>
-              <div class="code-line indent">
-                <span class="keyword">return</span>
-                <span class="variable">items</span>
-                <span class="operator">.</span>
-                <span class="function">map</span>
-                <span class="bracket">(</span>
-                <span class="variable">x</span>
-                <span class="operator">=></span>
-                <span class="variable">x</span>
-                <span class="operator">*</span>
-                <span class="number">2</span>
-                <span class="bracket">)</span>
-                <span class="punctuation">;</span>
-              </div>
-              <div class="code-line">
-                <span class="bracket">}</span>
+              <!-- 代码行由 CODE_LINES 配置生成（内容重复一遍实现无缝滚动） -->
+              <div
+                v-for="(line, li) in scrollLines"
+                :key="li"
+                class="code-line"
+                :class="{ indent: line.indent }"
+              >
+                <span
+                  v-for="(token, ti) in line.tokens"
+                  :key="ti"
+                  :class="token.type"
+                  >{{ token.text }}</span
+                >
               </div>
             </div>
           </div>
-
           <!-- 光标闪烁 -->
           <div class="cursor-blink">_</div>
 
