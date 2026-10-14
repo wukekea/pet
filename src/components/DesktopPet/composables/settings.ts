@@ -2,8 +2,9 @@ import { ref, computed, watch } from "vue";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { setThemeMode, type ThemeMode } from "./theme";
 import { speechEnabled, toggleSpeech } from "./speech";
-import { llmConfig, type LLMConfig } from "./sharedState";
+import { llmConfig, saveLLMConfig, type LLMConfig } from "./sharedState";
 import { saveApiKey, saveApiHost, saveAmapKey } from "./qweatherStorage";
+import { createLocalStorage } from "../utils/storage";
 
 // 设置配置接口
 export interface PetSettings {
@@ -70,13 +71,12 @@ export function saveApiConfig(config: ApiConfig): void {
   saveApiKey(config.qweather.key);
   saveApiHost(config.qweather.host);
   saveAmapKey(config.amap.key);
-  llmConfig.value = {
+  saveLLMConfig({
     baseURL: config.ai.url,
     apiKey: config.ai.key,
     model: config.ai.model,
     requestFormat: config.ai.format,
-  };
-  localStorage.setItem(STORAGE_KEYS.llmConfig, JSON.stringify(llmConfig.value));
+  });
 }
 
 // 默认设置
@@ -114,19 +114,25 @@ export const opacityValue = computed(() => {
   return settings.value.opacity / 100;
 });
 
+// 设置存储（收敛到 createLocalStorage 工具，校验剔除旧版遗留字段）
+const settingsStorage = createLocalStorage<PetSettings>(
+  STORAGE_KEYS.settings,
+  defaultSettings,
+  (raw): raw is PetSettings => {
+    if (typeof raw !== "object" || raw === null) return false;
+    const record = raw as Record<string, unknown>;
+    // 只校验默认值中存在的字段；旧版遗留的 apiConfig 等额外字段忽略
+    return (Object.keys(defaultSettings) as (keyof PetSettings)[]).every(
+      (key) =>
+        record[key] === undefined ||
+        typeof record[key] === typeof defaultSettings[key],
+    );
+  },
+);
+
 // 加载设置
 export function loadSettings() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEYS.settings);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      // 旧版本曾把 apiConfig 存在 pet-settings 里（死配置），加载时剔除
-      delete parsed.apiConfig;
-      settings.value = { ...defaultSettings, ...parsed };
-    }
-  } catch (e) {
-    console.error("[Settings] 加载设置失败，使用默认设置", e);
-  }
+  settings.value = settingsStorage.load();
 
   // 同步语音设置（与 updateSetting 的对称逻辑一致：双向对齐）
   if (settings.value.voiceEnabled !== speechEnabled.value) {
@@ -141,12 +147,7 @@ export function loadSettings() {
 
 // 保存设置
 export function saveSettings() {
-  try {
-    const dataToSave = JSON.parse(JSON.stringify(settings.value));
-    localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(dataToSave));
-  } catch (e) {
-    console.error("[Settings] 保存设置失败", e);
-  }
+  settingsStorage.save(settings.value);
 }
 
 // 更新单个设置项

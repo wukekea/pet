@@ -1,6 +1,7 @@
 import type { AttributeData } from "../types";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { STARTING_MONEY } from "@/data/gameData";
+import { createLocalStorage } from "../utils/storage";
 
 // localStorage 存储键
 const STORAGE_KEY = STORAGE_KEYS.attributes;
@@ -30,7 +31,7 @@ export const DEFAULT_ATTRIBUTE_DATA: AttributeData = {
   dailyInteractionExp: 0,
   dailyInteractionExpDate: "",
   dailyAllowanceClaimed: "",
-  lastUpdateTimestamp: Date.now(),
+  lastUpdateTimestamp: 0, // 加载/重置时按当前时间生成
   ownedDecorations: [],
   equippedDecorations: [],
   ownedShapes: ["cloud"],
@@ -39,93 +40,88 @@ export const DEFAULT_ATTRIBUTE_DATA: AttributeData = {
   decorationInventory: {},
 };
 
+// 兼容旧数据：补全新增字段、清理无效装备、补全形态列表。
+// 返回 null 表示数据结构非法（调用方回退默认值）。
+function migrate(data: Record<string, unknown>): AttributeData | null {
+  // 基本格式验证
+  const numericKeys = [
+    "satiety",
+    "cleanliness",
+    "stamina",
+    "health",
+    "money",
+    "level",
+    "experience",
+  ];
+  for (const key of numericKeys) {
+    if (typeof data[key] !== "number") return null;
+  }
+
+  if (typeof data.dailyInteractionExp !== "number") {
+    data.dailyInteractionExp = 0;
+  }
+  if (typeof data.dailyInteractionExpDate !== "string") {
+    data.dailyInteractionExpDate = "";
+  }
+  if (typeof data.dailyAllowanceClaimed !== "string") {
+    data.dailyAllowanceClaimed = "";
+  }
+  if (!Array.isArray(data.ownedDecorations)) {
+    data.ownedDecorations = [];
+  }
+  if (!Array.isArray(data.equippedDecorations)) {
+    data.equippedDecorations = [];
+  }
+  // 兼容旧数据：补全形态列表（cloud 是默认形态，始终拥有）
+  if (!Array.isArray(data.ownedShapes)) {
+    data.ownedShapes = ["cloud"];
+  }
+  if (!(data.ownedShapes as string[]).includes("cloud")) {
+    data.ownedShapes = ["cloud", ...(data.ownedShapes as string[])];
+  }
+  // 清理无效装备（不在拥有列表中的）
+  data.equippedDecorations = (data.equippedDecorations as string[]).filter(
+    (d: string) =>
+      Array.isArray(data.ownedDecorations) &&
+      (data.ownedDecorations as string[]).includes(d),
+  );
+  // 兼容库存字段
+  for (const key of [
+    "foodInventory",
+    "bathInventory",
+    "decorationInventory",
+  ] as const) {
+    if (typeof data[key] !== "object" || !data[key]) {
+      data[key] = {};
+    }
+  }
+
+  return data as unknown as AttributeData;
+}
+
+const attributeStorage = createLocalStorage<AttributeData>(
+  STORAGE_KEY,
+  DEFAULT_ATTRIBUTE_DATA,
+  (raw): raw is AttributeData =>
+    migrate(raw as Record<string, unknown>) !== null,
+);
+
 // 保存属性数据
 export function saveAttributeData(data: AttributeData): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (e) {
-    console.error("保存属性数据失败:", e);
-  }
+  attributeStorage.save(data);
 }
 
 // 加载属性数据
 export function loadAttributeData(): AttributeData {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const data = JSON.parse(stored) as AttributeData;
-      // 基本格式验证
-      if (
-        typeof data.satiety === "number" &&
-        typeof data.cleanliness === "number" &&
-        typeof data.stamina === "number" &&
-        typeof data.health === "number" &&
-        typeof data.money === "number" &&
-        typeof data.level === "number" &&
-        typeof data.experience === "number"
-      ) {
-        // 兼容旧数据：补全新增字段
-        if (typeof data.dailyInteractionExp !== "number") {
-          data.dailyInteractionExp = 0;
-        }
-        if (typeof data.dailyInteractionExpDate !== "string") {
-          data.dailyInteractionExpDate = "";
-        }
-        if (typeof data.dailyAllowanceClaimed !== "string") {
-          data.dailyAllowanceClaimed = "";
-        }
-        if (!Array.isArray(data.ownedDecorations)) {
-          data.ownedDecorations = [];
-        }
-        if (!Array.isArray(data.equippedDecorations)) {
-          data.equippedDecorations = [];
-        }
-        // 兼容旧数据：补全形态列表
-        if (!Array.isArray(data.ownedShapes)) {
-          data.ownedShapes = ["cloud"];
-        }
-        if (!data.ownedShapes.includes("cloud")) {
-          data.ownedShapes = ["cloud", ...data.ownedShapes];
-        }
-        // 清理无效装备（不在拥有列表中的）
-        if (Array.isArray(data.equippedDecorations)) {
-          data.equippedDecorations = data.equippedDecorations.filter(
-            (d: string) =>
-              Array.isArray(data.ownedDecorations) &&
-              data.ownedDecorations.includes(d),
-          );
-        }
-        // 兼容库存字段
-        if (typeof data.foodInventory !== "object" || !data.foodInventory) {
-          data.foodInventory = {};
-        }
-        if (typeof data.bathInventory !== "object" || !data.bathInventory) {
-          data.bathInventory = {};
-        }
-        if (
-          typeof data.decorationInventory !== "object" ||
-          !data.decorationInventory
-        ) {
-          data.decorationInventory = {};
-        }
-        return data;
-      }
-    }
-  } catch (e) {
-    console.error("加载属性数据失败:", e);
-  }
-  // 深拷贝避免嵌套对象（foodInventory 等）与模块级默认常量共享引用
-  return structuredClone({
-    ...DEFAULT_ATTRIBUTE_DATA,
-    lastUpdateTimestamp: Date.now(),
-  });
+  const data = attributeStorage.load();
+  // 每次加载时刷新时间戳（createLocalStorage 返回默认值的深拷贝，无共享引用问题）
+  data.lastUpdateTimestamp = Date.now();
+  return data;
 }
 
 // 重置属性数据
 export function resetAttributeData(): AttributeData {
-  localStorage.removeItem(STORAGE_KEY);
-  return structuredClone({
-    ...DEFAULT_ATTRIBUTE_DATA,
-    lastUpdateTimestamp: Date.now(),
-  });
+  const data = attributeStorage.reset();
+  data.lastUpdateTimestamp = Date.now();
+  return data;
 }

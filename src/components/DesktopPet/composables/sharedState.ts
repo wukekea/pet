@@ -153,17 +153,38 @@ export interface LLMConfig {
   requestFormat: "openai" | "weibo";
 }
 
+const DEFAULT_LLM_CONFIG: LLMConfig = {
+  baseURL: "https://api.openai.com/v1/chat/completions",
+  apiKey: "",
+  model: "gpt-4o-mini",
+  requestFormat: "openai",
+};
+
 function loadLLMConfig(): LLMConfig {
+  // 校验失败或字段缺失时回退合并默认值，保证 requestFormat 始终有合法值
   try {
     const saved = localStorage.getItem(STORAGE_KEYS.llmConfig);
-    if (saved) return { requestFormat: "openai", ...JSON.parse(saved) };
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (typeof parsed === "object" && parsed !== null) {
+        return { requestFormat: "openai", ...parsed };
+      }
+    }
   } catch {}
-  return {
-    baseURL: "https://api.openai.com/v1/chat/completions",
-    apiKey: "",
-    model: "gpt-4o-mini",
-    requestFormat: "openai",
-  };
+  return { ...DEFAULT_LLM_CONFIG };
 }
 
 export const llmConfig = ref<LLMConfig>(loadLLMConfig());
+
+// 持久化 LLM 配置（ChatPanel 与设置面板共用，单一写入口）
+export function saveLLMConfig(config: LLMConfig): void {
+  llmConfig.value = config;
+  try {
+    localStorage.setItem(
+      STORAGE_KEYS.llmConfig,
+      JSON.stringify(llmConfig.value),
+    );
+  } catch (e) {
+    console.error("保存 LLM 配置失败:", e);
+  }
+}

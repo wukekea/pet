@@ -52,29 +52,28 @@ export function cleanupTheme(): void {
   }
 }
 
-// 初始化主题（从 localStorage 恢复）
+// 初始化主题
+// 主题真相在 pet-settings.theme（由 settings.ts 加载）；
+// pet-theme-mode 是旧版 key，仅在 settings 未存时作一次性迁移回退
 export function initTheme() {
   // 清理之前的监听
   cleanupTheme();
 
   // 优先从新的设置存储中读取
   const savedSettings = localStorage.getItem(STORAGE_KEYS.settings);
+  let restored = false;
   if (savedSettings) {
     try {
       const parsed = JSON.parse(savedSettings);
       if (parsed.theme && ["system", "light", "dark"].includes(parsed.theme)) {
         themeMode.value = parsed.theme;
+        restored = true;
       }
     } catch {
-      // 解析失败，尝试旧格式
-      const savedMode = localStorage.getItem(
-        STORAGE_KEYS.themeMode,
-      ) as ThemeMode | null;
-      if (savedMode && ["system", "light", "dark"].includes(savedMode)) {
-        themeMode.value = savedMode;
-      }
+      // 解析失败，走旧格式回退
     }
-  } else {
+  }
+  if (!restored) {
     // 兼容旧格式
     const savedMode = localStorage.getItem(
       STORAGE_KEYS.themeMode,

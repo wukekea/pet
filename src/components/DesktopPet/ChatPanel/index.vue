@@ -2,7 +2,12 @@
 import { ref, computed, nextTick, watch, onUnmounted } from "vue";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { useDraggable } from "../composables/useDraggable";
-import { isChatPanelOpen, llmConfig } from "../composables/sharedState";
+import {
+  isChatPanelOpen,
+  llmConfig,
+  saveLLMConfig,
+} from "../composables/sharedState";
+import { createLocalStorage } from "../utils/storage";
 import { sendMessage } from "../composables/llmService";
 import type { ChatMessage } from "../composables/llmService";
 import { isDark } from "../composables/theme";
@@ -16,21 +21,16 @@ import {
   checkNativeSpeechSupport,
 } from "../composables/nativeSpeechRecognition";
 
-// 消息历史
+// 消息历史（走 createLocalStorage 工具，统一错误处理）
 const MAX_HISTORY = 50;
-function loadHistory(): ChatMessage[] {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEYS.chatHistory);
-    if (saved) return JSON.parse(saved);
-  } catch {}
-  return [];
-}
-const messages = ref<ChatMessage[]>(loadHistory());
+const chatHistoryStorage = createLocalStorage<ChatMessage[]>(
+  STORAGE_KEYS.chatHistory,
+  [],
+  Array.isArray,
+);
+const messages = ref<ChatMessage[]>(chatHistoryStorage.load());
 function saveHistory() {
-  localStorage.setItem(
-    STORAGE_KEYS.chatHistory,
-    JSON.stringify(messages.value.slice(-MAX_HISTORY)),
-  );
+  chatHistoryStorage.save(messages.value.slice(-MAX_HISTORY));
 }
 
 // 输入框
@@ -53,9 +53,8 @@ function toggleSettings() {
 }
 
 function saveConfig() {
-  // 写入 sharedState 的 llmConfig 并持久化（与设置面板走同一份存储）
-  llmConfig.value = { ...editConfig.value };
-  localStorage.setItem(STORAGE_KEYS.llmConfig, JSON.stringify(llmConfig.value));
+  // 写入 sharedState 的 llmConfig 并持久化（单一写入口，与设置面板共用）
+  saveLLMConfig({ ...editConfig.value });
   showSettings.value = false;
 }
 

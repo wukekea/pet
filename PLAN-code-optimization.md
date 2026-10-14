@@ -150,16 +150,19 @@ P2-1（纯删除）→ P2-3（低风险）→ P2-4 → P2-2（最大重构放最
 
 ## P3：存储层统一与语音设置单源化
 
-### P3-1 localStorage 收敛到 createLocalStorage
+### P3-1 localStorage 收敛到 createLocalStorage ✅ 已完成（2026-10-14）
 
-统一工具 `utils/storage.ts` 的 `createLocalStorage` 只被 3/7 个存储模块使用，以下模块手写读写与迁移逻辑，需收敛：
+统一工具 `utils/storage.ts` 的 `createLocalStorage` 此前只被 3/7 个存储模块使用，本次收敛：
 
-- `attributeStorage.ts:67-110`（45 行手写字段兼容 if 链，正是 validate 参数要解决的问题）
-- `qweatherStorage.ts`（全文手写）
-- `petShapeStorage.ts`（手写，已有 `in PET_SHAPES` 校验逻辑可平移）
-- `settings.ts:124-159`（手写，仅剔除旧 `apiConfig` 字段）
-- `sharedState.ts:156-169`（llmConfig 手写加载）
-- `ChatPanel/index.vue:21-34`（chatHistory 写在组件内，无验证）
+- `attributeStorage.ts`：45 行手写字段兼容 if 链改写为独立 `migrate()` 校验函数 + `createLocalStorage`；`loadAttributeData`/`resetAttributeData` 的 `lastUpdateTimestamp` 统一在返回时刷新；默认值深拷贝由工具保证。
+- `qweatherStorage.ts`：天气状态缓存（cityId/cityName 等）走 `createLocalStorage`；key/host 类简单字符串读写保留直接 `localStorage` 调用（有"空值清除"和 env 回退语义，工具不适用）。
+- `petShapeStorage.ts`：`in PET_SHAPES` 校验平移到 validate 参数。
+- `settings.ts`：load/save 走 `createLocalStorage`，旧版 `apiConfig` 遗留字段靠"合并默认值"天然忽略；删除 `JSON.parse(JSON.stringify())` 无意义拷贝。
+- `ChatPanel/index.vue`：chatHistory 收敛到 `createLocalStorage`（Array.isArray 校验）。
+- `sharedState.ts`：新增 `saveLLMConfig()` 单一写入口，ChatPanel 与 settings.ts 的 `saveApiConfig` 两处直接 `localStorage.setItem(llmConfig)` 收敛到它；加载逻辑补对象类型守卫。
+- `theme.ts`：`initTheme` 的嵌套 try-catch 双格式回退整理为线性"新格式 → 未恢复再读旧格式"流程，行为不变。
+
+净删 25 行（+215/-240）。`vue-tsc` 与 prettier 通过。
 
 ### P3-2 语音设置单一数据源
 
