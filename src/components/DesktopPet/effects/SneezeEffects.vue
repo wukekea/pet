@@ -3,19 +3,19 @@
 </script>
 
 <template>
-  <div class="sneeze-effects">
+  <div class="sneeze-effects effect-badge">
     <span class="sneeze-cloud">💨</span>
     <span class="sneeze-text">阿嚏!</span>
   </div>
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .sneeze-effects {
-  position: absolute;
   top: -20px;
   left: 50%;
   transform: translateX(-50%);
-  pointer-events: none;
   display: flex;
   flex-direction: column;
   align-items: center;

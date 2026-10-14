@@ -3,18 +3,18 @@
 </script>
 
 <template>
-  <div class="stretch-effects">
+  <div class="stretch-effects effect-badge">
     <span class="stretch-icon">✨</span>
   </div>
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .stretch-effects {
-  position: absolute;
   top: -30px;
   left: 50%;
   transform: translateX(-50%);
-  pointer-events: none;
 }
 
 .stretch-icon {

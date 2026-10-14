@@ -28,7 +28,7 @@ const sweatDrops = [
 </script>
 
 <template>
-  <div class="scared-effects">
+  <div class="scared-effects effect-layer">
     <!-- 惊叹号 -->
     <div
       v-for="(ex, i) in exclaims"
@@ -86,11 +86,10 @@ const sweatDrops = [
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .scared-effects {
-  position: absolute;
   inset: -50px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 /* 惊叹号 */

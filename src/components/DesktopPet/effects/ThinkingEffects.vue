@@ -5,7 +5,7 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
 </script>
 
 <template>
-  <div class="thinking-effects">
+  <div class="thinking-effects effect-layer">
     <!-- 大的思考气泡 -->
     <div class="thought-bubble bubble-large">
       <svg viewBox="0 0 24 24" class="bubble-svg">
@@ -107,11 +107,10 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .thinking-effects {
-  position: absolute;
   inset: -50px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 /* 思考气泡 */
@@ -305,7 +304,7 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
 .sparkle {
   position: absolute;
   opacity: 0;
-  animation: sparkle-twinkle 2.5s ease-in-out infinite;
+  animation: fx-twinkle 2.5s ease-in-out infinite;
 }
 
 .sparkle-1 {
@@ -329,22 +328,5 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
 .sparkle-svg.small {
   width: 10px;
   height: 10px;
-}
-
-@keyframes sparkle-twinkle {
-  0%,
-  70% {
-    opacity: 0;
-    transform: scale(0.5) rotate(0deg);
-  }
-  75%,
-  90% {
-    opacity: 1;
-    transform: scale(1.2) rotate(180deg);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.8) rotate(360deg);
-  }
 }
 </style>

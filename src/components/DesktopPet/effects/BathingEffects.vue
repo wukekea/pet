@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="bathing-effects">
+  <div class="bathing-effects effect-layer">
     <!-- 莲蓬头淋浴器 -->
     <div class="shower-head-unit">
       <!-- 固定支架 -->
@@ -95,14 +95,14 @@
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .bathing-effects {
-  position: absolute;
   left: 50%;
   transform: translateX(-50%);
   width: 100px;
   height: 150px;
   top: -70px;
-  pointer-events: none;
 }
 
 /* 莲蓬头淋浴器 - 可爱工业风 */

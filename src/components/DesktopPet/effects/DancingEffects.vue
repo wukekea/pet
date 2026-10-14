@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="dancing-effects">
+  <div class="dancing-effects effect-layer">
     <!-- 霓虹音符 -->
     <div class="neon-note nn-1">♪</div>
     <div class="neon-note nn-2">♫</div>
@@ -30,11 +30,10 @@
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .dancing-effects {
-  position: absolute;
   inset: -40px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 /* 霓虹音符 */

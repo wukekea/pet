@@ -58,7 +58,7 @@ const twinkles = [
 </script>
 
 <template>
-  <div class="shy-effects">
+  <div class="shy-effects effect-layer">
     <!-- 粉红色腮红 -->
     <div
       v-for="(blush, i) in blushes"
@@ -141,11 +141,10 @@ const twinkles = [
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .shy-effects {
-  position: absolute;
   inset: -40px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 /* 粉红色腮红 */
@@ -307,7 +306,7 @@ const twinkles = [
 .twinkle {
   position: absolute;
   opacity: 0;
-  animation: twinkle-shine 2s ease-in-out infinite;
+  animation: fx-twinkle 2s ease-in-out infinite;
   animation-delay: var(--fx-delay, 0s);
 }
 
@@ -319,22 +318,5 @@ const twinkles = [
 .twinkle-svg.small {
   width: 6px;
   height: 6px;
-}
-
-@keyframes twinkle-shine {
-  0%,
-  70% {
-    opacity: 0;
-    transform: scale(0.5) rotate(0deg);
-  }
-  80%,
-  90% {
-    opacity: 1;
-    transform: scale(1.2) rotate(180deg);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.8) rotate(360deg);
-  }
 }
 </style>

@@ -22,7 +22,7 @@ const zigzags = [
 </script>
 
 <template>
-  <div class="angry-effects">
+  <div class="angry-effects effect-layer">
     <!-- 额头青筋符号 -->
     <div class="vein-symbol">
       <svg viewBox="0 0 24 24" class="vein-svg">
@@ -86,11 +86,10 @@ const zigzags = [
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .angry-effects {
-  position: absolute;
   inset: -30px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 /* 额头青筋符号 */

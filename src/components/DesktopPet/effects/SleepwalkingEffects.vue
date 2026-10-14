@@ -3,18 +3,18 @@
 </script>
 
 <template>
-  <div class="sleepwalking-effects">
+  <div class="sleepwalking-effects effect-badge">
     <span class="sleepwalking-icon">💤</span>
   </div>
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .sleepwalking-effects {
-  position: absolute;
   top: -30px;
   left: 50%;
   transform: translateX(-50%);
-  pointer-events: none;
 }
 
 .sleepwalking-icon {

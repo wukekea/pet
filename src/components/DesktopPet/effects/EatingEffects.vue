@@ -9,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="eating-effects">
+  <div class="eating-effects effect-layer">
     <!-- 食物容器 -->
     <FoodItem :food-type="foodType" />
 
@@ -52,14 +52,14 @@ defineProps<{
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .eating-effects {
-  position: absolute;
   left: 50%;
   transform: translateX(-50%);
   width: 120px;
   height: 140px;
   top: -50px;
-  pointer-events: none;
 }
 
 /* ========================================

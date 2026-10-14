@@ -3,17 +3,17 @@
 </script>
 
 <template>
-  <div class="grin-effects">
+  <div class="grin-effects effect-badge">
     <span class="grin-text">嘿嘿~</span>
   </div>
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .grin-effects {
-  position: absolute;
   top: -25px;
   right: -15px;
-  pointer-events: none;
 }
 
 .grin-text {

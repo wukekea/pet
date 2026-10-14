@@ -64,19 +64,19 @@
 
 ### P0-8 其余中低优先级 Bug（一并列入）✅ 全部修复
 
-| #   | 位置                              | 问题                                                                                                                                                      | 修复结果                                                  |
-| --- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| #   | 位置                              | 问题                                                                                                                                                      | 修复结果                                                                                                                                                                                                                        |
+| --- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | a   | `electron/updater-ipc.js:358`     | 静默更新 `update-available` 事件无任何监听者，结果被丢弃；`main.js:115-119` 传窗口值拷贝而非 `getWindow()` 回调，窗口销毁后抛 "Object has been destroyed" | ✅ `checkForUpdateSilent` 改为 `getWindow()` 回调模式，main.js 传 `() => mainWindow`；静默检查内部去重（复用 `compareVersions`/`getPlatformAssetUrl`）。事件监听者接入属于 P4-6 范畴（需设计提示 UI），本次先保证发送侧不再崩溃 |
-| b   | `electron/updater-ipc.js:261`     | Windows 安装目录 `dirname(dirname(execPath))` 多包一层，NSIS 布局下 dirname 一次即安装目录                                                                | ✅ 修正为 dirname 一次，附注释说明与 macOS 的区别 |
-| c   | `ChatPanel/index.vue:168-174`     | 关闭聊天面板不停录音，麦克风持续占用；`onUnmounted` 永不触发（组件常驻）                                                                                  | ✅ `watch(isChatPanelOpen)` 关闭分支调 `cleanupNativeRecorder()` |
-| d   | `electron/updater-ipc.js:144-170` | 下载写流无背压（不等 drain）、错误不中断循环、`error` 监听在 `end()` 后才注册                                                                             | ✅ 循环中处理 write 返回值等待 drain；`error` 监听在写入前注册，race finish/error，出错中断并抛出 |
-| e   | `attributeStorage.ts:117`         | 默认值浅拷贝，`foodInventory` 等嵌套对象与模块级常量共享引用                                                                                              | ✅ `loadAttributeData`/`resetAttributeData` 均改用 `structuredClone` |
-| f   | `ChatPanel/index.vue:94-95`       | 错误路径 pop 后 push 回同一内容，无效操作且有竞争风险；LLM 错误提示无自动清除（语音错误有）                                                               | ✅ 删除无效 pop/push，保留用户消息；补 5s 自动清除 |
-| g   | `settings/ApiPanel.vue:207`       | 保存按钮 `background: borderColor` 用错变量，按钮近乎透明                                                                                                 | ✅ 删除内联 style，shared.css 中补主色背景 `#f5a623` 与 hover 色 |
-| h   | `schedule/index.vue:129-143`      | 时间槽无校验：可保存 start==end 空槽与重叠槽，无提示                                                                                                      | ✅ 保存前校验 start==end 空槽并 Toast 提示（重叠槽暂不拦截，提示即可） |
-| i   | `attributes.ts:668, 712`          | 最后一分钟收入与完工奖先后写 `coinGainAmount` 互相覆盖                                                                                                    | ✅ 引入 `pendingCoinGain` 累加器，完工时合并展示；`resetWorkState` 一并清零 |
-| j   | `QuickActionPanel.vue:60`         | `isMouseOnPanel` 依赖 `mousePosition`，但 petController 只在 chase 状态更新它，读到旧坐标                                                                 | ✅ petController 的 `handleMouseMove` 改为始终更新 `mousePosition`（穿透窗口有 `forward: true`，事件不丢，无性能顾虑），并加注释说明 |
-| k   | `electron/main.js`                | 无 `app.requestSingleInstanceLock()`，双开时两只宠物写同一存档互相覆盖                                                                                    | ✅ 加单实例锁 + `second-instance` 聚焦已有窗口 |
+| b   | `electron/updater-ipc.js:261`     | Windows 安装目录 `dirname(dirname(execPath))` 多包一层，NSIS 布局下 dirname 一次即安装目录                                                                | ✅ 修正为 dirname 一次，附注释说明与 macOS 的区别                                                                                                                                                                               |
+| c   | `ChatPanel/index.vue:168-174`     | 关闭聊天面板不停录音，麦克风持续占用；`onUnmounted` 永不触发（组件常驻）                                                                                  | ✅ `watch(isChatPanelOpen)` 关闭分支调 `cleanupNativeRecorder()`                                                                                                                                                                |
+| d   | `electron/updater-ipc.js:144-170` | 下载写流无背压（不等 drain）、错误不中断循环、`error` 监听在 `end()` 后才注册                                                                             | ✅ 循环中处理 write 返回值等待 drain；`error` 监听在写入前注册，race finish/error，出错中断并抛出                                                                                                                               |
+| e   | `attributeStorage.ts:117`         | 默认值浅拷贝，`foodInventory` 等嵌套对象与模块级常量共享引用                                                                                              | ✅ `loadAttributeData`/`resetAttributeData` 均改用 `structuredClone`                                                                                                                                                            |
+| f   | `ChatPanel/index.vue:94-95`       | 错误路径 pop 后 push 回同一内容，无效操作且有竞争风险；LLM 错误提示无自动清除（语音错误有）                                                               | ✅ 删除无效 pop/push，保留用户消息；补 5s 自动清除                                                                                                                                                                              |
+| g   | `settings/ApiPanel.vue:207`       | 保存按钮 `background: borderColor` 用错变量，按钮近乎透明                                                                                                 | ✅ 删除内联 style，shared.css 中补主色背景 `#f5a623` 与 hover 色                                                                                                                                                                |
+| h   | `schedule/index.vue:129-143`      | 时间槽无校验：可保存 start==end 空槽与重叠槽，无提示                                                                                                      | ✅ 保存前校验 start==end 空槽并 Toast 提示（重叠槽暂不拦截，提示即可）                                                                                                                                                          |
+| i   | `attributes.ts:668, 712`          | 最后一分钟收入与完工奖先后写 `coinGainAmount` 互相覆盖                                                                                                    | ✅ 引入 `pendingCoinGain` 累加器，完工时合并展示；`resetWorkState` 一并清零                                                                                                                                                     |
+| j   | `QuickActionPanel.vue:60`         | `isMouseOnPanel` 依赖 `mousePosition`，但 petController 只在 chase 状态更新它，读到旧坐标                                                                 | ✅ petController 的 `handleMouseMove` 改为始终更新 `mousePosition`（穿透窗口有 `forward: true`，事件不丢，无性能顾虑），并加注释说明                                                                                            |
+| k   | `electron/main.js`                | 无 `app.requestSingleInstanceLock()`，双开时两只宠物写同一存档互相覆盖                                                                                    | ✅ 加单实例锁 + `second-instance` 聚焦已有窗口                                                                                                                                                                                  |
 
 ---
 
@@ -107,10 +107,13 @@ console.log 调试残留已清理：`ChatPanel/index.vue`（4 处）、`nativeSp
 
 现状：约 8200 行、29 个特效组件，新旧两种风格并存。
 
-### P2-1 激活已有抽象基础设施
+### P2-1 激活已有抽象基础设施 ✅ 已完成（2026-10-14）
 
 - `effects/shared.css` 已定义参数化 keyframes（`fx-twinkle`/`fx-float-up`/`fx-pop` 等）和 `.effect-layer`/`.effect-badge` 工具类，但全目录只有 1 个文件引用。
-- 行动：将约 27 个组件的根容器三件套（`position:absolute; inset:-Npx; pointer-events:none`）统一到 `.effect-layer`/`.effect-badge`（各组件只保留 `--fx-inset` 差异）；15 份重复/同名 keyframes（`star-twinkle`×3、`float-up`×2、`spiral-spin`×2 等）全部指向 `fx-*` 参数化版本。纯删除，无风险。
+- 执行结果：29 个组件根容器收敛——19 个到 `effect-layer`（覆盖型层）、10 个到 `effect-badge`（角标型）；SwingEffect/WorkProgressBar（`pointer-events: auto` 可交互）与 ParticleField 判定不适用，保持原状。
+- keyframes 替换 6 处（ConfusedEffects 的 star-twinkle、ShyEffects 的 twinkle-shine、SmugEffects 的 sparkle-shine、ThinkingEffects 的 sparkle-twinkle → `fx-twinkle`；BrickCarryingEffects 的 note-float → `fx-note-float`、sparkle-pop → `fx-pop`）。ConfusedEffects 通过 `--fx-show-opacity: 0.7; --fx-show-scale: 1` 保持原视觉。
+- 判定不等价而保留（严格执行"不确定一律保留"）：HappyEffects/DizzyEffects 的 star-twinkle（drop-shadow 滤镜动画）、EatingEffects 的 heart-float-up（含旋转与起点偏移）、HappyEffects 的 float-up（非线性两段位移）、ShyEffects 的 heart-float（起点偏移）、SleepBubble 的 float-up（往返浮动）、ScaredEffects 的 sweat-drip、EmbarrassedEffects 的汗滴系列、CoinGainEffects 的 sparkle-pop（4 段带旋转）。
+- 净删 107 行，`vue-tsc` 通过。
 
 ### P2-2 粒子类组件收敛为配置驱动
 

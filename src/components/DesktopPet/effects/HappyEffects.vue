@@ -5,7 +5,7 @@ import StarSvg from "./icons/StarSvg.vue";
 </script>
 
 <template>
-  <div class="happy-effects">
+  <div class="happy-effects effect-layer">
     <!-- 漂浮的爱心和星星 -->
     <div class="float-item heart-1">
       <HeartSvg color="#ff6b9d" class="heart-svg" />
@@ -26,11 +26,10 @@ import StarSvg from "./icons/StarSvg.vue";
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .happy-effects {
-  position: absolute;
   inset: -20px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 .float-item {

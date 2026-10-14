@@ -122,7 +122,7 @@ const dots = [
 </script>
 
 <template>
-  <div class="celebrate-effects">
+  <div class="celebrate-effects effect-layer">
     <!-- 彩带 -->
     <div
       v-for="(ribbon, i) in ribbons"
@@ -164,11 +164,10 @@ const dots = [
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .celebrate-effects {
-  position: absolute;
   inset: -40px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 /* 彩带：颜色/轨迹/delay 由 :style 注入 */

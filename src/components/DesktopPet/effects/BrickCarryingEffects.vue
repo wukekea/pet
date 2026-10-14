@@ -393,7 +393,7 @@ const effortNotes = [
 
 .sparkle {
   font-size: 8px;
-  animation: sparkle-pop 1s ease-in-out infinite;
+  animation: fx-pop 1s ease-in-out infinite;
 }
 
 .sparkle:nth-child(2) {
@@ -413,21 +413,11 @@ const effortNotes = [
   }
 }
 
-@keyframes sparkle-pop {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.3);
-  }
-}
-
 /* 努力音符 */
 .effort-note {
   position: absolute;
   opacity: 0;
-  animation: note-float 2s ease-in-out infinite;
+  animation: fx-note-float 2s ease-in-out infinite;
   animation-delay: var(--fx-delay, 0s);
 }
 
@@ -435,23 +425,6 @@ const effortNotes = [
   width: 14px;
   height: 14px;
   filter: drop-shadow(0 0 4px rgba(255, 107, 107, 0.5));
-}
-
-@keyframes note-float {
-  0%,
-  60% {
-    opacity: 0;
-    transform: translateY(0) rotate(-10deg) scale(0.8);
-  }
-  65%,
-  85% {
-    opacity: 1;
-    transform: translateY(-10px) rotate(5deg) scale(1.1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-20px) rotate(15deg) scale(0.9);
-  }
 }
 
 /* 左边杂乱的砖堆 */

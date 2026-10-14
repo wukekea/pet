@@ -30,7 +30,7 @@ const levelColor = computed(() => {
 </script>
 
 <template>
-  <div class="charge-indicator">
+  <div class="charge-indicator effect-badge">
     <!-- 蓄力进度环 -->
     <div class="charge-ring" :style="{ '--progress': chargeProgress * 360 }">
       <svg viewBox="0 0 100 100">
@@ -86,8 +86,9 @@ const levelColor = computed(() => {
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .charge-indicator {
-  position: absolute;
   top: -100px;
   left: 50%;
   transform: translateX(-50%);
@@ -95,7 +96,6 @@ const levelColor = computed(() => {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  pointer-events: none;
   animation: float-appear 0.3s ease-out;
 }
 

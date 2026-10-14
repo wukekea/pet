@@ -3,17 +3,17 @@
 </script>
 
 <template>
-  <div class="scratch-effects">
+  <div class="scratch-effects effect-badge">
     <span class="scratch-icon">❓</span>
   </div>
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .scratch-effects {
-  position: absolute;
   top: -35px;
   right: -5px;
-  pointer-events: none;
 }
 
 .scratch-icon {

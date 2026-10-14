@@ -3,17 +3,17 @@
 </script>
 
 <template>
-  <div class="hello-effects">
+  <div class="hello-effects effect-badge">
     <span class="wave">👋</span>
   </div>
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .hello-effects {
-  position: absolute;
   top: -20px;
   right: -25px;
-  pointer-events: none;
 }
 
 .wave {

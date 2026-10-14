@@ -5,7 +5,7 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
 </script>
 
 <template>
-  <div class="confused-effects">
+  <div class="confused-effects effect-layer">
     <!-- 问号 -->
     <div class="question question-1">
       <QuestionSvg color="#60a5fa" class="question-svg" />
@@ -85,11 +85,10 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .confused-effects {
-  position: absolute;
   inset: -45px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 /* 问号 */
@@ -268,7 +267,10 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
 .star {
   position: absolute;
   opacity: 0;
-  animation: star-twinkle 2s ease-in-out infinite;
+  animation: fx-twinkle 2s ease-in-out infinite;
+  /* 与原 star-twinkle 关键帧的显示幅度保持一致 */
+  --fx-show-opacity: 0.7;
+  --fx-show-scale: 1;
 }
 
 .star-1 {
@@ -291,23 +293,6 @@ import QuestionSvg from "./icons/QuestionSvg.vue";
 .star-svg.small {
   width: 8px;
   height: 8px;
-}
-
-@keyframes star-twinkle {
-  0%,
-  70% {
-    opacity: 0;
-    transform: scale(0.5) rotate(0deg);
-  }
-  80%,
-  90% {
-    opacity: 0.7;
-    transform: scale(1) rotate(180deg);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.8) rotate(360deg);
-  }
 }
 
 /* 波浪线 */

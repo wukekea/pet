@@ -26,7 +26,7 @@ const crossEyes = [
 </script>
 
 <template>
-  <div class="dizzy-effects">
+  <div class="dizzy-effects effect-layer">
     <!-- 旋转的星星 -->
     <div
       v-for="(star, i) in spinningStars"
@@ -74,11 +74,10 @@ const crossEyes = [
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .dizzy-effects {
-  position: absolute;
   inset: -50px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 /* 旋转的星星 */

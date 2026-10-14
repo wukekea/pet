@@ -3,18 +3,18 @@
 </script>
 
 <template>
-  <div class="yawn-effects">
+  <div class="yawn-effects effect-badge">
     <span class="yawn-icon">😴</span>
   </div>
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .yawn-effects {
-  position: absolute;
   top: -35px;
   left: 50%;
   transform: translateX(-50%);
-  pointer-events: none;
 }
 
 .yawn-icon {

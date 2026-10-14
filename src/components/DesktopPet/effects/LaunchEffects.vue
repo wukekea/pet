@@ -21,7 +21,7 @@ const dustCount = computed(() => {
 </script>
 
 <template>
-  <div class="launch-effects">
+  <div class="launch-effects effect-layer">
     <!-- 飞行轨迹 -->
     <div class="launch-trail" :style="{ opacity: trailOpacity }">
       <div class="trail-line" />
@@ -50,15 +50,14 @@ const dustCount = computed(() => {
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .launch-effects {
-  position: absolute;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 40px;
   height: 100vh;
-  pointer-events: none;
-  overflow: visible;
 }
 
 .launch-trail {

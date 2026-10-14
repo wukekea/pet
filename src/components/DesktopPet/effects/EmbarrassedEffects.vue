@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="embarrassed-effects">
+  <div class="embarrassed-effects effect-layer">
     <!-- 额头汗珠群 -->
     <div class="forehead-sweat">
       <div class="sweat-bead sweat-1">
@@ -136,11 +136,10 @@
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .embarrassed-effects {
-  position: absolute;
   inset: -50px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 /* 额头汗珠群 */

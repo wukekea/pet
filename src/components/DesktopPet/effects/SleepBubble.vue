@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="sleep-bubble">
+  <div class="sleep-bubble effect-badge">
     <span>Z</span>
     <span class="z2">Z</span>
     <span class="z3">Z</span>
@@ -11,9 +11,10 @@
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 /* 睡眠气泡 */
 .sleep-bubble {
-  position: absolute;
   top: -30px;
   right: -20px;
   font-size: 16px;

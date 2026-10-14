@@ -3,17 +3,17 @@
 </script>
 
 <template>
-  <div class="sleepy-effects">
+  <div class="sleepy-effects effect-badge">
     <span class="sleepy-icon">💤</span>
   </div>
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .sleepy-effects {
-  position: absolute;
   top: -35px;
   right: -15px;
-  pointer-events: none;
 }
 
 .sleepy-icon {

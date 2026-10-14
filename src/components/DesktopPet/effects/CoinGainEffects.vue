@@ -56,7 +56,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="coin-gain-effects">
+  <div class="coin-gain-effects effect-layer">
     <!-- 底部光晕 -->
     <div class="coin-glow"></div>
 
@@ -148,11 +148,10 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .coin-gain-effects {
-  position: absolute;
   inset: -50px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 /* ===== 底部光晕 ===== */

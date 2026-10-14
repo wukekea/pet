@@ -19,7 +19,7 @@ const charDelay = (col: number, index: number) =>
 </script>
 
 <template>
-  <div class="programmer-effects">
+  <div class="programmer-effects effect-layer">
     <!-- 巨大透明显示屏 -->
     <div class="holographic-display">
       <!-- 显示屏外框 - 发光边框 -->
@@ -506,11 +506,10 @@ const charDelay = (col: number, index: number) =>
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .programmer-effects {
-  position: absolute;
   inset: -50px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 /* ==================== 全息显示屏 ==================== */

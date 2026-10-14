@@ -44,7 +44,7 @@ const sparkles = [
 </script>
 
 <template>
-  <div class="smug-effects">
+  <div class="smug-effects effect-layer">
     <!-- 皇冠 -->
     <div class="crown">
       <svg viewBox="0 0 32 24" class="crown-svg">
@@ -117,11 +117,10 @@ const sparkles = [
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .smug-effects {
-  position: absolute;
   inset: -50px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 /* 皇冠 */
@@ -153,7 +152,7 @@ const sparkles = [
 .sparkle {
   position: absolute;
   opacity: 0;
-  animation: sparkle-shine 2s ease-in-out infinite;
+  animation: fx-twinkle 2s ease-in-out infinite;
   animation-delay: var(--fx-delay, 0s);
 }
 
@@ -172,24 +171,6 @@ const sparkles = [
   width: 8px;
   height: 8px;
 }
-
-@keyframes sparkle-shine {
-  0%,
-  60% {
-    opacity: 0;
-    transform: scale(0.5) rotate(0deg);
-  }
-  70%,
-  90% {
-    opacity: 1;
-    transform: scale(1.2) rotate(180deg);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.8) rotate(360deg);
-  }
-}
-
 /* 光芒线条 */
 .ray {
   position: absolute;

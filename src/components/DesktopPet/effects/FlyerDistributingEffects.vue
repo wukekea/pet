@@ -38,7 +38,7 @@ const excitementStars = [
 </script>
 
 <template>
-  <div class="flyer-distributing-effects">
+  <div class="flyer-distributing-effects effect-layer">
     <!-- 飞舞的传单 -->
     <div
       v-for="(flyer, i) in flyingFlyers"
@@ -224,11 +224,10 @@ const excitementStars = [
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .flyer-distributing-effects {
-  position: absolute;
   inset: -50px;
-  pointer-events: none;
-  overflow: visible;
 }
 
 /* 飞舞的传单 */

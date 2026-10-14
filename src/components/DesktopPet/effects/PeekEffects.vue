@@ -3,17 +3,17 @@
 </script>
 
 <template>
-  <div class="peek-effects">
+  <div class="peek-effects effect-badge">
     <span class="peek-icon">🤫</span>
   </div>
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .peek-effects {
-  position: absolute;
   top: -35px;
   left: 55%;
-  pointer-events: none;
 }
 
 .peek-icon {

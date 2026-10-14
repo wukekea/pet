@@ -7,7 +7,7 @@
 </script>
 
 <template>
-  <div class="parachute-effect">
+  <div class="parachute-effect effect-layer">
     <svg
       class="parachute-svg"
       viewBox="0 0 200 180"
@@ -180,14 +180,14 @@
 </template>
 
 <style scoped>
+@import "./shared.css";
+
 .parachute-effect {
-  position: absolute;
   top: -280px;
   left: 50%;
   transform: translateX(-50%);
   width: 280px;
   height: 360px;
-  pointer-events: none;
   z-index: -1;
   animation: parachute-appear 0.5s ease-out;
 }
