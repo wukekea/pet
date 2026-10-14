@@ -199,7 +199,6 @@ export interface StatsData {
   // 互动次数
   interactions: {
     click: number; // 点击次数
-    doubleClick: number; // 双击次数
     drag: number; // 拖拽次数
   };
   // 各状态触发次数

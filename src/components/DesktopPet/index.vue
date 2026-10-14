@@ -20,7 +20,6 @@ import {
 // 函数从 usePetState 导入
 import {
   handlePetClick,
-  handlePetDoubleClick,
   handleDragStart,
   initScreenSize,
   initPet,
@@ -108,8 +107,6 @@ import "./shapes/dog/styles.css";
 import "./shapes/penguin/styles.css";
 import "./shapes/frog/styles.css";
 
-import "./shapes/base.css";
-
 // ===== 快捷操作面板 =====
 
 // 属性上限
@@ -132,9 +129,8 @@ const canQuickWork = computed(() => {
   return getAffordableWorkStates(WORK_STATES).length > 0;
 });
 
-// 双击时显示快捷面板（覆盖原 handlePetDoubleClick）
+// 双击时显示快捷面板
 const onPetDoubleClick = () => {
-  handlePetDoubleClick();
   // 不可打断状态下不弹出（打工、吃东西、洗澡、发射、降落伞）
   if (UNINTERRUPTIBLE_STATES.includes(petState.value)) return;
   // 睡眠中不弹出

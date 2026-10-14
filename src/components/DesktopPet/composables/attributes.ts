@@ -31,8 +31,6 @@ import {
   DIRTY_THRESHOLD,
   AUTO_EAT_SATIETY_TARGET,
   AUTO_BATH_CLEANLINESS_TARGET,
-  HEALTH_HAPPY_THRESHOLD,
-  HEALTH_SICK_THRESHOLD,
   MAX_LEVEL,
   INTERACTION_EXPERIENCE,
   COMPANIONSHIP_EXPERIENCE,
@@ -792,14 +790,6 @@ export function addExperience(amount: number): void {
   }
 
   debouncedSave();
-}
-
-// 获取健康状态（供 petController 使用）
-export function getHealthStatus(): "happy" | "sick" | "normal" {
-  const health = attributeData.value.health;
-  if (health >= HEALTH_HAPPY_THRESHOLD) return "happy";
-  if (health < HEALTH_SICK_THRESHOLD) return "sick";
-  return "normal";
 }
 
 // 检查是否可以打工

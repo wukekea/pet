@@ -60,12 +60,6 @@ export function recordClick() {
   debouncedSave();
 }
 
-// 记录双击互动
-export function recordDoubleClick() {
-  statsData.value.interactions.doubleClick += 1;
-  debouncedSave();
-}
-
 // 记录拖拽互动
 export function recordDrag() {
   statsData.value.interactions.drag += 1;

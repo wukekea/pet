@@ -306,7 +306,6 @@ export async function sendMessage(
     | undefined;
 
   if (!choice) {
-    console.log("[LLM] 响应数据:", JSON.stringify(data, null, 2));
     throw new Error("API 返回了空响应");
   }
 

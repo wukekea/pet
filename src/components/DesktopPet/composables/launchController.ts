@@ -249,25 +249,6 @@ function endParachuting(): void {
 }
 
 /**
- * 取消蓄力（用于被打断的情况）
- */
-export function cancelCharging(): void {
-  if (chargeUpdateTimer !== null) {
-    cancelAnimationFrame(chargeUpdateTimer);
-    chargeUpdateTimer = null;
-  }
-
-  isCharging.value = false;
-  chargeStartTime.value = null;
-  chargeProgress.value = 0;
-
-  // 只有在蓄力阶段（还没开始飞行）才重置状态
-  if (flyingPhase === "idle" && petState.value === "launching") {
-    void changeState("idle", true, { force: true });
-  }
-}
-
-/**
  * 检查是否处于飞行状态
  */
 export function isFlyingState(): boolean {

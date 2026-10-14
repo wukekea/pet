@@ -166,8 +166,6 @@ export const DIRTY_THRESHOLD = 30; // 变脏阈值（清洁低于此值健康下
 export const AUTO_EAT_SATIETY_TARGET = 50; // 自动吃东西后目标饱腹值
 export const AUTO_BATH_CLEANLINESS_TARGET = 50; // 自动洗澡后目标清洁值
 export const WORK_STAMINA_MIN = 30; // 打工最低体力要求（通用）
-export const HEALTH_HAPPY_THRESHOLD = 70; // 健康开心阈值
-export const HEALTH_SICK_THRESHOLD = 30; // 健康生病阈值
 
 // 等级系统
 export const MAX_LEVEL = 40; // 等级上限

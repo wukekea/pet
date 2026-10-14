@@ -107,11 +107,6 @@ function clearHistory() {
 
 // 语音输入
 async function handleVoiceToggle() {
-  console.log(
-    "[ChatPanel] 语音按钮点击, 支持状态:",
-    isSpeechRecognitionSupported.value,
-  );
-
   // 重新检查支持状态
   if (!isSpeechRecognitionSupported.value) {
     await checkNativeSpeechSupport();
@@ -125,15 +120,12 @@ async function handleVoiceToggle() {
 
   try {
     const recording = await toggleNativeRecording((text, isFinal) => {
-      console.log("[ChatPanel] 识别结果:", text, "是否最终:", isFinal);
       if (isFinal) {
         inputText.value = text;
       } else {
         inputText.value = "聆听中...";
       }
     });
-
-    console.log("[ChatPanel] 录音状态:", recording ? "开始" : "停止");
 
     if (recording) {
       inputText.value = "聆听中...";

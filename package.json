@@ -15,9 +15,6 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.92.0",
-    "edge-tts": "^1.0.1",
-    "node-record-lpcm16": "^1.0.1",
     "vue": "^3.4.21"
   },
   "devDependencies": {

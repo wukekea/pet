@@ -49,18 +49,15 @@ export function loadApiKey(): string | null {
     // 优先从 localStorage 获取
     const saved = localStorage.getItem(API_KEY_STORAGE_KEY);
     if (saved) {
-      console.log("从 localStorage 加载 API Key");
       return saved;
     }
 
     // 回退到环境变量（开发环境）
     const envKey = import.meta.env.VITE_QWEATHER_API_KEY;
     if (envKey) {
-      console.log("从环境变量加载 API Key");
       return envKey;
     }
 
-    console.log("未找到 API Key");
     return null;
   } catch (e) {
     console.error("加载 API Key 失败:", e);

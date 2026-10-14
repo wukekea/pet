@@ -1,14 +1,7 @@
 import { ref, computed, watch } from "vue";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { setThemeMode, type ThemeMode } from "./theme";
-import {
-  speechEnabled,
-  speechEngine,
-  speechRate,
-  speechPitch,
-  speechVolume,
-  toggleSpeech,
-} from "./speech";
+import { speechEnabled, toggleSpeech } from "./speech";
 import { llmConfig, type LLMConfig } from "./sharedState";
 import { saveApiKey, saveApiHost, saveAmapKey } from "./qweatherStorage";
 
@@ -220,24 +213,4 @@ export function initSettings() {
   settingsWatcher = unwatch;
 
   loadSettings();
-}
-
-// 从设置组件同步语音设置
-export function syncSpeechSettings() {
-  // 监听语音相关状态的变化
-  watch(speechEnabled, (val) => {
-    if (settings.value.voiceEnabled !== val) {
-      settings.value.voiceEnabled = val;
-    }
-  });
-
-  watch(speechEngine, () => {
-    // 语音引擎变化时保存
-    saveSettings();
-  });
-
-  watch([speechRate, speechPitch, speechVolume], () => {
-    // 语音参数变化时保存
-    saveSettings();
-  });
 }

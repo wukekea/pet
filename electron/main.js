@@ -11,8 +11,6 @@ import {
 } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
-import { execFileSync, spawn } from "child_process";
-import fs from "fs";
 import { setupEdgeTTSIPC } from "./edgeTTS-ipc.js";
 import { setupWhisperIPC } from "./whisperIPC.js";
 import { setupUpdaterIPC, checkForUpdateSilent } from "./updater-ipc.js";

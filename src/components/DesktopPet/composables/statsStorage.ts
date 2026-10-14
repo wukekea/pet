@@ -16,7 +16,6 @@ export const DEFAULT_STATS_DATA: StatsData = {
   launchCount: 1,
   interactions: {
     click: 0,
-    doubleClick: 0,
     drag: 0,
   },
   stateCounts: {},

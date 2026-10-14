@@ -621,10 +621,6 @@ export function handlePetClick() {
   }
 }
 
-// 双击宠物 - 暂无特殊效果
-export function handlePetDoubleClick() {
-  // 暂时不触发任何动画
-}
 // 拖拽相关
 let dragOffset = { x: 0, y: 0 };
 // 拖拽前的状态（用于打工状态拖拽后恢复）

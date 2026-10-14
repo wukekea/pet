@@ -10,14 +10,12 @@ export const statusMessage = ref("");
 export async function checkNativeSpeechSupport(): Promise<boolean> {
   const api = (window as any).electronAPI;
   if (!api?.speechCheckStatus) {
-    console.log("[NativeSpeech] IPC 未注册");
     isSupported.value = false;
     return false;
   }
 
   try {
     const status = await api.speechCheckStatus();
-    console.log("[NativeSpeech] 状态:", status);
     isSupported.value = status.ready;
 
     if (!status.ready) {
