@@ -10,11 +10,13 @@ import type { ItemGridItem } from "../ui/ItemGridPanel.vue";
 import { usePanelTheme, useAmberCardTheme } from "../composables/usePanelTheme";
 import { useToast } from "../composables/useToast";
 import {
-  FOOD_ICONS,
-  BATH_ICONS,
-  type FoodType,
-  type BathType,
-  type DecorationType,
+  baseConsumableItem,
+  consumableEffectLabel,
+} from "../composables/itemFactories";
+import type {
+  FoodType,
+  BathType,
+  DecorationType,
 } from "../composables/sharedState";
 import {
   useAttributeRef,
@@ -74,14 +76,10 @@ const currentItems = computed<ShopItem[]>(() => {
 
   if (activeTab.value === "food") {
     return Object.values(FOOD_CONFIGS).map((f) => ({
-      type: f.type as string,
-      name: f.name,
+      ...baseConsumableItem("food", f.type),
       cost: f.cost,
-      icon: FOOD_ICONS[f.type],
-      decoType: undefined,
       canAfford: money >= f.cost,
-      effectLabel: `+${f.satietyRestore}饱腹`,
-      category: "food" as const,
+      effectLabel: consumableEffectLabel("food", f.type),
       owned: false,
       equipped: false,
       inInventory: false,
@@ -91,14 +89,10 @@ const currentItems = computed<ShopItem[]>(() => {
 
   if (activeTab.value === "bath") {
     return Object.values(BATH_CONFIGS).map((b) => ({
-      type: b.type as string,
-      name: b.name,
+      ...baseConsumableItem("bath", b.type),
       cost: b.cost,
-      icon: BATH_ICONS[b.type],
-      decoType: undefined,
       canAfford: money >= b.cost,
-      effectLabel: `+${b.cleanlinessRestore}清洁`,
-      category: "bath" as const,
+      effectLabel: consumableEffectLabel("bath", b.type),
       owned: false,
       equipped: false,
       inInventory: false,

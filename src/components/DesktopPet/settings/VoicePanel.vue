@@ -14,12 +14,10 @@ import {
   switchEngine,
   type SpeechEngine,
 } from "../composables/speech";
+import { formatPercent } from "./shared";
 
 // 是否支持语音
 const speechSupported = isSpeechSupported();
-
-// 格式化百分比
-const formatPercent = (val: number) => `${val}%`;
 
 // 主题色
 const primary = "#f5a623";

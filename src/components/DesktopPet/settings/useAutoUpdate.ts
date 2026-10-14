@@ -206,3 +206,18 @@ if (electronAPI.onUpdateError) {
     isDownloading.value = false;
   });
 }
+
+// 启动静默检查发现有新版本：填充更新状态，供设置面板展示
+// （此前主进程发出的 update-available 事件无任何监听者，结果被丢弃）
+if (electronAPI.onUpdateAvailable) {
+  electronAPI.onUpdateAvailable((info) => {
+    hasUpdate.value = true;
+    updateInfo.value = {
+      success: true,
+      currentVersion: version.value,
+      latestVersion: info?.version,
+      hasUpdate: true,
+      downloadUrl: info?.downloadUrl,
+    };
+  });
+}

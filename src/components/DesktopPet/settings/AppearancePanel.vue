@@ -5,9 +5,7 @@ import {
   updateSetting,
   type PetSettings,
 } from "../composables/settings";
-
-// 格式化百分比
-const formatPercent = (val: number) => `${val}%`;
+import { formatPercent } from "./shared";
 
 // 主题色
 const accent = "#60a5fa";

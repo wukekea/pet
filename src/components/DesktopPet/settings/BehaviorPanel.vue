@@ -1,9 +1,7 @@
 <script setup lang="ts">
 // 宠物行为面板（从 settings/index.vue 拆出）
 import { settings } from "../composables/settings";
-
-// 格式化百分比
-const formatPercent = (val: number) => `${val}%`;
+import { formatPercent } from "./shared";
 
 // 主题色（奶油糖果色系，与设置面板一致）
 const primary = "#f5a623";

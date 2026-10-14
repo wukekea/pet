@@ -11,6 +11,17 @@ import fs from "fs";
 // 下载的安装包路径（模块内状态）
 let updateDownloadPath = null;
 
+// fetch 超时包装（检查更新用；下载走流式不设超时）
+const CHECK_TIMEOUT_MS = 15000;
+
+function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), CHECK_TIMEOUT_MS);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => {
+    clearTimeout(timer);
+  });
+}
+
 // 根据平台获取对应的资源下载 URL
 function getPlatformAssetUrl(assets) {
   const platform = process.platform;
@@ -67,7 +78,7 @@ export function setupUpdaterIPC(getWindow, isDev) {
     const currentVersion = app.getVersion();
 
     try {
-      const response = await fetch(
+      const response = await fetchWithTimeout(
         "https://api.github.com/repos/wukekea/pet/releases/latest",
         {
           headers: {
@@ -318,7 +329,7 @@ rm -f "${scriptPath}"
  */
 export async function checkForUpdateSilent(getWindow) {
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       "https://api.github.com/repos/wukekea/pet/releases/latest",
       {
         headers: {

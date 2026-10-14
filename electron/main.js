@@ -153,12 +153,76 @@ ipcMain.handle(
   () => screen.getPrimaryDisplay().workAreaSize,
 );
 
+// ===== 网络请求安全工具 =====
+
+// 外部 API 请求 URL 安全校验：仅允许 http(s)，拒绝本机/内网/云元数据地址（防 SSRF）
+// 适用于用户可配置 host 的代理请求（LLM / 和风天气）
+function isAllowedApiUrl(rawUrl) {
+  try {
+    const parsed = new URL(rawUrl);
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+      return false;
+    }
+    const host = parsed.hostname;
+    // 拒绝 localhost / 127.x / 内网段 / [::1] / 云元数据 / 通配地址
+    if (
+      host === "localhost" ||
+      host === "[::1]" ||
+      host === "0.0.0.0" ||
+      host.startsWith("127.") ||
+      host.startsWith("10.") ||
+      host.startsWith("169.254.") ||
+      host.startsWith("192.168.") ||
+      /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
+      host.endsWith(".local") ||
+      host.endsWith(".internal")
+    ) {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// fetch 超时包装：主进程 fetch 默认无超时，接口挂起时 IPC promise 永久 pending
+const FETCH_TIMEOUT_MS = 15000;
+
+function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => {
+    clearTimeout(timer);
+  });
+}
+
+// 校验和风天气 host 并构建 API URL（host 由渲染进程配置，防止拼入内网地址）
+function buildQweatherUrl(apiHost, pathAndQuery) {
+  const host = String(apiHost || "")
+    .trim()
+    .replace(/\/$/, "");
+  const url = `https://${host}${pathAndQuery}`;
+  if (!isAllowedApiUrl(url)) {
+    return null;
+  }
+  return url;
+}
+
 // 获取实时天气
 ipcMain.handle("fetch-weather", async (event, locationId, apiKey, apiHost) => {
   try {
-    const url = `https://${apiHost}/v7/weather/now?location=${locationId}`;
+    const url = buildQweatherUrl(
+      apiHost,
+      `/v7/weather/now?location=${encodeURIComponent(locationId)}`,
+    );
+    if (!url) {
+      return {
+        code: "error",
+        message: "不允许的 API 地址（内网/非 http 协议）",
+      };
+    }
 
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
       headers: {
         "X-QW-Api-Key": apiKey,
       },
@@ -176,9 +240,18 @@ ipcMain.handle(
   "fetch-city-by-location",
   async (event, lat, lon, apiKey, apiHost) => {
     try {
-      const url = `https://${apiHost}/geo/v2/city/lookup?location=${lon},${lat}`;
+      const url = buildQweatherUrl(
+        apiHost,
+        `/geo/v2/city/lookup?location=${encodeURIComponent(`${lon},${lat}`)}`,
+      );
+      if (!url) {
+        return {
+          code: "error",
+          message: "不允许的 API 地址（内网/非 http 协议）",
+        };
+      }
 
-      const response = await fetch(url, {
+      const response = await fetchWithTimeout(url, {
         headers: {
           "X-QW-Api-Key": apiKey,
         },
@@ -193,42 +266,15 @@ ipcMain.handle(
 );
 
 // LLM API 代理（支持任意 OpenAI 兼容接口）
-// LLM 请求 URL 安全校验：仅允许 http(s)，拒绝本机/内网地址（防 SSRF）
-function isAllowedLLMUrl(rawUrl) {
-  try {
-    const parsed = new URL(rawUrl);
-    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-      return false;
-    }
-    const host = parsed.hostname;
-    // 拒绝 localhost / 127.x / 内网段 / [::1]
-    if (
-      host === "localhost" ||
-      host === "[::1]" ||
-      host.startsWith("127.") ||
-      host.startsWith("10.") ||
-      host.startsWith("192.168.") ||
-      /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
-      host.endsWith(".local") ||
-      host.endsWith(".internal")
-    ) {
-      return false;
-    }
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 ipcMain.handle("fetch-llm", async (event, url, options) => {
   try {
-    if (!isAllowedLLMUrl(url)) {
+    if (!isAllowedApiUrl(url)) {
       return {
         success: false,
         message: "不允许的 API 地址（内网/非 http 协议）",
       };
     }
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
       method: "POST",
       headers: options.headers,
       body: JSON.stringify(options.body),
@@ -241,11 +287,11 @@ ipcMain.handle("fetch-llm", async (event, url, options) => {
   }
 });
 
-// IP 定位服务（高德地图）
+// IP 定位服务（高德地图，host 固定不可配置，仍加超时防挂起）
 ipcMain.handle("fetch-ip-location", async (event, amapKey) => {
   try {
-    const response = await fetch(
-      `https://restapi.amap.com/v3/ip?key=${amapKey}`,
+    const response = await fetchWithTimeout(
+      `https://restapi.amap.com/v3/ip?key=${encodeURIComponent(amapKey)}`,
     );
     const data = await response.json();
 

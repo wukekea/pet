@@ -10,11 +10,13 @@ import type { ItemGridItem } from "../ui/ItemGridPanel.vue";
 import { usePanelTheme, useAmberCardTheme } from "../composables/usePanelTheme";
 import { useToast } from "../composables/useToast";
 import {
-  FOOD_ICONS,
-  BATH_ICONS,
-  type FoodType,
-  type BathType,
-  type DecorationType,
+  baseConsumableItem,
+  consumableEffectLabel,
+} from "../composables/itemFactories";
+import type {
+  FoodType,
+  BathType,
+  DecorationType,
 } from "../composables/sharedState";
 import {
   useAttributeRef,
@@ -74,13 +76,9 @@ const currentItems = computed<WarehouseItem[]>(() => {
     return Object.values(FOOD_CONFIGS)
       .filter((f) => (foodInv[f.type] || 0) > 0)
       .map((f) => ({
-        type: f.type as string,
-        name: f.name,
-        icon: FOOD_ICONS[f.type],
-        decoType: undefined,
+        ...baseConsumableItem("food", f.type),
         count: foodInv[f.type] || 0,
-        effectLabel: `+${f.satietyRestore}饱腹`,
-        category: "food" as const,
+        effectLabel: consumableEffectLabel("food", f.type),
         disabled: (foodInv[f.type] || 0) <= 0,
       }));
   }
@@ -89,13 +87,9 @@ const currentItems = computed<WarehouseItem[]>(() => {
     return Object.values(BATH_CONFIGS)
       .filter((b) => (bathInv[b.type] || 0) > 0)
       .map((b) => ({
-        type: b.type as string,
-        name: b.name,
-        icon: BATH_ICONS[b.type],
-        decoType: undefined,
+        ...baseConsumableItem("bath", b.type),
         count: bathInv[b.type] || 0,
-        effectLabel: `+${b.cleanlinessRestore}清洁`,
-        category: "bath" as const,
+        effectLabel: consumableEffectLabel("bath", b.type),
         disabled: (bathInv[b.type] || 0) <= 0,
       }));
   }

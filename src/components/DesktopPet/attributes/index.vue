@@ -156,24 +156,29 @@ const handleWork = (workState: PetState) => {
   }
 };
 
-// 装饰列表（已拥有的）
-const ownedDecoList = computed(() => {
+// 装饰列表（已拥有的，过滤无效条目后类型收窄，消除模板中的非空断言）
+interface OwnedDecoItem {
+  type: string;
+  name: string;
+  isEquipped: boolean;
+  slotName: string;
+}
+
+const ownedDecoList = computed<OwnedDecoItem[]>(() => {
   const owned = attrData.value.ownedDecorations || [];
   const equipped = attrData.value.equippedDecorations || [];
-  return owned
-    .map((type) => {
-      const config = DECORATION_CONFIGS[type as DecorationType];
-      if (!config) return null;
-      return {
-        type,
-        name: config.name,
-        icon: "",
-        isEquipped: equipped.includes(type),
-        slot: DECORATION_SLOTS[type as DecorationType],
-        slotName: SLOT_NAMES[DECORATION_SLOTS[type as DecorationType]],
-      };
-    })
-    .filter(Boolean);
+  const items: OwnedDecoItem[] = [];
+  for (const type of owned) {
+    const config = DECORATION_CONFIGS[type as DecorationType];
+    if (!config) continue;
+    items.push({
+      type,
+      name: config.name,
+      isEquipped: equipped.includes(type),
+      slotName: SLOT_NAMES[DECORATION_SLOTS[type as DecorationType]],
+    });
+  }
+  return items;
 });
 
 // 当前激活的装饰效果列表
@@ -434,20 +439,20 @@ const close = () => {
           <div class="deco-grid">
             <button
               v-for="item in ownedDecoList"
-              :key="item!.type"
+              :key="item.type"
               class="deco-item"
-              :class="{ equipped: item!.isEquipped }"
-              @click="handleDecoClick(item!.type)"
+              :class="{ equipped: item.isEquipped }"
+              @click="handleDecoClick(item.type)"
             >
               <span class="deco-item-icon"
-                ><DecoIcon :type="item!.type as DecorationType"
+                ><DecoIcon :type="item.type as DecorationType"
               /></span>
-              <span class="deco-item-name">{{ item!.name }}</span>
+              <span class="deco-item-name">{{ item.name }}</span>
               <span
                 class="deco-item-badge"
-                :class="item!.isEquipped ? 'badge-equipped' : 'badge-equip'"
+                :class="item.isEquipped ? 'badge-equipped' : 'badge-equip'"
               >
-                {{ item!.isEquipped ? "已装备" : item!.slotName }}
+                {{ item.isEquipped ? "已装备" : item.slotName }}
               </span>
             </button>
           </div>
