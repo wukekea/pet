@@ -59,7 +59,14 @@ const props = defineProps<{
   font-weight: 600;
   color: #6b7280;
 }
+</style>
 
+<!-- 全局（非 scoped）动画库。
+     keyframes 不能放在上面的 scoped 块：scoped 会给 keyframes 名加
+     hash 后缀且只改写同块内的 CSS animation 声明，而本组件的动画名
+     由 effectsMap 通过 props 传成内联 style，编译器无法跟随改名，
+     导致动画静默失效。全局定义 + fx-badge- 前缀保证名字稳定唯一。 -->
+<style>
 /* ===== 徽章动画库 =====
    合并原九个组件的同构 keyframes：
    wave-animation / grin-float / peek-shy / sneeze-puff /

@@ -856,6 +856,13 @@ function handleVisibilityChange(): void {
   }
 }
 
+// 页面即将卸载（窗口关闭/刷新）：visibilitychange 在直接关窗时
+// 不保证触发，此处兜底 flush，避免本次会话的进度丢失
+function handleBeforeUnload(): void {
+  stopTimers();
+  flushSave();
+}
+
 // 启动计时器
 function startTimers(): void {
   // 防止重复启动
@@ -886,8 +893,9 @@ export function initAttributes(): void {
   // 启动计时器
   startTimers();
 
-  // 监听可见性变化
+  // 监听可见性变化与页面卸载
   document.addEventListener("visibilitychange", handleVisibilityChange);
+  window.addEventListener("beforeunload", handleBeforeUnload);
 }
 
 // 检查并发放每日救济金
@@ -908,4 +916,5 @@ export function cleanupAttributes(): void {
   stopTimers();
   flushSave();
   document.removeEventListener("visibilitychange", handleVisibilityChange);
+  window.removeEventListener("beforeunload", handleBeforeUnload);
 }

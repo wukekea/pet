@@ -141,7 +141,8 @@ onBeforeUnmount(() => {
       :class="`cp-${i}`"
     />
 
-    <!-- 闪光星星 -->
+    <!-- 闪光星星（时长/延迟走 CSS 变量：animation 声明写在 scoped CSS 里，
+         内联 animation 引用 scoped keyframes 会因 hash 后缀失配而失效） -->
     <div
       v-for="(sp, i) in sparkles"
       :key="`sp-${i}`"
@@ -151,7 +152,8 @@ onBeforeUnmount(() => {
         right: sp.right,
         top: sp.top,
         fontSize: sp.size + 'px',
-        animation: `sparkle-pop ${sp.dur} ease-out ${sp.delay} forwards`,
+        '--fx-dur': sp.dur,
+        '--fx-delay': sp.delay,
       }"
     >
       {{ sp.icon }}
@@ -341,6 +343,9 @@ onBeforeUnmount(() => {
   color: #ffd700;
   opacity: 0;
   filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.8));
+  /* 时长/延迟由内联 --fx-dur/--fx-delay 注入（见模板注释） */
+  animation: sparkle-pop var(--fx-dur, 0.8s) ease-out var(--fx-delay, 0s)
+    forwards;
 }
 
 @keyframes sparkle-pop {
