@@ -9,8 +9,6 @@ import VoicePanel from "./VoicePanel.vue";
 import InteractionPanel from "./InteractionPanel.vue";
 import ApiPanel from "./ApiPanel.vue";
 import { initVersion } from "./useAutoUpdate";
-import { settings } from "../composables/settings";
-import { speechEnabled } from "../composables/speech";
 
 defineProps<{
   visible: boolean;
@@ -24,13 +22,6 @@ const emit = defineEmits<{
 const activeCategory = ref<
   "behavior" | "appearance" | "voice" | "interaction" | "api" | "about"
 >("behavior");
-
-// 同步语音设置到本地设置状态
-watch(speechEnabled, () => {
-  if (settings.value.voiceEnabled !== speechEnabled.value) {
-    settings.value.voiceEnabled = speechEnabled.value;
-  }
-});
 
 // 监听分类切换，懒加载版本信息
 watch(activeCategory, (category) => {

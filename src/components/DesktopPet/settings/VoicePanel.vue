@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // 语音设置面板（从 settings/index.vue 拆出）
-import { settings } from "../composables/settings";
+// 语音状态单一真相在 speech.ts（speechEnabled 及各参数），
+// 本面板直接读写 speech.ts 的 ref，不再经过 pet-settings.voiceEnabled 中转
 import {
   speechEnabled,
   speechEngine,
@@ -25,11 +26,7 @@ const primary = "#f5a623";
 
 // 处理语音开关
 const handleVoiceToggle = () => {
-  const newValue = !settings.value.voiceEnabled;
-  settings.value.voiceEnabled = newValue;
-  if (newValue !== speechEnabled.value) {
-    toggleSpeech();
-  }
+  toggleSpeech();
 };
 
 // 测试语音
@@ -86,7 +83,7 @@ defineProps<{
         </div>
         <button
           class="toggle-switch blue"
-          :class="{ active: settings.voiceEnabled }"
+          :class="{ active: speechEnabled }"
           @click="handleVoiceToggle"
         >
           <span class="toggle-thumb" />
@@ -94,10 +91,7 @@ defineProps<{
       </div>
 
       <!-- 语音引擎 -->
-      <div
-        class="setting-item vertical"
-        :class="{ disabled: !settings.voiceEnabled }"
-      >
+      <div class="setting-item vertical" :class="{ disabled: !speechEnabled }">
         <div class="setting-main">
           <div
             class="setting-icon-wrapper"
@@ -115,7 +109,7 @@ defineProps<{
           <button
             class="engine-option"
             :class="{ active: speechEngine === 'browser' }"
-            :disabled="!settings.voiceEnabled"
+            :disabled="!speechEnabled"
             @click="handleSwitchEngine('browser')"
           >
             <span class="engine-name">浏览器内置</span>
@@ -124,7 +118,7 @@ defineProps<{
           <button
             class="engine-option"
             :class="{ active: speechEngine === 'edge' }"
-            :disabled="!settings.voiceEnabled || isEdgeLoading"
+            :disabled="!speechEnabled || isEdgeLoading"
             @click="handleSwitchEngine('edge')"
           >
             <span class="engine-name">Edge TTS</span>
@@ -141,7 +135,7 @@ defineProps<{
       </div>
 
       <!-- 音量 -->
-      <div class="setting-item" :class="{ disabled: !settings.voiceEnabled }">
+      <div class="setting-item" :class="{ disabled: !speechEnabled }">
         <div class="setting-main">
           <div
             class="setting-icon-wrapper"
@@ -165,14 +159,14 @@ defineProps<{
             min="0"
             max="1"
             step="0.1"
-            :disabled="!settings.voiceEnabled"
+            :disabled="!speechEnabled"
             class="custom-slider"
           />
         </div>
       </div>
 
       <!-- 语速 -->
-      <div class="setting-item" :class="{ disabled: !settings.voiceEnabled }">
+      <div class="setting-item" :class="{ disabled: !speechEnabled }">
         <div class="setting-main">
           <div
             class="setting-icon-wrapper"
@@ -196,7 +190,7 @@ defineProps<{
             min="0.5"
             max="1.5"
             step="0.1"
-            :disabled="!settings.voiceEnabled"
+            :disabled="!speechEnabled"
             class="custom-slider green"
           />
           <div class="slider-marks">
@@ -210,7 +204,7 @@ defineProps<{
       <!-- 测试按钮 -->
       <button
         class="test-voice-btn"
-        :disabled="!settings.voiceEnabled"
+        :disabled="!speechEnabled"
         @click="testSpeech"
       >
         <span class="btn-icon">🎤</span>

@@ -1,7 +1,6 @@
 import { ref, computed, watch } from "vue";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { setThemeMode, type ThemeMode } from "./theme";
-import { speechEnabled, toggleSpeech } from "./speech";
 import { llmConfig, saveLLMConfig, type LLMConfig } from "./sharedState";
 import { saveApiKey, saveApiHost, saveAmapKey } from "./qweatherStorage";
 import { createLocalStorage } from "../utils/storage";
@@ -17,8 +16,6 @@ export interface PetSettings {
   theme: ThemeMode;
   opacity: number;
   showFootprints: boolean;
-  // 语音
-  voiceEnabled: boolean;
   // 交互
   clickReaction: boolean;
   dragSound: boolean;
@@ -88,7 +85,6 @@ const defaultSettings: PetSettings = {
   theme: "system",
   opacity: 100,
   showFootprints: true,
-  voiceEnabled: true,
   clickReaction: true,
   dragSound: true,
 };
@@ -134,11 +130,6 @@ const settingsStorage = createLocalStorage<PetSettings>(
 export function loadSettings() {
   settings.value = settingsStorage.load();
 
-  // 同步语音设置（与 updateSetting 的对称逻辑一致：双向对齐）
-  if (settings.value.voiceEnabled !== speechEnabled.value) {
-    toggleSpeech();
-  }
-
   // 同步主题设置
   if (settings.value.theme) {
     setThemeMode(settings.value.theme);
@@ -161,10 +152,6 @@ export function updateSetting<K extends keyof PetSettings>(
   // 同步到相关系统
   if (key === "theme") {
     setThemeMode(value as ThemeMode);
-  } else if (key === "voiceEnabled") {
-    if (value !== speechEnabled.value) {
-      toggleSpeech();
-    }
   }
 }
 

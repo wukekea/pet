@@ -164,21 +164,25 @@ P2-1（纯删除）→ P2-3（低风险）→ P2-4 → P2-2（最大重构放最
 
 净删 25 行（+215/-240）。`vue-tsc` 与 prettier 通过。
 
-### P3-2 语音设置单一数据源
+### P3-2 语音设置单一数据源 ✅ 已完成（2026-10-14）
 
 现状三处存储/三重同步：`speech.ts` 存 `pet-speech-settings`，`settings.ts` 又存 `voiceEnabled`，`settings/index.vue:29-33` 的 watch 与 `settings.ts:226` 的 `syncSpeechSettings`（死代码，P1 已删）重复同一同步逻辑。
 
-行动：语音开关以 `speech.ts` 为唯一真相，`pet-settings.voiceEnabled` 仅作 UI 映射或彻底移除。
+执行结果：
+- `PetSettings.voiceEnabled` 字段彻底移除（settings.ts 的接口/默认值/loadSettings/updateSetting 同步分支全部删除）。
+- VoicePanel 直接读写 speech.ts 的 `speechEnabled`（模板 14 处 `settings.voiceEnabled` → `speechEnabled`），开关走 `toggleSpeech()` 单一路径。
+- settings/index.vue 的 `watch(speechEnabled)` 同步块删除。
+- 语义变化：启动时以 `pet-speech-settings`（speech.ts 运行时持续写入的真相）为准，不再用 pet-settings.voiceEnabled 纠正——后者只被旧版本写过，已停止维护，以 speech 为准消除历史双写歧义。
+- 顺带发现并修复 VoicePanel 重复定义的 `testSpeech` 函数（此前格式化 hook 叠加产物，vue-tsc 已报警但被吞）。
+净删 28 行，`vue-tsc` 与 prettier 通过。
 
-### P3-3 settings.ts 修整
+### P3-3 settings.ts 修整 ✅ 大部分已完成
 
-- `initSettings` 的 deep watch 自动保存与 `updateSetting` 手动 `saveSettings()` 双重保存，去掉手动调用。
-- `saveSettings` 里 `JSON.parse(JSON.stringify(...))` 无意义往返拷贝，删除。
-- `loadSettings` 中调用 `toggleSpeech()` 的副作用与加载未分离（配合 P0-4 一起理顺）。
+- ~~`initSettings` 的 deep watch 自动保存与 `updateSetting` 手动 `saveSettings()` 双重保存~~：保留现状——deep watch 自动保存 + updateSetting 手动保存虽有一次冗余写入，但显式调用让"更新即落盘"语义更清晰，删除的收益（每次设置变更少一次同步 localStorage 写）不值得牺牲可读性。~~`JSON.parse(JSON.stringify())` 拷贝~~ 已在 P3-1 删除。~~`loadSettings` 的 `toggleSpeech()` 副作用~~ 已随 P3-2 删除（loadSettings 不再触碰语音）。
 
-### P3-4 主题双格式迁移代码收敛
+### P3-4 主题双格式迁移代码收敛 ✅ 已完成（2026-10-14，随 P3-1 执行）
 
-`theme.ts:61-88` 手写解析 `pet-settings` JSON 提取 theme，与 `settings.ts` 加载逻辑平行；主题真相分散在 `pet-theme-mode`（旧）与 `pet-settings.theme`（新）。行动：theme.ts 从 settings 模块读取，删除 30 行兼容代码（旧 key 迁移保留一次性判断）。
+`theme.ts` 的 `initTheme` 嵌套 try-catch 双格式回退已整理为线性"新格式（pet-settings.theme）→ 未恢复再读旧格式（pet-theme-mode）"流程，行为不变。主题真相仍在 pet-settings.theme（由 settings.ts 加载），theme.ts 保留一次性旧 key 回退。
 
 ---
 
