@@ -121,10 +121,11 @@ console.log 调试残留已清理：`ChatPanel/index.vue`（4 处）、`nativeSp
 - 行动：基于（或扩展）`ParticleField.vue` 做通用 `EffectParticles` 组件，九个粒子类组件缩为"一份配置数组 + 若干独有道具"，每个文件预计从 250-350 行缩到 60-120 行。
 - 预计目录总量减 40-50%（约 3000+ 行）。
 
-### P2-3 极简徽章组件合并
+### P2-3 极简徽章组件合并 ✅ 已完成（2026-10-14）
 
-- 8 个 30-50 行的 emoji 组件（Hello/Grin/Peek/Sneeze/Scratch/Sleepy/Yawn/Stretch）结构完全一致（根容器 + 一个 span + 一个 keyframes）。
-- 行动：合并为 `SimpleBadgeEffect.vue`（props: icon/position/animation），`effectsMap.ts` 改传配置。
+- 9 个结构一致的极简组件（Hello/Grin/Peek/Sneeze/Scratch/Sleepy/Yawn/Stretch/Sleepwalking，各 33-50 行）合并为 `BadgeEffect.vue`（props: content/subText/position/fontSize/color/animation）+ 内置 `fx-badge-*` 动画库（wave/float/float-scale/bounce/puff/sparkle）。
+- `effectsMap.ts` 拆为 BADGE_EFFECTS（h() 内联配置）与 COMPLEX_EFFECTS 两张表；徽章类返回渲染函数，`<component :is>` 兼容函数组件。
+- 净删 286 行（9 组件 ~370 行 → BadgeEffect ~140 行 + 配置）。`vue-tsc` 通过。
 
 ### P2-4 其他
 

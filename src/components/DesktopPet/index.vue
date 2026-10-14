@@ -259,7 +259,7 @@ const dialogueVariant = computed(() =>
   ["sleeping", "sleepy", "yawn"].includes(petState.value) ? "cloud" : "default",
 );
 
-// 当前效果组件
+// 当前效果组件（徽章类状态返回内联渲染函数，见 effectsMap）
 const currentEffectComponent = computed(() => {
   const state = petState.value;
   return STATE_EFFECTS[state] || null;
