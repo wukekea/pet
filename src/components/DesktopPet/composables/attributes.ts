@@ -193,20 +193,14 @@ function tick(): void {
   // 缓存装饰效果，避免每次衰减/恢复检查都重新计算
   const effects = getActiveEffects(data.equippedDecorations);
 
-  // 跨午夜检查：重置每日交互经验，发放每日救济金
+  // 跨午夜检查：重置每日交互经验
   const today = getTodayString();
   if (data.dailyInteractionExpDate !== today) {
     data.dailyInteractionExpDate = today;
     data.dailyInteractionExp = 0;
   }
   // 每日救济金：金币低于阈值时自动发放
-  if (
-    data.dailyAllowanceClaimed !== today &&
-    data.money < DAILY_ALLOWANCE_THRESHOLD
-  ) {
-    data.money += DAILY_ALLOWANCE;
-    data.dailyAllowanceClaimed = today;
-  }
+  checkDailyAllowance();
 
   // 饱腹值衰减（搬砖时加速 3 倍）
   const satietyInterval =
@@ -357,72 +351,70 @@ function checkAutoBehaviors(): void {
   }
 }
 
-// 自动吃饭逻辑
-function checkAutoEat(): void {
+// 自动消耗品补充的通用逻辑：
+// 优先从库存挑"最便宜且能让属性达标"的；库存为空时购买最便宜的可负担项并使用
+function autoConsume<K extends string, C extends { type: K; cost: number }>(
+  configs: Record<string, C>,
+  inventory: Record<string, number>,
+  currentValue: number,
+  targetValue: number,
+  getRestore: (config: C) => number,
+  use: (type: K) => void,
+  buy: (type: K) => boolean,
+): void {
   const data = attributeData.value;
-  // 优先从库存中找食物
-  const inventoryFoods = Object.entries(data.foodInventory)
+
+  // 库存中可用的，按价格升序
+  const inStock = Object.entries(inventory)
     .filter(([, count]) => count > 0)
-    .map(([type]) => FOOD_CONFIGS[type as FoodType])
+    .map(([type]) => configs[type])
     .filter(Boolean)
     .sort((a, b) => a.cost - b.cost);
 
-  if (inventoryFoods.length > 0) {
-    // 优先选择能让饱腹达到目标的
-    const targetSatiety = AUTO_EAT_SATIETY_TARGET;
-    const bestFood =
-      inventoryFoods.find(
-        (f) => data.satiety + f.satietyRestore >= targetSatiety,
-      ) || inventoryFoods[0];
-
-    useFood(bestFood.type, true);
+  if (inStock.length > 0) {
+    // 优先选择能让属性达到目标的，否则用最便宜的
+    const best =
+      inStock.find((c) => currentValue + getRestore(c) >= targetValue) ||
+      inStock[0];
+    use(best.type);
     return;
   }
 
   // 库存为空，尝试购买最便宜的
-  const affordableFoods = Object.values(FOOD_CONFIGS)
-    .filter((f) => f.cost <= data.money)
+  const affordable = Object.values(configs)
+    .filter((c) => c.cost <= data.money)
     .sort((a, b) => a.cost - b.cost);
 
-  if (affordableFoods.length === 0) return;
+  if (affordable.length === 0) return;
 
-  const bestFood = affordableFoods[0];
-  buyFoodItem(bestFood.type);
-  useFood(bestFood.type, true);
+  buy(affordable[0].type);
+  use(affordable[0].type);
+}
+
+// 自动吃饭逻辑
+function checkAutoEat(): void {
+  autoConsume(
+    FOOD_CONFIGS,
+    attributeData.value.foodInventory,
+    attributeData.value.satiety,
+    AUTO_EAT_SATIETY_TARGET,
+    (f) => f.satietyRestore,
+    (t) => useFood(t, true),
+    buyFoodItem,
+  );
 }
 
 // 自动洗澡逻辑
 function checkAutoBath(): void {
-  const data = attributeData.value;
-  // 优先从库存中找沐浴露
-  const inventoryBaths = Object.entries(data.bathInventory)
-    .filter(([, count]) => count > 0)
-    .map(([type]) => BATH_CONFIGS[type as BathType])
-    .filter(Boolean)
-    .sort((a, b) => a.cost - b.cost);
-
-  if (inventoryBaths.length > 0) {
-    const bestBath =
-      inventoryBaths.find(
-        (b) =>
-          data.cleanliness + b.cleanlinessRestore >=
-          AUTO_BATH_CLEANLINESS_TARGET,
-      ) || inventoryBaths[0];
-
-    useBathItem(bestBath.type, true);
-    return;
-  }
-
-  // 库存为空，尝试购买最便宜的
-  const affordableBaths = Object.values(BATH_CONFIGS)
-    .filter((b) => b.cost <= data.money)
-    .sort((a, b) => a.cost - b.cost);
-
-  if (affordableBaths.length === 0) return;
-
-  const bestBath = affordableBaths[0];
-  buyBathItem(bestBath.type);
-  useBathItem(bestBath.type, true);
+  autoConsume(
+    BATH_CONFIGS,
+    attributeData.value.bathInventory,
+    attributeData.value.cleanliness,
+    AUTO_BATH_CLEANLINESS_TARGET,
+    (b) => b.cleanlinessRestore,
+    (t) => useBathItem(t, true),
+    buyBathItem,
+  );
 }
 
 // 通用购买逻辑 - 扣钱、入库存、加经验
@@ -898,7 +890,7 @@ export function initAttributes(): void {
   window.addEventListener("beforeunload", handleBeforeUnload);
 }
 
-// 检查并发放每日救济金
+// 检查并发放每日救济金（启动时与 tick 跨天时各调用一次）
 function checkDailyAllowance(): void {
   const data = attributeData.value;
   const today = getTodayString();

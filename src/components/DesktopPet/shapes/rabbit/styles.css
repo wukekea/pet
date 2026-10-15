@@ -383,68 +383,6 @@
 }
 
 /* ========================================
-   兔子吃东西状态覆盖
-   ======================================== */
-
-.pet-shape-rabbit.pet-eating .mouth-smile {
-  display: none;
-}
-
-.pet-shape-rabbit.pet-eating .mouth-o {
-  display: block;
-  width: calc(var(--pet-size, 80px) * 0.125);
-  height: calc(var(--pet-size, 80px) * 0.125);
-  border-radius: 50%;
-  animation: rabbit-mouth-chew 0.4s ease-in-out infinite;
-}
-
-@keyframes rabbit-mouth-chew {
-  0%,
-  100% {
-    width: calc(var(--pet-size, 80px) * 0.125);
-    height: calc(var(--pet-size, 80px) * 0.125);
-    border-radius: 50%;
-  }
-  50% {
-    width: calc(var(--pet-size, 80px) * 0.1);
-    height: calc(var(--pet-size, 80px) * 0.075);
-    border-radius: 50%;
-  }
-}
-
-/* ========================================
-   兔子打哈欠状态覆盖
-   ======================================== */
-
-.pet-shape-rabbit.pet-yawn .mouth-smile {
-  display: none;
-}
-
-.pet-shape-rabbit.pet-yawn .mouth-o {
-  display: block;
-  width: calc(var(--pet-size, 80px) * 0.2);
-  height: calc(var(--pet-size, 80px) * 0.2);
-  border-radius: 50%;
-  animation: rabbit-yawn-mouth 2s ease-in-out;
-}
-
-@keyframes rabbit-yawn-mouth {
-  0% {
-    width: calc(var(--pet-size, 80px) * 0.125);
-    height: calc(var(--pet-size, 80px) * 0.125);
-  }
-  30%,
-  70% {
-    width: calc(var(--pet-size, 80px) * 0.2);
-    height: calc(var(--pet-size, 80px) * 0.2);
-  }
-  100% {
-    width: calc(var(--pet-size, 80px) * 0.125);
-    height: calc(var(--pet-size, 80px) * 0.125);
-  }
-}
-
-/* ========================================
    兔子洗澡状态覆盖
    ======================================== */
 

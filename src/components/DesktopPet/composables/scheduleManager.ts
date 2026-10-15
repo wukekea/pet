@@ -10,7 +10,11 @@ import {
 } from "./sharedState";
 import { loadScheduleConfig, saveScheduleConfig } from "./scheduleStorage";
 import { changeState } from "./petController";
-import { showCustomDialogue, getDreamTalk } from "./dialogue";
+import {
+  showCustomDialogue,
+  getDreamTalk,
+  getWakeUpGreeting,
+} from "./dialogue";
 import {
   workScheduleEnterMessages,
   workScheduleExitMessages,
@@ -172,7 +176,7 @@ export function exitSleepSchedule(): void {
   if (stretchGreetingTimerId) clearTimeout(stretchGreetingTimerId);
   stretchGreetingTimerId = setTimeout(() => {
     stretchGreetingTimerId = null;
-    const greeting = getTimeGreetingForSleep();
+    const greeting = getWakeUpGreeting();
     showCustomDialogue(greeting);
   }, STRETCH_DURATION);
 
@@ -211,20 +215,6 @@ export function exitWorkSchedule(): void {
 
   // 切换到 idle，恢复正常行为
   changeState("idle");
-}
-
-// 根据时间获取睡眠唤醒问候语
-function getTimeGreetingForSleep(): string {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 11) {
-    return "早安！新的一天开始啦~";
-  } else if (hour >= 11 && hour < 13) {
-    return "中午好！睡得好香~";
-  } else if (hour >= 13 && hour < 18) {
-    return "下午好！精神满满！";
-  } else {
-    return "晚上好！";
-  }
 }
 
 // 更新作息状态

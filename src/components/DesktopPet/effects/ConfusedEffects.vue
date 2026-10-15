@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 疑惑效果组件
 // 问号/星星复制差异用配置数组 + v-for 渲染
-import StarSvg from "./icons/StarSvg.vue";
+import FxIcon from "./icons/FxIcon.vue";
 import QuestionSvg from "./icons/QuestionSvg.vue";
 
 // 问号：颜色/位置/尺寸/delay 差异
@@ -130,7 +130,12 @@ const wiggles = [
         '--fx-delay': star.delay,
       }"
     >
-      <StarSvg :color="star.color" class="star-svg" :class="star.size" />
+      <FxIcon
+        name="star"
+        :color="star.color"
+        class="star-svg"
+        :class="star.size"
+      />
     </div>
 
     <!-- 波浪线 -->

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 晕眩效果组件（摔倒时显示）
 // 旋转星星与十字眼复用 icons 通用组件，重复模板用 v-for 渲染
-import StarSvg from "./icons/StarSvg.vue";
+import FxIcon from "./icons/FxIcon.vue";
 import CrossEyeSvg from "./icons/CrossEyeSvg.vue";
 
 // 旋转的星星：只有颜色/位置/delay 差异
@@ -54,7 +54,8 @@ const dots = [
         '--fx-delay': star.delay,
       }"
     >
-      <StarSvg
+      <FxIcon
+        name="star"
         :color="star.color"
         class="star-svg"
         :class="{ small: star.small }"

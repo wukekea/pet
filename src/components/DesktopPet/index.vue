@@ -163,37 +163,44 @@ const onPetClick = () => {
   }
 };
 
-// 快捷喂食 - 选库存中恢复值最高的食物
-const quickFeed = () => {
-  const inv = attrData.value.foodInventory;
-  let bestFood: FoodType | null = null;
+// 快捷消耗 - 选库存中恢复值最高的物品（食物/沐浴露共用）
+const pickBestInStock = <T extends string>(
+  inventory: Record<string, number>,
+  configs: Record<
+    string,
+    { satietyRestore?: number; cleanlinessRestore?: number }
+  >,
+): T | null => {
+  let bestType: T | null = null;
   let bestRestore = -1;
-  for (const [type, count] of Object.entries(inv)) {
+  for (const [type, count] of Object.entries(inventory)) {
     if (count > 0) {
-      const config = FOOD_CONFIGS[type as FoodType];
-      if (config && config.satietyRestore > bestRestore) {
-        bestRestore = config.satietyRestore;
-        bestFood = type as FoodType;
+      const config = configs[type];
+      const restore = config?.satietyRestore ?? config?.cleanlinessRestore ?? 0;
+      if (restore > bestRestore) {
+        bestRestore = restore;
+        bestType = type as T;
       }
     }
   }
+  return bestType;
+};
+
+// 快捷喂食 - 选库存中恢复值最高的食物
+const quickFeed = () => {
+  const bestFood = pickBestInStock<FoodType>(
+    attrData.value.foodInventory,
+    FOOD_CONFIGS,
+  );
   if (bestFood) useFood(bestFood);
 };
 
 // 快捷清洗 - 选库存中恢复值最高的沐浴露
 const quickBath = () => {
-  const inv = attrData.value.bathInventory;
-  let bestBath: BathType | null = null;
-  let bestRestore = -1;
-  for (const [type, count] of Object.entries(inv)) {
-    if (count > 0) {
-      const config = BATH_CONFIGS[type as BathType];
-      if (config && config.cleanlinessRestore > bestRestore) {
-        bestRestore = config.cleanlinessRestore;
-        bestBath = type as BathType;
-      }
-    }
-  }
+  const bestBath = pickBestInStock<BathType>(
+    attrData.value.bathInventory,
+    BATH_CONFIGS,
+  );
   if (bestBath) useBathItem(bestBath);
 };
 

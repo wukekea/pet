@@ -396,67 +396,35 @@ const removeRainDrop = (id: number) => {
   }
 };
 
-// 监听雨滴列表变化，所有雨滴消失后重置退出状态并启动新天气效果
-watch(
-  () => rainDrops.value.length,
-  (newLen) => {
-    if (
-      isWeatherChanging.value &&
-      newLen === 0 &&
-      snowFlakes.value.length === 0
-    ) {
-      isWeatherChanging.value = false;
+// 监听雨滴/雪花列表变化：退出动画进行中且两类粒子都已落尽时，
+// 重置退出状态并启动新天气效果（此前两个回调体相同的 watcher 已合并）
+watch([() => rainDrops.value.length, () => snowFlakes.value.length], () => {
+  if (
+    !isWeatherChanging.value ||
+    rainDrops.value.length > 0 ||
+    snowFlakes.value.length > 0
+  ) {
+    return;
+  }
+  isWeatherChanging.value = false;
 
-      // 检查新天气是否需要启动效果
-      const newWeather = currentWeather.value;
-      const isNewRain = ["lightRain", "heavyRain", "thunderstorm"].includes(
-        newWeather,
-      );
-      const isNewSnow = ["lightSnow", "heavySnow"].includes(newWeather);
+  // 检查新天气是否需要启动效果
+  const newWeather = currentWeather.value;
+  const isNewRain = ["lightRain", "heavyRain", "thunderstorm"].includes(
+    newWeather,
+  );
+  const isNewSnow = ["lightSnow", "heavySnow"].includes(newWeather);
 
-      if (newWeather === "cloudy") {
-        startCloudGeneration();
-      } else if (isNewRain) {
-        rainDrops.value = [];
-        startRainGeneration();
-      } else if (isNewSnow) {
-        snowFlakes.value = [];
-        startSnowGeneration();
-      }
-    }
-  },
-);
-
-// 监听雪花列表变化，所有雪花消失后重置退出状态并启动新天气效果
-watch(
-  () => snowFlakes.value.length,
-  (newLen) => {
-    if (
-      isWeatherChanging.value &&
-      newLen === 0 &&
-      rainDrops.value.length === 0
-    ) {
-      isWeatherChanging.value = false;
-
-      // 检查新天气是否需要启动效果
-      const newWeather = currentWeather.value;
-      const isNewRain = ["lightRain", "heavyRain", "thunderstorm"].includes(
-        newWeather,
-      );
-      const isNewSnow = ["lightSnow", "heavySnow"].includes(newWeather);
-
-      if (newWeather === "cloudy") {
-        startCloudGeneration();
-      } else if (isNewRain) {
-        rainDrops.value = [];
-        startRainGeneration();
-      } else if (isNewSnow) {
-        snowFlakes.value = [];
-        startSnowGeneration();
-      }
-    }
-  },
-);
+  if (newWeather === "cloudy") {
+    startCloudGeneration();
+  } else if (isNewRain) {
+    rainDrops.value = [];
+    startRainGeneration();
+  } else if (isNewSnow) {
+    snowFlakes.value = [];
+    startSnowGeneration();
+  }
+});
 
 // 启动雨滴生成
 // initialBatch: 是否立即生成初始批次（雨天之间切换时传 false）

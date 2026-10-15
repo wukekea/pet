@@ -299,13 +299,6 @@ const close = () => {
 
 <style scoped>
 /* 内容区（骨架/金币/Tab/Toast/卡片网格由通用组件提供） */
-.modal-body {
-  padding: 0 24px 24px;
-  overflow-y: auto;
-  flex: 1;
-  position: relative;
-}
-
 /* 卡片信息区（价格 + 效果标签） */
 .item-info {
   display: flex;

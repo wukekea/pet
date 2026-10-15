@@ -2,7 +2,7 @@
 // 发传单效果组件 - 主动推销动画
 // 传单 SVG 与星星复用 icons 通用组件，重复模板用 v-for 渲染
 import FlyerSvg from "./icons/FlyerSvg.vue";
-import RoundStarSvg from "./icons/RoundStarSvg.vue";
+import FxIcon from "./icons/FxIcon.vue";
 
 // 三张飞舞传单：只有配色和位置/delay 差异
 const flyingFlyers = [
@@ -98,7 +98,7 @@ const excitementStars = [
         '--fx-delay': star.delay,
       }"
     >
-      <RoundStarSvg :color="star.color" class="star-svg" />
+      <FxIcon name="roundStar" :color="star.color" class="star-svg" />
     </div>
 
     <!-- 宣传喇叭 -->

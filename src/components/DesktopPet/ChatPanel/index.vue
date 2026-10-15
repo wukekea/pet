@@ -2,11 +2,8 @@
 import { ref, computed, nextTick, watch, onUnmounted } from "vue";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { useDraggable } from "../composables/useDraggable";
-import {
-  isChatPanelOpen,
-  llmConfig,
-  saveLLMConfig,
-} from "../composables/sharedState";
+import { isChatPanelOpen } from "../composables/sharedState";
+import LLMConfigForm from "../settings/LLMConfigForm.vue";
 import { createLocalStorage } from "../utils/storage";
 import { sendMessage } from "../composables/llmService";
 import type { ChatMessage } from "../composables/llmService";
@@ -14,12 +11,12 @@ import { isDark } from "../composables/theme";
 import { speak, speechEnabled } from "../composables/speech";
 import {
   isRecording,
-  isSupported as isSpeechRecognitionSupported,
+  isSpeechInputReady as isSpeechRecognitionSupported,
   toggleNativeRecording,
   cleanupNativeRecorder,
   recordingError as recognitionError,
-  checkNativeSpeechSupport,
-} from "../composables/nativeSpeechRecognition";
+  checkSpeechInputDependencies,
+} from "../composables/speechInputSettings";
 
 // 消息历史（走 createLocalStorage 工具，统一错误处理）
 const MAX_HISTORY = 50;
@@ -42,20 +39,10 @@ const messagesEnd = ref<HTMLDivElement | null>(null);
 const isLoading = ref(false);
 const error = ref("");
 
-// 设置面板
+// 设置面板（表单由 LLMConfigForm 共用组件承载）
 const showSettings = ref(false);
-const editConfig = ref({ ...llmConfig.value });
 function toggleSettings() {
   showSettings.value = !showSettings.value;
-  if (showSettings.value) {
-    editConfig.value = { ...llmConfig.value };
-  }
-}
-
-function saveConfig() {
-  // 写入 sharedState 的 llmConfig 并持久化（单一写入口，与设置面板共用）
-  saveLLMConfig({ ...editConfig.value });
-  showSettings.value = false;
 }
 
 // 滚动到底部
@@ -114,7 +101,7 @@ function clearHistory() {
 async function handleVoiceToggle() {
   // 重新检查支持状态
   if (!isSpeechRecognitionSupported.value) {
-    await checkNativeSpeechSupport();
+    await checkSpeechInputDependencies();
   }
 
   if (!isSpeechRecognitionSupported.value) {
@@ -293,43 +280,11 @@ const cssVars = computed(() => ({
           </div>
         </div>
 
-        <!-- 设置面板 -->
+        <!-- 设置面板（表单与 settings/ApiPanel 共用 LLMConfigForm） -->
         <Transition name="settings-slide">
           <div v-if="showSettings" class="settings-panel" @mousedown.stop>
             <div class="settings-title">API 配置</div>
-            <div class="setting-group">
-              <label>API 地址</label>
-              <input
-                v-model="editConfig.baseURL"
-                placeholder="https://api.openai.com/v1/chat/completions"
-                spellcheck="false"
-              />
-            </div>
-            <div class="setting-group">
-              <label>API Key</label>
-              <input
-                v-model="editConfig.apiKey"
-                type="password"
-                placeholder="sk-..."
-                spellcheck="false"
-              />
-            </div>
-            <div class="setting-group">
-              <label>模型</label>
-              <input
-                v-model="editConfig.model"
-                placeholder="gpt-4o-mini"
-                spellcheck="false"
-              />
-            </div>
-            <div class="setting-group">
-              <label>请求格式</label>
-              <select v-model="editConfig.requestFormat" class="setting-select">
-                <option value="openai">标准 OpenAI（支持工具调用）</option>
-                <option value="weibo">微博 aigc 代理</option>
-              </select>
-            </div>
-            <button class="save-btn" @click="saveConfig">保存</button>
+            <LLMConfigForm @saved="showSettings = false" />
           </div>
         </Transition>
 
@@ -650,78 +605,6 @@ const cssVars = computed(() => ({
   letter-spacing: 1px;
   color: var(--text-sub);
   margin-bottom: 10px;
-}
-
-.setting-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 8px;
-}
-
-.setting-group label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--label-color);
-}
-
-.setting-group input {
-  width: 100%;
-  padding: 7px 10px;
-  border-radius: 10px;
-  border: 1px solid var(--input-border);
-  background: var(--input-bg);
-  color: var(--text-main);
-  font-size: 12px;
-  font-family: inherit;
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color 0.2s;
-}
-
-.setting-select {
-  width: 100%;
-  padding: 7px 10px;
-  border-radius: 10px;
-  border: 1px solid var(--input-border);
-  background: var(--input-bg);
-  color: var(--text-main);
-  font-size: 12px;
-  font-family: inherit;
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color 0.2s;
-  cursor: pointer;
-}
-
-.setting-group input:focus,
-.setting-select:focus {
-  border-color: rgba(139, 92, 246, 0.6);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-}
-
-.save-btn {
-  margin-top: 4px;
-  width: 100%;
-  padding: 8px;
-  border: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-  color: white;
-  font-size: 13px;
-  font-weight: 700;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.save-btn:hover {
-  transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-}
-
-.save-btn:active {
-  transform: scale(0.98);
 }
 
 /* ============================================================

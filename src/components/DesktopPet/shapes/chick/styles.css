@@ -41,15 +41,6 @@
   box-shadow: 0 0 6px rgba(220, 38, 38, 0.5);
 }
 
-/* === 耳朵隐藏（小鸡没有耳朵，用鸡冠替代） === */
-.pet-shape-chick .pet-ear {
-  width: 0;
-  height: 0;
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-
 /* 右耳保留为蝴蝶结锚点，定位到鸡冠右侧 */
 .pet-shape-chick .pet-ear.ear-right {
   position: absolute;
@@ -148,15 +139,8 @@
   border-radius: 20% 50% 50% 50%;
   transform: rotate(-10deg);
   transform-origin: top left;
-}
-
-/* 隐藏默认手臂（用翅膀替代） */
-.pet-shape-chick .pet-arm {
-  width: 0;
-  height: 0;
-  background: transparent;
-  box-shadow: none;
-  border: none;
+  /* 右侧肢体方向系数：镜像 keyframes 用 */
+  --fx-dir: -1;
 }
 
 /* === 腿（橙色鸡爪） === */
@@ -200,26 +184,16 @@
 
 .pet-idle .pet-shape-chick .pet-wing.wing-right,
 .pet-shape-chick.pet-idle .pet-wing.wing-right {
-  animation: chick-wing-idle-right 2s ease-in-out infinite;
+  animation: chick-wing-idle 2s ease-in-out infinite;
 }
 
 @keyframes chick-wing-idle {
   0%,
   100% {
-    transform: rotate(10deg);
+    transform: rotate(calc(10deg * var(--fx-dir, 1)));
   }
   50% {
-    transform: rotate(15deg);
-  }
-}
-
-@keyframes chick-wing-idle-right {
-  0%,
-  100% {
-    transform: rotate(-10deg);
-  }
-  50% {
-    transform: rotate(-15deg);
+    transform: rotate(calc(15deg * var(--fx-dir, 1)));
   }
 }
 
@@ -231,24 +205,15 @@
 
 .pet-happy .pet-shape-chick .pet-wing.wing-right,
 .pet-shape-chick.pet-happy .pet-wing.wing-right {
-  animation: chick-wing-flap-right 0.15s ease-in-out infinite alternate;
+  animation: chick-wing-flap 0.15s ease-in-out infinite alternate;
 }
 
 @keyframes chick-wing-flap {
   0% {
-    transform: rotate(10deg);
+    transform: rotate(calc(10deg * var(--fx-dir, 1)));
   }
   100% {
-    transform: rotate(45deg);
-  }
-}
-
-@keyframes chick-wing-flap-right {
-  0% {
-    transform: rotate(-10deg);
-  }
-  100% {
-    transform: rotate(-45deg);
+    transform: rotate(calc(45deg * var(--fx-dir, 1)));
   }
 }
 
@@ -260,7 +225,7 @@
 
 .pet-celebrate .pet-shape-chick .pet-wing.wing-right,
 .pet-shape-chick.pet-celebrate .pet-wing.wing-right {
-  animation: chick-wing-flap-right 0.15s ease-in-out infinite alternate;
+  animation: chick-wing-flap 0.15s ease-in-out infinite alternate;
 }
 
 /* 跳跃时翅膀展开 */
@@ -271,28 +236,17 @@
 
 .pet-jumping .pet-shape-chick .pet-wing.wing-right,
 .pet-shape-chick.pet-jumping .pet-wing.wing-right {
-  animation: chick-wing-jump-right 0.8s ease-in-out;
+  animation: chick-wing-jump 0.8s ease-in-out;
 }
 
 @keyframes chick-wing-jump {
   0%,
   100% {
-    transform: rotate(10deg);
+    transform: rotate(calc(10deg * var(--fx-dir, 1)));
   }
   30%,
   70% {
-    transform: rotate(50deg);
-  }
-}
-
-@keyframes chick-wing-jump-right {
-  0%,
-  100% {
-    transform: rotate(-10deg);
-  }
-  30%,
-  70% {
-    transform: rotate(-50deg);
+    transform: rotate(calc(50deg * var(--fx-dir, 1)));
   }
 }
 
@@ -492,26 +446,17 @@
 
 .pet-bathing .pet-shape-chick .pet-wing.wing-right,
 .pet-shape-chick.pet-bathing .pet-wing.wing-right {
-  animation: chick-wing-scrub-right 0.6s ease-in-out infinite;
+  animation: chick-wing-scrub-left 0.6s ease-in-out infinite;
 }
 
 @keyframes chick-wing-scrub-left {
   0%,
   100% {
-    transform: rotate(10deg);
+    transform: rotate(calc(10deg * var(--fx-dir, 1)));
   }
   50% {
-    transform: rotate(25deg) translateY(calc(var(--pet-size, 80px) * -0.025));
-  }
-}
-
-@keyframes chick-wing-scrub-right {
-  0%,
-  100% {
-    transform: rotate(-10deg);
-  }
-  50% {
-    transform: rotate(-25deg) translateY(calc(var(--pet-size, 80px) * -0.025));
+    transform: rotate(calc(25deg * var(--fx-dir, 1)))
+      translateY(calc(var(--pet-size, 80px) * -0.025));
   }
 }
 
@@ -550,24 +495,16 @@
 
 .pet-programmer .pet-shape-chick .pet-wing.wing-right,
 .pet-shape-chick.pet-programmer .pet-wing.wing-right {
-  animation: chick-wing-type-right 0.3s ease-in-out infinite alternate-reverse;
+  animation: chick-wing-type-left 0.3s ease-in-out infinite alternate-reverse;
 }
 
 @keyframes chick-wing-type-left {
   0% {
-    transform: rotate(10deg) translateY(0);
+    transform: rotate(calc(10deg * var(--fx-dir, 1))) translateY(0);
   }
   100% {
-    transform: rotate(15deg) translateY(calc(var(--pet-size, 80px) * 0.025));
-  }
-}
-
-@keyframes chick-wing-type-right {
-  0% {
-    transform: rotate(-10deg) translateY(0);
-  }
-  100% {
-    transform: rotate(-15deg) translateY(calc(var(--pet-size, 80px) * 0.025));
+    transform: rotate(calc(15deg * var(--fx-dir, 1)))
+      translateY(calc(var(--pet-size, 80px) * 0.025));
   }
 }
 
@@ -579,28 +516,18 @@
 
 .pet-stretch .pet-shape-chick .pet-wing.wing-right,
 .pet-shape-chick.pet-stretch .pet-wing.wing-right {
-  animation: chick-wing-stretch-right 2.5s ease-in-out;
+  animation: chick-wing-stretch 2.5s ease-in-out;
 }
 
 @keyframes chick-wing-stretch {
   0%,
   100% {
-    transform: rotate(10deg);
+    transform: rotate(calc(10deg * var(--fx-dir, 1)));
   }
   30%,
   70% {
-    transform: rotate(55deg) translateY(calc(var(--pet-size, 80px) * -0.0375));
-  }
-}
-
-@keyframes chick-wing-stretch-right {
-  0%,
-  100% {
-    transform: rotate(-10deg);
-  }
-  30%,
-  70% {
-    transform: rotate(-55deg) translateY(calc(var(--pet-size, 80px) * -0.0375));
+    transform: rotate(calc(55deg * var(--fx-dir, 1)))
+      translateY(calc(var(--pet-size, 80px) * -0.0375));
   }
 }
 
@@ -670,7 +597,7 @@
 
 .pet-chase .pet-shape-chick .pet-wing.wing-right,
 .pet-shape-chick.pet-chase .pet-wing.wing-right {
-  animation: chick-wing-flap-right 0.2s ease-in-out infinite alternate;
+  animation: chick-wing-flap 0.2s ease-in-out infinite alternate;
 }
 
 /* 背面时隐藏喙 */
@@ -732,7 +659,7 @@
 
 .pet-fallen .pet-shape-chick .pet-wing.wing-right,
 .pet-shape-chick.pet-fallen .pet-wing.wing-right {
-  animation: chick-wing-flap-right 0.1s ease-in-out infinite alternate;
+  animation: chick-wing-flap 0.1s ease-in-out infinite alternate;
 }
 
 /* 坠落时鸡冠歪斜 */

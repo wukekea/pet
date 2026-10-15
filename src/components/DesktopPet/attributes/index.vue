@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { isDark } from "../composables/theme";
 import BaseModal from "../ui/BaseModal.vue";
+import MoneyBadge from "../ui/MoneyBadge.vue";
 import { usePanelTheme } from "../composables/usePanelTheme";
 import { useToast } from "../composables/useToast";
 import type { DecorationType, DecorationEffectType } from "../types";
@@ -304,6 +305,8 @@ const close = () => {
     :max-height="80"
     title-gradient="linear-gradient(135deg, #f472b6, #fb923c)"
     :css-vars="cssVars"
+    :body-padding-x="20"
+    :body-padding-bottom="20"
     @close="close"
   >
     <div class="modal-body">
@@ -380,12 +383,7 @@ const close = () => {
       </div>
 
       <!-- 金币 -->
-      <div class="money-section">
-        <div class="money-badge">
-          <span class="money-icon">💰</span>
-          <span class="money-amount">{{ attrData.money }}</span>
-        </div>
-      </div>
+      <MoneyBadge :amount="attrData.money" />
 
       <!-- 我的形态 -->
       <div class="shape-section">
@@ -546,12 +544,6 @@ const close = () => {
 
 <style scoped>
 /* 骨架部分由 BaseModal 提供，此处仅保留业务样式 */
-.modal-body {
-  padding: 0 20px 20px;
-  overflow-y: auto;
-  flex: 1;
-}
-
 /* 等级区域 */
 .level-section {
   padding: 14px 16px;
@@ -1225,32 +1217,6 @@ const close = () => {
 .dark-mode .effect-tag {
   background: rgba(168, 85, 247, 0.15);
   color: #a78bfa;
-}
-
-/* 金币 */
-.money-section {
-  margin-bottom: 16px;
-}
-
-.money-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: var(--money-bg);
-  border-radius: 20px;
-  border: 1px solid rgba(251, 191, 36, 0.2);
-}
-
-.money-icon {
-  font-size: 18px;
-}
-
-.money-amount {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--money-color);
 }
 
 /* 操作区域 */

@@ -3,7 +3,7 @@
 // 砖头 SVG 与音符复用 icons 通用组件，重复模板用 v-for 渲染
 import BrickSvg from "./icons/BrickSvg.vue";
 import SmallBrickSvg from "./icons/SmallBrickSvg.vue";
-import SweatDropSvg from "./icons/SweatDropSvg.vue";
+import FxIcon from "./icons/FxIcon.vue";
 import NoteSvg from "./icons/NoteSvg.vue";
 
 // 头顶搬运的三块砖：只有 delay 和 margin 差异
@@ -70,7 +70,8 @@ const effortNotes = [
       class="sweat-drop"
       :style="sweat"
     >
-      <SweatDropSvg
+      <FxIcon
+        name="sweatDrop"
         color="#87CEEB"
         class="sweat-svg"
         :class="{ small: i > 0 }"

@@ -22,15 +22,6 @@
     calc(var(--pet-size, 80px) * 0.05) rgba(0, 0, 0, 0.04);
 }
 
-/* === 耳朵隐藏 === */
-.pet-shape-frog .pet-ear {
-  width: 0;
-  height: 0;
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-
 /* 右耳保留为蝴蝶结锚点 */
 .pet-shape-frog .pet-ear.ear-right {
   position: absolute;

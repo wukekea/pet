@@ -136,6 +136,7 @@ const getStateBarWidth = (count: number) => {
     :max-height="80"
     title-gradient="linear-gradient(135deg, #10b981, #06b6d4)"
     :css-vars="cssVars"
+    :body-padding-bottom="20"
     @close="close"
   >
     <div class="modal-body">
@@ -272,12 +273,6 @@ const getStateBarWidth = (count: number) => {
 
 <style scoped>
 /* 骨架部分（overlay/装饰星/标题栏/关闭按钮）由 BaseModal 提供 */
-.modal-body {
-  padding: 0 24px 20px;
-  overflow-y: auto;
-  flex: 1;
-}
-
 .modal-footer {
   display: flex;
   justify-content: flex-end;

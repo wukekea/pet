@@ -29,15 +29,6 @@
   margin-top: calc(var(--pet-size, 80px) * -0.175);
 }
 
-/* === 耳朵隐藏 === */
-.pet-shape-penguin .pet-ear {
-  width: 0;
-  height: 0;
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-
 /* 右耳保留为蝴蝶结锚点 */
 .pet-shape-penguin .pet-ear.ear-right {
   position: absolute;
@@ -141,15 +132,8 @@
   right: calc(var(--pet-size, 80px) * -0.05);
   border-radius: 40% 60% 60% 40%;
   transform: rotate(-8deg);
-}
-
-/* 隐藏默认手臂 */
-.pet-shape-penguin .pet-arm {
-  width: 0;
-  height: 0;
-  background: transparent;
-  box-shadow: none;
-  border: none;
+  /* 右侧肢体方向系数：镜像 keyframes 用 */
+  --fx-dir: -1;
 }
 
 /* === 脚蹼（橙色） === */
@@ -195,26 +179,16 @@
 
 .pet-idle .pet-shape-penguin .pet-flipper.flipper-right,
 .pet-shape-penguin.pet-idle .pet-flipper.flipper-right {
-  animation: penguin-flipper-idle-right 2.5s ease-in-out infinite;
+  animation: penguin-flipper-idle-left 2.5s ease-in-out infinite;
 }
 
 @keyframes penguin-flipper-idle-left {
   0%,
   100% {
-    transform: rotate(8deg);
+    transform: rotate(calc(8deg * var(--fx-dir, 1)));
   }
   50% {
-    transform: rotate(12deg);
-  }
-}
-
-@keyframes penguin-flipper-idle-right {
-  0%,
-  100% {
-    transform: rotate(-8deg);
-  }
-  50% {
-    transform: rotate(-12deg);
+    transform: rotate(calc(12deg * var(--fx-dir, 1)));
   }
 }
 
@@ -255,24 +229,15 @@
 
 .pet-happy .pet-shape-penguin .pet-flipper.flipper-right,
 .pet-shape-penguin.pet-happy .pet-flipper.flipper-right {
-  animation: penguin-flipper-flap-right 0.2s ease-in-out infinite alternate;
+  animation: penguin-flipper-flap-left 0.2s ease-in-out infinite alternate;
 }
 
 @keyframes penguin-flipper-flap-left {
   0% {
-    transform: rotate(8deg);
+    transform: rotate(calc(8deg * var(--fx-dir, 1)));
   }
   100% {
-    transform: rotate(40deg);
-  }
-}
-
-@keyframes penguin-flipper-flap-right {
-  0% {
-    transform: rotate(-8deg);
-  }
-  100% {
-    transform: rotate(-40deg);
+    transform: rotate(calc(40deg * var(--fx-dir, 1)));
   }
 }
 
@@ -284,7 +249,7 @@
 
 .pet-celebrate .pet-shape-penguin .pet-flipper.flipper-right,
 .pet-shape-penguin.pet-celebrate .pet-flipper.flipper-right {
-  animation: penguin-flipper-flap-right 0.2s ease-in-out infinite alternate;
+  animation: penguin-flipper-flap-left 0.2s ease-in-out infinite alternate;
 }
 
 /* 跳跃时翅膀展开 */
@@ -295,28 +260,17 @@
 
 .pet-jumping .pet-shape-penguin .pet-flipper.flipper-right,
 .pet-shape-penguin.pet-jumping .pet-flipper.flipper-right {
-  animation: penguin-flipper-jump-right 0.8s ease-in-out;
+  animation: penguin-flipper-jump-left 0.8s ease-in-out;
 }
 
 @keyframes penguin-flipper-jump-left {
   0%,
   100% {
-    transform: rotate(8deg);
+    transform: rotate(calc(8deg * var(--fx-dir, 1)));
   }
   30%,
   70% {
-    transform: rotate(50deg);
-  }
-}
-
-@keyframes penguin-flipper-jump-right {
-  0%,
-  100% {
-    transform: rotate(-8deg);
-  }
-  30%,
-  70% {
-    transform: rotate(-50deg);
+    transform: rotate(calc(50deg * var(--fx-dir, 1)));
   }
 }
 
@@ -402,7 +356,7 @@
 
 .pet-chase .pet-shape-penguin .pet-flipper.flipper-right,
 .pet-shape-penguin.pet-chase .pet-flipper.flipper-right {
-  animation: penguin-flipper-flap-right 0.18s ease-in-out infinite alternate;
+  animation: penguin-flipper-flap-left 0.18s ease-in-out infinite alternate;
 }
 
 /* 追逐时也摇摆 */
@@ -523,26 +477,17 @@
 
 .pet-bathing .pet-shape-penguin .pet-flipper.flipper-right,
 .pet-shape-penguin.pet-bathing .pet-flipper.flipper-right {
-  animation: penguin-flipper-scrub-right 0.6s ease-in-out infinite;
+  animation: penguin-flipper-scrub-left 0.6s ease-in-out infinite;
 }
 
 @keyframes penguin-flipper-scrub-left {
   0%,
   100% {
-    transform: rotate(8deg);
+    transform: rotate(calc(8deg * var(--fx-dir, 1)));
   }
   50% {
-    transform: rotate(20deg) translateY(calc(var(--pet-size, 80px) * -0.025));
-  }
-}
-
-@keyframes penguin-flipper-scrub-right {
-  0%,
-  100% {
-    transform: rotate(-8deg);
-  }
-  50% {
-    transform: rotate(-20deg) translateY(calc(var(--pet-size, 80px) * -0.025));
+    transform: rotate(calc(20deg * var(--fx-dir, 1)))
+      translateY(calc(var(--pet-size, 80px) * -0.025));
   }
 }
 
@@ -581,25 +526,17 @@
 
 .pet-programmer .pet-shape-penguin .pet-flipper.flipper-right,
 .pet-shape-penguin.pet-programmer .pet-flipper.flipper-right {
-  animation: penguin-flipper-type-right 0.3s ease-in-out infinite
+  animation: penguin-flipper-type-left 0.3s ease-in-out infinite
     alternate-reverse;
 }
 
 @keyframes penguin-flipper-type-left {
   0% {
-    transform: rotate(8deg) translateY(0);
+    transform: rotate(calc(8deg * var(--fx-dir, 1))) translateY(0);
   }
   100% {
-    transform: rotate(12deg) translateY(calc(var(--pet-size, 80px) * 0.025));
-  }
-}
-
-@keyframes penguin-flipper-type-right {
-  0% {
-    transform: rotate(-8deg) translateY(0);
-  }
-  100% {
-    transform: rotate(-12deg) translateY(calc(var(--pet-size, 80px) * 0.025));
+    transform: rotate(calc(12deg * var(--fx-dir, 1)))
+      translateY(calc(var(--pet-size, 80px) * 0.025));
   }
 }
 
@@ -611,28 +548,18 @@
 
 .pet-stretch .pet-shape-penguin .pet-flipper.flipper-right,
 .pet-shape-penguin.pet-stretch .pet-flipper.flipper-right {
-  animation: penguin-flipper-stretch-right 2.5s ease-in-out;
+  animation: penguin-flipper-stretch-left 2.5s ease-in-out;
 }
 
 @keyframes penguin-flipper-stretch-left {
   0%,
   100% {
-    transform: rotate(8deg);
+    transform: rotate(calc(8deg * var(--fx-dir, 1)));
   }
   30%,
   70% {
-    transform: rotate(50deg) translateY(calc(var(--pet-size, 80px) * -0.0375));
-  }
-}
-
-@keyframes penguin-flipper-stretch-right {
-  0%,
-  100% {
-    transform: rotate(-8deg);
-  }
-  30%,
-  70% {
-    transform: rotate(-50deg) translateY(calc(var(--pet-size, 80px) * -0.0375));
+    transform: rotate(calc(50deg * var(--fx-dir, 1)))
+      translateY(calc(var(--pet-size, 80px) * -0.0375));
   }
 }
 
@@ -679,7 +606,7 @@
 
 .pet-fallen .pet-shape-penguin .pet-flipper.flipper-right,
 .pet-shape-penguin.pet-fallen .pet-flipper.flipper-right {
-  animation: penguin-flipper-flap-right 0.1s ease-in-out infinite alternate;
+  animation: penguin-flipper-flap-left 0.1s ease-in-out infinite alternate;
 }
 
 /* 翻滚时翅膀展开 */

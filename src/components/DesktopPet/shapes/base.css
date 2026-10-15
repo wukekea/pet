@@ -2667,3 +2667,21 @@
       translateY(calc(var(--pet-size, 80px) * -0.0125));
   }
 }
+
+/* ========================================
+   无耳/无臂形态的肢体隐藏
+   （原 chick/penguin/frog 各自复制的五连块收敛至此；
+   新增无耳形态时在此选择器组里追加一行即可）
+   ======================================== */
+
+.pet-shape-chick .pet-ear,
+.pet-shape-penguin .pet-ear,
+.pet-shape-frog .pet-ear,
+.pet-shape-chick .pet-arm,
+.pet-shape-penguin .pet-arm {
+  width: 0;
+  height: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 惊吓效果组件
-// 汗滴复用通用 SweatDropSvg
-import SweatDropSvg from "./icons/SweatDropSvg.vue";
+// 汗滴复用通用 FxIcon
+import FxIcon from "./icons/FxIcon.vue";
 
 // 惊叹号与闪电：各两份，只有颜色/delay 差异
 const exclaims = [
@@ -79,7 +79,8 @@ const shakeLines = [
       class="sweat-drop"
       :style="{ top: sweat.top, right: sweat.right, '--fx-delay': sweat.delay }"
     >
-      <SweatDropSvg
+      <FxIcon
+        name="sweatDrop"
         :color="sweat.color"
         class="sweat-svg"
         :class="{ small: sweat.small }"

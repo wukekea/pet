@@ -1,24 +1,26 @@
 <script setup lang="ts">
 // API 配置面板（从 settings/index.vue 拆出）
+// AI 对话区块的表单由 LLMConfigForm 共用组件承载
+// （与 ChatPanel 齿轮面板同一份实现）
+import { loadApiConfig, type ApiConfig } from "../composables/settings";
 import {
-  loadApiConfig,
-  saveApiConfig,
-  type ApiConfig,
-} from "../composables/settings";
+  saveApiKey,
+  saveApiHost,
+  saveAmapKey,
+} from "../composables/qweatherStorage";
 import { ref, watch } from "vue";
+import LLMConfigForm from "./LLMConfigForm.vue";
 
-// AI 请求格式选项
-const aiFormats = [
-  { key: "openai" as const, label: "OpenAI", desc: "GPT 系列 / 兼容格式" },
-  { key: "weibo" as const, label: "微博代理", desc: "微博 aigc 代理格式" },
-];
-
-// API 配置（从真实存储加载，保存时写回真实存储）
+// API 配置（天气/高德部分；AI 部分由 LLMConfigForm 自持自存）
 const apiConfig = ref<ApiConfig>(loadApiConfig());
 
-// 保存 API 配置
+// 保存天气/高德配置
+// 注意不要走 saveApiConfig 整体写入——其 ai 分支会拿本面板打开时的
+// 旧快照覆盖 llm-config，回滚用户在 LLMConfigForm 里刚保存的 AI 配置
 const saveApi = () => {
-  saveApiConfig(apiConfig.value);
+  saveApiKey(apiConfig.value.qweather.key);
+  saveApiHost(apiConfig.value.qweather.host);
+  saveAmapKey(apiConfig.value.amap.key);
   apiSaveSuccess.value = true;
   setTimeout(() => (apiSaveSuccess.value = false), 2000);
 };
@@ -35,11 +37,14 @@ const props = defineProps<{
 
 // 每次打开设置弹窗时重新加载，避免显示过期快照
 // （用户可能在 ChatPanel 齿轮面板改过 AI 配置）
+// reloadKey 同步驱动 LLMConfigForm 内部刷新快照
+const reloadKey = ref(0);
 watch(
   () => props.visible,
   (visible) => {
     if (visible) {
       apiConfig.value = loadApiConfig();
+      reloadKey.value++;
     }
   },
 );
@@ -143,50 +148,8 @@ watch(
           </div>
         </div>
         <div class="api-input-group">
-          <div class="input-row">
-            <label :style="{ color: textMuted }">请求格式</label>
-            <div class="format-selector">
-              <button
-                v-for="fmt in aiFormats"
-                :key="fmt.key"
-                class="format-option"
-                :class="{
-                  active: apiConfig.ai.format === fmt.key,
-                }"
-                @click="apiConfig.ai.format = fmt.key"
-              >
-                <span class="format-name">{{ fmt.label }}</span>
-                <span class="format-desc">{{ fmt.desc }}</span>
-              </button>
-            </div>
-          </div>
-          <div class="input-row">
-            <label :style="{ color: textMuted }">API URL</label>
-            <input
-              v-model="apiConfig.ai.url"
-              type="text"
-              placeholder="https://api.openai.com/v1/chat/completions"
-              class="api-key-input"
-            />
-          </div>
-          <div class="input-row">
-            <label :style="{ color: textMuted }">API Key</label>
-            <input
-              v-model="apiConfig.ai.key"
-              type="password"
-              placeholder="请输入 API Key"
-              class="api-key-input"
-            />
-          </div>
-          <div class="input-row">
-            <label :style="{ color: textMuted }">模型名称</label>
-            <input
-              v-model="apiConfig.ai.model"
-              type="text"
-              placeholder="如: gpt-4o-mini, glm-4"
-              class="api-key-input"
-            />
-          </div>
+          <!-- 表单与保存由 LLMConfigForm 承载，直接写入 llm-config 存储 -->
+          <LLMConfigForm :reload-key="reloadKey" />
         </div>
       </div>
 

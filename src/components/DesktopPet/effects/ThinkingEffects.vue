@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 思考效果组件
 // 星星点缀/省略号用配置数组 + v-for 渲染
-import SparkleSvg from "./icons/SparkleSvg.vue";
+import FxIcon from "./icons/FxIcon.vue";
 import QuestionSvg from "./icons/QuestionSvg.vue";
 
 // 闪烁星星：颜色/位置/尺寸/delay 差异
@@ -117,7 +117,8 @@ const sparkles = [
         '--fx-delay': sp.delay,
       }"
     >
-      <SparkleSvg
+      <FxIcon
+        name="sparkle"
         :color="sp.color"
         class="sparkle-svg"
         :class="{ small: sp.small }"

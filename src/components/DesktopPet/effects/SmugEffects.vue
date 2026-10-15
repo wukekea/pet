@@ -1,8 +1,7 @@
 <script setup lang="ts">
 // 得意效果组件
 // 爱心/闪光星复用 icons 通用组件，音符用 NoteSvg 替代重复 SVG
-import HeartSvg from "./icons/HeartSvg.vue";
-import SparkleSvg from "./icons/SparkleSvg.vue";
+import FxIcon from "./icons/FxIcon.vue";
 import NoteSvg from "./icons/NoteSvg.vue";
 
 // 光芒线条：旋转角度均分 + delay 步进
@@ -80,7 +79,12 @@ const sparkles = [
         '--fx-delay': sp.delay,
       }"
     >
-      <SparkleSvg :color="sp.color" class="sparkle-svg" :class="sp.size" />
+      <FxIcon
+        name="sparkle"
+        :color="sp.color"
+        class="sparkle-svg"
+        :class="sp.size"
+      />
     </div>
 
     <!-- 光芒线条 -->
@@ -111,7 +115,7 @@ const sparkles = [
 
     <!-- 小爱心 -->
     <div class="heart heart-1">
-      <HeartSvg color="#ff6b9d" class="heart-svg" />
+      <FxIcon name="heart" color="#ff6b9d" class="heart-svg" />
     </div>
   </div>
 </template>

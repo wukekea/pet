@@ -1,8 +1,8 @@
 import { ref, computed, watch } from "vue";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { setThemeMode, type ThemeMode } from "./theme";
-import { llmConfig, saveLLMConfig, type LLMConfig } from "./sharedState";
-import { saveApiKey, saveApiHost, saveAmapKey } from "./qweatherStorage";
+import { llmConfig, type LLMConfig } from "./sharedState";
+import { loadApiKey, loadApiHost, loadAmapKey } from "./qweatherStorage";
 import { createLocalStorage } from "../utils/storage";
 
 // 设置配置接口
@@ -46,13 +46,11 @@ export interface ApiConfig {
 export function loadApiConfig(): ApiConfig {
   return {
     qweather: {
-      key: localStorage.getItem(STORAGE_KEYS.qweatherApiKey) ?? "",
-      host:
-        localStorage.getItem(STORAGE_KEYS.qweatherApiHost) ??
-        "devapi.qweather.com",
+      key: loadApiKey() ?? "",
+      host: loadApiHost(),
     },
     amap: {
-      key: localStorage.getItem(STORAGE_KEYS.amapKey) ?? "",
+      key: loadAmapKey() ?? "",
     },
     ai: {
       key: llmConfig.value.apiKey,
@@ -61,19 +59,6 @@ export function loadApiConfig(): ApiConfig {
       format: llmConfig.value.requestFormat,
     },
   };
-}
-
-// 保存 API 配置到各真实存储（天气/定位重启应用后生效）
-export function saveApiConfig(config: ApiConfig): void {
-  saveApiKey(config.qweather.key);
-  saveApiHost(config.qweather.host);
-  saveAmapKey(config.amap.key);
-  saveLLMConfig({
-    baseURL: config.ai.url,
-    apiKey: config.ai.key,
-    model: config.ai.model,
-    requestFormat: config.ai.format,
-  });
 }
 
 // 默认设置

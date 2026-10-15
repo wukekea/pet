@@ -42,6 +42,22 @@ export function getTimeGreeting(): string {
   }
 }
 
+// 睡眠作息唤醒后的问候语（时段划分与 getTimeGreeting 一致，文案不同）
+export function getWakeUpGreeting(): string {
+  const period = getTimePeriod();
+
+  switch (period) {
+    case TIME_PERIOD_MORNING:
+      return "早安！新的一天开始啦~";
+    case TIME_PERIOD_NOON:
+      return "中午好！睡得好香~";
+    case TIME_PERIOD_AFTERNOON:
+      return "下午好！精神满满！";
+    default:
+      return "晚上好！";
+  }
+}
+
 // 显示自定义对话（用于打招呼等场景）
 export function showCustomDialogue(text: string) {
   // AI 聊天面板打开时不显示头顶气泡

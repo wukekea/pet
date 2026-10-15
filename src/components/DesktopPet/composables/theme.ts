@@ -1,8 +1,27 @@
 import { ref } from "vue";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
+import { createLocalStorage } from "../utils/storage";
+import type { PetSettings } from "./settings";
 
 // 主题模式类型
 export type ThemeMode = "system" | "light" | "dark";
+
+const THEME_MODES: readonly string[] = ["system", "light", "dark"];
+
+function isThemeMode(v: unknown): v is ThemeMode {
+  return typeof v === "string" && THEME_MODES.includes(v);
+}
+
+// 设置存储（与 settings.ts 共用同一 key/校验，只读用）
+// 注：settings.ts 正式持有该存储，此处仅声明同构校验以读取 theme 字段
+const settingsStorage = createLocalStorage<PetSettings>(
+  STORAGE_KEYS.settings,
+  { theme: "system" } as PetSettings,
+  (raw): raw is PetSettings =>
+    typeof raw === "object" &&
+    raw !== null &&
+    isThemeMode((raw as PetSettings).theme),
+);
 
 // 清理函数引用
 let themeCleanupFn: (() => void) | null = null;
@@ -60,25 +79,15 @@ export function initTheme() {
   cleanupTheme();
 
   // 优先从新的设置存储中读取
-  const savedSettings = localStorage.getItem(STORAGE_KEYS.settings);
-  let restored = false;
-  if (savedSettings) {
-    try {
-      const parsed = JSON.parse(savedSettings);
-      if (parsed.theme && ["system", "light", "dark"].includes(parsed.theme)) {
-        themeMode.value = parsed.theme;
-        restored = true;
-      }
-    } catch {
-      // 解析失败，走旧格式回退
-    }
-  }
-  if (!restored) {
+  const theme = settingsStorage.load().theme;
+  if (isThemeMode(theme)) {
+    themeMode.value = theme;
+  } else {
     // 兼容旧格式
     const savedMode = localStorage.getItem(
       STORAGE_KEYS.themeMode,
     ) as ThemeMode | null;
-    if (savedMode && ["system", "light", "dark"].includes(savedMode)) {
+    if (savedMode && isThemeMode(savedMode)) {
       themeMode.value = savedMode;
     }
   }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 害羞效果组件
-// 爱心复用 HeartSvg，腮红/小花/闪烁星重复模板用 v-for 渲染
-import HeartSvg from "./icons/HeartSvg.vue";
+// 爱心复用通用 FxIcon，腮红/小花/闪烁星重复模板用 v-for 渲染
+import FxIcon from "./icons/FxIcon.vue";
 
 // 腮红：左右各一份
 const blushes = [
@@ -88,7 +88,12 @@ const twinkles = [
         '--fx-delay': heart.delay,
       }"
     >
-      <HeartSvg :color="heart.color" class="heart-svg" :class="heart.size" />
+      <FxIcon
+        name="heart"
+        :color="heart.color"
+        class="heart-svg"
+        :class="heart.size"
+      />
     </div>
 
     <!-- 小花 -->

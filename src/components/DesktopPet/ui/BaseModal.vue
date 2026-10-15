@@ -44,6 +44,10 @@ const props = withDefaults(
     titleGradient?: string;
     /** 主题 CSS 变量集合（含 --overlay-bg/--modal-bg/--modal-shadow 等） */
     cssVars?: Record<string, string>;
+    /** 内容区两侧内边距（px），默认 24；用于默认 .modal-body 样式 */
+    bodyPaddingX?: number;
+    /** 内容区底部内边距（px），默认 24；用于默认 .modal-body 样式 */
+    bodyPaddingBottom?: number;
   }>(),
   {
     decorEmojis: () => [],
@@ -52,6 +56,8 @@ const props = withDefaults(
     borderRadius: 24,
     titleGradient: undefined,
     cssVars: () => ({}),
+    bodyPaddingX: 24,
+    bodyPaddingBottom: 24,
   },
 );
 
@@ -68,6 +74,9 @@ const modalStyle = computed(() => {
     "max-width": "90vw",
     "max-height": `${props.maxHeight}vh`,
     "border-radius": `${props.borderRadius}px`,
+    // 内容区骨架样式的内边距变量（见 :deep(.modal-body)）
+    "--modal-body-px": `${props.bodyPaddingX}px`,
+    "--modal-body-pb": `${props.bodyPaddingBottom}px`,
   };
   if (props.height) {
     style.height = `${props.height}px`;
@@ -120,7 +129,8 @@ const titleStyle = computed(() => {
             </button>
           </div>
 
-          <!-- 内容区（默认插槽） -->
+          <!-- 内容区（默认插槽；内容容器 .modal-body 的骨架样式
+               由本组件提供，各面板不再各自复制一份） -->
           <slot />
         </div>
       </div>
@@ -278,5 +288,15 @@ const titleStyle = computed(() => {
   100% {
     opacity: 0;
   }
+}
+
+/* ===== 内容区骨架（原 5 个面板各自复制的 .modal-body） ===== */
+/* 通过深度选择器作用于插槽内容；内边距由 bodyPaddingX/bodyPaddingBottom
+   props 注入为 CSS 变量，需要自定义的面板仍可局部覆盖 */
+:deep(.modal-body) {
+  padding: 0 var(--modal-body-px, 24px) var(--modal-body-pb, 24px);
+  overflow-y: auto;
+  flex: 1;
+  position: relative; /* 作为面板内 Toast 等绝对定位子元素的基准 */
 }
 </style>

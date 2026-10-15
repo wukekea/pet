@@ -225,6 +225,7 @@ const saveSchedule = () => {
     :max-height="70"
     title-gradient="linear-gradient(135deg, #8b5cf6, #ec4899)"
     :css-vars="cssVars"
+    :body-padding-bottom="20"
     @close="close"
   >
     <div class="modal-body">
@@ -409,12 +410,6 @@ const saveSchedule = () => {
 
 <style scoped>
 /* 骨架部分由 BaseModal 提供，此处仅保留业务样式 */
-.modal-body {
-  padding: 0 24px 20px;
-  overflow-y: auto;
-  flex: 1;
-}
-
 .toggle-card {
   display: flex;
   align-items: center;

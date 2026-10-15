@@ -1,8 +1,7 @@
 <script setup lang="ts">
 // 开心效果组件 - 萌系动漫风格
 // 漂浮元素用配置数组 + v-for 渲染（替代手写序号副本）
-import HeartSvg from "./icons/HeartSvg.vue";
-import StarSvg from "./icons/StarSvg.vue";
+import FxIcon from "./icons/FxIcon.vue";
 
 // 爱心：颜色/位置/delay 差异
 const hearts = [
@@ -39,7 +38,8 @@ const stars = [
         '--fx-delay': heart.delay,
       }"
     >
-      <HeartSvg
+      <FxIcon
+        name="heart"
         :color="heart.color"
         class="heart-svg"
         :class="{ small: heart.small }"
@@ -59,7 +59,8 @@ const stars = [
         '--fx-delay': star.delay,
       }"
     >
-      <StarSvg
+      <FxIcon
+        name="star"
         :color="star.color"
         class="star-svg"
         :class="{ small: star.small }"
