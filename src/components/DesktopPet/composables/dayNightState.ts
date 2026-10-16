@@ -28,6 +28,8 @@ const REFRESH_INTERVAL = 30_000;
 export const daylight = ref(1);
 /** 月相档位（0-7：0 新月、2 上弦、4 满月、6 下弦） */
 export const moonPhaseIndex = ref(0);
+/** 月相连续相位（0~1，0 新月、0.5 满月，用于月面阴影绘制） */
+export const moonPhaseFraction = ref(0);
 /** 月亮照亮比例 0~1（连续值，用于月光亮度） */
 export const moonIllumination = ref(0);
 /** 是否为白天 */
@@ -71,6 +73,7 @@ function computeState(): void {
   const daysSinceNewMoon =
     ((now.getTime() - REFERENCE_NEW_MOON_UTC) / 86_400_000) % SYNODIC_MONTH;
   const phase = daysSinceNewMoon / SYNODIC_MONTH; // 0~1，0 和 1 为新月
+  moonPhaseFraction.value = phase;
   moonPhaseIndex.value = Math.floor(phase * 8 + 0.5) % 8;
   moonIllumination.value = (1 - Math.cos(2 * Math.PI * phase)) / 2;
 

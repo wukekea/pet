@@ -4,7 +4,7 @@ import { currentWeather, isWeatherChanging } from "./composables/weatherState";
 import {
   daylight,
   isDaytime,
-  moonPhaseIndex,
+  moonPhaseFraction,
   moonIllumination,
   celestialX,
   celestialY,
@@ -144,9 +144,9 @@ const celestialStyle = computed(() => ({
   transform: `translate(${(celestialX.value / 100) * CELESTIAL_CONTAINER_SIZE}px, ${(celestialY.value / 100) * CELESTIAL_CONTAINER_SIZE}px)`,
 }));
 
-// 夜间遮罩透明度：深夜最深 0.85，随 daylight 增大而变浅
+// 夜间遮罩透明度：深夜最深 0.7（保持月夜蓝调的可辨识亮度），随 daylight 增大而变浅
 const nightOverlayOpacity = computed(() =>
-  ((1 - daylight.value) * 0.85).toFixed(3),
+  ((1 - daylight.value) * 0.7).toFixed(3),
 );
 
 // 月光层透明度：满月夜最亮约 0.25，且仅夜晚非雨天生效
@@ -156,23 +156,38 @@ const moonlightOverlayOpacity = computed(() => {
   return (moonIllumination.value * 0.25).toFixed(3);
 });
 
-// 月相 SVG 阴影参数：8 档月相 → 阴影椭圆的宽度与水平偏移
-// 用两个半圆 + 椭圆近似月相盘面：
-//   phase 0(新月)~4(满月)：阴影从右往左退出；phase 4~7+0：从左往右进入
-// 月相视觉由 CSS 类 + 阴影椭圆参数共同决定
+// 月相阴影：真实月相成因是"月球被太阳照亮的一半朝向变化"，非地球遮挡（那是月食）。
+// 标准月相画法（terminator 画法）：暗区由"暗侧月缘半圆弧 + 明暗交界椭圆弧"围成：
+//   相位 f（0 新月 → 0.5 满月 → 1 新月），交界椭圆的带符号半宽 rx = R·cos(2πf)
+//   盈月（f<0.5）亮面在右、暗侧在左；亏月相反
+//   |rx|=R（新月/满月）时椭圆弧与月缘重合（全暗/全亮），rx=0（上下弦）时退化为直线
+// 另加固定倾角：真实月相的明暗线因黄道倾角略有斜置（娥眉月如小船），约 -15°
 const moonShadow = computed(() => {
-  const phase = moonPhaseIndex.value;
-  // illuminate: 0 新月 → 1 满月
-  const illuminate = moonIllumination.value;
-  // 椭圆宽度 = |cos(2π·phase/8)| × 半径：上弦/下弦时最宽（半圆），满月/新月时为 0
-  const widthRatio = Math.abs(Math.cos((2 * Math.PI * phase) / 8));
-  // 阴影圆心水平偏移：新月时遮住整个盘面，满月时完全移出
-  const dx = (1 - illuminate) * 2;
+  const f = moonPhaseFraction.value; // 0~1
+  const R = 16; // 月盘半径（viewBox 坐标）
+  const cx = 20;
+  const cy = 20;
+  const TILT_DEG = -15; // 明暗线倾角（度，负=逆时针）
+
+  const waxing = f < 0.5; // 盈月：暗侧在左；亏月：暗侧在右
+  const signedRx = Math.cos(2 * Math.PI * f) * R;
+
+  // 两段弧均从上极点 (cx, cy-R) 画到下极点 (cx, cy+R)，再回到上极点围成暗区：
+  //   椭圆弧（明暗交界线，上→下）：sweep=1 凸向右、sweep=0 凸向左
+  //     娥眉/残月：交界线凸向亮侧（暗区大）；盈凸/亏凸：凸向暗侧（暗区小）
+  //   月缘弧（暗侧半圆，下→上）：注意方向反转——sweep=1 凸向左、sweep=0 凸向右
+  //     盈月暗侧在左（sweep=1 走左缘）、亏月暗侧在右（sweep=0 走右缘）
+  const ellipseSweep = waxing === signedRx > 0 ? 1 : 0;
+  const limbSweep = waxing ? 1 : 0;
+
+  const rx = Math.abs(signedRx).toFixed(2);
   return {
-    widthRatio: widthRatio.toFixed(3),
-    // 阴影位于右侧（娥眉→盈凸）或左侧（残月→亏凸）
-    side: phase < 4 ? "right" : "left",
-    dx: dx.toFixed(3),
+    d: `M ${cx} ${cy - R} A ${rx} ${R} 0 0 ${ellipseSweep} ${cx} ${cy + R} A ${R} ${R} 0 0 ${limbSweep} ${cx} ${cy - R} Z`,
+    // 整体绕月心旋转，让明暗线斜置
+    transform: `rotate(${TILT_DEG} ${cx} ${cy})`,
+    // 仅满月（f≈0.5，暗区退化到月缘之外）跳过阴影渲染；
+    // 新月时暗区覆盖全盘，必须渲染才能"看不见月亮"
+    isFullMoon: f > 0.25 && f < 0.75 && Math.abs(signedRx) >= R * 0.999,
   };
 });
 
@@ -939,7 +954,7 @@ onUnmounted(() => {
       <div class="sun-halo sun-halo-inner"></div>
       <div class="sun-disc"></div>
     </div>
-    <!-- 月亮：夜晚非雨天（含雪夜），8 档月相 -->
+    <!-- 月亮：夜晚非雨天（含雪夜），terminator 画法呈现月相 -->
     <div v-show="moonVisible" class="celestial moon" :style="celestialStyle">
       <div class="moon-halo"></div>
       <svg class="moon-disc" viewBox="0 0 40 40">
@@ -949,26 +964,14 @@ onUnmounted(() => {
         <circle cx="14" cy="15" r="3" class="moon-crater" />
         <circle cx="25" cy="24" r="2.2" class="moon-crater" />
         <circle cx="21" cy="12" r="1.6" class="moon-crater" />
-        <!-- 月相阴影：椭圆遮罩，宽度和偏移由 moonShadow 计算 -->
-        <ellipse
-          v-if="moonPhaseIndex !== 4"
+        <!-- 月相暗区：暗侧月缘弧 + 明暗交界椭圆弧围成，整体带 -15° 倾角；
+             fill 取深夜天空色而非纯黑，避免在非纯黑背景上显出突兀色块；
+             满月（暗区退化）时跳过渲染 -->
+        <path
+          v-if="!moonShadow.isFullMoon"
           class="moon-shadow"
-          :cx="
-            20 +
-            (moonShadow.side === 'right' ? 1 : -1) *
-              (16 * parseFloat(moonShadow.dx))
-          "
-          cy="20"
-          :rx="16 * parseFloat(moonShadow.widthRatio)"
-          ry="16"
-        />
-        <!-- 新月时整个盘面被阴影盖住 -->
-        <circle
-          v-if="moonPhaseIndex === 0"
-          class="moon-shadow-full"
-          cx="20"
-          cy="20"
-          r="16"
+          :d="moonShadow.d"
+          :transform="moonShadow.transform"
         />
       </svg>
     </div>

@@ -363,15 +363,12 @@
   fill: rgba(176, 190, 210, 0.35);
 }
 
-/* 月相阴影：不透明遮盖照亮区之外的盘面 */
+/* 月相遮挡圆（"地球影子"）：
+   取深夜天空色（与 night-overlay 同族）而非纯黑——背景非纯黑，
+   纯黑会显出突兀色块；描边与月盘同色，让遮住的月缘与天空自然融合 */
 .moon-shadow {
-  fill: #1c2431;
-  opacity: 0.94;
-}
-
-.moon-shadow-full {
-  fill: #1c2431;
-  opacity: 0.96;
+  fill: #101828;
+  opacity: 0.97;
 }
 
 .moon-halo {
@@ -389,20 +386,23 @@
 }
 
 /* --- 亮度遮罩层 --- */
-/* 夜间遮罩：深夜蓝黑，opacity 由组件按 (1-daylight)×0.85 注入 */
+/* 夜间遮罩：月夜蓝调，opacity 由组件按 (1-daylight)×0.85 注入 */
 .night-overlay {
   position: absolute;
   inset: 0;
   z-index: 4; /* 高于云层，整个场景一起入夜 */
   pointer-events: none;
-  /* 与其他天气背景一致：径向渐变淡出，视觉为柔和圆形而非方形色块 */
+  /* 与其他天气背景一致：径向渐变淡出，视觉为柔和圆形而非方形色块；
+     色调用较亮的月夜蓝而非深黑，深夜也保持可辨识度，与白天形成明显但柔和的反差 */
   background: radial-gradient(
     ellipse at 50% 45%,
-    rgba(16, 24, 44, 0.55) 0%,
-    rgba(10, 16, 32, 0.6) 40%,
+    rgba(52, 73, 112, 0.42) 0%,
+    rgba(38, 54, 86, 0.48) 40%,
     transparent 70%
   );
-  transition: opacity 32s linear; /* 与 30s tick 匹配，跨 tick 平滑衔接 */
+  /* 真实运行时 30s tick 的 opacity 步长仅 ~0.03，1.5s 过渡即可无感抹平；
+     调试滑块大跳变时也能在 1.5s 内完成（此前 32s 定长会导致拖动后遮罩长时间冻结） */
+  transition: opacity 1.5s ease-out;
 }
 
 /* 月光层：冷白蓝光晕，opacity 由组件按月照亮比例注入 */
