@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted } from "vue";
 import { currentWeather, isWeatherChanging } from "./composables/weatherState";
-import { isDark } from "./composables/theme";
+import {
+  daylight,
+  isDaytime,
+  moonPhaseIndex,
+  moonIllumination,
+  celestialX,
+  celestialY,
+} from "./composables/dayNightState";
 import { position } from "./composables/sharedState";
 import "./weather.css";
 
@@ -103,6 +110,7 @@ let rippleId = 0;
 
 // ========== 计算属性 ==========
 // 天气背景样式类（退场时保持原天气样式）
+// 注：不再挂载 dark-theme——背景明暗由昼夜遮罩层接管，系统主题只影响 UI 面板
 const weatherClass = computed(() => {
   if (isWeatherChanging.value) {
     // 根据是否有雨滴或雪花判断是否显示天气背景
@@ -112,9 +120,6 @@ const weatherClass = computed(() => {
   }
   return `weather-${currentWeather.value}`;
 });
-const themeClass = computed(() =>
-  isDark.value ? "dark-theme" : "light-theme",
-);
 
 // 天气背景位置 - 跟随宠物位置，居中显示
 // 使用 transform 替代 left/top，利用 GPU 合成层避免 reflow
@@ -122,6 +127,54 @@ const themeClass = computed(() =>
 const weatherStyle = computed(() => ({
   transform: `translate(calc(${position.value.x + 40}px - 50%), calc(${position.value.y - 20}px - 50%))`,
 }));
+
+// ========== 昼夜系统 ==========
+// 雨天（小雨/暴雨/雷阵雨）隐藏天体与月光层
+const isRainy = computed(() =>
+  ["lightRain", "heavyRain", "thunderstorm"].includes(currentWeather.value),
+);
+
+// 天体可见性：白天出太阳、夜晚出月亮，雨天淡出
+const sunVisible = computed(() => isDaytime.value && !isRainy.value);
+const moonVisible = computed(() => !isDaytime.value && !isRainy.value);
+
+// 天体沿弧线的定位（百分比映射为容器像素，容器为 280px）
+const CELESTIAL_CONTAINER_SIZE = 280;
+const celestialStyle = computed(() => ({
+  transform: `translate(${(celestialX.value / 100) * CELESTIAL_CONTAINER_SIZE}px, ${(celestialY.value / 100) * CELESTIAL_CONTAINER_SIZE}px)`,
+}));
+
+// 夜间遮罩透明度：深夜最深 0.85，随 daylight 增大而变浅
+const nightOverlayOpacity = computed(() =>
+  ((1 - daylight.value) * 0.85).toFixed(3),
+);
+
+// 月光层透明度：满月夜最亮约 0.25，且仅夜晚非雨天生效
+// 遮罩数值随 30s tick 小步变化，配合 CSS transition 平滑过渡
+const moonlightOverlayOpacity = computed(() => {
+  if (isDaytime.value || isRainy.value) return "0";
+  return (moonIllumination.value * 0.25).toFixed(3);
+});
+
+// 月相 SVG 阴影参数：8 档月相 → 阴影椭圆的宽度与水平偏移
+// 用两个半圆 + 椭圆近似月相盘面：
+//   phase 0(新月)~4(满月)：阴影从右往左退出；phase 4~7+0：从左往右进入
+// 月相视觉由 CSS 类 + 阴影椭圆参数共同决定
+const moonShadow = computed(() => {
+  const phase = moonPhaseIndex.value;
+  // illuminate: 0 新月 → 1 满月
+  const illuminate = moonIllumination.value;
+  // 椭圆宽度 = |cos(2π·phase/8)| × 半径：上弦/下弦时最宽（半圆），满月/新月时为 0
+  const widthRatio = Math.abs(Math.cos((2 * Math.PI * phase) / 8));
+  // 阴影圆心水平偏移：新月时遮住整个盘面，满月时完全移出
+  const dx = (1 - illuminate) * 2;
+  return {
+    widthRatio: widthRatio.toFixed(3),
+    // 阴影位于右侧（娥眉→盈凸）或左侧（残月→亏凸）
+    side: phase < 4 ? "right" : "left",
+    dx: dx.toFixed(3),
+  };
+});
 
 // ========== 工具函数 ==========
 // 生成随机数序列用于动画延迟
@@ -878,11 +931,55 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div
-    class="weather-background"
-    :class="[weatherClass, themeClass]"
-    :style="weatherStyle"
-  >
+  <div class="weather-background" :class="weatherClass" :style="weatherStyle">
+    <!-- 昼夜天体层 - z 低于云层，多云时云飘过自然遮挡 -->
+    <!-- 太阳：白天非雨天，沿弧线东升西落 -->
+    <div v-show="sunVisible" class="celestial sun" :style="celestialStyle">
+      <div class="sun-halo sun-halo-outer"></div>
+      <div class="sun-halo sun-halo-inner"></div>
+      <div class="sun-disc"></div>
+    </div>
+    <!-- 月亮：夜晚非雨天（含雪夜），8 档月相 -->
+    <div v-show="moonVisible" class="celestial moon" :style="celestialStyle">
+      <div class="moon-halo"></div>
+      <svg class="moon-disc" viewBox="0 0 40 40">
+        <!-- 月盘本体 -->
+        <circle cx="20" cy="20" r="16" class="moon-body" />
+        <!-- 月面环形山（暗斑，营造立体感） -->
+        <circle cx="14" cy="15" r="3" class="moon-crater" />
+        <circle cx="25" cy="24" r="2.2" class="moon-crater" />
+        <circle cx="21" cy="12" r="1.6" class="moon-crater" />
+        <!-- 月相阴影：椭圆遮罩，宽度和偏移由 moonShadow 计算 -->
+        <ellipse
+          v-if="moonPhaseIndex !== 4"
+          class="moon-shadow"
+          :cx="
+            20 +
+            (moonShadow.side === 'right' ? 1 : -1) *
+              (16 * parseFloat(moonShadow.dx))
+          "
+          cy="20"
+          :rx="16 * parseFloat(moonShadow.widthRatio)"
+          ry="16"
+        />
+        <!-- 新月时整个盘面被阴影盖住 -->
+        <circle
+          v-if="moonPhaseIndex === 0"
+          class="moon-shadow-full"
+          cx="20"
+          cy="20"
+          r="16"
+        />
+      </svg>
+    </div>
+
+    <!-- 亮度遮罩层 - 平滑过渡由 CSS transition 保证 -->
+    <div class="night-overlay" :style="{ opacity: nightOverlayOpacity }"></div>
+    <div
+      class="moonlight-overlay"
+      :style="{ opacity: moonlightOverlayOpacity }"
+    ></div>
+
     <!-- 晴天效果 - 温柔的光晕与漂浮光点 -->
     <div
       v-if="currentWeather === 'sunny' && !isWeatherChanging"
@@ -940,7 +1037,7 @@ onUnmounted(() => {
           }"
           @animationend="removeCloud(cloud.id)"
         >
-          <g class="cloud-group" :class="{ 'dark-theme': isDark }">
+          <g class="cloud-group">
             <ellipse cx="30" cy="35" rx="25" ry="15" class="cloud-part" />
             <ellipse cx="50" cy="28" rx="30" ry="20" class="cloud-part" />
             <ellipse cx="70" cy="35" rx="22" ry="14" class="cloud-part" />

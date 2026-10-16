@@ -37,6 +37,10 @@ import {
   currentWeather,
   setWeather,
 } from "../DesktopPet/composables/weatherState";
+import {
+  timeOffset,
+  setTimeOffset,
+} from "../DesktopPet/composables/dayNightState";
 import { weatherStatus } from "../DesktopPet/composables/qweatherService";
 import DecoIcon from "../DesktopPet/shapes/decorations/DecoIcon.vue";
 import type { PetState } from "../DesktopPet/types";
@@ -248,6 +252,47 @@ const themeOptions: { value: ThemeMode; label: string; icon: string }[] = [
 
 // 当前天气
 const activeWeather = computed(() => currentWeather.value);
+
+// 昼夜时间偏移选项（相对于真实时间的快速跳转，便于验收昼夜各状态）
+const dayNightOptions: {
+  value: number;
+  label: string;
+  icon: string;
+  title: string;
+}[] = [
+  { value: 0, label: "实时", icon: "🕐", title: "跟随系统真实时间" },
+  {
+    value: 12 - new Date().getHours(),
+    label: "正午",
+    icon: "☀️",
+    title: "跳到白天 12:00（观察太阳）",
+  },
+  {
+    value: 0 - new Date().getHours(),
+    label: "午夜",
+    icon: "🌙",
+    title: "跳到 0:00（观察月亮弧线位置）",
+  },
+  {
+    value: 18 - new Date().getHours(),
+    label: "黄昏",
+    icon: "🌇",
+    title: "跳到 18:00（观察亮度过渡）",
+  },
+  {
+    value: 6 - new Date().getHours(),
+    label: "黎明",
+    icon: "🌅",
+    title: "跳到 6:00（观察亮度过渡）",
+  },
+];
+
+// 偏移量展示（小时）
+const timeOffsetLabel = computed(() =>
+  timeOffset.value === 0
+    ? "关闭"
+    : `${timeOffset.value > 0 ? "+" : ""}${timeOffset.value.toFixed(1)}h`,
+);
 
 // 真实天气描述（API 返回）
 const realWeatherText = computed(() => {
@@ -614,6 +659,26 @@ defineExpose({
               >
                 <span class="btn-icon">{{ weather.icon }}</span>
                 <span class="btn-label">{{ weather.label }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 昼夜时间偏移（调试） -->
+          <div class="action-group">
+            <div class="group-title">
+              昼夜时间（偏移 {{ timeOffsetLabel }}）
+            </div>
+            <div class="action-buttons">
+              <button
+                v-for="option in dayNightOptions"
+                :key="option.label"
+                class="action-btn"
+                :class="{ active: timeOffset === option.value }"
+                @click="setTimeOffset(option.value)"
+                :title="option.title"
+              >
+                <span class="btn-icon">{{ option.icon }}</span>
+                <span class="btn-label">{{ option.label }}</span>
               </button>
             </div>
           </div>

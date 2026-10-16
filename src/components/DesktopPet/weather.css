@@ -41,16 +41,6 @@
   );
 }
 
-.weather-sunny.dark-theme {
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(255, 236, 179, 0.08) 0%,
-    rgba(255, 213, 79, 0.04) 30%,
-    rgba(255, 183, 77, 0.02) 50%,
-    transparent 70%
-  );
-}
-
 .sunny-container {
   position: absolute;
   inset: 0;
@@ -271,6 +261,166 @@
 }
 
 /* ========================================
+   昼夜系统 - 天体与亮度遮罩
+   太阳/月亮沿正弦弧线东升西落（拟真速度）；
+   亮度由两个遮罩层叠加实现，均带长 transition 保证平滑
+   ======================================== */
+
+/* --- 天体通用定位 --- */
+/* translate 已由组件内联注入（跟随弧线坐标），此处只负责居中偏移 */
+.celestial {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0; /* 低于云层(1~3)，云飘过自然遮挡天体 */
+  pointer-events: none;
+  transition: opacity 1s ease-in-out; /* 雨天淡入淡出 */
+}
+
+/* --- 太阳 --- */
+.celestial.sun {
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px; /* 盘面中心对准弧线坐标 */
+}
+
+.sun-disc {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 38% 34%,
+    #fffdf5 0%,
+    #ffe9a8 45%,
+    #ffd166 78%,
+    #ffb84d 100%
+  );
+  box-shadow: 0 0 14px 4px rgba(255, 214, 102, 0.65);
+}
+
+.sun-halo {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.sun-halo-outer {
+  inset: -18px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 224, 130, 0.35) 0%,
+    rgba(255, 213, 79, 0.16) 45%,
+    transparent 70%
+  );
+  filter: blur(6px);
+  animation: sun-halo-pulse 6s ease-in-out infinite;
+}
+
+.sun-halo-inner {
+  inset: -4px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 248, 225, 0.5) 0%,
+    rgba(255, 236, 179, 0.22) 55%,
+    transparent 75%
+  );
+  filter: blur(3px);
+  animation: sun-halo-pulse 4s ease-in-out infinite 0.8s;
+}
+
+@keyframes sun-halo-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+/* --- 月亮 --- */
+.celestial.moon {
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+}
+
+.moon-disc {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.moon-body {
+  fill: url(#moon-gradient) #e8ecf4;
+  /* 无渐变定义时的实色兜底由上面的 fill 属性第二值承担 */
+}
+
+.moon-crater {
+  fill: rgba(176, 190, 210, 0.35);
+}
+
+/* 月相阴影：不透明遮盖照亮区之外的盘面 */
+.moon-shadow {
+  fill: #1c2431;
+  opacity: 0.94;
+}
+
+.moon-shadow-full {
+  fill: #1c2431;
+  opacity: 0.96;
+}
+
+.moon-halo {
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(214, 226, 244, 0.3) 0%,
+    rgba(190, 208, 236, 0.14) 45%,
+    transparent 70%
+  );
+  filter: blur(5px);
+  animation: sun-halo-pulse 7s ease-in-out infinite;
+}
+
+/* --- 亮度遮罩层 --- */
+/* 夜间遮罩：深夜蓝黑，opacity 由组件按 (1-daylight)×0.85 注入 */
+.night-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4; /* 高于云层，整个场景一起入夜 */
+  pointer-events: none;
+  /* 与其他天气背景一致：径向渐变淡出，视觉为柔和圆形而非方形色块 */
+  background: radial-gradient(
+    ellipse at 50% 45%,
+    rgba(16, 24, 44, 0.55) 0%,
+    rgba(10, 16, 32, 0.6) 40%,
+    transparent 70%
+  );
+  transition: opacity 32s linear; /* 与 30s tick 匹配，跨 tick 平滑衔接 */
+}
+
+/* 月光层：冷白蓝光晕，opacity 由组件按月照亮比例注入 */
+.moonlight-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    rgba(196, 214, 242, 0.4) 0%,
+    rgba(176, 198, 234, 0.2) 40%,
+    transparent 70%
+  );
+  transition: opacity 1.2s ease-in-out; /* 雨天隐藏月光时快速柔和淡出 */
+}
+
+/* ========================================
    多云 CLOUDY
    柔软层叠云朵，梦幻飘动
    ======================================== */
@@ -279,15 +429,6 @@
     ellipse at 50% 50%,
     rgba(236, 239, 241, 0.4) 0%,
     rgba(207, 216, 220, 0.2) 35%,
-    transparent 65%
-  );
-}
-
-.weather-cloudy.dark-theme {
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(69, 90, 100, 0.3) 0%,
-    rgba(55, 71, 79, 0.15) 35%,
     transparent 65%
   );
 }
@@ -392,15 +533,6 @@
   );
 }
 
-.weather-lightRain.dark-theme {
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(69, 90, 100, 0.25) 0%,
-    rgba(55, 71, 79, 0.12) 40%,
-    transparent 70%
-  );
-}
-
 /* 雨天背景 - 暴雨 */
 .weather-heavyRain {
   background: radial-gradient(
@@ -411,30 +543,12 @@
   );
 }
 
-.weather-heavyRain.dark-theme {
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(38, 50, 56, 0.35) 0%,
-    rgba(30, 40, 46, 0.2) 40%,
-    transparent 70%
-  );
-}
-
 /* 雨天背景 - 雷阵雨 */
 .weather-thunderstorm {
   background: radial-gradient(
     ellipse at 50% 50%,
     rgba(55, 71, 79, 0.4) 0%,
     rgba(38, 50, 56, 0.25) 40%,
-    transparent 70%
-  );
-}
-
-.weather-thunderstorm.dark-theme {
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(30, 40, 46, 0.45) 0%,
-    rgba(20, 26, 30, 0.28) 40%,
     transparent 70%
   );
 }
@@ -647,15 +761,6 @@
   );
 }
 
-.weather-lightSnow.dark-theme {
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(41, 82, 122, 0.3) 0%,
-    rgba(30, 58, 95, 0.15) 40%,
-    transparent 70%
-  );
-}
-
 .snow-container {
   position: absolute;
   inset: -20px;
@@ -764,15 +869,6 @@
     ellipse at 50% 50%,
     rgba(187, 222, 251, 0.4) 0%,
     rgba(144, 202, 249, 0.2) 40%,
-    transparent 70%
-  );
-}
-
-.weather-heavySnow.dark-theme {
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(30, 58, 95, 0.35) 0%,
-    rgba(25, 48, 78, 0.18) 40%,
     transparent 70%
   );
 }

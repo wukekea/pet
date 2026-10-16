@@ -33,6 +33,7 @@ import {
 } from "./composables/launchController";
 import { footprints } from "./composables/footprints";
 import { isDark, initTheme, cleanupTheme } from "./composables/theme";
+import { initDayNight, cleanupDayNight } from "./composables/dayNightState";
 import { initStats, cleanupStats } from "./composables/stats";
 import { initPetShape } from "./composables/petShapeStorage";
 import { getShapeConfig, getShapeComponent } from "./shapes";
@@ -296,6 +297,9 @@ onMounted(async () => {
   // 初始化主题
   initTheme();
 
+  // 初始化昼夜系统
+  initDayNight();
+
   // 初始化宠物形态
   initPetShape();
 
@@ -313,6 +317,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   cleanupPet();
   cleanupStats();
+  cleanupDayNight();
   cleanupTheme();
   cleanupSpeech();
   // 清理点击定时器
