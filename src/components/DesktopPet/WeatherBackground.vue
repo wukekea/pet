@@ -138,6 +138,12 @@ const isRainy = computed(() =>
 const sunVisible = computed(() => isDaytime.value && !isRainy.value);
 const moonVisible = computed(() => !isDaytime.value && !isRainy.value);
 
+// 夜间云朵：多云天气且已入夜时，用蓝灰配色在夜幕之上另行渲染
+// （白天的云朵容器 z 低于夜幕，夜晚会被遮罩压得看不清）
+const isNightCloudy = computed(
+  () => !isDaytime.value && currentWeather.value === "cloudy",
+);
+
 // 天体沿弧线的定位（百分比映射为容器像素，容器为 280px）
 const CELESTIAL_CONTAINER_SIZE = 280;
 const celestialStyle = computed(() => ({
@@ -954,30 +960,93 @@ onUnmounted(() => {
       <div class="sun-halo sun-halo-inner"></div>
       <div class="sun-disc"></div>
     </div>
-    <!-- 月亮：夜晚非雨天（含雪夜），terminator 画法呈现月相 -->
+    <!-- 亮度遮罩层 - 平滑过渡由 CSS transition 保证 -->
+    <div class="night-overlay" :style="{ opacity: nightOverlayOpacity }"></div>
+
+    <!-- 月亮：夜晚非雨天（含雪夜），terminator 画法呈现月相
+         放在夜幕遮罩之上：亮面不被遮罩压暗，保证在亮色桌面背景上
+         依然比"透出桌面"的暗面更亮（否则月相视觉会反转） -->
     <div v-show="moonVisible" class="celestial moon" :style="celestialStyle">
       <div class="moon-halo"></div>
       <svg class="moon-disc" viewBox="0 0 40 40">
-        <!-- 月盘本体 -->
-        <circle cx="20" cy="20" r="16" class="moon-body" />
-        <!-- 月面环形山（暗斑，营造立体感） -->
-        <circle cx="14" cy="15" r="3" class="moon-crater" />
-        <circle cx="25" cy="24" r="2.2" class="moon-crater" />
-        <circle cx="21" cy="12" r="1.6" class="moon-crater" />
-        <!-- 月相暗区：暗侧月缘弧 + 明暗交界椭圆弧围成，整体带 -15° 倾角；
-             fill 取深夜天空色而非纯黑，避免在非纯黑背景上显出突兀色块；
-             满月（暗区退化）时跳过渲染 -->
-        <path
-          v-if="!moonShadow.isFullMoon"
-          class="moon-shadow"
-          :d="moonShadow.d"
-          :transform="moonShadow.transform"
-        />
+        <defs>
+          <!-- 月相 mask：白=显示、黑=隐藏。暗区 path 以黑色挖空，
+               被遮住的月面直接透明露出背景——暗面与天空天然融合，
+               不再需要"猜背景色"，任何天气/亮度下都不会出现突兀色块 -->
+          <mask id="moon-phase-mask">
+            <rect x="0" y="0" width="40" height="40" fill="white" />
+            <path
+              v-if="!moonShadow.isFullMoon"
+              :d="moonShadow.d"
+              :transform="moonShadow.transform"
+              fill="black"
+            />
+          </mask>
+        </defs>
+        <!-- 地照：真实新月夜能隐约看到被地球反光照亮的暗面，画一层极淡的整盘 -->
+        <circle cx="20" cy="20" r="16" class="moon-earthshine" />
+        <!-- 月盘本体 + 环形山，按月相裁剪：只显示亮面 -->
+        <g mask="url(#moon-phase-mask)">
+          <circle cx="20" cy="20" r="16" class="moon-body" />
+          <!-- 月面环形山（暗斑，营造立体感） -->
+          <circle cx="14" cy="15" r="3" class="moon-crater" />
+          <circle cx="25" cy="24" r="2.2" class="moon-crater" />
+          <circle cx="21" cy="12" r="1.6" class="moon-crater" />
+        </g>
       </svg>
     </div>
 
-    <!-- 亮度遮罩层 - 平滑过渡由 CSS transition 保证 -->
-    <div class="night-overlay" :style="{ opacity: nightOverlayOpacity }"></div>
+    <!-- 夜间云朵：夜晚时显示（白天多云走下方原 cloudy 容器，z 低于夜幕）
+         放在夜幕之上并使用蓝灰填充：白桌面背景上白云朵被夜幕压暗后
+         会比天空更暗看不清，蓝灰色在明暗两种桌面上都有足够对比度 -->
+    <div v-if="isNightCloudy" class="night-cloud-container">
+      <svg
+        v-for="cloud in clouds"
+        :key="`night-${cloud.id}-${cloud.renderKey}`"
+        class="cloud cloud-back cloud-anim"
+        viewBox="0 0 100 50"
+        :style="{
+          '--cloud-start-x': `${cloud.startPosition}px`,
+          '--cloud-end-x': `${cloud.config.endX}px`,
+          '--cloud-duration': `${getCloudDuration(cloud)}s`,
+          top: cloud.config.top,
+        }"
+        @animationend="removeCloud(cloud.id)"
+      >
+        <g class="cloud-group night-cloud-group">
+          <ellipse
+            cx="30"
+            cy="35"
+            rx="25"
+            ry="15"
+            class="cloud-part night-cloud-part"
+          />
+          <ellipse
+            cx="50"
+            cy="28"
+            rx="30"
+            ry="20"
+            class="cloud-part night-cloud-part"
+          />
+          <ellipse
+            cx="70"
+            cy="35"
+            rx="22"
+            ry="14"
+            class="cloud-part night-cloud-part"
+          />
+          <ellipse
+            cx="45"
+            cy="38"
+            rx="20"
+            ry="12"
+            class="cloud-part night-cloud-part"
+          />
+        </g>
+      </svg>
+    </div>
+
+    <!-- 月光层 -->
     <div
       class="moonlight-overlay"
       :style="{ opacity: moonlightOverlayOpacity }"

@@ -341,10 +341,37 @@
 }
 
 /* --- 月亮 --- */
+/* --- 月亮 --- */
+/* z-index 6：位于夜幕遮罩(4)之上——亮面不被夜幕压暗，
+   在亮色桌面背景上仍比透出桌面的暗面更亮（否则月相视觉反转）；
+   同时高于云层(1~3)，夜间云朵改由 night-cloud-container 单独渲染 */
 .celestial.moon {
   width: 44px;
   height: 44px;
   margin: -22px 0 0 -22px;
+  z-index: 6;
+}
+
+/* 夜间云朵容器：夜幕之上，使用蓝灰配色
+   （白云被夜幕压暗后在白色桌面上几乎不可见） */
+.night-cloud-container {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: 4; /* 与夜幕同级，云朵从月面下方飘过或遮挡由绘制顺序决定 */
+}
+
+.night-cloud-container .cloud {
+  z-index: 4;
+}
+
+.night-cloud-part {
+  fill: #7d93a8; /* 月夜蓝灰：明暗两种桌面背景下都有足够对比度 */
+}
+
+.night-cloud-group {
+  opacity: 0.7;
 }
 
 .moon-disc {
@@ -363,12 +390,11 @@
   fill: rgba(176, 190, 210, 0.35);
 }
 
-/* 月相遮挡圆（"地球影子"）：
-   取深夜天空色（与 night-overlay 同族）而非纯黑——背景非纯黑，
-   纯黑会显出突兀色块；描边与月盘同色，让遮住的月缘与天空自然融合 */
-.moon-shadow {
-  fill: #101828;
-  opacity: 0.97;
+/* 地照：真实月相的暗面并非全黑——被地球反光微微照亮（earthshine），
+   新月夜隐约可见整轮轮廓。这里画一层极淡的月盘作为暗面，
+   让月亮"消失"时仍有一丝存在感，且与天空色调融合 */
+.moon-earthshine {
+  fill: rgba(120, 140, 175, 0.12);
 }
 
 .moon-halo {
