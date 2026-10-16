@@ -294,6 +294,33 @@ const timeOffsetLabel = computed(() =>
     : `${timeOffset.value > 0 ? "+" : ""}${timeOffset.value.toFixed(1)}h`,
 );
 
+// ===== 一天时间轴滑块 =====
+// 滑块直接映射"一天中的时刻"（0~1439 分钟），拖动时换算为相对当前时刻的偏移注入昼夜系统，
+// 左右滑动即可动态观察太阳/月亮沿弧线移动与亮度变化
+
+// 当前时刻（分钟，0~1439）：由全局偏移反推
+const nowMinutes = () => {
+  const now = new Date(Date.now() + timeOffset.value * 3600_000);
+  return now.getHours() * 60 + now.getMinutes();
+};
+
+const sliderMinutes = computed(() => nowMinutes());
+
+// 滑块拖动：目标时刻 → 相对当前真实时间的偏移（可为负/超过 ±24h，computeState 用取模处理）
+const onSliderInput = (e: Event) => {
+  const target = Number((e.target as HTMLInputElement).value);
+  const real = new Date();
+  const realMinutes = real.getHours() * 60 + real.getMinutes();
+  const diffMinutes = target - realMinutes;
+  setTimeOffset(diffMinutes / 60);
+};
+
+// 滑块当前时刻展示（HH:MM）
+const sliderTimeLabel = computed(() => {
+  const m = sliderMinutes.value;
+  return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+});
+
 // 真实天气描述（API 返回）
 const realWeatherText = computed(() => {
   const text = weatherStatus.value.weatherText;
@@ -680,6 +707,23 @@ defineExpose({
                 <span class="btn-icon">{{ option.icon }}</span>
                 <span class="btn-label">{{ option.label }}</span>
               </button>
+            </div>
+            <!-- 一天时间轴滑块：左右拖动模拟时间流逝，动态观察太阳/月亮轨迹 -->
+            <div class="day-night-slider">
+              <div class="slider-time-label">{{ sliderTimeLabel }}</div>
+              <input
+                type="range"
+                class="time-slider"
+                min="0"
+                max="1439"
+                step="1"
+                :value="sliderMinutes"
+                @input="onSliderInput"
+              />
+              <div class="slider-scale">
+                <span>0点</span><span>6点</span><span>12点</span
+                ><span>18点</span><span>24点</span>
+              </div>
             </div>
           </div>
 
@@ -1174,6 +1218,84 @@ defineExpose({
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
+}
+
+/* ========================================
+   昼夜时间轴滑块
+   ======================================== */
+.day-night-slider {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(0, 128, 144, 0.06);
+}
+
+.slider-time-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #008090;
+  text-align: center;
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-slider {
+  width: 100%;
+  height: 6px;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 3px;
+  /* 轨道底色按昼夜分段：深夜 | 黎明 | 白天 | 黄昏 | 深夜 */
+  background: linear-gradient(
+    90deg,
+    #1c2431 0%,
+    #1c2431 20%,
+    #7fb3d5 27%,
+    #ffe9a8 30%,
+    #ffd166 50%,
+    #ffe9a8 72%,
+    #e8896b 76%,
+    #1c2431 82%,
+    #1c2431 100%
+  );
+  outline: none;
+  cursor: pointer;
+}
+
+/* 滑块手柄 - 与调试面板机械键帽风格呼应 */
+.time-slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #008090;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.1s ease;
+}
+
+.time-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.time-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #008090;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.slider-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: rgba(0, 128, 144, 0.6);
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ========================================

@@ -71,16 +71,17 @@ function computeState(): void {
   moonIllumination.value = (1 - Math.cos(2 * Math.PI * phase)) / 2;
 
   // ---- 天体弧线坐标 ----
-  // 白天进度 / 夜晚进度（6:00→18:00 / 18:00→次日 6:00 各 12 小时，各为一次完整东升西落）
+  // 白天 6:00→18:00、夜晚 18:00→次日 6:00，各 12 小时，各为一次完整东升西落
+  const NIGHT_LENGTH = HOURS_PER_DAY - DAY_END + DAY_START; // 12h
   let progress: number;
   if (isDaytime.value) {
     progress = (hours - DAY_START) / (DAY_END - DAY_START);
   } else if (hours >= DAY_END) {
-    // 18:00–24:00：夜晚前半段
-    progress = (hours - DAY_END) / (HOURS_PER_DAY - DAY_END);
+    // 18:00–24:00：夜晚前半段（18:00 起算）
+    progress = (hours - DAY_END) / NIGHT_LENGTH;
   } else {
-    // 0:00–6:00：夜晚后半段，前半段（18:00–24:00）已走完
-    progress = (hours + HOURS_PER_DAY - DAY_END) / (HOURS_PER_DAY - DAY_END);
+    // 0:00–6:00：夜晚后半段（前半段 6 小时已走完，继续累加）
+    progress = (hours + HOURS_PER_DAY - DAY_END) / NIGHT_LENGTH;
   }
   // 水平：从容器左侧外(-15%)飘到右侧外(115%)；垂直：正弦弧线，贴近地平线(70%)升至最高(15%)
   celestialX.value = -15 + progress * 130;
