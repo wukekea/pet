@@ -42,7 +42,11 @@ const timeOffsetHours = ref(0);
 
 /** 计算昼夜核心状态（纯计算，幂等） */
 function computeState(): void {
-  const now = new Date(Date.now() + timeOffsetHours.value * 3600_000);
+  const now = new Date(
+    Date.now() +
+      timeOffsetHours.value * 3600_000 +
+      dateOffsetDays.value * 86_400_000,
+  );
   const hours =
     now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
 
@@ -94,7 +98,7 @@ export function computeCelestialPositionForTest(offsetHours: number): {
   x: number;
   y: number;
 } {
-  const saved = timeOffsetHours.value;
+  const savedTime = timeOffsetHours.value;
   timeOffsetHours.value = offsetHours;
   computeState();
   const result = {
@@ -102,7 +106,7 @@ export function computeCelestialPositionForTest(offsetHours: number): {
     x: celestialX.value,
     y: celestialY.value,
   };
-  timeOffsetHours.value = saved;
+  timeOffsetHours.value = savedTime;
   computeState();
   return result;
 }
@@ -115,6 +119,21 @@ export function setTimeOffset(hours: number): void {
 
 /** 获取当前时间偏移（调试面板显示用） */
 export const timeOffset = computed(() => timeOffsetHours.value);
+
+// 调试用：日期偏移（天），0 为不偏移；影响月相计算
+const dateOffsetDays = ref(0);
+
+/** 获取当前日期偏移（调试面板显示用） */
+export const dateOffset = computed(() => dateOffsetDays.value);
+
+/**
+ * 调试：设置日期偏移（天，可为负），立即重算月相
+ * 只改日期不影响时刻——太阳/月亮弧线位置不变，仅月相变化
+ */
+export function setDateOffset(days: number): void {
+  dateOffsetDays.value = days;
+  computeState();
+}
 
 // ========== 生命周期 ==========
 let refreshTimer: ReturnType<typeof setInterval> | null = null;

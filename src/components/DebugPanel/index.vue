@@ -40,6 +40,10 @@ import {
 import {
   timeOffset,
   setTimeOffset,
+  dateOffset,
+  setDateOffset,
+  moonPhaseIndex,
+  moonIllumination,
 } from "../DesktopPet/composables/dayNightState";
 import { weatherStatus } from "../DesktopPet/composables/qweatherService";
 import DecoIcon from "../DesktopPet/shapes/decorations/DecoIcon.vue";
@@ -319,6 +323,36 @@ const onSliderInput = (e: Event) => {
 const sliderTimeLabel = computed(() => {
   const m = sliderMinutes.value;
   return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+});
+
+// ===== 日期偏移滑块（月相测试） =====
+// 拖动改变日期偏移（-15 ~ +15 天），覆盖完整朔望月周期，观察月相阴晴圆缺
+// 注意：日期偏移不影响一天内的时刻——太阳/月亮位置不变，只有月相变化
+
+// 日期滑块拖动
+const onDateSliderInput = (e: Event) => {
+  setDateOffset(Number((e.target as HTMLInputElement).value));
+};
+
+// 8 档月相名称
+const MOON_PHASE_NAMES = [
+  "新月",
+  "娥眉月",
+  "上弦月",
+  "盈凸月",
+  "满月",
+  "亏凸月",
+  "下弦月",
+  "残月",
+];
+
+// 当前月相描述：档位名称 + 照亮百分比 + 偏移后对应的模拟日期
+const moonPhaseLabel = computed(() => {
+  const simulated = new Date(Date.now() + dateOffset.value * 86_400_000);
+  const dateStr = `${simulated.getMonth() + 1}月${simulated.getDate()}日`;
+  const phase = MOON_PHASE_NAMES[moonPhaseIndex.value];
+  const ill = Math.round(moonIllumination.value * 100);
+  return `${phase}（照亮 ${ill}%）· ${dateStr}`;
 });
 
 // 真实天气描述（API 返回）
@@ -723,6 +757,23 @@ defineExpose({
               <div class="slider-scale">
                 <span>0点</span><span>6点</span><span>12点</span
                 ><span>18点</span><span>24点</span>
+              </div>
+            </div>
+            <!-- 日期偏移滑块：观察不同日期下的月相变化（不影响当日时刻） -->
+            <div class="day-night-slider">
+              <div class="slider-time-label">月相 {{ moonPhaseLabel }}</div>
+              <input
+                type="range"
+                class="time-slider date-slider"
+                min="-15"
+                max="15"
+                step="1"
+                :value="dateOffset"
+                @input="onDateSliderInput"
+              />
+              <div class="slider-scale">
+                <span>-15天</span><span>-8天</span><span>今天</span
+                ><span>+8天</span><span>+15天</span>
               </div>
             </div>
           </div>
@@ -1296,6 +1347,20 @@ defineExpose({
   color: rgba(0, 128, 144, 0.6);
   margin-top: 4px;
   font-variant-numeric: tabular-nums;
+}
+
+/* 日期偏移滑块：轨道按朔望月着色（两端暗=新月，中间亮=满月） */
+.time-slider.date-slider {
+  background: linear-gradient(
+    90deg,
+    #1c2431 0%,
+    #56637a 10%,
+    #c4d6f2 30%,
+    #fff 50%,
+    #c4d6f2 70%,
+    #56637a 90%,
+    #1c2431 100%
+  );
 }
 
 /* ========================================
