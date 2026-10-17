@@ -833,11 +833,31 @@ function isMouseInElement(
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 }
 
-// 处理鼠标移动
+// 处理鼠标移动（rAF 合帧节流）
+// 穿透窗口 forward: true 会把鼠标事件全量转发进渲染进程，高回报率鼠标
+// （1000Hz）下每秒可达上千次，而命中检测只需最新坐标——事件到达时只
+// 记录坐标，每帧渲染前统一处理一次，中间帧的计算全部省掉
+let pendingMousePos: { x: number; y: number } | null = null;
+let mouseMoveRafId: number | null = null;
+
 export function handleMouseMove(e: MouseEvent) {
   // mousePosition 供 chase 追逐与 QuickActionPanel 的悬停检测使用，
   // 始终更新（穿透窗口有 forward: true，事件不会丢）
   mousePosition.value = { x: e.clientX, y: e.clientY };
+  // 记录最新坐标，攒到下一帧处理
+  pendingMousePos = { x: e.clientX, y: e.clientY };
+  if (mouseMoveRafId === null) {
+    mouseMoveRafId = requestAnimationFrame(processMouseMove);
+  }
+}
+
+// 每帧至多执行一次的穿透检测（原 handleMouseMove 主体）
+function processMouseMove() {
+  mouseMoveRafId = null;
+  if (!pendingMousePos) return;
+  const { x, y } = pendingMousePos;
+  pendingMousePos = null;
+
   // 任意 UI 弹窗打开时，不自动控制穿透
   if (isAnyUiOpen.value) return;
 
@@ -857,8 +877,8 @@ export function handleMouseMove(e: MouseEvent) {
         ".action-btns",
       ) as HTMLElement;
       if (
-        isMouseInElement(attrBars, e.clientX, e.clientY) ||
-        isMouseInElement(actionBtns, e.clientX, e.clientY)
+        isMouseInElement(attrBars, x, y) ||
+        isMouseInElement(actionBtns, x, y)
       ) {
         setPassthrough(false);
         return;
@@ -878,10 +898,10 @@ export function handleMouseMove(e: MouseEvent) {
     if (cachedProgressBar) {
       const rect = cachedProgressBar.getBoundingClientRect();
       if (
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom
+        x >= rect.left &&
+        x <= rect.right &&
+        y >= rect.top &&
+        y <= rect.bottom
       ) {
         // 在进度条区域内，禁用穿透以允许交互
         setPassthrough(false);
@@ -894,12 +914,12 @@ export function handleMouseMove(e: MouseEvent) {
 
   // 流星活动期间：鼠标命中流星轨迹区时禁用穿透，允许点击许愿
   // （舞台坐标→屏幕坐标的换算由 starrySkyState 注入的实现完成）
-  if (isMouseOnMeteor(e.clientX, e.clientY, meteorScreenHitbox)) {
+  if (isMouseOnMeteor(x, y, meteorScreenHitbox)) {
     setPassthrough(false);
     return;
   }
 
-  const onPet = isMouseOnPet(e.clientX, e.clientY);
+  const onPet = isMouseOnPet(x, y);
   setPassthrough(!onPet);
 }
 // 处理系统休眠/唤醒：防止积累的 setTimeout 在醒来后批量触发导致异常
@@ -973,6 +993,12 @@ export function cleanupPet() {
   if (stateTimer.value) clearTimeout(stateTimer.value);
   if (initTimer) clearTimeout(initTimer);
   if (initTimer2) clearTimeout(initTimer2);
+  // 取消未执行的鼠标穿透检测帧
+  if (mouseMoveRafId !== null) {
+    cancelAnimationFrame(mouseMoveRafId);
+    mouseMoveRafId = null;
+  }
+  pendingMousePos = null;
   // 停止属性系统
   cleanupAttributes();
   // 停止作息监控
