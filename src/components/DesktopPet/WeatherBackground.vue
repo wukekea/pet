@@ -138,17 +138,15 @@ const isRainy = computed(() =>
 const sunVisible = computed(() => isDaytime.value && !isRainy.value);
 const moonVisible = computed(() => !isDaytime.value && !isRainy.value);
 
-// 夜间云朵：多云天气且已入夜时，用蓝灰配色在夜幕之上另行渲染
-// （白天的云朵容器 z 低于夜幕，夜晚会被遮罩压得看不清）
-const isNightCloudy = computed(
-  () => !isDaytime.value && currentWeather.value === "cloudy",
+// 天体沿弧线的定位（百分比映射为 SVG viewBox 像素，舞台为 280x280）
+const CELESTIAL_CONTAINER_SIZE = 280;
+const celestialTransform = computed(
+  () =>
+    `translate(${(celestialX.value / 100) * CELESTIAL_CONTAINER_SIZE}px, ${(celestialY.value / 100) * CELESTIAL_CONTAINER_SIZE}px)`,
 );
 
-// 天体沿弧线的定位（百分比映射为容器像素，容器为 280px）
-const CELESTIAL_CONTAINER_SIZE = 280;
-const celestialStyle = computed(() => ({
-  transform: `translate(${(celestialX.value / 100) * CELESTIAL_CONTAINER_SIZE}px, ${(celestialY.value / 100) * CELESTIAL_CONTAINER_SIZE}px)`,
-}));
+// 云道 top 百分比 → 舞台 viewBox 像素（供 <g transform="translate(0, y)"> 定位）
+const cloudTopPx = (top: string) => (parseFloat(top) / 100) * 280;
 
 // 夜间遮罩透明度：深夜最深 0.7（保持月夜蓝调的可辨识亮度），随 daylight 增大而变浅
 const nightOverlayOpacity = computed(() =>
@@ -953,98 +951,234 @@ onUnmounted(() => {
 
 <template>
   <div class="weather-background" :class="weatherClass" :style="weatherStyle">
-    <!-- 昼夜天体层 - z 低于云层，多云时云飘过自然遮挡 -->
-    <!-- 太阳：白天非雨天，沿弧线东升西落 -->
-    <div v-show="sunVisible" class="celestial sun" :style="celestialStyle">
-      <div class="sun-halo sun-halo-outer"></div>
-      <div class="sun-halo sun-halo-inner"></div>
-      <div class="sun-disc"></div>
-    </div>
+    <!-- 白天舞台：太阳 + 白天云，同层 SVG 内云对太阳像素级遮挡
+         （天体组套云遮挡 mask，云画在天体之后；mask 坐标系为舞台根坐标——
+         遮挡 mask 必须挂在外层无 transform 的 g 上，celestialStyle 挂中层，
+         否则 mask 内容会随天体位移一起平移，挖空与可见云错位） -->
+    <svg class="celestial-stage day-stage" viewBox="0 0 280 280">
+      <defs>
+        <!-- 云形唯一定义：日云/夜云/两个遮挡 mask 副本共用 <use> 实例 -->
+        <g id="cloud-shape">
+          <ellipse cx="30" cy="35" rx="25" ry="15" fill="currentColor" />
+          <ellipse cx="50" cy="28" rx="30" ry="20" fill="currentColor" />
+          <ellipse cx="70" cy="35" rx="22" ry="14" fill="currentColor" />
+          <ellipse cx="45" cy="38" rx="20" ry="12" fill="currentColor" />
+        </g>
+        <!-- 太阳被云挖空：mask region 显式覆盖全弧线（-200..600），
+             region 外 mask 值为 0（不可见），缺省 bbox±10% 会让
+             弧线两端伸出画布的天体突然消失 -->
+        <mask
+          id="sun-occlusion-mask"
+          maskUnits="userSpaceOnUse"
+          x="-200"
+          y="-200"
+          width="800"
+          height="800"
+        >
+          <rect x="-200" y="-200" width="800" height="800" fill="white" />
+          <!-- 挖空副本：纯黑、不透明、无滤镜，套与可见云相同的圆形裁剪
+               （继承可见云的 opacity/drop-shadow 会变成"部分挖空"＝调暗效果）；
+               外层 g 定位云道，内层 g 跑动画（transform 属性与 CSS transform 分层） -->
+          <g clip-path="url(#sky-clip)">
+            <g
+              v-for="cloud in clouds"
+              :key="`sun-mask-${cloud.id}-${cloud.renderKey}`"
+              :transform="`translate(0 ${cloudTopPx(cloud.config.top)})`"
+            >
+              <g
+                class="cloud-anim cloud-mask-copy"
+                :style="{
+                  '--cloud-start-x': `${cloud.startPosition}px`,
+                  '--cloud-end-x': `${cloud.config.endX}px`,
+                  '--cloud-duration': `${getCloudDuration(cloud)}s`,
+                }"
+              >
+                <use href="#cloud-shape" />
+              </g>
+            </g>
+          </g>
+        </mask>
+        <!-- 复刻原 cloudy-container 的 border-radius:50% 圆形裁剪 -->
+        <clipPath id="sky-clip">
+          <circle cx="140" cy="140" r="140" />
+        </clipPath>
+        <!-- 太阳盘面渐变（复刻原 CSS radial-gradient at 38% 34%） -->
+        <radialGradient id="sun-disc-gradient" cx="0.38" cy="0.34" r="0.9">
+          <stop offset="0%" stop-color="#fffdf5" />
+          <stop offset="45%" stop-color="#ffe9a8" />
+          <stop offset="78%" stop-color="#ffd166" />
+          <stop offset="100%" stop-color="#ffb84d" />
+        </radialGradient>
+        <radialGradient id="sun-halo-outer-gradient">
+          <stop offset="0%" stop-color="rgba(255, 224, 130, 0.35)" />
+          <stop offset="45%" stop-color="rgba(255, 213, 79, 0.16)" />
+          <stop offset="70%" stop-color="rgba(255, 213, 79, 0)" />
+        </radialGradient>
+        <radialGradient id="sun-halo-inner-gradient">
+          <stop offset="0%" stop-color="rgba(255, 248, 225, 0.5)" />
+          <stop offset="55%" stop-color="rgba(255, 236, 179, 0.22)" />
+          <stop offset="75%" stop-color="rgba(255, 236, 179, 0)" />
+        </radialGradient>
+      </defs>
+      <!-- 太阳：外层 g 只挂遮挡 mask（无 transform，mask 云与可见云同坐标系），
+           中层 g 挂弧线位移，雨天淡出用组级 opacity 过渡 -->
+      <g mask="url(#sun-occlusion-mask)">
+        <g
+          class="celestial-g"
+          :class="{ visible: sunVisible }"
+          :style="{ transform: celestialTransform }"
+        >
+          <circle
+            class="sun-halo-svg sun-halo-outer-svg"
+            cx="0"
+            cy="0"
+            r="40"
+          />
+          <circle
+            class="sun-halo-svg sun-halo-inner-svg"
+            cx="0"
+            cy="0"
+            r="26"
+          />
+          <circle class="sun-disc-svg" cx="0" cy="0" r="15" />
+        </g>
+      </g>
+      <!-- 白天云：画在太阳之后（遮挡感由上方 mask 完成，此处为可见层）
+           外层 g 挂 SVG transform 属性（云道垂直定位），内层 g 跑 CSS 动画
+           ——CSS transform 会覆盖 transform 属性，两者必须分层 -->
+      <g clip-path="url(#sky-clip)">
+        <g
+          v-for="cloud in clouds"
+          :key="`day-${cloud.id}-${cloud.renderKey}`"
+          class="cloud-svg"
+          :transform="`translate(0 ${cloudTopPx(cloud.config.top)})`"
+        >
+          <g
+            class="cloud-anim"
+            :style="{
+              '--cloud-start-x': `${cloud.startPosition}px`,
+              '--cloud-end-x': `${cloud.config.endX}px`,
+              '--cloud-duration': `${getCloudDuration(cloud)}s`,
+            }"
+            @animationend="removeCloud(cloud.id)"
+          >
+            <use href="#cloud-shape" class="cloud-use-day" />
+          </g>
+        </g>
+      </g>
+    </svg>
+
     <!-- 亮度遮罩层 - 平滑过渡由 CSS transition 保证 -->
     <div class="night-overlay" :style="{ opacity: nightOverlayOpacity }"></div>
 
-    <!-- 月亮：夜晚非雨天（含雪夜），terminator 画法呈现月相
-         放在夜幕遮罩之上：亮面不被遮罩压暗，保证在亮色桌面背景上
-         依然比"透出桌面"的暗面更亮（否则月相视觉会反转） -->
-    <div v-show="moonVisible" class="celestial moon" :style="celestialStyle">
-      <div class="moon-halo"></div>
-      <svg class="moon-disc" viewBox="0 0 40 40">
-        <defs>
-          <!-- 月相 mask：白=显示、黑=隐藏。暗区 path 以黑色挖空，
-               被遮住的月面直接透明露出背景——暗面与天空天然融合，
-               不再需要"猜背景色"，任何天气/亮度下都不会出现突兀色块 -->
-          <mask id="moon-phase-mask">
-            <rect x="0" y="0" width="40" height="40" fill="white" />
-            <path
-              v-if="!moonShadow.isFullMoon"
-              :d="moonShadow.d"
-              :transform="moonShadow.transform"
-              fill="black"
-            />
-          </mask>
-        </defs>
-        <!-- 地照：真实新月夜能隐约看到被地球反光照亮的暗面，画一层极淡的整盘 -->
-        <circle cx="20" cy="20" r="16" class="moon-earthshine" />
-        <!-- 月盘本体 + 环形山，按月相裁剪：只显示亮面 -->
-        <g mask="url(#moon-phase-mask)">
-          <circle cx="20" cy="20" r="16" class="moon-body" />
-          <!-- 月面环形山（暗斑，营造立体感） -->
-          <circle cx="14" cy="15" r="3" class="moon-crater" />
-          <circle cx="25" cy="24" r="2.2" class="moon-crater" />
-          <circle cx="21" cy="12" r="1.6" class="moon-crater" />
+    <!-- 夜晚舞台：月亮 + 夜间蓝灰云，在夜幕之上（z:6）——
+         月相暗面由 mask 挖空透出桌面，若被夜幕压暗则亮色桌面上
+         暗面比亮面亮、月相视觉反转，故舞台必须高于夜幕（既有约束） -->
+    <svg class="celestial-stage night-stage" viewBox="0 0 280 280">
+      <defs>
+        <!-- 月亮被云挖空：结构同太阳舞台 -->
+        <mask
+          id="moon-occlusion-mask"
+          maskUnits="userSpaceOnUse"
+          x="-200"
+          y="-200"
+          width="800"
+          height="800"
+        >
+          <rect x="-200" y="-200" width="800" height="800" fill="white" />
+          <g clip-path="url(#sky-clip-night)">
+            <g
+              v-for="cloud in clouds"
+              :key="`moon-mask-${cloud.id}-${cloud.renderKey}`"
+              :transform="`translate(0 ${cloudTopPx(cloud.config.top)})`"
+            >
+              <g
+                class="cloud-anim cloud-mask-copy"
+                :style="{
+                  '--cloud-start-x': `${cloud.startPosition}px`,
+                  '--cloud-end-x': `${cloud.config.endX}px`,
+                  '--cloud-duration': `${getCloudDuration(cloud)}s`,
+                }"
+              >
+                <use href="#cloud-shape" />
+              </g>
+            </g>
+          </g>
+        </mask>
+        <clipPath id="sky-clip-night">
+          <circle cx="140" cy="140" r="140" />
+        </clipPath>
+        <!-- 月相 mask：白=显示、黑=隐藏。暗区 path 以黑色挖空，
+             被遮住的月面直接透明露出背景——暗面与天空天然融合，
+             不再需要"猜背景色"，任何天气/亮度下都不会出现突兀色块 -->
+        <mask id="moon-phase-mask">
+          <rect x="0" y="0" width="40" height="40" fill="white" />
+          <path
+            v-if="!moonShadow.isFullMoon"
+            :d="moonShadow.d"
+            :transform="moonShadow.transform"
+            fill="black"
+          />
+        </mask>
+        <!-- 月盘渐变（补上现状 url(#moon-gradient) 无定义的兜底缺失） -->
+        <radialGradient id="moon-gradient" cx="0.4" cy="0.35" r="0.85">
+          <stop offset="0%" stop-color="#f2f5fa" />
+          <stop offset="60%" stop-color="#e4eaf3" />
+          <stop offset="100%" stop-color="#d3dce9" />
+        </radialGradient>
+        <radialGradient id="moon-halo-gradient">
+          <stop offset="0%" stop-color="rgba(214, 226, 244, 0.3)" />
+          <stop offset="45%" stop-color="rgba(190, 208, 236, 0.14)" />
+          <stop offset="70%" stop-color="rgba(190, 208, 236, 0)" />
+        </radialGradient>
+      </defs>
+      <!-- 月亮三层结构：遮挡 mask（无 transform）→ 弧线位移 → 月相 mask -->
+      <g mask="url(#moon-occlusion-mask)">
+        <g
+          class="celestial-g"
+          :class="{ visible: moonVisible }"
+          :style="{ transform: celestialTransform }"
+        >
+          <circle class="moon-halo-svg" cx="0" cy="0" r="30" />
+          <!-- 月盘本体 + 环形山，按月相裁剪：只显示亮面
+               mask 必须与 translate(-20 -20) 挂同一个 g：mask 内容在引用元素
+               的用户坐标系里解析，元素 transform 会连同 mask 一起变换——
+               挂到外层（无 translate）会让白底 rect(0..40) 与月盘(-16..16)
+               只剩一个象限重叠，满月只剩 1/4 扇形 -->
+          <g mask="url(#moon-phase-mask)" transform="translate(-20 -20)">
+            <circle cx="20" cy="20" r="16" class="moon-body-svg" />
+            <circle cx="14" cy="15" r="3" class="moon-crater-svg" />
+            <circle cx="25" cy="24" r="2.2" class="moon-crater-svg" />
+            <circle cx="21" cy="12" r="1.6" class="moon-crater-svg" />
+          </g>
+          <!-- 地照：放月相 mask 之外、遮挡 mask 之内——新月夜仍隐约可见整轮轮廓 -->
+          <g transform="translate(-20 -20)">
+            <circle cx="20" cy="20" r="16" class="moon-earthshine-svg" />
+          </g>
         </g>
-      </svg>
-    </div>
-
-    <!-- 夜间云朵：夜晚时显示（白天多云走下方原 cloudy 容器，z 低于夜幕）
-         放在夜幕之上并使用蓝灰填充：白桌面背景上白云朵被夜幕压暗后
-         会比天空更暗看不清，蓝灰色在明暗两种桌面上都有足够对比度 -->
-    <div v-if="isNightCloudy" class="night-cloud-container">
-      <svg
-        v-for="cloud in clouds"
-        :key="`night-${cloud.id}-${cloud.renderKey}`"
-        class="cloud cloud-back cloud-anim"
-        viewBox="0 0 100 50"
-        :style="{
-          '--cloud-start-x': `${cloud.startPosition}px`,
-          '--cloud-end-x': `${cloud.config.endX}px`,
-          '--cloud-duration': `${getCloudDuration(cloud)}s`,
-          top: cloud.config.top,
-        }"
-        @animationend="removeCloud(cloud.id)"
-      >
-        <g class="cloud-group night-cloud-group">
-          <ellipse
-            cx="30"
-            cy="35"
-            rx="25"
-            ry="15"
-            class="cloud-part night-cloud-part"
-          />
-          <ellipse
-            cx="50"
-            cy="28"
-            rx="30"
-            ry="20"
-            class="cloud-part night-cloud-part"
-          />
-          <ellipse
-            cx="70"
-            cy="35"
-            rx="22"
-            ry="14"
-            class="cloud-part night-cloud-part"
-          />
-          <ellipse
-            cx="45"
-            cy="38"
-            rx="20"
-            ry="12"
-            class="cloud-part night-cloud-part"
-          />
+      </g>
+      <!-- 夜间云：蓝灰配色，画在月亮之后（同白天云的双层结构） -->
+      <g clip-path="url(#sky-clip-night)">
+        <g
+          v-for="cloud in clouds"
+          :key="`night-${cloud.id}-${cloud.renderKey}`"
+          class="cloud-svg"
+          :transform="`translate(0 ${cloudTopPx(cloud.config.top)})`"
+        >
+          <g
+            class="cloud-anim"
+            :style="{
+              '--cloud-start-x': `${cloud.startPosition}px`,
+              '--cloud-end-x': `${cloud.config.endX}px`,
+              '--cloud-duration': `${getCloudDuration(cloud)}s`,
+            }"
+            @animationend="removeCloud(cloud.id)"
+          >
+            <use href="#cloud-shape" class="cloud-use-night" />
+          </g>
         </g>
-      </svg>
-    </div>
+      </g>
+    </svg>
 
     <!-- 月光层 -->
     <div
@@ -1090,34 +1224,12 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- 多云效果 - 柔软的云朵层叠 -->
+    <!-- 多云效果 - 舞台 SVG 内已含天体与云（含遮挡），此容器仅保留给
+         非白天/非夜晚舞台渲染的场景（已无内容，见上方两个 celestial-stage） -->
     <div
       v-if="currentWeather === 'cloudy' || isWeatherChanging"
       class="cloudy-container"
-    >
-      <div class="cloud-layer layer-back">
-        <svg
-          v-for="cloud in clouds"
-          :key="`${cloud.id}-${cloud.renderKey}`"
-          class="cloud cloud-back cloud-anim"
-          viewBox="0 0 100 50"
-          :style="{
-            '--cloud-start-x': `${cloud.startPosition}px`,
-            '--cloud-end-x': `${cloud.config.endX}px`,
-            '--cloud-duration': `${getCloudDuration(cloud)}s`,
-            top: cloud.config.top,
-          }"
-          @animationend="removeCloud(cloud.id)"
-        >
-          <g class="cloud-group">
-            <ellipse cx="30" cy="35" rx="25" ry="15" class="cloud-part" />
-            <ellipse cx="50" cy="28" rx="30" ry="20" class="cloud-part" />
-            <ellipse cx="70" cy="35" rx="22" ry="14" class="cloud-part" />
-            <ellipse cx="45" cy="38" rx="20" ry="12" class="cloud-part" />
-          </g>
-        </svg>
-      </div>
-    </div>
+    ></div>
 
     <!-- 雨天效果 - 统一动画，雨量不同 -->
     <div

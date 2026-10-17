@@ -261,70 +261,71 @@
 }
 
 /* ========================================
-   昼夜系统 - 天体与亮度遮罩
-   太阳/月亮沿正弦弧线东升西落（拟真速度）；
-   亮度由两个遮罩层叠加实现，均带长 transition 保证平滑
+   昼夜系统 - 天体与云统一舞台（SVG）
+   太阳/月亮与云在同一 SVG 内绘制，天体套"云遮挡 mask"
+   实现像素级遮挡：云飘过时被遮住的天体部分被精确挖空，
+   透出的是"半透明云 + 桌面壁纸"而非天体光亮。
+   结构纪律（实测验证，勿改）：
+   1. 遮挡 mask 挂外层无 transform 的 g，celestialStyle 挂中层 g
+      ——mask 坐标系随引用元素的 transform 一起平移，挂同一元素
+      会导致挖空随天体满场错位；
+   2. mask region 显式 -200..600，region 外 = 不可见，缺省 bbox±10%
+      会让弧线两端的天体突然消失；
+   3. mask 云副本用专用类（纯黑、opacity 1、无滤镜），继承可见云的
+      opacity/drop-shadow 会退化为"部分挖空"＝调暗效果。
    ======================================== */
 
-/* --- 天体通用定位 --- */
-/* translate 已由组件内联注入（跟随弧线坐标），此处只负责居中偏移 */
-.celestial {
+/* --- 舞台 --- */
+.celestial-stage {
   position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 0; /* 低于云层(1~3)，云飘过自然遮挡天体 */
+  inset: 0;
+  width: 280px;
+  height: 280px;
   pointer-events: none;
-  transition: opacity 1s ease-in-out; /* 雨天淡入淡出 */
+  overflow: visible; /* 天体弧线两端可伸出画布 */
 }
 
-/* --- 太阳 --- */
-.celestial.sun {
-  width: 46px;
-  height: 46px;
-  margin: -23px 0 0 -23px; /* 盘面中心对准弧线坐标 */
+/* 白天舞台在夜幕(z4)之下：白天云/太阳随整场景入夜被压暗 */
+.celestial-stage.day-stage {
+  z-index: 0;
 }
 
-.sun-disc {
-  position: absolute;
-  inset: 8px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 38% 34%,
-    #fffdf5 0%,
-    #ffe9a8 45%,
-    #ffd166 78%,
-    #ffb84d 100%
-  );
-  box-shadow: 0 0 14px 4px rgba(255, 214, 102, 0.65);
+/* 夜晚舞台在夜幕之上(z6)：月相暗面由 mask 挖空透出桌面，
+   若被夜幕压暗则亮色桌面上暗面比亮面亮、月相视觉反转（既有约束） */
+.celestial-stage.night-stage {
+  z-index: 6;
 }
 
-.sun-halo {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
+/* 天体组：雨天淡入淡出（平移自原 .celestial 的 opacity 过渡） */
+.celestial-g {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
 }
 
-.sun-halo-outer {
-  inset: -18px;
-  background: radial-gradient(
-    circle,
-    rgba(255, 224, 130, 0.35) 0%,
-    rgba(255, 213, 79, 0.16) 45%,
-    transparent 70%
-  );
-  filter: blur(6px);
+.celestial-g.visible {
+  opacity: 1;
+}
+
+/* --- 太阳（SVG 版）--- */
+/* 盘面渐变由 #sun-disc-gradient 定义；辉光复刻原 box-shadow */
+.sun-disc-svg {
+  fill: url(#sun-disc-gradient);
+  filter: drop-shadow(0 0 5px rgba(255, 214, 102, 0.65));
+}
+
+/* 光晕：渐变填充替代原 blur filter，保 pulse 缩放动画 */
+.sun-halo-svg {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.sun-halo-outer-svg {
+  fill: url(#sun-halo-outer-gradient);
   animation: sun-halo-pulse 6s ease-in-out infinite;
 }
 
-.sun-halo-inner {
-  inset: -4px;
-  background: radial-gradient(
-    circle,
-    rgba(255, 248, 225, 0.5) 0%,
-    rgba(255, 236, 179, 0.22) 55%,
-    transparent 75%
-  );
-  filter: blur(3px);
+.sun-halo-inner-svg {
+  fill: url(#sun-halo-inner-gradient);
   animation: sun-halo-pulse 4s ease-in-out infinite 0.8s;
 }
 
@@ -340,75 +341,75 @@
   }
 }
 
-/* --- 月亮 --- */
-/* --- 月亮 --- */
-/* z-index 6：位于夜幕遮罩(4)之上——亮面不被夜幕压暗，
-   在亮色桌面背景上仍比透出桌面的暗面更亮（否则月相视觉反转）；
-   同时高于云层(1~3)，夜间云朵改由 night-cloud-container 单独渲染 */
-.celestial.moon {
-  width: 44px;
-  height: 44px;
-  margin: -22px 0 0 -22px;
-  z-index: 6;
+/* --- 月亮（SVG 版）--- */
+.moon-halo-svg {
+  fill: url(#moon-halo-gradient);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sun-halo-pulse 7s ease-in-out infinite;
 }
 
-/* 夜间云朵容器：夜幕之上，使用蓝灰配色
-   （白云被夜幕压暗后在白色桌面上几乎不可见） */
-.night-cloud-container {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  overflow: hidden;
-  z-index: 4; /* 与夜幕同级，云朵从月面下方飘过或遮挡由绘制顺序决定 */
+.moon-body-svg {
+  fill: url(#moon-gradient);
 }
 
-.night-cloud-container .cloud {
-  z-index: 4;
-}
-
-.night-cloud-part {
-  fill: #7d93a8; /* 月夜蓝灰：明暗两种桌面背景下都有足够对比度 */
-}
-
-.night-cloud-group {
-  opacity: 0.7;
-}
-
-.moon-disc {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.moon-body {
-  fill: url(#moon-gradient) #e8ecf4;
-  /* 无渐变定义时的实色兜底由上面的 fill 属性第二值承担 */
-}
-
-.moon-crater {
+.moon-crater-svg {
   fill: rgba(176, 190, 210, 0.35);
 }
 
 /* 地照：真实月相的暗面并非全黑——被地球反光微微照亮（earthshine），
-   新月夜隐约可见整轮轮廓。这里画一层极淡的月盘作为暗面，
-   让月亮"消失"时仍有一丝存在感，且与天空色调融合 */
-.moon-earthshine {
+   新月夜隐约可见整轮轮廓（放月相 mask 之外、遮挡 mask 之内） */
+.moon-earthshine-svg {
   fill: rgba(120, 140, 175, 0.12);
 }
 
-.moon-halo {
-  position: absolute;
-  inset: -14px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(214, 226, 244, 0.3) 0%,
-    rgba(190, 208, 236, 0.14) 45%,
-    transparent 70%
-  );
-  filter: blur(5px);
-  animation: sun-halo-pulse 7s ease-in-out infinite;
+/* --- 舞台内云朵 --- */
+/* 可见云副本：颜色经 <use> 的 color 传入（currentColor） */
+.cloud-svg {
+  opacity: 0.5; /* 对应原 .cloud-back */
+}
+
+.cloud-use-day {
+  color: white;
+}
+
+.dark-theme .cloud-use-day {
+  color: #78909c;
+}
+
+/* 夜间蓝灰云：月夜蓝灰在明暗两种桌面背景下都有足够对比度
+   （原 night-cloud-group 0.7 × cloud-back 0.5 的有效不透明度） */
+.cloud-use-night {
+  color: #7d93a8;
+}
+
+.cloud-svg:has(.cloud-use-night) {
+  opacity: 0.35;
+}
+
+/* 遮挡 mask 内的挖空副本：纯黑实心、无滤镜，只携带动画变量——
+   绝不能继承可见云的透明度/阴影（会退化为部分挖空） */
+.cloud-mask-copy {
+  color: black;
+  opacity: 1;
+  filter: none;
+}
+
+/* 云朵动画 - cloud-drift keyframes 沿用（SVG g 上 CSS transform
+   动画 Chromium 原生支持，mask 内同样逐帧刷新——已实测验证） */
+.cloud-anim {
+  animation: cloud-drift var(--cloud-duration, 35s) linear forwards;
+}
+
+/* 云朵从画布左侧外面飘入，飘出右侧
+   使用 CSS 变量接收位置参数，由 Vue 组件配置 */
+@keyframes cloud-drift {
+  0% {
+    transform: translateX(var(--cloud-start-x, -120px));
+  }
+  100% {
+    transform: translateX(var(--cloud-end-x, 320px));
+  }
 }
 
 /* --- 亮度遮罩层 --- */
@@ -459,83 +460,13 @@
   );
 }
 
+/* 舞台化后多云容器仅保留背景外壳：云朵与天体在上方
+   celestial-stage 内渲染（含像素级遮挡），此处不再有内容 */
 .cloudy-container {
   position: absolute;
   inset: 0;
   border-radius: 50%;
   overflow: hidden;
-}
-
-/* 云层 */
-.cloud-layer {
-  position: absolute;
-  inset: 0;
-}
-
-.layer-back {
-  z-index: 1;
-}
-.layer-mid {
-  z-index: 2;
-}
-.layer-front {
-  z-index: 3;
-}
-
-/* 云朵 SVG */
-.cloud {
-  position: absolute;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.05));
-}
-
-/* 云朵组 - 使用 CSS opacity 使整朵云透明度一致 */
-.cloud-group {
-  opacity: 0.85;
-}
-
-.cloud-group.dark-theme {
-  opacity: 0.6;
-}
-
-/* 云朵部分使用实色填充 */
-.cloud-part {
-  fill: white;
-}
-
-.dark-theme .cloud-part {
-  fill: #78909c;
-}
-
-.cloud-back {
-  width: 100px;
-  opacity: 0.5;
-}
-
-.cloud-mid {
-  width: 85px;
-  opacity: 0.7;
-}
-
-.cloud-front {
-  width: 70px;
-  opacity: 0.9;
-}
-
-/* 云朵动画 - 从背景外依次飘入 */
-/* 使用 CSS 变量接收位置和时长参数，由 Vue 组件配置 */
-.cloud-anim {
-  animation: cloud-drift var(--cloud-duration, 35s) linear forwards;
-}
-
-/* 云朵从背景左侧外面开始，慢慢飘入，最后飘出右侧 */
-/* 使用 CSS 变量接收位置参数，由 Vue 组件配置 */
-@keyframes cloud-drift {
-  0% {
-    transform: translateX(var(--cloud-start-x, -120px));
-  }
-  100% {
-    transform: translateX(var(--cloud-end-x, 320px));
-  }
 }
 
 /* ========================================
@@ -929,7 +860,7 @@
    性能优化
    ======================================== */
 @media (prefers-reduced-motion: reduce) {
-  .cloud,
+  .cloud-svg,
   .rain-drop,
   .snowflake,
   .lightning-container,
@@ -949,7 +880,7 @@
 .cloudy-container,
 .rain-container,
 .snow-container,
-.cloud,
+.cloud-svg,
 .rain-drop,
 .snowflake,
 .particle,
