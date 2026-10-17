@@ -11,7 +11,9 @@ import {
 } from "./composables/dayNightState";
 import { position } from "./composables/sharedState";
 import {
-  stars,
+  liveStars,
+  recycleStar,
+  retireStar,
   meteors,
   reportMeteorDone,
   reportStageRect,
@@ -168,11 +170,12 @@ const nightOverlayOpacity = computed(() =>
 // 星空可见性：与月亮同规则——夜晚、非雨天
 const starsVisible = computed(() => !isDaytime.value && !isRainy.value);
 
-// 星光整体亮度：月光越亮星光越淡（满月夜月光淹没了暗星）
-// 满月 0.55、半月 0.75、新月 1.0；daylight 过渡期随夜幕同淡
+// 星光整体亮度：月光越亮星光越暗（满月夜月光淹没暗星）
+// 满月 0.25、半月 0.62、新月 1.0，对比拉满让"满月夜看不到几颗星"可感知；
+// daylight 过渡期随夜幕同淡
 const starBrightness = computed(() => {
   if (isDaytime.value) return 0;
-  const moonDim = 1 - moonIllumination.value * 0.45; // 1 → 0.55
+  const moonDim = 1 - moonIllumination.value * 0.75; // 1 → 0.25
   // 与夜幕同步：黄昏入夜时星星随天黑亮起，黎明随天亮隐去
   return ((1 - daylight.value) * moonDim).toFixed(3);
 });
@@ -1222,31 +1225,32 @@ onUnmounted(() => {
         :class="{ visible: starsVisible }"
         :style="{ '--star-brightness': starBrightness }"
       >
-        <circle
-          v-for="star in stars"
-          :key="`star-${star.id}`"
-          class="star"
-          :class="`star-${star.kind}`"
-          :cx="star.x"
-          :cy="star.y"
-          :r="star.r"
-          :style="{
-            '--twinkle-duration': `${star.twinkleDuration}s`,
-            '--twinkle-delay': `${star.twinkleDelay}s`,
-          }"
-        />
-        <!-- 十字亮星：中心点星已由上方 circle 渲染，这里补四芒 -->
+        <!-- 点星/亮星：单个元素完成"出生延迟 → 闪烁 N 周期 → 熄灭淡出"，
+             两段动画按周期数精确接力；animationend 后模块回收并另处重生 -->
         <g
-          v-for="star in stars.filter((s) => s.kind === 'cross')"
-          :key="`star-cross-${star.id}`"
+          v-for="star in liveStars"
+          :key="`star-${star.id}`"
           :transform="`translate(${star.x} ${star.y})`"
           :style="{
             '--twinkle-duration': `${star.twinkleDuration}s`,
-            '--twinkle-delay': `${star.twinkleDelay}s`,
+            '--twinkle-cycles': star.cycles,
+            '--star-delay': `${star.delay}s`,
+            '--fade-duration': '0.8s',
           }"
         >
+          <circle
+            class="star"
+            :class="[`star-${star.kind}`, { 'star-dying': star.dying }]"
+            :r="star.r"
+            @animationend="
+              star.dying ? recycleStar(star.id) : retireStar(star.id)
+            "
+          />
+          <!-- 十字亮星补四芒 -->
           <path
+            v-if="star.kind === 'cross'"
             class="star star-cross-rays"
+            :class="{ 'star-dying': star.dying }"
             :d="`M ${-star.r * 4.5} 0 H ${star.r * 4.5} M 0 ${-star.r * 4.5} V ${star.r * 4.5}`"
           />
         </g>

@@ -450,7 +450,8 @@
 /* ========================================
    星空层 STARRY SKY
    夜幕之上、月亮之下：星等分层（点星/十字亮星/泛蓝大星），
-   闪烁错相、亮度随月相反比（满月夜月光淹没暗星）
+   星星有生命周期——出生延迟 → 闪烁 N 周期（最暗-最亮-最暗）→ 熄灭淡出，
+   星光整体亮度随月相反比（满月夜月光淹没暗星）
    ======================================== */
 
 /* 星空整体：夜晚非雨天可见，亮度经 --star-brightness 调制 */
@@ -465,10 +466,14 @@
 }
 
 /* 星星基色：暖白，泛蓝大星偏冷 */
+/* 生命第一阶段：出生延迟 + 闪烁指定周期数（iteration-count 用整数变量），
+   周期走完停在 0%（最暗），恰好衔接熄灭淡出；
+   fill 用 both——正值出生延迟期间也要按 0%（最暗）起态渲染，否则星星
+   会先以全亮静态亮相再突然开始闪 */
 .star {
   fill: #f0f3f8;
-  animation: star-twinkle var(--twinkle-duration, 3s) ease-in-out infinite;
-  animation-delay: var(--twinkle-delay, 0s);
+  animation: star-twinkle var(--twinkle-duration, 3s) ease-in-out
+    var(--star-delay, 0s) var(--twinkle-cycles, 4) both;
 }
 
 .star-bright {
@@ -476,40 +481,41 @@
   filter: drop-shadow(0 0 1.5px rgba(200, 220, 255, 0.8));
 }
 
-/* 十字亮星：中心点星自带闪烁（见上方第一层 v-for），
-   四芒单独呼吸（更长的周期错开节奏；不与中心星同步明暗） */
+/* 十字亮星四芒：与中心点星同一生命周期变量，节奏同步 */
 .star-cross-rays {
   stroke: #e8eef8;
   stroke-width: 0.5;
   stroke-linecap: round;
   fill: none;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: star-rays-breathe var(--twinkle-duration, 3s) ease-in-out infinite;
-  animation-delay: var(--twinkle-delay, 0s);
+  animation: star-twinkle var(--twinkle-duration, 3s) ease-in-out
+    var(--star-delay, 0s) var(--twinkle-cycles, 4) both;
 }
 
-/* 闪烁：透明度 0.35~1 呼吸（不缩放——缩放会让点星在低帧率下抖动） */
+/* 生命第二阶段：熄灭淡出（中心星 animationend 后由组件切上此类；
+   cross 的四芒跟随同切，淡出时长相同，两元素同步消隐） */
+.star-dying {
+  animation: star-fade var(--fade-duration, 0.8s) ease-out both;
+}
+
+/* 闪烁：一个完整明暗周期（最暗 → 最亮 → 最暗），起点即最暗，
+   N 个周期结束后 forwards 停在 0% = 最暗，视觉上"到最暗后消失" */
 @keyframes star-twinkle {
   0%,
   100% {
-    opacity: 0.35;
+    opacity: 0.15;
   }
   50% {
     opacity: 1;
   }
 }
 
-/* 四芒呼吸：长度随透明度联动伸缩 */
-@keyframes star-rays-breathe {
-  0%,
-  100% {
-    opacity: 0.25;
-    transform: scale(0.75);
+/* 熄灭：从最暗平滑归零 */
+@keyframes star-fade {
+  from {
+    opacity: 0.15;
   }
-  50% {
-    opacity: 0.9;
-    transform: scale(1);
+  to {
+    opacity: 0;
   }
 }
 
@@ -519,7 +525,7 @@
   pointer-events: auto; /* 可点击许愿 */
   cursor: pointer;
   opacity: 0;
-  animation: meteor-fly var(--meteor-duration, 2.4s)
+  animation: meteor-fly var(--meteor-duration, 5.5s)
     cubic-bezier(0.2, 0.6, 0.35, 1) forwards;
 }
 

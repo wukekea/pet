@@ -5,28 +5,34 @@ import { currentWeather } from "./weatherState";
 /**
  * 夜晚星空层状态
  *
- * 星表：固定随机种子一次性生成（星星位置跨会话稳定，不随响应式刷新跳动）；
- * 只有流星走运行时调度。
- * 星星亮度渲染不在此处驱动——组件按 daylight/月相直接算，这里只管流星生命周期。
+ * 星星有生命周期：出生（随机延迟错峰）→ 闪烁 3~6 个周期（每周期
+ * 最暗→最亮→最暗）→ 熄灭淡出 → 移除并在别处重生，总星数恒定。
+ * 渲染层只负责绘制与转发 animationend，生死流转都在本模块完成。
+ * 流星走运行时随机调度；星星亮度由组件按 daylight/月相直接算。
  */
 
 // ========== 常量 ==========
 /** 舞台 viewBox 尺寸（与 WeatherBackground 夜晚舞台一致） */
 const STAGE_SIZE = 280;
-/** 星星总数（密度与 280px 舞台匹配：约 1 颗/170px²） */
+/** 同屏星星总数（密度与 280px 舞台匹配：约 1 颗/170px²） */
 const STAR_COUNT = 46;
-/** 固定随机种子：星表跨会话稳定 */
-const STAR_SEED = 20261017;
+/** 新星与现有星的最小间距（舞台 px），避免扎堆 */
+const STAR_MIN_DISTANCE = 18;
+/** 单颗星一次生命的闪烁周期数范围 */
+const STAR_MIN_CYCLES = 3;
+const STAR_MAX_CYCLES = 6;
 /** 同屏流星上限 */
-const MAX_METEORS = 2;
+const MAX_METEORS = 4;
 /** 流星调度间隔下限（ms） */
-const METEOR_MIN_INTERVAL = 18_000;
+const METEOR_MIN_INTERVAL = 9_000;
 /** 流星调度间隔上限（ms） */
-const METEOR_MAX_INTERVAL = 90_000;
+const METEOR_MAX_INTERVAL = 60_000;
 /** 流星动画基础时长（ms），实际时长在此基础上 ±15% 随机 */
-const METEOR_DURATION = 2_400;
+const METEOR_DURATION = 5_500;
+/** 入夜后首颗流星的延迟（ms）——星星先亮，流星后到 */
+const METEOR_INITIAL_DELAY = 3_000;
 
-// ========== 星表 ==========
+// ========== 星星（有生命周期） ==========
 /** 单颗星：三种形态——普通点星、十字亮星、泛蓝大星 */
 export interface Star {
   id: number;
@@ -34,44 +40,75 @@ export interface Star {
   y: number; // 舞台坐标 0~280（偏上半区）
   r: number; // 半径
   kind: "dot" | "cross" | "bright";
-  twinkleDuration: number; // 闪烁周期（s）
-  twinkleDelay: number; // 闪烁延迟（s）
+  twinkleDuration: number; // 单个明暗周期时长（s）
+  cycles: number; // 本次生命闪烁的周期数
+  delay: number; // 出生延迟（s），错开避免整片同步亮起
+  dying: boolean; // 周期走完、熄灭淡出中
 }
 
-/** 线性同余随机数（固定种子，可复现） */
-function seededRandom(seed: number): () => number {
-  let s = seed;
-  return () => {
-    s = (s * 1664525 + 1013904223) % 4294967296;
-    return s / 4294967296;
-  };
-}
+/** 在场星星列表 */
+export const liveStars = ref<Star[]>([]);
+let starId = 0;
 
-/** 一次性生成星表（模块加载时执行，非响应式） */
-function generateStars(): Star[] {
-  const rand = seededRandom(STAR_SEED);
-  const stars: Star[] = [];
-  for (let i = 0; i < STAR_COUNT; i++) {
-    // 直径分布：少量亮星 + 多数暗星
-    const roll = rand();
-    const kind: Star["kind"] =
-      roll < 0.08 ? "bright" : roll < 0.24 ? "cross" : "dot";
-    stars.push({
-      id: i,
-      // 星空只占上半区（地平线以下无星），横向略出血增加开阔感
-      x: -6 + rand() * (STAGE_SIZE + 12),
-      y: rand() * STAGE_SIZE * 0.62,
-      r: kind === "bright" ? 1.4 : kind === "cross" ? 1.1 : 0.55 + rand() * 0.5,
-      kind,
-      twinkleDuration: 2.2 + rand() * 3.4,
-      twinkleDelay: -rand() * 4, // 负延迟：错相启动，避免整片同闪
-    });
+/** 挑一个出生点：随机取点，尽量与现有星保持最小间距（最多尝试 8 次） */
+function pickStarPosition(): { x: number; y: number } {
+  let x = 0;
+  let y = 0;
+  for (let i = 0; i < 8; i++) {
+    // 星空只占上半区（地平线以下无星），横向略出血增加开阔感
+    x = -6 + Math.random() * (STAGE_SIZE + 12);
+    y = Math.random() * STAGE_SIZE * 0.62;
+    const tooClose = liveStars.value.some(
+      (s) => (s.x - x) ** 2 + (s.y - y) ** 2 < STAR_MIN_DISTANCE ** 2,
+    );
+    if (!tooClose) break;
   }
-  return stars;
+  return { x, y };
 }
 
-/** 星表（冻结，永不重建） */
-export const stars: readonly Star[] = Object.freeze(generateStars());
+/** 生成一颗新星加入列表 */
+function spawnStar(): void {
+  const { x, y } = pickStarPosition();
+  // 星等分布：少量亮星 + 多数暗星
+  const roll = Math.random();
+  const kind: Star["kind"] =
+    roll < 0.08 ? "bright" : roll < 0.24 ? "cross" : "dot";
+  liveStars.value.push({
+    id: ++starId,
+    x,
+    y,
+    r:
+      kind === "bright"
+        ? 1.4
+        : kind === "cross"
+          ? 1.1
+          : 0.55 + Math.random() * 0.5,
+    kind,
+    twinkleDuration: 2.2 + Math.random() * 3.4,
+    cycles:
+      STAR_MIN_CYCLES +
+      Math.floor(Math.random() * (STAR_MAX_CYCLES - STAR_MIN_CYCLES + 1)),
+    delay: Math.random() * 3,
+    dying: false,
+  });
+}
+
+/** 闪烁周期全部走完：进入熄灭淡出（重复调用安全） */
+export function retireStar(id: number): void {
+  const star = liveStars.value.find((s) => s.id === id);
+  if (!star || star.dying) return;
+  star.dying = true;
+}
+
+/** 熄灭淡出结束：移除并另处重生，保持总星数（重复调用安全） */
+export function recycleStar(id: number): void {
+  if (!liveStars.value.some((s) => s.id === id)) return;
+  liveStars.value = liveStars.value.filter((s) => s.id !== id);
+  spawnStar();
+}
+
+// 初始铺满星表（出生延迟错峰，天空渐次亮起）
+for (let i = 0; i < STAR_COUNT; i++) spawnStar();
 
 // ========== 流星 ==========
 /** 单颗流星：起止点为舞台坐标 */
@@ -118,7 +155,7 @@ export function isMouseOnMeteor(
 // ========== 舞台坐标 → 屏幕坐标 ==========
 // 夜晚舞台是 280×280 viewBox 的 SVG，跟随宠物位移（weatherStyle transform）。
 // 渲染层挂载后回写舞台元素的 getBoundingClientRect，本模块据此把流星
-// 的舞台坐标换算为屏幕坐标（含动画期间头部当前位置的近似插值）。
+// 的舞台坐标换算为屏幕坐标。
 let stageRect: DOMRect | null = null;
 /** 舞台 viewBox 与实际渲染尺寸的换算比例 */
 let stageScale = 1;
@@ -219,13 +256,12 @@ watch(
   [isDaytime, currentWeather],
   () => {
     if (isNightSkyClear()) {
-      // 夜幕降临后先等一小段再出现（星星先亮，流星后到）
       if (!meteorTimer && meteors.value.length === 0) {
         meteorTimer = setTimeout(() => {
           meteorTimer = null;
           spawnMeteor();
           scheduleNextMeteor();
-        }, 6000);
+        }, METEOR_INITIAL_DELAY);
       }
     } else {
       stopMeteors();
