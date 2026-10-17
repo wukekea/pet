@@ -60,6 +60,7 @@ import {
 import { initWeatherService, cleanupWeatherService } from "./qweatherService";
 import { recordClick, recordDrag, recordState } from "./stats";
 import { setPassthrough } from "./passthrough";
+import { isMouseOnMeteor, meteorScreenHitbox } from "./starrySkyState";
 import {
   initAttributes,
   cleanupAttributes,
@@ -887,6 +888,14 @@ export function handleMouseMove(e: MouseEvent) {
   } else {
     cachedProgressBar = null;
   }
+
+  // 流星活动期间：鼠标命中流星轨迹区时禁用穿透，允许点击许愿
+  // （舞台坐标→屏幕坐标的换算由 starrySkyState 注入的实现完成）
+  if (isMouseOnMeteor(e.clientX, e.clientY, meteorScreenHitbox)) {
+    setPassthrough(false);
+    return;
+  }
+
   const onPet = isMouseOnPet(e.clientX, e.clientY);
   setPassthrough(!onPet);
 }

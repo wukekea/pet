@@ -45,6 +45,7 @@ import {
   moonPhaseIndex,
   moonIllumination,
 } from "../DesktopPet/composables/dayNightState";
+import { triggerMeteorForDebug } from "../DesktopPet/composables/starrySkyState";
 import { weatherStatus } from "../DesktopPet/composables/qweatherService";
 import DecoIcon from "../DesktopPet/shapes/decorations/DecoIcon.vue";
 import type { PetState } from "../DesktopPet/types";
@@ -575,6 +576,14 @@ defineExpose({
               >
                 <span class="btn-icon">🌳</span>
                 <span class="btn-label">秋千</span>
+              </button>
+              <button
+                class="action-btn"
+                @click="triggerMeteorForDebug"
+                title="流星（需夜间非雨天可见）"
+              >
+                <span class="btn-icon">🌠</span>
+                <span class="btn-label">流星</span>
               </button>
             </div>
           </div>

@@ -10,6 +10,17 @@ import {
   celestialY,
 } from "./composables/dayNightState";
 import { position } from "./composables/sharedState";
+import {
+  stars,
+  meteors,
+  reportMeteorDone,
+  reportStageRect,
+  clearStageRect,
+  type Meteor,
+} from "./composables/starrySkyState";
+import { wishUponStarMessages } from "@/data/dialogues";
+import { randomPick } from "./utils/random";
+import { showCustomDialogue } from "./composables/dialogue";
 import "./weather.css";
 
 // ========== 类型定义 ==========
@@ -152,6 +163,72 @@ const cloudTopPx = (top: string) => (parseFloat(top) / 100) * 280;
 const nightOverlayOpacity = computed(() =>
   ((1 - daylight.value) * 0.7).toFixed(3),
 );
+
+// ========== 星空层 ==========
+// 星空可见性：与月亮同规则——夜晚、非雨天
+const starsVisible = computed(() => !isDaytime.value && !isRainy.value);
+
+// 星光整体亮度：月光越亮星光越淡（满月夜月光淹没了暗星）
+// 满月 0.55、半月 0.75、新月 1.0；daylight 过渡期随夜幕同淡
+const starBrightness = computed(() => {
+  if (isDaytime.value) return 0;
+  const moonDim = 1 - moonIllumination.value * 0.45; // 1 → 0.55
+  // 与夜幕同步：黄昏入夜时星星随天黑亮起，黎明随天亮隐去
+  return ((1 - daylight.value) * moonDim).toFixed(3);
+});
+
+// 流星尾迹向量：路径长的 35%，从头部沿运动反方向延伸（拖在头后）
+const meteorTail = (m: Meteor) => ({
+  dx: (m.x2 - m.x1) * -0.35,
+  dy: (m.y2 - m.y1) * -0.35,
+});
+
+// 流星动画结束回调（动画 forwards 结束后从列表移除）
+const onMeteorEnd = (m: Meteor) => {
+  reportMeteorDone(m.id);
+};
+
+// 点击流星：许愿台词（走宠物头顶气泡 + 语音），流星"被接住"立即消失
+const onMeteorClick = (m: Meteor) => {
+  reportMeteorDone(m.id);
+  showCustomDialogue(randomPick(wishUponStarMessages));
+};
+
+// 夜晚舞台引用：向 starrySkyState 回写舞台屏幕矩形与缩放，
+// 供穿透检测把流星舞台坐标换算为屏幕坐标
+const nightStageRef = ref<SVGSVGElement | null>(null);
+
+// 舞台矩形随宠物位移持续变化（weatherStyle transform），
+// 用 rAF 轻量同步——仅在流星活动期间才需要精确矩形
+let stageRectRafId: number | null = null;
+const syncStageRectLoop = () => {
+  const el = nightStageRef.value;
+  if (el) {
+    const rect = el.getBoundingClientRect();
+    // viewBox 280 → 实际渲染宽度（舞台无缩放时为 1）
+    reportStageRect(rect, rect.width / 280);
+  }
+  stageRectRafId = requestAnimationFrame(syncStageRectLoop);
+};
+
+// 流星存在期间启动矩形同步，空闲时停掉（不常驻耗电）
+watch(meteors, (list) => {
+  if (list.length > 0 && stageRectRafId === null) {
+    stageRectRafId = requestAnimationFrame(syncStageRectLoop);
+  } else if (list.length === 0 && stageRectRafId !== null) {
+    cancelAnimationFrame(stageRectRafId);
+    stageRectRafId = null;
+    clearStageRect();
+  }
+});
+
+onUnmounted(() => {
+  if (stageRectRafId !== null) {
+    cancelAnimationFrame(stageRectRafId);
+    stageRectRafId = null;
+  }
+  clearStageRect();
+});
 
 // 月光层透明度：满月夜最亮约 0.25，且仅夜晚非雨天生效
 // 遮罩数值随 30s tick 小步变化，配合 CSS transition 平滑过渡
@@ -1071,10 +1148,14 @@ onUnmounted(() => {
     <!-- 亮度遮罩层 - 平滑过渡由 CSS transition 保证 -->
     <div class="night-overlay" :style="{ opacity: nightOverlayOpacity }"></div>
 
-    <!-- 夜晚舞台：月亮 + 夜间蓝灰云，在夜幕之上（z:6）——
+    <!-- 夜晚舞台：月亮 + 夜间蓝灰云 + 星空，在夜幕之上（z:6）——
          月相暗面由 mask 挖空透出桌面，若被夜幕压暗则亮色桌面上
          暗面比亮面亮、月相视觉反转，故舞台必须高于夜幕（既有约束） -->
-    <svg class="celestial-stage night-stage" viewBox="0 0 280 280">
+    <svg
+      ref="nightStageRef"
+      class="celestial-stage night-stage"
+      viewBox="0 0 280 280"
+    >
       <defs>
         <!-- 月亮被云挖空：结构同太阳舞台 -->
         <mask
@@ -1131,7 +1212,95 @@ onUnmounted(() => {
           <stop offset="45%" stop-color="rgba(190, 208, 236, 0.14)" />
           <stop offset="70%" stop-color="rgba(190, 208, 236, 0)" />
         </radialGradient>
+        <!-- 流星拖尾渐变说明已迁移至流星元素内（按 id 动态生成） -->
       </defs>
+      <!-- 星空层：夜幕之上（z:6 舞台内）、月亮之下——
+           亮度由组件按 (1-daylight)×月相反比注入，雨天/白天整体隐藏；
+           不挂月亮遮挡 mask（星星远比云近，被云"挖空"反而失真，云飘过星光变暗即可） -->
+      <g
+        class="starfield"
+        :class="{ visible: starsVisible }"
+        :style="{ '--star-brightness': starBrightness }"
+      >
+        <circle
+          v-for="star in stars"
+          :key="`star-${star.id}`"
+          class="star"
+          :class="`star-${star.kind}`"
+          :cx="star.x"
+          :cy="star.y"
+          :r="star.r"
+          :style="{
+            '--twinkle-duration': `${star.twinkleDuration}s`,
+            '--twinkle-delay': `${star.twinkleDelay}s`,
+          }"
+        />
+        <!-- 十字亮星：中心点星已由上方 circle 渲染，这里补四芒 -->
+        <g
+          v-for="star in stars.filter((s) => s.kind === 'cross')"
+          :key="`star-cross-${star.id}`"
+          :transform="`translate(${star.x} ${star.y})`"
+          :style="{
+            '--twinkle-duration': `${star.twinkleDuration}s`,
+            '--twinkle-delay': `${star.twinkleDelay}s`,
+          }"
+        >
+          <path
+            class="star star-cross-rays"
+            :d="`M ${-star.r * 4.5} 0 H ${star.r * 4.5} M 0 ${-star.r * 4.5} V ${star.r * 4.5}`"
+          />
+        </g>
+        <!-- 流星：渐隐线段 + 头部光点，CSS 动画沿起止点平移；
+             点击许愿，穿透开关由 petController 按流星屏幕矩形控制 -->
+        <g
+          v-for="m in meteors"
+          :key="`meteor-${m.id}`"
+          class="meteor"
+          :style="{
+            '--meteor-duration': `${m.duration}ms`,
+            '--meteor-x1': `${m.x1}px`,
+            '--meteor-y1': `${m.y1}px`,
+            '--meteor-x2': `${m.x2}px`,
+            '--meteor-y2': `${m.y2}px`,
+          }"
+          @animationend="onMeteorEnd(m)"
+          @click="onMeteorClick(m)"
+        >
+          <!-- 拖尾：尾部渐隐的渐变线段（渐变按头部位置与尾迹向量生成） -->
+          <line
+            class="meteor-tail"
+            :x1="m.x1 + meteorTail(m).dx"
+            :y1="m.y1 + meteorTail(m).dy"
+            :x2="m.x1"
+            :y2="m.y1"
+            :stroke="`url(#meteor-tail-${m.id})`"
+          />
+          <defs>
+            <linearGradient
+              :id="`meteor-tail-${m.id}`"
+              gradientUnits="userSpaceOnUse"
+              :x1="m.x1 + meteorTail(m).dx"
+              :y1="m.y1 + meteorTail(m).dy"
+              :x2="m.x1"
+              :y2="m.y1"
+            >
+              <stop offset="0%" stop-color="rgba(255, 255, 255, 0)" />
+              <stop offset="70%" stop-color="rgba(220, 232, 255, 0.7)" />
+              <stop offset="100%" stop-color="rgba(255, 255, 255, 0.95)" />
+            </linearGradient>
+          </defs>
+          <!-- 头部光点 -->
+          <circle :cx="m.x1" :cy="m.y1" r="1.6" class="meteor-head" />
+          <!-- 不可见加宽命中线：覆盖尾迹（头部所在段），否则 1.2px 几乎点不中 -->
+          <line
+            class="meteor-hit"
+            :x1="m.x1 + meteorTail(m).dx"
+            :y1="m.y1 + meteorTail(m).dy"
+            :x2="m.x1"
+            :y2="m.y1"
+          />
+        </g>
+      </g>
       <!-- 月亮三层结构：遮挡 mask（无 transform）→ 弧线位移 → 月相 mask -->
       <g mask="url(#moon-occlusion-mask)">
         <g
