@@ -491,7 +491,16 @@ export async function changeState(
   }
 }
 // 动画循环 - 仅在移动状态下运行（walking/chase）
-export function animate() {
+// 帧率无关速度：按时间步进（px/s × 帧间隔秒），以 60Hz 下的旧观感为基准换算，
+// 高刷屏（如 120Hz）上速度不再翻倍；dt 钳制上限防休眠唤醒后首帧瞬移
+let lastFrameTime = 0;
+const MAX_FRAME_DT = 0.1; // 秒
+
+export function animate(now: number = performance.now()) {
+  if (!lastFrameTime) lastFrameTime = now;
+  const dt = Math.min((now - lastFrameTime) / 1000, MAX_FRAME_DT);
+  lastFrameTime = now;
+
   if (!isVisible.value) {
     stopAnimationLoop();
     return;
@@ -505,8 +514,9 @@ export function animate() {
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     if (distance > 5) {
-      const speed = 3;
-      const ratio = speed / distance;
+      // 追赶速度 3px/帧（旧 60Hz 基准）换算为 px/s
+      const step = 3 * 60 * dt;
+      const ratio = step / distance;
       const moveX = dx * ratio;
       const moveY = dy * ratio;
       position.value.x += moveX;
@@ -519,10 +529,11 @@ export function animate() {
     const dx = targetPosition.value.x - position.value.x;
     const dy = targetPosition.value.y - position.value.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    // 应用移动速度设置
-    const effectiveSpeed = WALK_SPEED * moveSpeedFactor.value;
-    if (distance > effectiveSpeed) {
-      const ratio = effectiveSpeed / distance;
+    // 应用移动速度设置（WALK_SPEED 为 px/帧的 60Hz 基准值，换算为 px/s）
+    const speedPerSecond = WALK_SPEED * moveSpeedFactor.value * 60;
+    const step = speedPerSecond * dt;
+    if (distance > step) {
+      const ratio = step / distance;
       const moveX = dx * ratio;
       const moveY = dy * ratio;
       position.value.x += moveX;
@@ -559,9 +570,11 @@ export function animate() {
   animationFrameId.value = requestAnimationFrame(animate);
 }
 
-// 启动动画循环（防止重复启动）
+// 启动动画循环（防止重复启动）；重置帧时间基准，避免两次移动间
+// 的间隔被计入下一帧 dt 导致首帧步距过大
 export function startAnimationLoop() {
   if (animationFrameId.value !== null) return;
+  lastFrameTime = 0;
   animationFrameId.value = requestAnimationFrame(animate);
 }
 
