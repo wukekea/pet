@@ -451,6 +451,19 @@ const onPetMouseLeave = () => {
     stopLongPressPush();
   }
 };
+
+// 容器定位 - 位移/秋千合成单一 transform，走合成器不触发 layout；
+// hover/dragging 缩放挂在 .pet-scaler 内层，避免覆盖位移
+const petTransform = computed(() => {
+  // 秋千的 translateY/scale 与位移合并，一次 transform 搞定
+  if (showSwing.value) {
+    return `translate3d(${position.value.x}px, ${position.value.y}px, 0) ${swingTransform.value}`;
+  }
+  return `translate3d(${position.value.x}px, ${position.value.y}px, 0)`;
+});
+const petShadowVisible = computed(
+  () => petState.value !== "launching" && petState.value !== "parachuting",
+);
 </script>
 
 <template>
@@ -476,20 +489,13 @@ const onPetMouseLeave = () => {
       :color="petColors.footprint"
     />
 
-    <!-- 宠物容器 -->
+    <!-- 宠物容器：位移/秋千 transform 每帧更新，走 GPU 合成层 -->
     <div
       class="pet-container"
-      :class="{
-        'is-dragging': isDragging,
-        'is-charging': isCharging,
-        'is-swinging': showSwing,
-      }"
       :style="{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
+        transform: petTransform,
         '--pet-size': `${petSizePixels}px`,
         opacity: opacityValue,
-        transform: showSwing ? swingTransform : undefined,
       }"
       @mousedown="onPetMouseDown"
       @mousemove="onPetMouseMove"
@@ -499,67 +505,74 @@ const onPetMouseLeave = () => {
       @contextmenu="handleContextMenu"
       title="长按：蓄力发射 | 单击：互动 | 右键：菜单"
     >
-      <!-- 阴影（飞行时隐藏） -->
+      <!-- 缩放层：hover/dragging 的缩放放内层，不与容器位移 transform 冲突 -->
       <div
-        v-if="petState !== 'launching' && petState !== 'parachuting'"
-        class="pet-shadow"
-      ></div>
+        class="pet-scaler"
+        :class="{
+          'is-dragging': isDragging,
+          'is-charging': isCharging,
+          'is-swinging': showSwing,
+        }"
+      >
+        <!-- 阴影（飞行时隐藏） -->
+        <div v-if="petShadowVisible" class="pet-shadow"></div>
 
-      <!-- 形态组件 -->
-      <component
-        :is="currentShapeComponent"
-        :pet-state="petState"
-        :pet-direction="petDirection"
-        :equipped-decorations="equippedDecorations"
-      />
+        <!-- 形态组件 -->
+        <component
+          :is="currentShapeComponent"
+          :pet-state="petState"
+          :pet-direction="petDirection"
+          :equipped-decorations="equippedDecorations"
+        />
 
-      <!-- 状态效果组件 -->
-      <component
-        v-if="currentEffectComponent"
-        :is="currentEffectComponent"
-        v-bind="currentEffectProps"
-      />
+        <!-- 状态效果组件 -->
+        <component
+          v-if="currentEffectComponent"
+          :is="currentEffectComponent"
+          v-bind="currentEffectProps"
+        />
 
-      <!-- 蓄力指示器（蓄力进度超过10%时才显示，避免单击时闪烁） -->
-      <ChargeIndicator v-if="isCharging && chargeProgress > 0.1" />
+        <!-- 蓄力指示器（蓄力进度超过10%时才显示，避免单击时闪烁） -->
+        <ChargeIndicator v-if="isCharging && chargeProgress > 0.1" />
 
-      <!-- 发射效果 -->
-      <LaunchEffects v-if="petState === 'launching'" />
+        <!-- 发射效果 -->
+        <LaunchEffects v-if="petState === 'launching'" />
 
-      <!-- 降落伞效果 -->
-      <ParachuteEffect v-if="showParachute" />
+        <!-- 降落伞效果 -->
+        <ParachuteEffect v-if="showParachute" />
 
-      <!-- 秋千效果 -->
-      <SwingEffect v-if="showSwing" />
+        <!-- 秋千效果 -->
+        <SwingEffect v-if="showSwing" />
 
-      <!-- 工作进度条 -->
-      <WorkProgressBar v-if="showWorkProgressBar" />
+        <!-- 工作进度条 -->
+        <WorkProgressBar v-if="showWorkProgressBar" />
 
-      <!-- 金币增长特效 -->
-      <CoinGainEffects
-        v-if="coinGainAmount !== null"
-        :amount="coinGainAmount"
-        @complete="onCoinGainComplete"
-      />
+        <!-- 金币增长特效 -->
+        <CoinGainEffects
+          v-if="coinGainAmount !== null"
+          :amount="coinGainAmount"
+          @complete="onCoinGainComplete"
+        />
 
-      <!-- 快捷操作面板 -->
-      <QuickActionPanel
-        :visible="quickPanelVisible"
-        :satiety="attrData.satiety"
-        :cleanliness="attrData.cleanliness"
-        :stamina="attrData.stamina"
-        :health="attrData.health"
-        :attribute-cap="attributeCap"
-        :can-feed="canFeed"
-        :can-bath="canBath"
-        :can-work="canQuickWork"
-        :is-swinging="showSwing"
-        @close="quickPanelVisible = false"
-        @feed="quickFeed"
-        @bath="quickBath"
-        @work="quickWork"
-        @swing="toggleSwing"
-      />
+        <!-- 快捷操作面板 -->
+        <QuickActionPanel
+          :visible="quickPanelVisible"
+          :satiety="attrData.satiety"
+          :cleanliness="attrData.cleanliness"
+          :stamina="attrData.stamina"
+          :health="attrData.health"
+          :attribute-cap="attributeCap"
+          :can-feed="canFeed"
+          :can-bath="canBath"
+          :can-work="canQuickWork"
+          :is-swinging="showSwing"
+          @close="quickPanelVisible = false"
+          @feed="quickFeed"
+          @bath="quickBath"
+          @work="quickWork"
+          @swing="toggleSwing"
+        />
+      </div>
     </div>
 
     <!-- 对话气泡 -->
@@ -633,8 +646,8 @@ const onPetMouseLeave = () => {
   --pet-footprint: v-bind("petColors.footprint");
 }
 
-/* 蓄力状态样式 */
-.pet-container.is-charging {
+/* 蓄力状态样式（is-charging 挂在 .pet-scaler 上） */
+.pet-scaler.is-charging {
   animation: charging-pulse 0.3s ease-in-out infinite;
 }
 
@@ -648,8 +661,5 @@ const onPetMouseLeave = () => {
   }
 }
 
-/* 秋千摇摆状态样式 - 现由 JavaScript 控制 */
-.pet-container.is-swinging {
-  /* 动画由 swingAnimation.ts 控制 */
-}
+/* 秋千摇摆状态样式 - 现由 JavaScript 控制（合成进容器 transform） */
 </style>

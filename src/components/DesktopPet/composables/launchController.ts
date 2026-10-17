@@ -38,6 +38,19 @@ let flyingAnimationFrame: number | null = null;
 // 摆动角度
 let swayAngle = 0;
 
+// 上一帧时间戳（performance.now），用于按时间步进；
+// 首帧为 0 表示"无上一帧"，取基准 60Hz 的一帧时长
+let lastFrameTime = 0;
+const BASE_FRAME_DT = 1000 / 60; // 毫秒，60Hz 基准
+const MAX_FRAME_DT = 100; // 毫秒，钳制防休眠唤醒后瞬移
+
+// 计算与上一帧的时间步长（毫秒），并推进时间戳
+function frameStep(timestamp: number): number {
+  const dt = lastFrameTime > 0 ? timestamp - lastFrameTime : BASE_FRAME_DT;
+  lastFrameTime = timestamp;
+  return Math.min(dt, MAX_FRAME_DT);
+}
+
 // 当前飞行阶段：'rising' | 'falling' | 'idle'
 let flyingPhase: "rising" | "falling" | "idle" = "idle";
 
@@ -123,6 +136,9 @@ function startLaunch(): void {
   flyingPhase = "rising";
   petDirection.value = "front"; // 面向用户
 
+  // 重置帧时间基准，避免两次飞行间隔被计入首帧 dt
+  lastFrameTime = 0;
+
   // 启动上升动画
   flyingAnimationFrame = requestAnimationFrame(animateRise);
 }
@@ -131,9 +147,12 @@ function startLaunch(): void {
  * 发射上升动画（减速运动）
  * 使用抛物线原理：速度随高度增加而减小
  */
-function animateRise(): void {
+function animateRise(timestamp: number): void {
   // 只有在上升阶段才继续
   if (flyingPhase !== "rising") return;
+
+  // 帧率无关步进：px/帧（60Hz 基准）× 60 × dt 秒
+  const dt = frameStep(timestamp) / 1000;
 
   // 计算当前进度（0 到 1）
   const progress = currentLaunchHeight.value / launchTargetHeight.value;
@@ -141,7 +160,7 @@ function animateRise(): void {
   // 速度随高度增加而减小：初始速度 * (1 - progress^2)
   // 使用平方让减速更明显，接近顶部时速度趋近于0
   const currentSpeed =
-    launchRiseSpeed.value * Math.max(0.1, 1 - progress * progress);
+    launchRiseSpeed.value * 60 * dt * Math.max(0.1, 1 - progress * progress);
 
   // 更新高度
   currentLaunchHeight.value += currentSpeed;
@@ -184,9 +203,12 @@ function startParachuting(): void {
  * 降落伞下落动画
  * 摆动幅度随高度降低而减小，确保平稳落地
  */
-function animateFall(): void {
+function animateFall(timestamp: number): void {
   // 只有在下落阶段才继续
   if (flyingPhase !== "falling") return;
+
+  // 帧率无关步进：px/帧与弧度/帧均为 60Hz 基准，× 60 × dt 秒
+  const dt = frameStep(timestamp) / 1000;
 
   // 计算下落进度（0 表示刚开始下落，1 表示即将落地）
   const fallProgress = 1 - currentLaunchHeight.value / launchTargetHeight.value;
@@ -196,11 +218,11 @@ function animateFall(): void {
   const currentSwayAmplitude = PARACHUTE_SWAY_AMPLITUDE * swayMultiplier;
 
   // 更新摆动角度
-  swayAngle += PARACHUTE_SWAY_SPEED;
+  swayAngle += PARACHUTE_SWAY_SPEED * 60 * dt;
   parachuteSwayOffset.value = Math.sin(swayAngle) * currentSwayAmplitude;
 
   // 更新高度（下落）
-  currentLaunchHeight.value -= PARACHUTE_FALL_SPEED;
+  currentLaunchHeight.value -= PARACHUTE_FALL_SPEED * 60 * dt;
 
   // 检查是否落地
   if (currentLaunchHeight.value <= 0) {

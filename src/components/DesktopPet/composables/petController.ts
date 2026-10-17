@@ -332,6 +332,9 @@ export async function changeState(
 
       stateTimer.value = setTimeout(() => {
         if (!isDragging.value) {
+          // 荡秋千/移向秋千期间不自发切换状态或移动，
+          // 否则宠物会带着秋千走到别处（停止秋千时会重新进 idle 恢复节奏）
+          if (showSwing.value || isMovingToSwing.value) return;
           if (isInSleepSchedule.value) {
             // 睡眠作息期间，只能进入睡眠状态
             changeState("sleeping");

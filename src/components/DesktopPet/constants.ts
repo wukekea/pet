@@ -185,8 +185,10 @@ export const CHARGE_MIN_DURATION = 500; // 最小蓄力时间（毫秒），低�
 export const CHARGE_MAX_DURATION = 3000; // 最大蓄力时间（毫秒），超过此值不再增加
 export const CHARGE_MAX_HEIGHT = 600; // 最大飞行高度（像素）
 export const CHARGE_MIN_HEIGHT = 150; // 最小飞行高度（像素）
-export const CHARGE_RISE_SPEED_BASE = 8; // 基础上升速度（像素/帧）
-export const CHARGE_RISE_SPEED_MAX = 25; // 最大上升速度（像素/帧）
-export const PARACHUTE_FALL_SPEED = 2; // 降落伞下落速度（像素/帧）
+// 飞行速度均为 60Hz 基准的 px/帧，运行时统一换算为 px/s（× 60）按时间步进，
+// 高刷屏（120/300Hz）上飞行时长与 60Hz 观感一致
+export const CHARGE_RISE_SPEED_BASE = 8; // 基础上升速度（像素/帧，60Hz 基准）
+export const CHARGE_RISE_SPEED_MAX = 25; // 最大上升速度（像素/帧，60Hz 基准）
+export const PARACHUTE_FALL_SPEED = 2; // 降落伞下落速度（像素/帧，60Hz 基准）
 export const PARACHUTE_SWAY_AMPLITUDE = 60; // 降落伞左右摆动幅度（像素）
-export const PARACHUTE_SWAY_SPEED = 0.04; // 降落伞摆动速度
+export const PARACHUTE_SWAY_SPEED = 0.04; // 降落伞摆动角速度（弧度/帧，60Hz 基准）
