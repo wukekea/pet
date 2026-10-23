@@ -37,3 +37,6 @@ pnpm-debug.log*
 # 测试覆盖率
 coverage
 .claude/settings.local.json
+
+# 性能采集运行时通信文件（scripts/perf-sweep.mjs 写入，内容随采集变化）
+src/devOnly/sweepCommand.json

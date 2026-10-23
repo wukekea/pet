@@ -7,8 +7,13 @@ import { currentWeather } from "./weatherState";
  *
  * 星星有生命周期：出生（随机延迟错峰）→ 闪烁 3~6 个周期（每周期
  * 最暗→最亮→最暗）→ 熄灭淡出 → 移除并在别处重生，总星数恒定。
- * 渲染层只负责绘制与转发 animationend，生死流转都在本模块完成。
- * 流星走运行时随机调度；星星亮度由组件按 daylight/月相直接算。
+ *
+ * 渲染方式：星星列表不再进 Vue 响应式（原实现每颗星是 SVG 元素、
+ * 闪烁靠 CSS 动画逐帧重绘整个夜晚舞台）。生死流转与闪烁相位全部
+ * 在本模块的 tick 里按毫秒步进，渲染层（WeatherBackground 挂的
+ * Canvas + StarfieldRenderer）每帧读快照位图绘制。
+ * 流星仍走 SVG DOM（同屏最多 4 颗、数秒一发，量级可忽略），
+ * 穿透检测/点击许愿的交互链路保持不变。
  */
 
 // ========== 常量 ==========
@@ -21,6 +26,8 @@ const STAR_MIN_DISTANCE = 18;
 /** 单颗星一次生命的闪烁周期数范围 */
 const STAR_MIN_CYCLES = 3;
 const STAR_MAX_CYCLES = 6;
+/** 熄灭淡出时长（ms，原 CSS --fade-duration 0.8s） */
+const STAR_FADE_DURATION = 800;
 /** 同屏流星上限 */
 const MAX_METEORS = 4;
 /** 流星调度间隔下限（ms） */
@@ -32,7 +39,7 @@ const METEOR_DURATION = 5_500;
 /** 入夜后首颗流星的延迟（ms）——星星先亮，流星后到 */
 const METEOR_INITIAL_DELAY = 3_000;
 
-// ========== 星星（有生命周期） ==========
+// ========== 星星（有生命周期，时间步进） ==========
 /** 单颗星：三种形态——普通点星、十字亮星、泛蓝大星 */
 export interface Star {
   id: number;
@@ -40,14 +47,20 @@ export interface Star {
   y: number; // 舞台坐标 0~280（偏上半区）
   r: number; // 半径
   kind: "dot" | "cross" | "bright";
-  twinkleDuration: number; // 单个明暗周期时长（s）
-  cycles: number; // 本次生命闪烁的周期数
-  delay: number; // 出生延迟（s），错开避免整片同步亮起
-  dying: boolean; // 周期走完、熄灭淡出中
+  /** 已存活时间（ms，出生延迟期内不增长） */
+  age: number;
+  /** 出生延迟剩余（ms） */
+  delay: number;
+  /** 单个明暗周期时长（ms） */
+  twinkleDuration: number;
+  /** 本次生命闪烁的周期数 */
+  cycles: number;
+  /** 熄灭淡出剩余（ms，null = 未进入熄灭） */
+  fadeRemaining: number | null;
 }
 
-/** 在场星星列表 */
-export const liveStars = ref<Star[]>([]);
+/** 星星列表：普通数组（不进响应式——渲染层每帧读快照，无需触发更新） */
+let stars: Star[] = [];
 let starId = 0;
 
 /** 挑一个出生点：随机取点，尽量与现有星保持最小间距（最多尝试 8 次） */
@@ -58,7 +71,7 @@ function pickStarPosition(): { x: number; y: number } {
     // 星空只占上半区（地平线以下无星），横向略出血增加开阔感
     x = -6 + Math.random() * (STAGE_SIZE + 12);
     y = Math.random() * STAGE_SIZE * 0.62;
-    const tooClose = liveStars.value.some(
+    const tooClose = stars.some(
       (s) => (s.x - x) ** 2 + (s.y - y) ** 2 < STAR_MIN_DISTANCE ** 2,
     );
     if (!tooClose) break;
@@ -73,7 +86,7 @@ function spawnStar(): void {
   const roll = Math.random();
   const kind: Star["kind"] =
     roll < 0.08 ? "bright" : roll < 0.24 ? "cross" : "dot";
-  liveStars.value.push({
+  stars.push({
     id: ++starId,
     x,
     y,
@@ -84,33 +97,58 @@ function spawnStar(): void {
           ? 1.1
           : 0.55 + Math.random() * 0.5,
     kind,
-    twinkleDuration: 2.2 + Math.random() * 3.4,
+    age: 0,
+    delay: Math.random() * 3000,
+    twinkleDuration: (2.2 + Math.random() * 3.4) * 1000,
     cycles:
       STAR_MIN_CYCLES +
       Math.floor(Math.random() * (STAR_MAX_CYCLES - STAR_MIN_CYCLES + 1)),
-    delay: Math.random() * 3,
-    dying: false,
+    fadeRemaining: null,
   });
-}
-
-/** 闪烁周期全部走完：进入熄灭淡出（重复调用安全） */
-export function retireStar(id: number): void {
-  const star = liveStars.value.find((s) => s.id === id);
-  if (!star || star.dying) return;
-  star.dying = true;
-}
-
-/** 熄灭淡出结束：移除并另处重生，保持总星数（重复调用安全） */
-export function recycleStar(id: number): void {
-  if (!liveStars.value.some((s) => s.id === id)) return;
-  liveStars.value = liveStars.value.filter((s) => s.id !== id);
-  spawnStar();
 }
 
 // 初始铺满星表（出生延迟错峰，天空渐次亮起）
 for (let i = 0; i < STAR_COUNT; i++) spawnStar();
 
-// ========== 流星 ==========
+// ========== 生命周期 tick（由渲染层 rAF 驱动） ==========
+/** 渲染层每帧调用：步进生死与闪烁相位，返回当前快照 */
+export function tickStars(dt: number): Star[] {
+  for (let i = stars.length - 1; i >= 0; i--) {
+    const s = stars[i];
+    if (s.fadeRemaining !== null) {
+      // 熄灭淡出中：倒计时归零即移除重生
+      s.fadeRemaining -= dt;
+      if (s.fadeRemaining <= 0) {
+        stars.splice(i, 1);
+        spawnStar();
+      }
+      continue;
+    }
+    if (s.delay > 0) {
+      s.delay -= dt;
+      continue;
+    }
+    s.age += dt;
+    // 生命周期走完（闪烁 N 周期）→ 进入熄灭淡出
+    if (s.age >= s.twinkleDuration * s.cycles) {
+      s.fadeRemaining = STAR_FADE_DURATION;
+    }
+  }
+  return stars;
+}
+
+/** 单星当前透明度：正常期恒 1，熄灭期 0.15→0（原 star-fade 曲线） */
+export function starAlpha(s: Star): number {
+  if (s.fadeRemaining === null) return 1;
+  return 0.15 * Math.max(0, s.fadeRemaining / STAR_FADE_DURATION);
+}
+
+/** 单星当前闪烁相位 [0,1)：0=最暗、0.5=最亮 */
+export function starPhase(s: Star): number {
+  return (s.age / s.twinkleDuration) % 1;
+}
+
+// ========== 流星（保留 SVG DOM 渲染，数量少） ==========
 /** 单颗流星：起止点为舞台坐标 */
 export interface Meteor {
   id: number;

@@ -484,75 +484,32 @@
    星光整体亮度随月相反比（满月夜月光淹没暗星）
    ======================================== */
 
-/* 星空整体：夜晚非雨天可见，亮度经 --star-brightness 调制 */
+/* 星空层：星星已迁至独立 Canvas（.starfield-canvas，见模板），
+   此组只承载流星 SVG 元素；星空整体显隐（夜/雨天）由 canvas
+   自身 opacity 控制——JS 循环在星空不可见时不推进不绘制 */
 .starfield {
+  pointer-events: none; /* 星星不可点，只有流星开启命中 */
+}
+
+/* 星空画布：随夜幕淡入淡出（transition 与原 .starfield.visible 一致），
+   亮度（月相反比 + 昼夜过渡）由 JS 每帧乘进 globalAlpha；
+   CSS 尺寸固定 280 逻辑像素，物理像素由渲染器按 dpr 重设
+   （不设会被 foreignObject 拉伸成 0 尺寸，设大了会糊） */
+.starfield-canvas {
+  width: 280px;
+  height: 280px;
   opacity: 0;
-  transition: opacity 2s ease-in-out; /* 与夜幕 1.5s 同量级，入夜比夜幕略慢亮起 */
-  pointer-events: none; /* 星星本身不可点，只有流星开启命中 */
+  transition: opacity 2s ease-in-out;
+  pointer-events: none;
 }
 
-.starfield.visible {
-  opacity: var(--star-brightness, 1);
+.starfield-canvas.visible {
+  opacity: 1;
 }
 
-/* 星星基色：暖白，泛蓝大星偏冷 */
-/* 生命第一阶段：出生延迟 + 闪烁指定周期数（iteration-count 用整数变量），
-   周期走完停在 0%（最暗），恰好衔接熄灭淡出；
-   fill 用 both——正值出生延迟期间也要按 0%（最暗）起态渲染，否则星星
-   会先以全亮静态亮相再突然开始闪 */
-.star {
-  fill: #f0f3f8;
-  animation: star-twinkle var(--twinkle-duration, 3s) ease-in-out
-    var(--star-delay, 0s) var(--twinkle-cycles, 4) both;
-}
-
-/* 泛蓝大星：原 drop-shadow 辉光。SVG 滤镜逐元素重绘，星空几十颗星
-   常驻闪烁时开销可观。改为十字辉光层——泛蓝大星有独立的 4 芒十字
-   （star-cross-rays），把辉光做进四芒描边宽度与透明度，闪烁时
-   只动 opacity，无滤镜参与 */
-.star-bright {
-  fill: #dce8ff;
-}
-
-/* 十字亮星四芒：与中心点星同一生命周期变量，节奏同步。
-   加宽 stroke-width + 降低描边透明度，叠出辉光层次——
-   泛蓝大星（star-bright）的辉光由这层加宽四芒承担 */
-.star-cross-rays {
-  stroke: rgba(200, 220, 255, 0.55);
-  stroke-width: 0.8;
-  stroke-linecap: round;
-  fill: none;
-  animation: star-twinkle var(--twinkle-duration, 3s) ease-in-out
-    var(--star-delay, 0s) var(--twinkle-cycles, 4) both;
-}
-
-/* 生命第二阶段：熄灭淡出（中心星 animationend 后由组件切上此类；
-   cross 的四芒跟随同切，淡出时长相同，两元素同步消隐） */
-.star-dying {
-  animation: star-fade var(--fade-duration, 0.8s) ease-out both;
-}
-
-/* 闪烁：一个完整明暗周期（最暗 → 最亮 → 最暗），起点即最暗，
-   N 个周期结束后 forwards 停在 0% = 最暗，视觉上"到最暗后消失" */
-@keyframes star-twinkle {
-  0%,
-  100% {
-    opacity: 0.15;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-/* 熄灭：从最暗平滑归零 */
-@keyframes star-fade {
-  from {
-    opacity: 0.15;
-  }
-  to {
-    opacity: 0;
-  }
-}
+/* 星星基色/闪烁曲线迁至 particles/StarfieldRenderer.ts（Canvas 精灵）。
+   原 .star / .star-cross-rays / .star-dying 样式与 keyframes 随 SVG
+   渲染一并移除 */
 
 /* --- 流星 --- */
 /* 沿起止点平移 + 渐显渐隐：CSS 变量由组件按流星坐标注入 */

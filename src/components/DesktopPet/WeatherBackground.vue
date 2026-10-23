@@ -11,15 +11,16 @@ import {
 } from "./composables/dayNightState";
 import { position } from "./composables/sharedState";
 import {
-  liveStars,
-  recycleStar,
-  retireStar,
   meteors,
   reportMeteorDone,
   reportStageRect,
   clearStageRect,
+  tickStars,
+  starAlpha,
+  starPhase,
   type Meteor,
 } from "./composables/starrySkyState";
+import { StarfieldRenderer } from "./particles/StarfieldRenderer";
 import {
   hasActiveParticles,
   attachParticleCanvas,
@@ -66,7 +67,64 @@ const starBrightness = computed(() => {
   if (isDaytime.value) return 0;
   const moonDim = 1 - moonIllumination.value * 0.75; // 1 → 0.25
   // 与夜幕同步：黄昏入夜时星星随天黑亮起，黎明随天亮隐去
-  return ((1 - daylight.value) * moonDim).toFixed(3);
+  return (1 - daylight.value) * moonDim;
+});
+
+// ---------- 星空 Canvas 渲染 ----------
+// 星星不再是 SVG 元素（46 颗星逐帧重绘整个夜晚舞台是深夜场景的
+// 最大热点），改为星空画布 + 每帧快照位图绘制（复用雨雪粒子的
+// Canvas 架构）。流星仍走 SVG（同屏最多 4 颗，量级可忽略）。
+const starfieldCanvasRef = ref<HTMLCanvasElement | null>(null);
+let starfieldRenderer: StarfieldRenderer | null = null;
+let starfieldRafId: number | null = null;
+let starfieldLastTime = 0;
+
+const starfieldLoop = (now: number) => {
+  starfieldRafId = requestAnimationFrame(starfieldLoop);
+  const dt = Math.min(now - starfieldLastTime, 100);
+  starfieldLastTime = now;
+
+  if (!starfieldRenderer || !starfieldCanvasRef.value) return;
+  // 仅夜晚非雨天推进与绘制（白天/雨天隐藏画布，tick 也停——
+  // 星星相位冻结，重新入夜时从冻结处继续，无感）
+  if (!starsVisible.value || starBrightness.value <= 0) return;
+
+  const stars = tickStars(dt);
+  starfieldRenderer.render(
+    stars.map((s) => ({
+      x: s.x,
+      y: s.y,
+      r: s.r,
+      kind: s.kind,
+      phase: starPhase(s),
+      alpha: starAlpha(s),
+    })),
+    280,
+    280,
+    starBrightness.value,
+  );
+};
+
+// 画布显隐挂 visible 类驱动 CSS opacity 过渡（入夜淡入/天亮淡出）
+watch(starsVisible, (visible) => {
+  starfieldCanvasRef.value?.classList.toggle("visible", visible);
+});
+
+watch(starfieldCanvasRef, (canvas) => {
+  if (canvas) {
+    starfieldRenderer = new StarfieldRenderer(canvas);
+    if (starfieldRafId === null) {
+      starfieldLastTime = performance.now();
+      starfieldRafId = requestAnimationFrame(starfieldLoop);
+    }
+  } else {
+    if (starfieldRafId !== null) {
+      cancelAnimationFrame(starfieldRafId);
+      starfieldRafId = null;
+    }
+    starfieldRenderer?.dispose();
+    starfieldRenderer = null;
+  }
 });
 
 // 流星尾迹向量：路径长的 35%，从头部沿运动反方向延伸（拖在头后）
@@ -820,42 +878,21 @@ onUnmounted(() => {
         <!-- 流星拖尾渐变说明已迁移至流星元素内（按 id 动态生成） -->
       </defs>
       <!-- 星空层：夜幕之上（z:6 舞台内）、月亮之下——
-           亮度由组件按 (1-daylight)×月相反比注入，雨天/白天整体隐藏；
-           不挂月亮遮挡 mask（星星远比云近，被云"挖空"反而失真，云飘过星光变暗即可） -->
-      <g
-        class="starfield"
-        :class="{ visible: starsVisible }"
-        :style="{ '--star-brightness': starBrightness }"
-      >
-        <!-- 点星/亮星：单个元素完成"出生延迟 → 闪烁 N 周期 → 熄灭淡出"，
-             两段动画按周期数精确接力；animationend 后模块回收并另处重生 -->
-        <g
-          v-for="star in liveStars"
-          :key="`star-${star.id}`"
-          :transform="`translate(${star.x} ${star.y})`"
-          :style="{
-            '--twinkle-duration': `${star.twinkleDuration}s`,
-            '--twinkle-cycles': star.cycles,
-            '--star-delay': `${star.delay}s`,
-            '--fade-duration': '0.8s',
-          }"
-        >
-          <circle
-            class="star"
-            :class="[`star-${star.kind}`, { 'star-dying': star.dying }]"
-            :r="star.r"
-            @animationend="
-              star.dying ? recycleStar(star.id) : retireStar(star.id)
-            "
-          />
-          <!-- 十字亮星补四芒 -->
-          <path
-            v-if="star.kind === 'cross'"
-            class="star star-cross-rays"
-            :class="{ 'star-dying': star.dying }"
-            :d="`M ${-star.r * 4.5} 0 H ${star.r * 4.5} M 0 ${-star.r * 4.5} V ${star.r * 4.5}`"
-          />
-        </g>
+           星星在独立 Canvas 渲染（particles/StarfieldRenderer，
+           原 SVG 逐星动画会整舞台逐帧重绘），流星仍为 SVG 元素；
+           亮度由组件按 (1-daylight)×月相反比注入画布 -->
+      <g class="starfield">
+        <!-- 星空画布：z 序与原 starfield 一致（月亮之下、夜幕之上）。
+             canvas 的 width/height 属性会被渲染器按 dpr 重设（物理像素），
+             CSS 尺寸固定 280 逻辑像素（见 .starfield-canvas），勿写内联
+             width/height 避免覆盖渲染器的物理尺寸设置 -->
+        <foreignObject x="0" y="0" width="280" height="280">
+          <canvas
+            ref="starfieldCanvasRef"
+            xmlns="http://www.w3.org/1999/xhtml"
+            class="starfield-canvas"
+          ></canvas>
+        </foreignObject>
         <!-- 流星：渐隐线段 + 头部光点，CSS 动画沿起止点平移；
              点击许愿，穿透开关由 petController 按流星屏幕矩形控制 -->
         <g
