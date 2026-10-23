@@ -43,6 +43,15 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function pollLoop() {
   let lastSeq = -1;
   let lastAction = "";
+  // 心跳探针：从 vite 服务器可直接 fetch 本模块的编译产物（?probe= 参数
+  // 会改变 URL 让 Vite 重新转译，转译时读取的模块源码里含此调用）——
+  // 不行，那只能看到静态代码。改为：循环启动即上报脚本端口（脚本未启动
+  // 时静默失败），便于从外部观测循环是否存活
+  await fetch(`${REPORT_URL}/loop-alive`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ generation, at: Date.now() }),
+  }).catch(() => {});
   // eslint-disable-next-line no-constant-condition
   while (w.__perfSweepGeneration === generation) {
     try {

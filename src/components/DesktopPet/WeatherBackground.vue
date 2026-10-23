@@ -247,11 +247,26 @@ const getRandomPos = (index: number) => `${(index * 37) % 100}%`;
 const weatherClass = computed(() => `weather-${currentWeather.value}`);
 
 // 天气背景位置 - 跟随宠物位置，居中显示
-// 使用 transform 替代 left/top，利用 GPU 合成层避免 reflow
-// 包含 translate(-50%, -50%) 用于居中（原在 CSS 中定义）
-const weatherStyle = computed(() => ({
-  transform: `translate(calc(${position.value.x + 40}px - 50%), calc(${position.value.y - 20}px - 50%))`,
-}));
+// 性能：position 是高频变化源（宠物走动时每帧都动），走 Vue 响应式
+// 会让整个组件的渲染链每帧重跑。改为 ref 拿到根元素后直改
+// style.transform（只合成该层，不触发 Vue 重渲染）；transform 里的
+// translate(-50%, -50%) 用于居中（原在 CSS 中定义）
+//
+// watch 源必须用 getter 读取深层属性：行走路径是 position.value.x +=
+// 的属性突变（对象引用不变），直接 watch(position) 只浅层监听 .value
+// 替换——拖动路径（整体替换对象）能触发、行走路径不触发，背景就会
+// 停在原地。getter 里读取 x/y 即建立深层依赖，两种路径都能捕获，
+// 且比 deep: true（整树深比较）便宜
+const weatherBackgroundRef = ref<HTMLElement | null>(null);
+watch(
+  [() => ({ x: position.value.x, y: position.value.y }), weatherBackgroundRef],
+  () => {
+    const el = weatherBackgroundRef.value;
+    if (!el) return;
+    el.style.transform = `translate(calc(${position.value.x + 40}px - 50%), calc(${position.value.y - 20}px - 50%))`;
+  },
+  { immediate: true },
+);
 
 // ========== 雨雪粒子（Canvas 渲染） ==========
 // 粒子逻辑与渲染在 particles/weatherParticleSystem，组件只提供画布并
@@ -701,7 +716,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="weather-background" :class="weatherClass" :style="weatherStyle">
+  <div
+    ref="weatherBackgroundRef"
+    class="weather-background"
+    :class="weatherClass"
+  >
     <!-- 共享资源定义：云形 + 圆形裁剪。必须在两个 celestial-stage 之外——
          舞台按昼夜 v-if 裁剪后，定义若在舞台内会导致另一舞台的
          <use href="#cloud-shape"> 引用悬空（夜云消失的根因）。

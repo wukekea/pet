@@ -21,9 +21,12 @@ interface SpriteKey {
 /** 离屏精灵画布 */
 interface Sprite {
   canvas: HTMLCanvasElement;
-  /** 绘制锚点：精灵中心（雪花）或顶部中点（雨滴） */
+  /** 绘制锚点（逻辑坐标）：精灵中心（雪花）或顶部中点（雨滴） */
   anchorX: number;
   anchorY: number;
+  /** 逻辑尺寸；源画布物理分辨率 = 逻辑 × dpr。
+      未定义时源画布即逻辑分辨率（雨滴精灵，1:1 绘制） */
+  logical?: number;
 }
 
 export class CanvasParticleRenderer implements ParticleRenderer {
@@ -38,7 +41,8 @@ export class CanvasParticleRenderer implements ParticleRenderer {
   render({ particles, dark, width, height }: RenderFrameInput): void {
     const { canvas, ctx } = this;
 
-    // dpr 变化（跨屏拖拽）时重设画布物理尺寸
+    // dpr 变化（跨屏拖拽）时重设画布物理尺寸；雪花精灵按 dpr
+    // 分辨率构建，一并失效重建
     const dpr = window.devicePixelRatio || 1;
     if (
       canvas.width !== Math.round(width * dpr) ||
@@ -48,6 +52,7 @@ export class CanvasParticleRenderer implements ParticleRenderer {
       this.dpr = dpr;
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
+      this.sprites.clear();
     }
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -85,6 +90,7 @@ export class CanvasParticleRenderer implements ParticleRenderer {
         else alpha = t > 0.5 ? 1 - (t - 0.5) * 0.4 : 1; // 0.9 → 0.8
         if (alpha <= 0) continue;
         ctx.globalAlpha = alpha;
+        // 源画布是 dpr 倍物理分辨率，目标按粒子尺寸（逻辑 px）缩放
         ctx.drawImage(
           snowSprite.canvas,
           p.x - snowSprite.anchorX,
@@ -149,14 +155,20 @@ export class CanvasParticleRenderer implements ParticleRenderer {
 
   /** 雪花精灵：带辉光径向渐变（复刻方案二烘焙后的 .snowflake） */
   private buildSnowSprite({ dark }: SpriteKey): Sprite {
-    // 精灵带辉光出血：核心直径 32px + 出血 16px 两侧
-    const size = 64;
+    // 精灵尺寸按 dpr 缩放：雪花显示尺寸 5~12 逻辑 px，辉光渐变
+    // 从 45% 处开始（核心只占直径 ~45%），精灵 = 最大雪花 12px
+    // 的 2.2 倍余量即可覆盖辉光出血——原来固定 64 逻辑 px，实际
+    // 显示时被缩到 1/5~1/13，drawImage 的降采样混合成本白付 5 倍。
+    // 物理分辨率再乘 dpr，保证 Retina 下不糊（星空精灵同思路）
+    const logical = 28;
+    const dpr = this.dpr;
     const canvas = document.createElement("canvas");
-    canvas.width = size;
-    canvas.height = size;
+    canvas.width = Math.ceil(logical * dpr);
+    canvas.height = Math.ceil(logical * dpr);
     const ctx = canvas.getContext("2d")!;
-    const c = size / 2;
-    const r = size / 2;
+    ctx.scale(dpr, dpr); // 之后按逻辑坐标绘制
+    const c = logical / 2;
+    const r = logical / 2;
 
     const grad = ctx.createRadialGradient(c, c, 0, c, c, r);
     if (dark) {
@@ -177,8 +189,9 @@ export class CanvasParticleRenderer implements ParticleRenderer {
       grad.addColorStop(1, "rgba(187, 222, 251, 0)");
     }
     ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, size, size);
+    ctx.fillRect(0, 0, logical, logical);
 
-    return { canvas, anchorX: c, anchorY: c };
+    // 绘制按逻辑尺寸缩放源图（dpr 份在源内），锚点同样按逻辑坐标
+    return { canvas, anchorX: c, anchorY: c, logical };
   }
 }

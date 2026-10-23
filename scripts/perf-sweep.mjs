@@ -119,10 +119,17 @@ const reportServer = http.createServer((req, res) => {
 });
 
 function sampleCpu() {
-  const out = execSync(
-    `ps aux | grep "Electron Helper (Renderer)\\|Electron Helper (GPU)" | grep pet | grep -v grep`,
-    { encoding: "utf8" },
-  );
+  // ps 无结果（宠物重启/窗口关闭的瞬间）时 execSync 会因 grep 退出码 1
+  // 抛错——吞掉返回全 0，由多次采样取中位自然过滤
+  let out = "";
+  try {
+    out = execSync(
+      `ps aux | grep "Electron Helper (Renderer)\\|Electron Helper (GPU)" | grep pet | grep -v grep`,
+      { encoding: "utf8" },
+    );
+  } catch {
+    return { renderer: 0, gpu: 0 };
+  }
   let renderer = 0,
     gpu = 0;
   for (const line of out.trim().split("\n")) {
