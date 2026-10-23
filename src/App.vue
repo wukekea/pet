@@ -8,6 +8,12 @@ const DebugPanel = import.meta.env.DEV
   ? defineAsyncComponent(() => import("@/components/DebugPanel/index.vue"))
   : null;
 
+// 性能采集控制器（仅开发环境）：暴露 window.__perfSweep 命令通道，
+// 供 scripts/perf-sweep.mjs 驱动天气×昼夜遍历并采样 CPU
+if (import.meta.env.DEV) {
+  import("@/devOnly/perfSweep");
+}
+
 const isLoaded = ref(false);
 
 onMounted(() => {
