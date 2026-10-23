@@ -16,7 +16,8 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    port: 5173,
+    // 支持通过 PET_PORT 环境变量指定端口，与 electron:dev 的 wait-on 保持一致
+    port: Number(process.env.PET_PORT) || 5173,
     strictPort: true,
   },
 });

@@ -9,9 +9,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:${PET_PORT:-5173} && electron .\"",
     "electron:build": "vite build && electron-builder",
-    "electron:preview": "vite build && electron .",
+    "electron:preview": "vite build && PET_PREVIEW=1 electron .",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {

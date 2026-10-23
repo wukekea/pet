@@ -27,7 +27,11 @@ app.commandLine.appendSwitch("enable-speech-dispatcher");
 let mainWindow = null;
 let tray = null;
 
-const isDev = process.env.NODE_ENV === "development" || !app.isPackaged;
+// electron:preview 场景：直接 electron . 运行（未打包，isPackaged=false）
+// 但应加载 vite build 的 dist 产物而非 dev server。PET_PREVIEW=1 时强制生产模式。
+const isPreview = process.env.PET_PREVIEW === "1";
+const isDev =
+  !isPreview && (process.env.NODE_ENV === "development" || !app.isPackaged);
 
 // 单实例锁（双开存档互写问题）
 const gotTheLock = app.requestSingleInstanceLock();
@@ -66,7 +70,9 @@ function createWindow() {
   mainWindow.setIgnoreMouseEvents(true, { forward: true });
 
   if (isDev) {
-    mainWindow.loadURL("http://localhost:5173");
+    // 端口与 vite.config.ts 的 PET_PORT 保持一致，默认 5173
+    const port = Number(process.env.PET_PORT) || 5173;
+    mainWindow.loadURL(`http://localhost:${port}`);
   } else {
     mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
   }
