@@ -41,6 +41,17 @@ const isRainy = computed(() =>
 const sunVisible = computed(() => isDaytime.value && !isRainy.value);
 const moonVisible = computed(() => !isDaytime.value && !isRainy.value);
 
+// 舞台昼夜裁剪：深夜（daylight≈0）不渲染白天舞台（太阳+遮挡 mask），
+// 正午（daylight≈1）不渲染夜晚舞台（月亮+星空容器+月相/遮挡 mask）。
+// 单个 SVG 舞台带两个 800×800 mask region 的层结构，仅在层树里存在
+// 就有 ~7% GPU 合成成本（实测隐藏夜晚舞台 GPU 24→16）。
+// 过渡期（黎明 5-7 点、黄昏 17-19 点，daylight 在中间区间）两个舞台
+// 都保留——昼夜交叉淡入依赖双方同时在场，裁剪只在稳定态生效。
+const DAY_STAGE_THRESHOLD = 0.05; // daylight 低于此值 = 夜晚稳定态
+const NIGHT_STAGE_THRESHOLD = 0.95; // daylight 高于此值 = 白天稳定态
+const showDayStage = computed(() => daylight.value > DAY_STAGE_THRESHOLD);
+const showNightStage = computed(() => daylight.value < NIGHT_STAGE_THRESHOLD);
+
 // 天体沿弧线的定位（百分比映射为 SVG viewBox 像素，舞台为 280x280）
 const CELESTIAL_CONTAINER_SIZE = 280;
 const celestialTransform = computed(
@@ -691,11 +702,11 @@ onUnmounted(() => {
 
 <template>
   <div class="weather-background" :class="weatherClass" :style="weatherStyle">
-    <!-- 白天舞台：太阳 + 白天云，同层 SVG 内云对太阳像素级遮挡
-         （天体组套云遮挡 mask，云画在天体之后；mask 坐标系为舞台根坐标——
-         遮挡 mask 必须挂在外层无 transform 的 g 上，celestialStyle 挂中层，
-         否则 mask 内容会随天体位移一起平移，挖空与可见云错位） -->
-    <svg class="celestial-stage day-stage" viewBox="0 0 280 280">
+    <!-- 共享资源定义：云形 + 圆形裁剪。必须在两个 celestial-stage 之外——
+         舞台按昼夜 v-if 裁剪后，定义若在舞台内会导致另一舞台的
+         <use href="#cloud-shape"> 引用悬空（夜云消失的根因）。
+         此 SVG 零渲染成本（只有 defs，无可见内容） -->
+    <svg class="shared-defs" width="0" height="0" aria-hidden="true">
       <defs>
         <!-- 云形唯一定义：日云/夜云/两个遮挡 mask 副本共用 <use> 实例 -->
         <g id="cloud-shape">
@@ -704,6 +715,27 @@ onUnmounted(() => {
           <ellipse cx="70" cy="35" rx="22" ry="14" fill="currentColor" />
           <ellipse cx="45" cy="38" rx="20" ry="12" fill="currentColor" />
         </g>
+        <!-- 复刻原 cloudy-container 的 border-radius:50% 圆形裁剪（两舞台共用） -->
+        <clipPath id="sky-clip">
+          <circle cx="140" cy="140" r="140" />
+        </clipPath>
+        <clipPath id="sky-clip-night">
+          <circle cx="140" cy="140" r="140" />
+        </clipPath>
+      </defs>
+    </svg>
+    <!-- 白天舞台：太阳 + 白天云，同层 SVG 内云对太阳像素级遮挡
+         （天体组套云遮挡 mask，云画在天体之后；mask 坐标系为舞台根坐标——
+         遮挡 mask 必须挂在外层无 transform 的 g 上，celestialStyle 挂中层，
+         否则 mask 内容会随天体位移一起平移，挖空与可见云错位） -->
+    <!-- v-if 昼夜裁剪：深夜不渲染白天舞台（约省 3-4% GPU 层成本），
+         过渡期保留（见 showDayStage 注释） -->
+    <svg
+      v-if="showDayStage"
+      class="celestial-stage day-stage"
+      viewBox="0 0 280 280"
+    >
+      <defs>
         <!-- 太阳被云挖空：mask region 显式覆盖全弧线（-200..600），
              region 外 mask 值为 0（不可见），缺省 bbox±10% 会让
              弧线两端伸出画布的天体突然消失 -->
@@ -738,10 +770,6 @@ onUnmounted(() => {
             </g>
           </g>
         </mask>
-        <!-- 复刻原 cloudy-container 的 border-radius:50% 圆形裁剪 -->
-        <clipPath id="sky-clip">
-          <circle cx="140" cy="140" r="140" />
-        </clipPath>
         <!-- 太阳盘面渐变（复刻原 CSS radial-gradient at 38% 34%） -->
         <radialGradient id="sun-disc-gradient" cx="0.38" cy="0.34" r="0.9">
           <stop offset="0%" stop-color="#fffdf5" />
@@ -813,8 +841,11 @@ onUnmounted(() => {
 
     <!-- 夜晚舞台：月亮 + 夜间蓝灰云 + 星空，在夜幕之上（z:6）——
          月相暗面由 mask 挖空透出桌面，若被夜幕压暗则亮色桌面上
-         暗面比亮面亮、月相视觉反转，故舞台必须高于夜幕（既有约束） -->
+         暗面比亮面亮、月相视觉反转，故舞台必须高于夜幕（既有约束）。
+         v-if 昼夜裁剪：正午不渲染夜晚舞台（实测省 ~6-8% GPU），
+         过渡期保留（见 showNightStage 注释） -->
     <svg
+      v-if="showNightStage"
       ref="nightStageRef"
       class="celestial-stage night-stage"
       viewBox="0 0 280 280"
@@ -849,9 +880,6 @@ onUnmounted(() => {
             </g>
           </g>
         </mask>
-        <clipPath id="sky-clip-night">
-          <circle cx="140" cy="140" r="140" />
-        </clipPath>
         <!-- 月相 mask：白=显示、黑=隐藏。暗区 path 以黑色挖空，
              被遮住的月面直接透明露出背景——暗面与天空天然融合，
              不再需要"猜背景色"，任何天气/亮度下都不会出现突兀色块 -->

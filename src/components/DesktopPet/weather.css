@@ -306,6 +306,16 @@
    ======================================== */
 
 /* --- 舞台 --- */
+/* 共享资源 SVG：只承载 defs（云形/圆形裁剪），无可见内容零渲染成本。
+   必须在两个 celestial-stage 外——舞台按昼夜 v-if 裁剪后，
+   定义在舞台内会让另一舞台的引用悬空（夜云消失的教训） */
+.shared-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
 .celestial-stage {
   position: absolute;
   inset: 0;
