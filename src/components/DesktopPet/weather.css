@@ -14,8 +14,25 @@
   z-index: 1;
   overflow: visible;
   will-change: transform;
-  /* 移除边框，使用柔和的阴影 */
-  filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.1));
+}
+
+/* 场景柔光晕：替代原容器级 filter: drop-shadow(0 0 30px)。
+   容器滤镜作用于全部子元素的合成结果——粒子每帧变化都会触发
+   全场景模糊重算，是渲染进程的 CPU 大头；改为静态渐变光晕，
+   渲染零成本，视觉近似（原本就是对半透明粒子的极淡白晕） */
+.weather-background::before {
+  content: "";
+  position: absolute;
+  inset: -30px;
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.04) 45%,
+    transparent 70%
+  );
 }
 
 /* ========================================
@@ -59,43 +76,47 @@
   }
 }
 
-/* 光晕背景 - 多层叠加营造柔和阳光感 */
+/* 光晕背景 - 多层叠加营造柔和阳光感
+   blur(20px) 替换为径向渐变边缘过渡（渐变是静态背景，随层合成，
+   滤镜逐帧重绘），中心/透明度与原滤镜柔化后的视觉一致 */
 .sun-glow {
   position: absolute;
   border-radius: 50%;
-  filter: blur(20px);
 }
 
 .sun-glow-outer {
-  inset: -40px;
+  inset: -60px;
   background: radial-gradient(
     circle at 65% 35%,
     rgba(255, 248, 225, 0.12) 0%,
-    rgba(255, 236, 179, 0.06) 40%,
-    transparent 70%
+    rgba(255, 248, 225, 0.06) 35%,
+    rgba(255, 236, 179, 0.03) 55%,
+    transparent 75%
   );
   animation: glow-pulse-outer 6s ease-in-out infinite;
 }
 
 .sun-glow-mid {
-  inset: -10px;
+  inset: -30px;
   background: radial-gradient(
     circle at 60% 40%,
     rgba(255, 248, 225, 0.15) 0%,
-    rgba(255, 236, 179, 0.08) 35%,
-    transparent 60%
+    rgba(255, 248, 225, 0.08) 30%,
+    rgba(255, 236, 179, 0.04) 48%,
+    transparent 65%
   );
   animation: glow-pulse-mid 5s ease-in-out infinite;
   animation-delay: 0.5s;
 }
 
 .sun-glow-inner {
-  inset: 20px;
+  inset: 0px;
   background: radial-gradient(
     circle at 55% 45%,
     rgba(255, 252, 240, 0.12) 0%,
-    rgba(255, 248, 225, 0.05) 30%,
-    transparent 55%
+    rgba(255, 252, 240, 0.06) 25%,
+    rgba(255, 248, 225, 0.03) 42%,
+    transparent 58%
   );
   animation: glow-pulse-inner 4s ease-in-out infinite;
   animation-delay: 1s;
@@ -172,12 +193,14 @@
 
 .particle {
   position: absolute;
-  width: 3px;
-  height: 3px;
+  width: 4px;
+  height: 4px;
   background: radial-gradient(
     circle,
     rgba(255, 255, 255, 0.9) 0%,
-    rgba(255, 248, 225, 0.5) 50%,
+    rgba(255, 255, 255, 0.6) 25%,
+    rgba(255, 248, 225, 0.5) 40%,
+    rgba(255, 248, 225, 0.15) 65%,
     transparent 100%
   );
   border-radius: 50%;
@@ -185,14 +208,15 @@
   top: var(--y-start);
   animation: particle-drift 8s ease-in-out infinite;
   animation-delay: var(--delay);
-  filter: blur(0.5px);
 }
 
 .dark-theme .particle {
   background: radial-gradient(
     circle,
     rgba(255, 236, 179, 0.6) 0%,
-    rgba(255, 224, 130, 0.3) 50%,
+    rgba(255, 236, 179, 0.4) 25%,
+    rgba(255, 224, 130, 0.3) 40%,
+    rgba(255, 224, 130, 0.1) 65%,
     transparent 100%
   );
 }
@@ -223,27 +247,33 @@
   inset: 0;
 }
 
+/* 柔和光斑
+   blur(8px) 替换为径向渐变柔和边缘 + 补偿性放大（原 blur 会把
+   斑点放大约一个模糊半径），透明度按模糊后的能量稀释回填 */
 .light-spot {
   position: absolute;
-  width: var(--size);
-  height: var(--size);
+  width: calc(var(--size) + 16px);
+  height: calc(var(--size) + 16px);
   background: radial-gradient(
     circle,
     rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.12) 25%,
     rgba(255, 252, 240, 0.1) 40%,
+    rgba(255, 252, 240, 0.04) 55%,
     transparent 70%
   );
   border-radius: 50%;
   animation: spot-shimmer 5s ease-in-out infinite;
   animation-delay: var(--delay);
-  filter: blur(8px);
 }
 
 .dark-theme .light-spot {
   background: radial-gradient(
     circle,
     rgba(255, 236, 179, 0.12) 0%,
+    rgba(255, 236, 179, 0.07) 25%,
     rgba(255, 224, 130, 0.06) 40%,
+    rgba(255, 224, 130, 0.02) 55%,
     transparent 70%
   );
 }
@@ -476,15 +506,20 @@
     var(--star-delay, 0s) var(--twinkle-cycles, 4) both;
 }
 
+/* 泛蓝大星：原 drop-shadow 辉光。SVG 滤镜逐元素重绘，星空几十颗星
+   常驻闪烁时开销可观。改为十字辉光层——泛蓝大星有独立的 4 芒十字
+   （star-cross-rays），把辉光做进四芒描边宽度与透明度，闪烁时
+   只动 opacity，无滤镜参与 */
 .star-bright {
   fill: #dce8ff;
-  filter: drop-shadow(0 0 1.5px rgba(200, 220, 255, 0.8));
 }
 
-/* 十字亮星四芒：与中心点星同一生命周期变量，节奏同步 */
+/* 十字亮星四芒：与中心点星同一生命周期变量，节奏同步。
+   加宽 stroke-width + 降低描边透明度，叠出辉光层次——
+   泛蓝大星（star-bright）的辉光由这层加宽四芒承担 */
 .star-cross-rays {
-  stroke: #e8eef8;
-  stroke-width: 0.5;
+  stroke: rgba(200, 220, 255, 0.55);
+  stroke-width: 0.8;
   stroke-linecap: round;
   fill: none;
   animation: star-twinkle var(--twinkle-duration, 3s) ease-in-out
@@ -560,7 +595,17 @@
 
 .meteor-head {
   fill: #ffffff;
-  filter: drop-shadow(0 0 2.5px rgba(210, 228, 255, 0.9));
+  transform: translate(
+    calc(var(--meteor-x1) * -1),
+    calc(var(--meteor-y1) * -1)
+  );
+}
+
+/* 流星头辉光：原 drop-shadow(0 0 2.5px)。流星同时最多 1-2 颗、
+   生命周期仅数秒，滤镜成本可接受，但顺手改为双层圆更便宜：
+   光点 r1.6 叠半透明辉光圆 r3.5，同一次动画合成 */
+.meteor-head-glow {
+  fill: rgba(210, 228, 255, 0.35);
   transform: translate(
     calc(var(--meteor-x1) * -1),
     calc(var(--meteor-y1) * -1)
@@ -609,6 +654,18 @@
   inset: 0;
   border-radius: 50%;
   overflow: hidden;
+}
+
+/* 雨雪粒子画布（particles/weatherParticleSystem Canvas 渲染）：
+   替代原 .rain-drops/.snowflakes DOM 粒子；与雨容器同享圆形裁剪 */
+.particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 /* 雨天背景 - 小雨 */
@@ -727,16 +784,19 @@
   }
 }
 
-/* 雾气（所有雨天共用） */
+/* 雾气（所有雨天共用）
+   blur(10px) 替换为长尾径向渐变柔边——原渐变本身就有 50%→100%
+   的透明过渡，滤镜只是再柔化一层，去掉后加宽过渡带视觉等价 */
 .mist {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
-    transparent 50%,
+    transparent 40%,
+    rgba(120, 144, 156, 0.05) 60%,
     rgba(120, 144, 156, 0.08) 100%
   );
-  filter: blur(10px);
+  border-radius: 50%;
 }
 
 /* ========================================
@@ -867,32 +927,35 @@
   height: var(--size);
   left: var(--x);
   top: -10px;
+  /* box-shadow 辉光烘焙进径向渐变（box-shadow 在动画期间逐帧重绘，
+     渐变是静态背景随 transform 合成）；雪花有 scale(0.6~1) 动画，
+     等比例放大会让辉光过粗，故辉光用固定 px 出血圈弥补 */
   background: radial-gradient(
     circle,
     rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 0.9) 40%,
-    rgba(227, 242, 253, 0.5) 70%,
+    rgba(255, 255, 255, 0.95) 30%,
+    rgba(255, 255, 255, 0.8) 45%,
+    rgba(227, 242, 253, 0.5) 65%,
+    rgba(255, 255, 255, 0.25) 80%,
+    rgba(187, 222, 251, 0.12) 90%,
     transparent 100%
   );
   border-radius: 50%;
   animation: snowfall var(--duration) ease-in-out forwards;
   animation-delay: var(--delay);
-  box-shadow:
-    0 0 3px rgba(255, 255, 255, 0.8),
-    0 0 6px rgba(187, 222, 251, 0.4);
 }
 
 .dark-theme .snowflake {
   background: radial-gradient(
     circle,
-    rgba(227, 242, 253, 0.9) 0%,
-    rgba(187, 222, 251, 0.7) 40%,
-    rgba(144, 202, 249, 0.3) 70%,
+    rgba(227, 242, 253, 0.95) 0%,
+    rgba(227, 242, 253, 0.8) 30%,
+    rgba(187, 222, 251, 0.65) 45%,
+    rgba(187, 222, 251, 0.4) 65%,
+    rgba(144, 202, 249, 0.2) 80%,
+    rgba(144, 202, 249, 0.08) 90%,
     transparent 100%
   );
-  box-shadow:
-    0 0 4px rgba(227, 242, 253, 0.6),
-    0 0 8px rgba(144, 202, 249, 0.3);
 }
 
 @keyframes snowfall {
@@ -961,7 +1024,8 @@
   );
 }
 
-/* 积雪效果（仅大雪） */
+/* 积雪效果（仅大雪）
+   blur(5px) 替换为宽过渡带径向渐变 */
 .snow-ground {
   position: absolute;
   bottom: 0;
@@ -972,18 +1036,21 @@
   background: radial-gradient(
     ellipse at 50% 100%,
     rgba(255, 255, 255, 0.5) 0%,
-    rgba(227, 242, 253, 0.3) 40%,
-    transparent 70%
+    rgba(255, 255, 255, 0.4) 25%,
+    rgba(227, 242, 253, 0.3) 45%,
+    rgba(227, 242, 253, 0.12) 60%,
+    transparent 78%
   );
-  filter: blur(5px);
 }
 
 .dark-theme .snow-ground {
   background: radial-gradient(
     ellipse at 50% 100%,
     rgba(187, 222, 251, 0.35) 0%,
-    rgba(144, 202, 249, 0.2) 40%,
-    transparent 70%
+    rgba(187, 222, 251, 0.28) 25%,
+    rgba(144, 202, 249, 0.2) 45%,
+    rgba(144, 202, 249, 0.08) 60%,
+    transparent 78%
   );
 }
 
@@ -1006,16 +1073,14 @@
   }
 }
 
-/* GPU 加速优化 */
+/* GPU 加速优化：will-change 只挂在低数量、长生命周期的容器级元素上。
+   粒子（.rain-drop/.snowflake/.particle/.light-spot 等）不挂——它们
+   高频生成/销毁，每个都提升合成层反而造成数百个层的显存与合成开销；
+   粒子的 CSS 动画本身会自动进入合成，无需显式提示 */
 .sunny-container,
 .cloudy-container,
 .rain-container,
 .snow-container,
-.cloud-svg,
-.rain-drop,
-.snowflake,
-.particle,
-.light-spot,
 .lightning-container,
 .lightning-bolt {
   will-change: transform, opacity;

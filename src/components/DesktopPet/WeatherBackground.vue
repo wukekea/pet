@@ -20,126 +20,15 @@ import {
   clearStageRect,
   type Meteor,
 } from "./composables/starrySkyState";
+import {
+  hasActiveParticles,
+  attachParticleCanvas,
+  detachParticleCanvas,
+} from "./particles/weatherParticleSystem";
 import { wishUponStarMessages } from "@/data/dialogues";
 import { randomPick } from "./utils/random";
 import { showCustomDialogue } from "./composables/dialogue";
 import "./weather.css";
-
-// ========== 类型定义 ==========
-// 雨滴数据结构
-interface RainDrop {
-  id: number;
-  x: string;
-  duration: number;
-  delay: number;
-  width: number;
-  height: number;
-}
-
-// 雪花数据结构
-interface SnowFlake {
-  id: number;
-  x: string;
-  duration: number;
-  delay: number;
-  size: number;
-  sway: number;
-}
-
-// ========== 对象池 ==========
-// 雨滴对象池：预创建对象，避免频繁内存分配
-const rainDropPool: RainDrop[] = [];
-const RAIN_POOL_SIZE = 200; // 预创建数量，覆盖最大雨滴需求
-
-// 初始化雨滴对象池
-const initRainDropPool = () => {
-  for (let i = 0; i < RAIN_POOL_SIZE; i++) {
-    rainDropPool.push({
-      id: 0,
-      x: "",
-      duration: 0,
-      delay: 0,
-      width: 0,
-      height: 0,
-    });
-  }
-};
-initRainDropPool();
-
-// 从池中获取雨滴对象
-let rainDropId = 0;
-const acquireRainDrop = (): RainDrop => {
-  const drop = rainDropPool.pop();
-  if (drop) return drop;
-  // 池空了才创建新对象
-  return { id: 0, x: "", duration: 0, delay: 0, width: 0, height: 0 };
-};
-
-// 归还雨滴对象到池中
-const releaseRainDrop = (drop: RainDrop) => {
-  rainDropPool.push(drop);
-};
-
-// 雪花对象池：预创建对象，避免频繁内存分配
-const snowFlakePool: SnowFlake[] = [];
-const SNOW_POOL_SIZE = 80; // 预创建数量，覆盖最大雪花需求
-
-// 初始化雪花对象池
-const initSnowFlakePool = () => {
-  for (let i = 0; i < SNOW_POOL_SIZE; i++) {
-    snowFlakePool.push({
-      id: 0,
-      x: "",
-      duration: 0,
-      delay: 0,
-      size: 0,
-      sway: 0,
-    });
-  }
-};
-initSnowFlakePool();
-
-// 从池中获取雪花对象
-let snowFlakeId = 0;
-const acquireSnowFlake = (): SnowFlake => {
-  const flake = snowFlakePool.pop();
-  if (flake) return flake;
-  return { id: 0, x: "", duration: 0, delay: 0, size: 0, sway: 0 };
-};
-
-// 归还雪花对象到池中
-const releaseSnowFlake = (flake: SnowFlake) => {
-  snowFlakePool.push(flake);
-};
-
-// ========== 响应式数组 ==========
-// 雨滴响应式数组
-const rainDrops = ref<RainDrop[]>([]);
-// 雪花响应式数组
-const snowFlakes = ref<SnowFlake[]>([]);
-// 涟漪数据（带唯一 key）
-const ripples = ref<{ id: number; x: string; y: string }[]>([]);
-let rippleId = 0;
-
-// ========== 计算属性 ==========
-// 天气背景样式类（退场时保持原天气样式）
-// 注：不再挂载 dark-theme——背景明暗由昼夜遮罩层接管，系统主题只影响 UI 面板
-const weatherClass = computed(() => {
-  if (isWeatherChanging.value) {
-    // 根据是否有雨滴或雪花判断是否显示天气背景
-    if (rainDrops.value.length > 0 || snowFlakes.value.length > 0) {
-      return `weather-${currentWeather.value}`;
-    }
-  }
-  return `weather-${currentWeather.value}`;
-});
-
-// 天气背景位置 - 跟随宠物位置，居中显示
-// 使用 transform 替代 left/top，利用 GPU 合成层避免 reflow
-// 包含 translate(-50%, -50%) 用于居中（原在 CSS 中定义）
-const weatherStyle = computed(() => ({
-  transform: `translate(calc(${position.value.x + 40}px - 50%), calc(${position.value.y - 20}px - 50%))`,
-}));
 
 // ========== 昼夜系统 ==========
 // 雨天（小雨/暴雨/雷阵雨）隐藏天体与月光层
@@ -283,7 +172,52 @@ const getRandomDelay = (index: number, base: number = 0.5) =>
 // 生成随机位置
 const getRandomPos = (index: number) => `${(index * 37) % 100}%`;
 
+// ========== 天气背景样式与位置 ==========
+// 天气背景样式类（退场时保持原天气样式）
+// 注：不再挂载 dark-theme——背景明暗由昼夜遮罩层接管，系统主题只影响 UI 面板
+const weatherClass = computed(() => `weather-${currentWeather.value}`);
+
+// 天气背景位置 - 跟随宠物位置，居中显示
+// 使用 transform 替代 left/top，利用 GPU 合成层避免 reflow
+// 包含 translate(-50%, -50%) 用于居中（原在 CSS 中定义）
+const weatherStyle = computed(() => ({
+  transform: `translate(calc(${position.value.x + 40}px - 50%), calc(${position.value.y - 20}px - 50%))`,
+}));
+
+// ========== 雨雪粒子（Canvas 渲染） ==========
+// 粒子逻辑与渲染在 particles/weatherParticleSystem，组件只提供画布并
+// 按"天气是否需要粒子 / 退场期是否还有粒子"控制画布显隐
+const particleCanvasRef = ref<HTMLCanvasElement | null>(null);
+const showParticles = computed(() => {
+  const w = currentWeather.value;
+  const isRain = ["lightRain", "heavyRain", "thunderstorm"].includes(w);
+  const isSnow = ["lightSnow", "heavySnow"].includes(w);
+  return (
+    isRain || isSnow || (isWeatherChanging.value && hasActiveParticles.value)
+  );
+});
+
+watch(
+  particleCanvasRef,
+  (canvas) => {
+    if (canvas) {
+      attachParticleCanvas(canvas);
+    } else {
+      detachParticleCanvas();
+    }
+  },
+  { immediate: true },
+);
+
+onUnmounted(() => {
+  detachParticleCanvas();
+});
+
 // ========== 涟漪效果 ==========
+// 涟漪数据（带唯一 key）
+const ripples = ref<{ id: number; x: string; y: string }[]>([]);
+let rippleId = 0;
+
 // 创建一个新涟漪
 const createRipple = () => ({
   id: ++rippleId,
@@ -342,282 +276,12 @@ onUnmounted(() => {
   }
 });
 
-// ========== 雨天效果配置 ==========
-// 雨量配置（三种雨共用同一套动画，仅雨量不同）
-interface RainConfig {
-  dropCount: number; // 初始雨滴数量
-  maxDrops: number; // 最大雨滴数量
-  generateInterval: number; // 生成间隔（ms）
-  dropWidth: number; // 雨滴粗细（px）
-  dropHeight: number; // 雨滴长度（px）
-  hasRipple: boolean; // 是否有涟漪效果
-  hasLightning: boolean; // 是否有闪电效果
-}
-
-const rainConfigs: Record<string, RainConfig> = {
-  lightRain: {
-    dropCount: 25, // 适中初始雨滴
-    maxDrops: 45, // 屏幕上最多45颗
-    generateInterval: 70, // 70ms一颗
-    dropWidth: 1.5, // 较细
-    dropHeight: 18, // 较短
-    hasRipple: true,
-    hasLightning: false,
-  },
-  heavyRain: {
-    dropCount: 60, // 较多初始雨滴
-    maxDrops: 100, // 屏幕上最多100颗
-    generateInterval: 30, // 生成快，30ms一颗
-    dropWidth: 2.5, // 较粗
-    dropHeight: 25, // 较长
-    hasRipple: false,
-    hasLightning: false,
-  },
-  thunderstorm: {
-    dropCount: 100, // 大量初始雨滴
-    maxDrops: 180, // 屏幕上最多180颗
-    generateInterval: 12, // 生成非常快，12ms一颗
-    dropWidth: 3, // 最粗
-    dropHeight: 30, // 最长
-    hasRipple: false,
-    hasLightning: true,
-  },
-};
-
-// ========== 雪天效果配置 ==========
-// 雪量配置（两种雪共用同一套动画，仅雪量不同）
-interface SnowConfig {
-  flakeCount: number; // 初始雪花数量
-  maxFlakes: number; // 最大雪花数量
-  generateInterval: number; // 生成间隔（ms）
-  minSize: number; // 最小尺寸
-  maxSize: number; // 最大尺寸
-  minDuration: number; // 最小下落时长
-  maxDuration: number; // 最大下落时长
-  hasSparkles: boolean; // 是否有闪光效果
-  hasSnowGround: boolean; // 是否有积雪效果
-}
-
-const snowConfigs: Record<string, SnowConfig> = {
-  lightSnow: {
-    flakeCount: 18,
-    maxFlakes: 25,
-    generateInterval: 400,
-    minSize: 4,
-    maxSize: 8,
-    minDuration: 4,
-    maxDuration: 7,
-    hasSparkles: true,
-    hasSnowGround: false,
-  },
-  heavySnow: {
-    flakeCount: 40,
-    maxFlakes: 70,
-    generateInterval: 150,
-    minSize: 5,
-    maxSize: 12,
-    minDuration: 3,
-    maxDuration: 6,
-    hasSparkles: false,
-    hasSnowGround: true,
-  },
-};
-
-// 获取当前雪的配置
-const getCurrentSnowConfig = (): SnowConfig | null => {
-  const weather = currentWeather.value;
-  if (["lightSnow", "heavySnow"].includes(weather)) {
-    return snowConfigs[weather];
-  }
-  return null;
-};
-
-// 生成雪花（使用对象池）
-const spawnSnowFlake = () => {
-  if (isWeatherChanging.value) return;
-
-  const config = getCurrentSnowConfig();
-  if (!config) return;
-
-  // 从对象池获取
-  const flake = acquireSnowFlake();
-  flake.id = ++snowFlakeId;
-  flake.x = `${Math.floor(Math.random() * 100)}%`;
-  flake.duration =
-    config.minDuration +
-    Math.random() * (config.maxDuration - config.minDuration);
-  flake.delay = 0;
-  flake.size =
-    config.minSize + Math.random() * (config.maxSize - config.minSize);
-  flake.sway = 15 + Math.random() * 25;
-
-  snowFlakes.value.push(flake);
-};
-
-// 移除雪花（动画结束后调用，归还对象池）
-const removeSnowFlake = (id: number) => {
-  const index = snowFlakes.value.findIndex((f) => f.id === id);
-  if (index !== -1) {
-    const flake = snowFlakes.value[index];
-    releaseSnowFlake(flake); // 归还对象池
-    snowFlakes.value.splice(index, 1);
-  }
-};
-
-// 启动雪花生成
-const startSnowGeneration = (initialBatch: boolean = true) => {
-  const config = getCurrentSnowConfig();
-  if (!config) return;
-
-  // 立即生成一批雪花（仅首次进入雪天时）
-  if (initialBatch) {
-    for (let i = 0; i < config.flakeCount; i++) {
-      // 从对象池获取
-      const flake = acquireSnowFlake();
-      flake.id = ++snowFlakeId;
-      flake.x = `${(i * 5 + Math.random() * 10) % 100}%`;
-      flake.duration = config.minDuration + (i % 4) * 0.5;
-      flake.delay = parseFloat(getRandomDelay(i, 0.5));
-      flake.size = config.minSize + (i % 3) * 2;
-      flake.sway = 15 + (i % 5) * 5;
-
-      snowFlakes.value.push(flake);
-    }
-  }
-
-  // 持续生成新雪花
-  snowTimer = setInterval(() => {
-    if (snowFlakes.value.length < config.maxFlakes) {
-      spawnSnowFlake();
-    }
-  }, config.generateInterval);
-};
-
-// 停止雪花生成
-const stopSnowGeneration = () => {
-  if (snowTimer) {
-    clearInterval(snowTimer);
-    snowTimer = null;
-  }
-};
-
-// 雨滴相关变量
-let rainTimer: ReturnType<typeof setInterval> | null = null;
-let snowTimer: ReturnType<typeof setInterval> | null = null;
-
-// 获取当前雨的配置
-const getCurrentRainConfig = (): RainConfig | null => {
-  const weather = currentWeather.value;
-  if (["lightRain", "heavyRain", "thunderstorm"].includes(weather)) {
-    return rainConfigs[weather];
-  }
-  return null;
-};
-
-// 生成雨滴（使用对象池）
-const spawnRainDrop = () => {
-  // 退出状态下不再生成新雨滴
-  if (isWeatherChanging.value) return;
-
-  const config = getCurrentRainConfig();
-  if (!config) return;
-
-  // 统一的雨滴动画参数
-  const baseDuration = 0.6;
-  const durationVariation = 0.3;
-
-  // 从对象池获取
-  const drop = acquireRainDrop();
-  drop.id = ++rainDropId;
-  drop.x = `${Math.floor(Math.random() * 100)}%`;
-  drop.duration = baseDuration + Math.random() * durationVariation;
-  drop.delay = 0;
-  drop.width = config.dropWidth;
-  drop.height = config.dropHeight;
-
-  rainDrops.value.push(drop);
-};
-
-// 移除雨滴（动画结束后调用，归还对象池）
-const removeRainDrop = (id: number) => {
-  const index = rainDrops.value.findIndex((d) => d.id === id);
-  if (index !== -1) {
-    const drop = rainDrops.value[index];
-    releaseRainDrop(drop); // 归还对象池
-    rainDrops.value.splice(index, 1);
-  }
-};
-
-// 监听雨滴/雪花列表变化：退出动画进行中且两类粒子都已落尽时，
-// 重置退出状态并启动新天气效果（此前两个回调体相同的 watcher 已合并）
-watch([() => rainDrops.value.length, () => snowFlakes.value.length], () => {
-  if (
-    !isWeatherChanging.value ||
-    rainDrops.value.length > 0 ||
-    snowFlakes.value.length > 0
-  ) {
-    return;
-  }
-  isWeatherChanging.value = false;
-
-  // 检查新天气是否需要启动效果
-  const newWeather = currentWeather.value;
-  const isNewRain = ["lightRain", "heavyRain", "thunderstorm"].includes(
-    newWeather,
-  );
-  const isNewSnow = ["lightSnow", "heavySnow"].includes(newWeather);
-
-  if (newWeather === "cloudy") {
-    startCloudGeneration();
-  } else if (isNewRain) {
-    rainDrops.value = [];
-    startRainGeneration();
-  } else if (isNewSnow) {
-    snowFlakes.value = [];
-    startSnowGeneration();
-  }
-});
-
-// 启动雨滴生成
-// initialBatch: 是否立即生成初始批次（雨天之间切换时传 false）
-const startRainGeneration = (initialBatch: boolean = true) => {
-  const config = getCurrentRainConfig();
-  if (!config) return;
-
-  // 统一的雨滴动画参数
-  const baseDuration = 0.6;
-
-  // 立即生成一批雨滴（仅首次进入雨天时）
-  if (initialBatch) {
-    for (let i = 0; i < config.dropCount; i++) {
-      // 从对象池获取
-      const drop = acquireRainDrop();
-      drop.id = ++rainDropId;
-      drop.x = `${(i * 5) % 100}%`;
-      drop.duration = baseDuration + (i % 4) * 0.05;
-      drop.delay = parseFloat(getRandomDelay(i, 0.2));
-      drop.width = config.dropWidth;
-      drop.height = config.dropHeight;
-
-      rainDrops.value.push(drop);
-    }
-  }
-
-  // 持续生成新雨滴
-  rainTimer = setInterval(() => {
-    if (rainDrops.value.length < config.maxDrops) {
-      spawnRainDrop();
-    }
-  }, config.generateInterval);
-};
-
-// 停止雨滴生成
-const stopRainGeneration = () => {
-  if (rainTimer) {
-    clearInterval(rainTimer);
-    rainTimer = null;
-  }
-};
+// ========== 雨雪天气标记 ==========
+// 粒子的生成/回收已迁移至 particles/weatherParticleSystem（Canvas 渲染），
+// 组件只保留"是否雨/雪"的判定供云朵退场与容器显隐逻辑使用
+const isRainWeatherType = (w: string) =>
+  ["lightRain", "heavyRain", "thunderstorm"].includes(w);
+const isSnowWeatherType = (w: string) => ["lightSnow", "heavySnow"].includes(w);
 
 // ========== 多云效果配置 ==========
 // 基础速度（px/s）- 修改此值可统一调整所有云朵速度
@@ -731,44 +395,20 @@ const startCloudExit = () => {
   });
 };
 
-// 监听云朵列表变化，所有云朵消失后重置退出状态并启动新天气效果
-watch(
-  () => clouds.value.length,
-  (newLen) => {
-    if (isWeatherChanging.value && newLen === 0) {
-      // 所有云朵消失，恢复状态
-      isWeatherChanging.value = false;
+// 监听云朵列表变化，所有云朵消失后与粒子落尽共同收口（见下方合并 watcher）
 
-      // 检查新天气是否需要启动效果
-      const newWeather = currentWeather.value;
-      const isNewRain = ["lightRain", "heavyRain", "thunderstorm"].includes(
-        newWeather,
-      );
-      const isNewSnow = ["lightSnow", "heavySnow"].includes(newWeather);
-
-      if (isNewRain) {
-        rainDrops.value = [];
-        startRainGeneration();
-      } else if (isNewSnow) {
-        snowFlakes.value = [];
-        startSnowGeneration();
-      }
-    }
-  },
-);
-
-// 监听天气变化，启动/停止云朵和雨滴生成
+// 监听天气变化，管理云朵与退场状态
+// 雨雪粒子的生成/停发由 particles/weatherParticleSystem 的 watch 与
+// tick 读取 isWeatherChanging 自行处理，这里只管云与容器
 watch(
   currentWeather,
   (newWeather, oldWeather) => {
-    const isOldRain = ["lightRain", "heavyRain", "thunderstorm"].includes(
-      oldWeather || "",
-    );
-    const isNewRain = ["lightRain", "heavyRain", "thunderstorm"].includes(
-      newWeather,
-    );
-    const isOldSnow = ["lightSnow", "heavySnow"].includes(oldWeather || "");
-    const isNewSnow = ["lightSnow", "heavySnow"].includes(newWeather);
+    const isOldRain = isRainWeatherType(oldWeather || "");
+    const isNewRain = isRainWeatherType(newWeather);
+    const isOldSnow = isSnowWeatherType(oldWeather || "");
+    const isNewSnow = isSnowWeatherType(newWeather);
+    const isCrossCategory =
+      (isOldRain && !isNewRain) || (isOldSnow && !isNewSnow);
 
     // 从多云切换到其他天气：启动云朵退出动画
     if (
@@ -785,33 +425,11 @@ watch(
       return;
     }
 
-    // 从雨天切换到非雨天：启动雨滴退出（等待现有雨滴落尽）
-    if (isOldRain && !isNewRain && rainDrops.value.length > 0) {
-      stopRainGeneration();
+    // 雨雪跨类切换：进入退场（粒子系统停发，在场粒子落尽后归位）。
+    // 云朵退出与粒子退场并行进行，等两者都落定再复位（watcher 各自复位
+    // 会互相打断——粒子先落尽时复位会让云动画还没播完就被清场跳变）
+    if (isCrossCategory && hasActiveParticles.value) {
       isWeatherChanging.value = true;
-      return;
-    }
-
-    // 雨天之间切换：平滑过渡，不清空现有雨滴
-    if (isOldRain && isNewRain) {
-      stopRainGeneration();
-      isWeatherChanging.value = false;
-      startRainGeneration(false);
-      return;
-    }
-
-    // 从雪天切换到非雪天：启动雪花退出（等待现有雪花落尽）
-    if (isOldSnow && !isNewSnow && snowFlakes.value.length > 0) {
-      stopSnowGeneration();
-      isWeatherChanging.value = true;
-      return;
-    }
-
-    // 雪天之间切换：平滑过渡，不清空现有雪花
-    if (isOldSnow && isNewSnow) {
-      stopSnowGeneration();
-      isWeatherChanging.value = false;
-      startSnowGeneration(false);
       return;
     }
 
@@ -820,22 +438,10 @@ watch(
       clearTimeout(cloudTimer);
       cloudTimer = null;
     }
-    stopRainGeneration();
-    stopSnowGeneration();
 
     // 非 cloudy 天气时清空云朵
     if (newWeather !== "cloudy") {
       clouds.value = [];
-    }
-
-    // 非雨天时清空雨滴
-    if (!isNewRain) {
-      rainDrops.value = [];
-    }
-
-    // 非雪天时清空雪花
-    if (!isNewSnow) {
-      snowFlakes.value = [];
     }
 
     // 重置退出状态
@@ -844,28 +450,32 @@ watch(
     if (newWeather === "cloudy") {
       startCloudGeneration();
     }
-
-    // 启动雨天（从非雨天切换到雨天）
-    if (isNewRain) {
-      rainDrops.value = [];
-      startRainGeneration();
-    }
-
-    // 启动雪天（从非雪天切换到雪天）
-    if (isNewSnow) {
-      snowFlakes.value = [];
-      startSnowGeneration();
-    }
   },
   { immediate: true },
+);
+
+// 退场收口：粒子落尽或云朵落尽都只是"完成了一半"，两边都完成才复位
+// isWeatherChanging（跨类雨雪切换时粒子与云朵退场并行进行）。
+// 收口时机不是终点：复位后新天气的进场效果才开始（雨雪粒子铺底由
+// 粒子系统 needsEntryBatch 驱动，云朵在此重新生成）
+watch(
+  [hasActiveParticles, () => clouds.value.length],
+  ([activeParticles, cloudCount]) => {
+    if (isWeatherChanging.value && !activeParticles && cloudCount === 0) {
+      isWeatherChanging.value = false;
+      // 跨类切到多云：退场复位后云朵才能重新生成（退场期间
+      // spawnCloud 会因 isWeatherChanging 拒绝生成）
+      if (currentWeather.value === "cloudy") {
+        startCloudGeneration();
+      }
+    }
+  },
 );
 
 onUnmounted(() => {
   if (cloudTimer) {
     clearTimeout(cloudTimer);
   }
-  stopRainGeneration();
-  stopSnowGeneration();
 });
 
 // ========== 闪电效果 ==========
@@ -992,7 +602,8 @@ onMounted(() => {
   document.addEventListener("visibilitychange", handleWeatherVisibilityChange);
 });
 
-// 系统休眠唤醒处理：重置天气效果，防止云朵/雨滴/雪花积累堆叠
+// 系统休眠唤醒处理：重置云朵，防止休眠期间积累堆叠
+// （雨雪粒子由粒子系统自身的 visibilitychange 监听重置，此处不再管）
 function handleWeatherVisibilityChange(): void {
   if (document.visibilityState !== "visible") return;
 
@@ -1002,18 +613,9 @@ function handleWeatherVisibilityChange(): void {
     // 清除积累的定时器和旧云朵，重新生成
     isWeatherChanging.value = false;
     startCloudGeneration();
-  } else if (["lightRain", "heavyRain", "thunderstorm"].includes(weather)) {
-    // 重置雨滴
-    stopRainGeneration();
+  } else if (isRainWeatherType(weather) || isSnowWeatherType(weather)) {
+    // 雨雪退场标记复位（粒子在粒子系统中自愈）
     isWeatherChanging.value = false;
-    rainDrops.value = [];
-    startRainGeneration();
-  } else if (["lightSnow", "heavySnow"].includes(weather)) {
-    // 重置雪花
-    stopSnowGeneration();
-    isWeatherChanging.value = false;
-    snowFlakes.value = [];
-    startSnowGeneration();
   }
 }
 
@@ -1293,7 +895,8 @@ onUnmounted(() => {
               <stop offset="100%" stop-color="rgba(255, 255, 255, 0.95)" />
             </linearGradient>
           </defs>
-          <!-- 头部光点 -->
+          <!-- 头部光点：辉光圆 + 核心亮点（替代原 drop-shadow 滤镜） -->
+          <circle :cx="m.x1" :cy="m.y1" r="3.5" class="meteor-head-glow" />
           <circle :cx="m.x1" :cy="m.y1" r="1.6" class="meteor-head" />
           <!-- 不可见加宽命中线：覆盖尾迹（头部所在段），否则 1.2px 几乎点不中 -->
           <line
@@ -1404,36 +1007,23 @@ onUnmounted(() => {
       class="cloudy-container"
     ></div>
 
-    <!-- 雨天效果 - 统一动画，雨量不同 -->
+    <!-- 雨雪粒子层 - Canvas 渲染（particles/weatherParticleSystem）：
+         单画布替代原雨滴/雪花 DOM span，显隐跟随天气与退场期 -->
+    <canvas
+      v-show="showParticles"
+      ref="particleCanvasRef"
+      class="particle-canvas"
+      width="280"
+      height="280"
+    ></canvas>
+
+    <!-- 雨天辅助效果（粒子在 Canvas，此处为雾气/涟漪/闪电） -->
     <div
-      v-if="
-        (['lightRain', 'heavyRain', 'thunderstorm'].includes(currentWeather) ||
-          (isWeatherChanging && rainDrops.length > 0)) &&
-        rainDrops.length > 0
-      "
+      v-if="isRainWeatherType(currentWeather) && !isWeatherChanging"
       class="rain-container"
     >
-      <!-- 雨滴 -->
-      <div class="rain-drops">
-        <span
-          v-for="drop in rainDrops"
-          :key="drop.id"
-          class="rain-drop"
-          :style="{
-            '--delay': `${drop.delay}s`,
-            '--x': drop.x,
-            '--duration': `${drop.duration}s`,
-            '--width': `${drop.width}px`,
-            '--height': `${drop.height}px`,
-          }"
-          @animationend="removeRainDrop(drop.id)"
-        ></span>
-      </div>
       <!-- 涟漪效果（仅小雨） -->
-      <div
-        v-if="currentWeather === 'lightRain' && !isWeatherChanging"
-        class="ripples"
-      >
+      <div v-if="currentWeather === 'lightRain'" class="ripples">
         <span
           v-for="ripple in ripples"
           :key="ripple.id"
@@ -1447,9 +1037,9 @@ onUnmounted(() => {
       </div>
       <!-- 雾气效果 -->
       <div class="mist"></div>
-      <!-- 闪电效果（仅雷阵雨，退场时不显示） -->
+      <!-- 闪电效果（仅雷阵雨） -->
       <div
-        v-if="currentWeather === 'thunderstorm' && !isWeatherChanging"
+        v-if="currentWeather === 'thunderstorm'"
         class="lightning-container"
         :class="{ 'lightning-active': lightningActive }"
       >
@@ -1483,36 +1073,13 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- 雪天效果 - 统一动画，雪量不同 -->
+    <!-- 雪天辅助效果（雪花粒子在 Canvas，此处为闪光/积雪） -->
     <div
-      v-if="
-        (['lightSnow', 'heavySnow'].includes(currentWeather) ||
-          (isWeatherChanging && snowFlakes.length > 0)) &&
-        snowFlakes.length > 0
-      "
+      v-if="isSnowWeatherType(currentWeather) && !isWeatherChanging"
       class="snow-container"
     >
-      <!-- 雪花 -->
-      <div class="snowflakes">
-        <span
-          v-for="flake in snowFlakes"
-          :key="flake.id"
-          class="snowflake"
-          :style="{
-            '--delay': `${flake.delay}s`,
-            '--x': flake.x,
-            '--duration': `${flake.duration}s`,
-            '--size': `${flake.size}px`,
-            '--sway': `${flake.sway}px`,
-          }"
-          @animationend="removeSnowFlake(flake.id)"
-        ></span>
-      </div>
       <!-- 雪花闪光（仅小雪） -->
-      <div
-        v-if="currentWeather === 'lightSnow' && !isWeatherChanging"
-        class="sparkles"
-      >
+      <div v-if="currentWeather === 'lightSnow'" class="sparkles">
         <span
           v-for="i in 8"
           :key="i"
@@ -1525,10 +1092,7 @@ onUnmounted(() => {
         ></span>
       </div>
       <!-- 积雪效果（仅大雪） -->
-      <div
-        v-if="currentWeather === 'heavySnow' && !isWeatherChanging"
-        class="snow-ground"
-      ></div>
+      <div v-if="currentWeather === 'heavySnow'" class="snow-ground"></div>
     </div>
   </div>
 </template>
