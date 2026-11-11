@@ -85,6 +85,14 @@ function speakWithBrowser(text: string): void {
 
 // ========== 统一接口 ==========
 /**
+ * 播放代次：每次停止或开始新台词都会自增。
+ * 本地音频在加载阶段被新台词/停止操作打断时会以失败返回，
+ * 用代次把这种"被取消"与"真实加载失败"区分开——被取消的播放不得回退 TTS，
+ * 否则旧句会以浏览器 TTS 与新句的本地音频同时发声（US1 验收场景 2）。
+ */
+let speakSeq = 0;
+
+/**
  * 播放一句台词：优先本地预录音频，失败或无音频时回退浏览器 TTS。
  * 返回值表示是否使用了本地音频（供气泡计时判断）。
  */
@@ -92,8 +100,13 @@ export async function speak(text: string): Promise<boolean> {
   if (!speechEnabled.value) return false;
 
   stopSpeaking();
+  const seq = speakSeq;
 
   const played = await playLocalAudio(text, speechVolume.value);
+
+  // 等待期间被新的 speak / stopSpeaking 取代：静默丢弃，不回退 TTS
+  if (seq !== speakSeq) return false;
+
   if (!played) {
     speakWithBrowser(text);
   }
@@ -101,6 +114,8 @@ export async function speak(text: string): Promise<boolean> {
 }
 
 export function stopSpeaking(): void {
+  // 使所有进行中的 speak 失效（含其尚未返回的本地音频加载）
+  speakSeq++;
   stopLocalAudio();
   if (isSpeechSupported()) {
     window.speechSynthesis.cancel();

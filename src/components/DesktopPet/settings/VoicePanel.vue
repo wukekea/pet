@@ -5,6 +5,7 @@
 import {
   speechEnabled,
   speechRate,
+  speechPitch,
   speechVolume,
   isSpeechSupported,
   toggleSpeech,
@@ -160,6 +161,45 @@ defineProps<{
             <span>慢</span>
             <span>中</span>
             <span>快</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 音调 -->
+      <div class="setting-item" :class="{ disabled: !speechEnabled }">
+        <div class="setting-main">
+          <div
+            class="setting-icon-wrapper"
+            style="--icon-bg: rgba(96, 165, 250, 0.15); --icon-color: #60a5fa"
+          >
+            <span class="setting-icon">🎵</span>
+          </div>
+          <div class="setting-info">
+            <span class="setting-label" :style="{ color: textColor }"
+              >音调</span
+            >
+            <span class="setting-desc" :style="{ color: textMuted }"
+              >仅对 TTS 回退语音生效，预录语音不受影响</span
+            >
+            <span class="setting-value" :style="{ color: '#60a5fa' }">{{
+              formatPercent(speechPitch * 100)
+            }}</span>
+          </div>
+        </div>
+        <div class="slider-wrapper">
+          <input
+            v-model.number="speechPitch"
+            type="range"
+            min="0.5"
+            max="1.5"
+            step="0.1"
+            :disabled="!speechEnabled"
+            class="custom-slider accent"
+          />
+          <div class="slider-marks">
+            <span>低</span>
+            <span>中</span>
+            <span>高</span>
           </div>
         </div>
       </div>
