@@ -79,6 +79,7 @@ const TTS_OVERRIDES = {
 };
 
 const RETRY_TIMES = 3;
+const CONCURRENCY = 8;
 
 /** 是否含可朗读内容：至少一个字母或数字 */
 function hasReadableContent(text) {
@@ -274,22 +275,30 @@ async function main() {
   const failures = [];
   if (!args.check && !args.dryRun) {
     let done = 0;
-    for (const item of toGenerate) {
-      try {
-        await synthesizeWithRetry(item.ttsText, item.file);
-        item.entry.durationMs = estimateDurationMs(item.file);
-        done++;
-        process.stdout.write(
-          `\r已生成 ${done}/${toGenerate.length}  ${item.entry.id}`,
-        );
-      } catch (error) {
-        failures.push({
-          id: item.entry.id,
-          text: item.text,
-          error: String(error.message ?? error),
-        });
+    let cursor = 0;
+    // 并发池：edge-tts 单次往返网络耗时较长，串行生成全量过慢
+    const worker = async () => {
+      while (cursor < toGenerate.length) {
+        const item = toGenerate[cursor++];
+        try {
+          await synthesizeWithRetry(item.ttsText, item.file);
+          item.entry.durationMs = estimateDurationMs(item.file);
+          done++;
+          process.stdout.write(
+            `\r已生成 ${done}/${toGenerate.length}  ${item.entry.id}   `,
+          );
+        } catch (error) {
+          failures.push({
+            id: item.entry.id,
+            text: item.text,
+            error: String(error.message ?? error),
+          });
+        }
       }
-    }
+    };
+    await Promise.all(
+      Array.from({ length: Math.min(CONCURRENCY, toGenerate.length) }, worker),
+    );
     if (toGenerate.length > 0) process.stdout.write("\n");
     writeLedger(ledger);
   } else if (args.dryRun) {

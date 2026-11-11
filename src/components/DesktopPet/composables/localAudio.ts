@@ -73,24 +73,28 @@ export async function playLocalAudio(
   audio.volume = volume;
   currentAudio = audio;
 
+  // 已从缓存解码完成时 readyState 已达 HAVE_FUTURE_DATA，直接播放；
+  // 否则等 canplay。同时监听 error：文件损坏 / 0 字节时立即回退 TTS。
   try {
-    await new Promise<void>((resolve, reject) => {
-      const onCanPlay = () => {
-        cleanup();
-        resolve();
-      };
-      const onError = () => {
-        cleanup();
-        reject(new Error("本地音频加载失败"));
-      };
-      const cleanup = () => {
-        audio.removeEventListener("canplay", onCanPlay);
-        audio.removeEventListener("error", onError);
-      };
-      audio.addEventListener("canplay", onCanPlay);
-      audio.addEventListener("error", onError);
-      audio.load();
-    });
+    if (audio.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) {
+      await new Promise<void>((resolve, reject) => {
+        const cleanup = () => {
+          audio.removeEventListener("canplay", onCanPlay);
+          audio.removeEventListener("error", onError);
+        };
+        const onCanPlay = () => {
+          cleanup();
+          resolve();
+        };
+        const onError = () => {
+          cleanup();
+          reject(new Error("本地音频加载失败"));
+        };
+        audio.addEventListener("canplay", onCanPlay);
+        audio.addEventListener("error", onError);
+        audio.load();
+      });
+    }
     await audio.play();
     return true;
   } catch {

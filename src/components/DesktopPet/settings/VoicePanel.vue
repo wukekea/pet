@@ -8,6 +8,7 @@ import {
   speechVolume,
   isSpeechSupported,
   toggleSpeech,
+  speak,
 } from "../composables/speech";
 import { formatPercent } from "./shared";
 import { testVoiceMessage } from "@/data/dialogues";
@@ -26,9 +27,7 @@ const handleVoiceToggle = () => {
 // 测试语音
 const testSpeech = () => {
   if (!speechEnabled.value) return;
-  import("../composables/speech").then(({ speak }) => {
-    speak(testVoiceMessage);
-  });
+  speak(testVoiceMessage);
 };
 
 // 语速/音调只作用于浏览器 TTS 回退路径，预录语音不受影响
