@@ -5,6 +5,8 @@ import {
   dreamTalkMessages,
   weatherDialogues,
   moodDialogues,
+  greetingMessages,
+  wakeUpGreetingMessages,
 } from "@/data/dialogues";
 import { petState, isChatPanelOpen, showSwing } from "./sharedState";
 import { isDragging, moodLevel } from "./sharedState";
@@ -23,22 +25,22 @@ export const dialogueText = ref<string | null>(null);
 export const dialogueTimer = ref<ReturnType<typeof setTimeout> | null>(null);
 export const isDialogueVisible = ref(false);
 
-// 根据时间获取问候语
+// 根据时间获取问候语（文案统一收编在 data/dialogues 的 greetingMessages）
 export function getTimeGreeting(): string {
   const period = getTimePeriod();
 
   switch (period) {
     case TIME_PERIOD_MORNING:
-      return "早上好！";
+      return greetingMessages.morning;
     case TIME_PERIOD_NOON:
-      return "中午好！";
+      return greetingMessages.noon;
     case TIME_PERIOD_AFTERNOON:
-      return "下午好！";
+      return greetingMessages.afternoon;
     case TIME_PERIOD_DAWN:
-      return "这么晚了还不睡吗？";
+      return greetingMessages.dawn;
     default:
       // 黄昏和夜晚合并为晚上好
-      return "晚上好！";
+      return greetingMessages.dusk;
   }
 }
 
@@ -48,13 +50,13 @@ export function getWakeUpGreeting(): string {
 
   switch (period) {
     case TIME_PERIOD_MORNING:
-      return "早安！新的一天开始啦~";
+      return wakeUpGreetingMessages.morning;
     case TIME_PERIOD_NOON:
-      return "中午好！睡得好香~";
+      return wakeUpGreetingMessages.noon;
     case TIME_PERIOD_AFTERNOON:
-      return "下午好！精神满满！";
+      return wakeUpGreetingMessages.afternoon;
     default:
-      return "晚上好！";
+      return wakeUpGreetingMessages.default;
   }
 }
 

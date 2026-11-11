@@ -2,6 +2,7 @@
 import { llmConfig, currentFood, currentBathType, mood } from "./sharedState";
 import { changeState, stopWork } from "./petController";
 import { showCustomDialogue } from "./dialogue";
+import { interactionBlockedMessages } from "@/data/dialogues";
 import {
   startWork,
   useFood,
@@ -166,7 +167,7 @@ function executeState(state: PetState) {
     if (food) {
       useFood(food);
     } else {
-      showCustomDialogue("没有食物了～");
+      showCustomDialogue(interactionBlockedMessages.noFood);
       changeState("crying", true);
     }
   } else if (state === "bathing") {
@@ -177,7 +178,7 @@ function executeState(state: PetState) {
     if (bath) {
       useBathItem(bath);
     } else {
-      showCustomDialogue("没有沐浴露了～");
+      showCustomDialogue(interactionBlockedMessages.noBathItem);
       changeState("crying", true);
     }
   } else if (state === "idle") {
@@ -188,10 +189,10 @@ function executeState(state: PetState) {
     if (!success) {
       const data = getAttributeData();
       if (data.health <= 0) {
-        showCustomDialogue("我生病了，不能打工～");
+        showCustomDialogue(interactionBlockedMessages.tooSickToWork);
         changeState("crying", true);
       } else {
-        showCustomDialogue("体力不够，休息一下～");
+        showCustomDialogue(interactionBlockedMessages.tooTiredToWork);
         changeState("sleeping", true);
       }
     }

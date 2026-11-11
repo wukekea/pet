@@ -15,6 +15,7 @@ import {
   type SpeechEngine,
 } from "../composables/speech";
 import { formatPercent } from "./shared";
+import { testVoiceMessage } from "@/data/dialogues";
 
 // 是否支持语音
 const speechSupported = isSpeechSupported();
@@ -31,7 +32,7 @@ const handleVoiceToggle = () => {
 const testSpeech = () => {
   if (!speechEnabled.value) return;
   import("../composables/speech").then(({ speak }) => {
-    speak("你好，我是你的桌面宠物！");
+    speak(testVoiceMessage);
   });
 };
 
