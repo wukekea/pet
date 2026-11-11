@@ -7,6 +7,7 @@
  *   node scripts/generate-voice-audio.mjs --check    # 只做覆盖率校验（不生成）
  *   node scripts/generate-voice-audio.mjs --check --warn-only  # 校验且始终退出码 0（供 prebuild）
  *   node scripts/generate-voice-audio.mjs --dry-run  # 打印将要生成的内容，不调用 TTS
+ *   node scripts/generate-voice-audio.mjs --refresh-durations  # 只重算既有音频时长并刷新台账/清单
  *
  * 设计要点：
  * - 台词 id 由本目录下的 voice-ledger.json 台账统一分配：文本 → id 的映射，
@@ -37,7 +38,8 @@ const AUDIO_REL_DIR = `audio/${ENGINE}@${VOICE}`;
 const AUDIO_DIR = join(ROOT, "public", AUDIO_REL_DIR);
 const LEDGER_PATH = join(ROOT, "scripts", "voice-ledger.json");
 const MANIFEST_PATH = join(ROOT, "src", "data", "audioManifest.json");
-const DATA_MODULE = join(ROOT, "src", "data", "dialogues.ts");
+// 台词数据用脚本在 Node 18+ 下可直接 import 的 .mjs（不能 import .ts，见 F002）
+const DATA_MODULE = join(ROOT, "src", "data", "dialogueLines.mjs");
 
 /** 台词分组登记表：决定 id 的分组前缀，也决定扫描范围（顺序稳定） */
 const GROUPS = [
@@ -57,26 +59,6 @@ const GROUPS = [
   { key: "interactionBlockedMessages", prefix: "blocked" },
   { key: "testVoiceMessage", prefix: "test" },
 ];
-
-/** 生成用文本覆写：键为气泡原文，值为交给 TTS 的替代文本（FR-006） */
-const TTS_OVERRIDES = {
-  "Zzz...": "嘘嘘嘘",
-  "好困...Zzz...": "好困，嘘嘘嘘",
-  "Zzz...嗯...": "嘘嘘嘘，嗯",
-  "Zzz...别吵...": "嘘嘘嘘，别吵",
-  "Zzz...好困...": "嘘嘘嘘，好困",
-  "Zzz...再睡会儿...": "嘘嘘嘘，再睡会儿",
-  "Zzz...唔...": "嘘嘘嘘，唔",
-  "Bug在哪里？": "八哥在哪里？",
-  "Git提交一下~": "提交一下代码~",
-  "Stack Overflow救我！": "斯塔克欧沃弗洛救我！",
-  "Debug到怀疑人生~": "调试到怀疑人生~",
-  "NullPointerException！": "空指针异常！",
-  "代码review一下~": "代码评审一下~",
-  "API对接中...": "接口对接中...",
-  "工作ing~": "工作中~",
-  "工作专注度100%~": "工作专注度百分之一百~",
-};
 
 const RETRY_TIMES = 3;
 const CONCURRENCY = 8;
@@ -105,9 +87,12 @@ function writeLedger(ledger) {
   writeFileSync(LEDGER_PATH, JSON.stringify(out, null, 2) + "\n", "utf8");
 }
 
+async function loadDataModule() {
+  return import(pathToFileURL(DATA_MODULE).href);
+}
+
 /** 收集全部台词：{ text, group, prefix }，同一文本只保留首次所属分组 */
-async function collectLines() {
-  const data = await import(pathToFileURL(DATA_MODULE).href);
+async function collectLines(data) {
   const lines = [];
   const seen = new Set();
   for (const group of GROUPS) {
@@ -154,31 +139,50 @@ function ensureId(ledger, line) {
   return entry;
 }
 
-/** 生成用文本（含覆写） */
-function ttsTextFor(text) {
-  return TTS_OVERRIDES[text] ?? text;
-}
-
 /**
  * 从 MP3 首帧推导码率，按「音频数据字节数 × 8 / 码率」估算时长（毫秒）。
+ *
+ * 码率表必须按 version + layer 选取：
+ * - MPEG-1 Layer I / II / III
+ * - MPEG-2 / 2.5 Layer I 与 Layer II/III（本项目 edge-tts 产出为 MPEG-2 Layer III，
+ *   帧头 ff f3，versionBits=2、layerBits=1，应取 8~160 kbps 表）
+ * 取错表会让时长成比例偏差（曾把 MPEG-2 Layer III 误用 MPEG-1 Layer II 表，
+ * 全部时长恰好只有真实值的一半）。
  * 解析失败时返回 0，运行时将退回音频元数据时长或 3 秒下限。
  */
+const BITRATE_TABLES = {
+  // MPEG-1 Layer I
+  "1-1": [0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448],
+  // MPEG-1 Layer II
+  "1-2": [0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384],
+  // MPEG-1 Layer III
+  "1-3": [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320],
+  // MPEG-2 / 2.5 Layer I
+  "2-1": [0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256],
+  // MPEG-2 / 2.5 Layer II 与 Layer III 共用
+  "2-2": [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160],
+};
+
+function bitrateTableFor(versionBits, layerBits) {
+  // versionBits: 0=MPEG-2.5, 2=MPEG-2, 3=MPEG-1；layerBits: 3=I, 2=II, 1=III
+  const isMpeg1 = versionBits === 0x03;
+  const layer = layerBits === 0x03 ? 1 : layerBits === 0x02 ? 2 : 3;
+  // MPEG-2/2.5 的 Layer II 与 Layer III 共用同一张表
+  const key = isMpeg1 ? `1-${layer}` : layer === 1 ? "2-1" : "2-2";
+  return BITRATE_TABLES[key];
+}
+
 function estimateDurationMs(file) {
   const buf = readFileSync(file);
-  const bitrateTable = [
-    [0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448],
-    [0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384],
-    [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320],
-  ];
   for (let i = 0; i + 4 < buf.length; i++) {
     if (buf[i] !== 0xff || (buf[i + 1] & 0xe0) !== 0xe0) continue;
     const versionBits = (buf[i + 1] >> 3) & 0x03;
     const layerBits = (buf[i + 1] >> 1) & 0x03;
-    if (layerBits !== 0x01 || versionBits === 0x01) continue;
+    if (layerBits === 0x00 || versionBits === 0x01) continue;
     const bitrateIndex = (buf[i + 2] >> 4) & 0x0f;
     if (bitrateIndex === 0 || bitrateIndex === 0x0f) continue;
-    const table = versionBits === 0x03 ? bitrateTable[0] : bitrateTable[1];
-    const kbps = table[bitrateIndex];
+    const table = bitrateTableFor(versionBits, layerBits);
+    const kbps = table?.[bitrateIndex];
     if (!kbps) continue;
     const bytes = statSync(file).size;
     return Math.round((bytes * 8 * 1000) / (kbps * 1000));
@@ -238,13 +242,22 @@ function parseArgs(argv) {
     check: argv.includes("--check"),
     warnOnly: argv.includes("--warn-only"),
     dryRun: argv.includes("--dry-run"),
+    // 只重算既有音频的时长并刷新台账/清单，不生成音频
+    refreshDurations: argv.includes("--refresh-durations"),
   };
 }
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const ledger = readLedger();
-  const lines = await collectLines();
+  const data = await loadDataModule();
+  const overrides = data.TTS_OVERRIDES ?? {};
+  // 覆写以 id 为键；id 不存在说明对应台词已删除，给出警告避免静默残留
+  for (const id of Object.keys(overrides)) {
+    const exists = Object.values(ledger.entries).some((e) => e.id === id);
+    if (!exists) console.warn(`⚠ 覆写 id 在台账中不存在：${id}`);
+  }
+  const lines = await collectLines(data);
   mkdirSync(AUDIO_DIR, { recursive: true });
 
   const toGenerate = [];
@@ -259,7 +272,8 @@ async function main() {
     }
     const entry = ensureId(ledger, line);
     const file = join(AUDIO_DIR, `${entry.id}.mp3`);
-    const ttsText = ttsTextFor(line.text);
+    // 覆写按 id 取，未配置覆写时用台词原文
+    const ttsText = overrides[entry.id] ?? line.text;
     const entryTtsChanged = entry.ttsText !== ttsText;
     entry.ttsText = ttsText;
     entry.group = line.group;
@@ -269,11 +283,18 @@ async function main() {
       missing.push(line);
     } else {
       upToDate.push(line);
+      // 已有音频的时长可能因估算逻辑修正而过期（如码率表取错），
+      // 校验模式下重算并在偏差超过 1ms 时刷新，保证清单与真实时长一致。
+      const durationMs = estimateDurationMs(file);
+      if (durationMs > 0 && entry.durationMs !== durationMs) {
+        entry.durationMs = durationMs;
+      }
     }
   }
 
   const failures = [];
-  if (!args.check && !args.dryRun) {
+  const generating = !args.check && !args.dryRun && !args.refreshDurations;
+  if (generating) {
     let done = 0;
     let cursor = 0;
     // 并发池：edge-tts 单次往返网络耗时较长，串行生成全量过慢
@@ -300,6 +321,8 @@ async function main() {
       Array.from({ length: Math.min(CONCURRENCY, toGenerate.length) }, worker),
     );
     if (toGenerate.length > 0) process.stdout.write("\n");
+    writeLedger(ledger);
+  } else if (args.refreshDurations) {
     writeLedger(ledger);
   } else if (args.dryRun) {
     for (const item of toGenerate) {
@@ -328,7 +351,8 @@ async function main() {
     dir: AUDIO_REL_DIR,
     lines: manifestLines,
   };
-  if (!args.check && !args.dryRun) {
+  const writeOutputs = generating || args.refreshDurations;
+  if (writeOutputs) {
     writeFileSync(
       MANIFEST_PATH,
       JSON.stringify(manifest, null, 2) + "\n",
@@ -368,7 +392,9 @@ async function main() {
     console.warn(
       `\n⚠ 覆盖率不足：${missingCount} 条台词缺少音频（不阻塞构建）。`,
     );
-    if (!args.warnOnly) process.exitCode = 0;
+    // 不带 --warn-only 时以非零退出码提示，便于 CI 等场景作为门禁；
+    // --warn-only 始终退出 0，保证 prebuild 不阻塞构建（FR-008）。
+    if (!args.warnOnly) process.exitCode = 1;
   }
   if (args.check) {
     console.log(
