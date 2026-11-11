@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "verdict": "comment",
+  "summary": "scoped 复审结论：上轮 7 条 finding 全部 ADDRESSED，修复 diff（6e0bb54..7786179）未引入新的 blocker；按剧本，本轮 pass 只声明\"上轮 blocker 均已解决 + 修复 diff 无新增 blocker\"，不声明全量健康。新发现 1 条 minor（README 语音设置清单漏了新增的音调项，不影响功能，不阻塞）。\n\n覆盖度与取证（均为本轮独立实跑，不采信台账自述）：\n\n- **spec**：逐条对照 FR-001~017 与 US1~US4 验收场景；核心播放链路（本地优先 + 浏览器 TTS 回退）、id 台账稳定、文本单一事实源、覆盖率校验、Edge TTS 路径移除均落地。\n- **KB**：复核 /Users/keke/pet/.kb 与 .kb/kb.yaml、tools/kbserve/cli.py 均不存在，无 KB 可消费，kb_status: skipped。\n- **测试报告**：specs/prerecorded-voice-audio/test-report.json 不存在（devflow-test 第二轮因无 test_cmd 豁免跳过），容器未验证，本报告不引用任何测试通过结论；仅引用本轮实跑命令输出：npm run build（prebuild 覆盖率校验 + vue-tsc + vite build）PASS；node --no-experimental-strip-types scripts/generate-voice-audio.mjs --check --warn-only exit 0；npx node@18(18.20.8) ... --check --warn-only exit 0；临时移走 1 个 mp3 后 --check exit 1、--check --warn-only exit 0；--refresh-durations 与重跑生成脚本幂等（台账/清单零 diff）。\n- **独立取证要点**：用 afinfo 全量对照 1318 条 durationMs 零偏差，mpg123 独立确认 wish_007 为 MPEG 2.0 L III cbr48、时长 3528ms；旧 vs 新 dialogues 数据逐组比对完全一致（1204 条唯一文本，两侧无增减），dialogues.ts 仅剩 ./dialogueLines.mjs 一个字符串字面量；16 条 TTS_OVERRIDES 的 id 均映射到预期台词且台账 ttsText 与覆写值一致，注入一个不存在的 id 时脚本确实告警。",
+  "findings": [
+    {
+      "severity": "minor",
+      "category": "maintainability",
+      "file": "README.md",
+      "line": 153,
+      "title": "README 语音设置清单漏了新增的音调项",
+      "id": "F001",
+      "body": "本次修复在语音面板新增了音调滑块（VoicePanel.vue），但 README 重写\"语音设置\"清单时只列了启用语音/语速/音量三项（README.md:151-153），原有的\"音调\"一行在改写中被删掉。后果：按文档查看设置项的用户会以为只有语速可调，面板与文档描述不一致；对功能无影响。建议在\"语速\"一行后补一行：- **音调** - 调整语音音调（仅对 TTS 回退语音生效，预录语音不受影响），与面板文案保持一致。"
+    }
+  ],
+  "head_base": "6e0bb54c8351adeb8bbea8553da4c92e42d386d8",
+  "head_sha": "7786179e9be3fc7e6e2ff35a7dd5bbe66424546f",
+  "spec_status": "checked",
+  "kb_status": "skipped",
+  "scoped_verdicts": [
+    {
+      "id": "F001",
+      "verdict": "ADDRESSED",
+      "evidence": "码率表改为按 version+layer 选取（MPEG-2/2.5 Layer III 取 8~160kbps 表），afinfo 全量 1318 条与清单 durationMs 零偏差，11 条 >3000ms 条目恢复为真实值（如 wish_007 3528ms、mpg123 确认 cbr48/24kHz 3.5s），清单与台账 durationMs 完全一致且无缺失。"
+    },
+    {
+      "id": "F002",
+      "verdict": "ADDRESSED",
+      "evidence": "生成脚本改为 import src/data/dialogueLines.mjs；在 Node 22.22 加 --no-experimental-strip-types 与 npx node@18.20.8 下 --check --warn-only 均 exit 0，prebuild 不再依赖 TS 类型擦除；dialogues.ts 变成纯 re-export，逐组数据比对与旧文件完全一致，全项目无第二份台词文本，d.mts 类型声明被 tsc 实际消费（注入错误类型能报错）。"
+    },
+    {
+      "id": "F003",
+      "verdict": "ADDRESSED",
+      "evidence": "speak() 在 await playLocalAudio 后比较 seq !== speakSeq 即静默返回，stopSpeaking 自增令牌；被 stopSpeaking/新 speak 打断的加载不会再回退浏览器 TTS，stopSpeaking 仍先停本地音频再 cancel speechSynthesis，关闭开关路径（toggleSpeech → stopSpeaking）语义未变。"
+    },
+    {
+      "id": "F004",
+      "verdict": "ADDRESSED",
+      "evidence": "TTS_OVERRIDES 已从脚本删除，按 id 挂在 dialogueLines.mjs；16 个 id 全部存在于台账并对应预期原文，台账 ttsText 与覆写值一致；注入不存在 id 时脚本输出\"⚠ 覆写 id 在台账中不存在\"告警。"
+    },
+    {
+      "id": "F005",
+      "verdict": "ADDRESSED",
+      "evidence": "VoicePanel 新增音调滑块（0.5~1.5）及\"仅对 TTS 回退语音生效，预录语音不受影响\"说明，复用 speechPitch 与既有 accent 滑块样式；语速说明保留。"
+    },
+    {
+      "id": "F006",
+      "verdict": "ADDRESSED",
+      "evidence": "README 语音章节已改为本地预录音频优先 + 浏览器 TTS 回退，补 audio:generate/audio:check 维护说明与 TTS_OVERRIDES 说明，目录结构删除 edgeTTS.js/edgeTTS-ipc.js；全仓库仅剩\"生成音频需 pip3 install edge-tts\"一处合理提及。"
+    },
+    {
+      "id": "F007",
+      "verdict": "ADDRESSED",
+      "evidence": "--check 缺音频分支改为 process.exitCode=1，--warn-only 仍为 0；实测临时移走 1 个 mp3 后 --check exit 1、--check --warn-only exit 0；prebuild 不受影响。"
+    }
+  ]
+}
