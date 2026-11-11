@@ -1,7 +1,7 @@
 /**
  * 自动更新 IPC 模块（从 main.js 拆出）
  * 覆盖：静默检查更新、手动检查、下载（带进度）、三平台安装。
- * 接口与 edgeTTS-ipc.js 保持一致的 setup 模式。
+ * 以 setup 函数形式在 main.js 中注册。
  */
 import { app, ipcMain } from "electron";
 import path from "path";

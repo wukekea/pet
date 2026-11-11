@@ -19,6 +19,7 @@ import {
   TIME_PERIOD_DAWN,
 } from "@/constants/time";
 import { speak, stopSpeaking, speechEnabled } from "./speech";
+import { getDialogueDisplayMs } from "./localAudio";
 
 // 对话气泡状态
 export const dialogueText = ref<string | null>(null);
@@ -60,15 +61,12 @@ export function getWakeUpGreeting(): string {
   }
 }
 
-// 显示自定义对话（用于打招呼等场景）
-export function showCustomDialogue(text: string) {
-  // AI 聊天面板打开时不显示头顶气泡
-  if (isChatPanelOpen.value) return;
-
+// 显示一句台词：气泡时长与音频协调，到点隐藏并停止语音
+function displayDialogue(text: string, repeatWhileSwinging: boolean) {
   dialogueText.value = text;
   isDialogueVisible.value = true;
 
-  // 播放语音
+  // 播放语音（本地预录音频优先，未命中回退浏览器 TTS）
   if (speechEnabled.value) {
     speak(text);
   }
@@ -77,11 +75,11 @@ export function showCustomDialogue(text: string) {
     clearTimeout(dialogueTimer.value);
   }
 
-  // 3秒后隐藏
+  // 气泡时长取 max(3 秒, 本地音频实际时长)，不截断语音
   dialogueTimer.value = setTimeout(() => {
     hideDialogue();
     // 荡秋千状态下，等待 10-15 秒后继续显示新台词
-    if (showSwing.value) {
+    if (repeatWhileSwinging && showSwing.value) {
       const delay = 10000 + Math.random() * 5000;
       setTimeout(() => {
         if (showSwing.value) {
@@ -89,7 +87,14 @@ export function showCustomDialogue(text: string) {
         }
       }, delay);
     }
-  }, 3000);
+  }, getDialogueDisplayMs(text));
+}
+
+// 显示自定义对话（用于打招呼等场景）
+export function showCustomDialogue(text: string) {
+  // AI 聊天面板打开时不显示头顶气泡
+  if (isChatPanelOpen.value) return;
+  displayDialogue(text, true);
 }
 
 // 显示荡秋千台词（用于持续触发）
@@ -148,25 +153,7 @@ export function showDialogue() {
   }
 
   const messages = dialogueMessages[currentState] || dialogueMessages.idle;
-  const randomMessage = randomPick(messages);
-
-  dialogueText.value = randomMessage;
-  isDialogueVisible.value = true;
-
-  // 播放语音
-  if (speechEnabled.value) {
-    speak(randomMessage);
-  }
-
-  // 清除之前的定时器
-  if (dialogueTimer.value) {
-    clearTimeout(dialogueTimer.value);
-  }
-
-  // 3秒后隐藏
-  dialogueTimer.value = setTimeout(() => {
-    hideDialogue();
-  }, 3000);
+  displayDialogue(randomPick(messages), false);
 }
 
 // 隐藏对话气泡

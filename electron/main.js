@@ -11,7 +11,6 @@ import {
 } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
-import { setupEdgeTTSIPC } from "./edgeTTS-ipc.js";
 import { setupWhisperIPC } from "./whisperIPC.js";
 import { setupUpdaterIPC, checkForUpdateSilent } from "./updater-ipc.js";
 
@@ -115,7 +114,6 @@ app.whenReady().then(() => {
 
   createWindow();
   createTray();
-  setupEdgeTTSIPC(); // 设置 Edge TTS IPC
   setupWhisperIPC(); // 设置 Whisper 语音识别 IPC
 
   // 自动授权定位权限

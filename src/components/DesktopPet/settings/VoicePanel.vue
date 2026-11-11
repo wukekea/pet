@@ -4,15 +4,10 @@
 // 本面板直接读写 speech.ts 的 ref，不再经过 pet-settings.voiceEnabled 中转
 import {
   speechEnabled,
-  speechEngine,
   speechRate,
   speechVolume,
   isSpeechSupported,
-  isEdgeLoading,
-  edgeStatus,
   toggleSpeech,
-  switchEngine,
-  type SpeechEngine,
 } from "../composables/speech";
 import { formatPercent } from "./shared";
 import { testVoiceMessage } from "@/data/dialogues";
@@ -36,16 +31,7 @@ const testSpeech = () => {
   });
 };
 
-// 切换语音引擎
-const handleSwitchEngine = async (engine: SpeechEngine) => {
-  if (engine === speechEngine.value) return;
-  const success = await switchEngine(engine);
-  if (!success && engine === "edge") {
-    alert(
-      "Edge TTS 初始化失败，请检查网络连接或安装 edge-tts: pip3 install edge-tts",
-    );
-  }
-};
+// 语速/音调只作用于浏览器 TTS 回退路径，预录语音不受影响
 
 defineProps<{
   textColor: string;
@@ -89,47 +75,23 @@ defineProps<{
         </button>
       </div>
 
-      <!-- 语音引擎 -->
-      <div class="setting-item vertical" :class="{ disabled: !speechEnabled }">
+      <!-- 语音来源说明 -->
+      <div class="setting-item voice-source-item">
         <div class="setting-main">
           <div
             class="setting-icon-wrapper"
             style="--icon-bg: rgba(167, 139, 250, 0.15); --icon-color: #a78bfa"
           >
-            <span class="setting-icon">🔧</span>
+            <span class="setting-icon">💾</span>
           </div>
           <div class="setting-info">
             <span class="setting-label" :style="{ color: textColor }"
-              >语音引擎</span
+              >预录语音优先</span
+            >
+            <span class="setting-desc" :style="{ color: textMuted }"
+              >优先播放本地预录音频，无网络也清晰；未收录的台词回退浏览器语音</span
             >
           </div>
-        </div>
-        <div class="engine-selector">
-          <button
-            class="engine-option"
-            :class="{ active: speechEngine === 'browser' }"
-            :disabled="!speechEnabled"
-            @click="handleSwitchEngine('browser')"
-          >
-            <span class="engine-name">浏览器内置</span>
-            <span class="engine-desc">免费，无需网络</span>
-          </button>
-          <button
-            class="engine-option"
-            :class="{ active: speechEngine === 'edge' }"
-            :disabled="!speechEnabled || isEdgeLoading"
-            @click="handleSwitchEngine('edge')"
-          >
-            <span class="engine-name">Edge TTS</span>
-            <span class="engine-desc">高质量，需网络</span>
-          </button>
-        </div>
-        <div
-          v-if="edgeStatus && speechEngine === 'edge'"
-          class="engine-status"
-          :style="{ color: textMuted }"
-        >
-          {{ edgeStatus }}
         </div>
       </div>
 
@@ -176,6 +138,9 @@ defineProps<{
           <div class="setting-info">
             <span class="setting-label" :style="{ color: textColor }"
               >语速</span
+            >
+            <span class="setting-desc" :style="{ color: textMuted }"
+              >仅对 TTS 回退语音生效，预录语音不受影响</span
             >
             <span class="setting-value" :style="{ color: '#34d399' }">{{
               formatPercent(speechRate * 100)

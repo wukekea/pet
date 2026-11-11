@@ -12,7 +12,10 @@
     "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:${PET_PORT:-5173} && electron .\"",
     "electron:build": "vite build && electron-builder",
     "electron:preview": "vite build && PET_PREVIEW=1 electron .",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "audio:generate": "node scripts/generate-voice-audio.mjs",
+    "audio:check": "node scripts/generate-voice-audio.mjs --check",
+    "prebuild": "node scripts/generate-voice-audio.mjs --check --warn-only"
   },
   "dependencies": {
     "vue": "^3.4.21"

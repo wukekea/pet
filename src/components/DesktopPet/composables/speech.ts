@@ -1,14 +1,11 @@
 import { ref, watch } from "vue";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { createLocalStorage } from "../utils/storage";
-
-// 语音引擎类型
-export type SpeechEngine = "browser" | "edge";
+import { playLocalAudio, stopLocalAudio } from "./localAudio";
 
 // 语音设置存储
 interface SpeechSettings {
   enabled: boolean;
-  engine: SpeechEngine;
   rate: number;
   pitch: number;
   volume: number;
@@ -16,7 +13,6 @@ interface SpeechSettings {
 
 const speechStorage = createLocalStorage<SpeechSettings>(STORAGE_KEYS.speech, {
   enabled: true,
-  engine: "browser", // 默认使用浏览器 TTS
   rate: 1.0,
   pitch: 1.0,
   volume: 1.0,
@@ -25,24 +21,20 @@ const speechStorage = createLocalStorage<SpeechSettings>(STORAGE_KEYS.speech, {
 const savedSettings = speechStorage.load();
 
 export const speechEnabled = ref(savedSettings.enabled);
-export const speechEngine = ref<SpeechEngine>(savedSettings.engine);
 export const speechRate = ref(savedSettings.rate);
 export const speechPitch = ref(savedSettings.pitch);
 export const speechVolume = ref(savedSettings.volume);
-export const isEdgeReady = ref(false);
-export const isEdgeLoading = ref(false);
-export const edgeStatus = ref("");
 
 // 监听设置变化并持久化
 watch(
-  [speechEnabled, speechEngine, speechRate, speechPitch, speechVolume],
-  ([enabled, engine, rate, pitch, volume]) => {
-    speechStorage.save({ enabled, engine, rate, pitch, volume });
+  [speechEnabled, speechRate, speechPitch, speechVolume],
+  ([enabled, rate, pitch, volume]) => {
+    speechStorage.save({ enabled, rate, pitch, volume });
   },
   { deep: true },
 );
 
-// ========== 浏览器 TTS ==========
+// ========== 浏览器 TTS（唯一的回退路径） ==========
 let cachedVoices: SpeechSynthesisVoice[] = [];
 
 export function isSpeechSupported(): boolean {
@@ -91,83 +83,28 @@ function speakWithBrowser(text: string): void {
   window.speechSynthesis.speak(utterance);
 }
 
-// ========== Edge TTS ==========
-async function initEdgeTTS(): Promise<boolean> {
-  if (isEdgeReady.value) return true;
-  if (isEdgeLoading.value) return false;
-
-  isEdgeLoading.value = true;
-  edgeStatus.value = "正在初始化...";
-
-  try {
-    // 通过 IPC 调用主进程初始化 Edge TTS
-    if (window.electronAPI?.initEdgeTTS) {
-      const result = await window.electronAPI.initEdgeTTS(
-        (_status: string, message: string) => {
-          edgeStatus.value = message;
-        },
-      );
-      isEdgeReady.value = result;
-      return result;
-    }
-    edgeStatus.value = "不支持 Edge TTS";
-    return false;
-  } catch (error) {
-    console.error("Edge TTS 初始化失败:", error);
-    edgeStatus.value = "初始化失败";
-    return false;
-  } finally {
-    isEdgeLoading.value = false;
-  }
-}
-
-async function speakWithEdge(text: string): Promise<void> {
-  if (!isEdgeReady.value) {
-    const ready = await initEdgeTTS();
-    if (!ready) {
-      console.warn("Edge TTS 未就绪，回退到浏览器语音");
-      speakWithBrowser(text);
-      return;
-    }
-  }
-
-  if (window.electronAPI?.speakWithEdgeTTS) {
-    await window.electronAPI.speakWithEdgeTTS(text);
-  }
-}
-
 // ========== 统一接口 ==========
-export async function speak(text: string): Promise<void> {
-  if (!speechEnabled.value) return;
+/**
+ * 播放一句台词：优先本地预录音频，失败或无音频时回退浏览器 TTS。
+ * 返回值表示是否使用了本地音频（供气泡计时判断）。
+ */
+export async function speak(text: string): Promise<boolean> {
+  if (!speechEnabled.value) return false;
 
   stopSpeaking();
 
-  if (speechEngine.value === "edge") {
-    await speakWithEdge(text);
-  } else {
+  const played = await playLocalAudio(text, speechVolume.value);
+  if (!played) {
     speakWithBrowser(text);
   }
+  return played;
 }
 
 export function stopSpeaking(): void {
-  if (speechEngine.value === "browser" && isSpeechSupported()) {
+  stopLocalAudio();
+  if (isSpeechSupported()) {
     window.speechSynthesis.cancel();
-  } else if (speechEngine.value === "edge" && window.electronAPI?.stopEdgeTTS) {
-    window.electronAPI.stopEdgeTTS();
   }
-}
-
-export async function switchEngine(engine: SpeechEngine): Promise<boolean> {
-  if (engine === "edge") {
-    const ready = await initEdgeTTS();
-    if (ready) {
-      speechEngine.value = engine;
-      return true;
-    }
-    return false;
-  }
-  speechEngine.value = engine;
-  return true;
 }
 
 export function toggleSpeech(): boolean {
@@ -208,9 +145,4 @@ export function initSpeech(): void {
       updateVoiceCache,
     );
   };
-
-  // 如果设置是 Edge，尝试初始化
-  if (speechEngine.value === "edge") {
-    initEdgeTTS();
-  }
 }

@@ -1,0 +1,6597 @@
+{
+  "version": 1,
+  "engine": "edge-tts",
+  "voice": "zh-CN-XiaoyiNeural",
+  "entries": {
+    "API对接中...": {
+      "id": "state_programmer_032",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "接口对接中..."
+    },
+    "Bug在哪里？": {
+      "id": "state_programmer_002",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "八哥在哪里？"
+    },
+    "Debug到怀疑人生~": {
+      "id": "state_programmer_017",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "调试到怀疑人生~"
+    },
+    "Git提交一下~": {
+      "id": "state_programmer_006",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "提交一下代码~"
+    },
+    "NullPointerException！": {
+      "id": "state_programmer_023",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "空指针异常！"
+    },
+    "Stack Overflow救我！": {
+      "id": "state_programmer_014",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "斯塔克欧沃弗洛救我！"
+    },
+    "Zzz...": {
+      "id": "state_sleeping_001",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "嘘嘘嘘"
+    },
+    "Zzz...再睡会儿...": {
+      "id": "dream_021",
+      "group": "dreamTalkMessages",
+      "ttsText": "嘘嘘嘘，再睡会儿"
+    },
+    "Zzz...别吵...": {
+      "id": "dream_013",
+      "group": "dreamTalkMessages",
+      "ttsText": "嘘嘘嘘，别吵"
+    },
+    "Zzz...唔...": {
+      "id": "dream_030",
+      "group": "dreamTalkMessages",
+      "ttsText": "嘘嘘嘘，唔"
+    },
+    "Zzz...嗯...": {
+      "id": "dream_006",
+      "group": "dreamTalkMessages",
+      "ttsText": "嘘嘘嘘，嗯"
+    },
+    "Zzz...好困...": {
+      "id": "dream_017",
+      "group": "dreamTalkMessages",
+      "ttsText": "嘘嘘嘘，好困"
+    },
+    "一口接一口~": {
+      "id": "state_eating_016",
+      "group": "dialogueMessages.eating",
+      "ttsText": "一口接一口~"
+    },
+    "一块两块三块...": {
+      "id": "state_brickCarrying_003",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "一块两块三块..."
+    },
+    "一块砖头一份力~": {
+      "id": "state_brickCarrying_018",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "一块砖头一份力~"
+    },
+    "一天的工作完成~": {
+      "id": "work_exit_012",
+      "group": "workScheduleExitMessages",
+      "ttsText": "一天的工作完成~"
+    },
+    "一头雾水...": {
+      "id": "state_confused_004",
+      "group": "dialogueMessages.confused",
+      "ttsText": "一头雾水..."
+    },
+    "一步一步向前走~": {
+      "id": "state_walking_006",
+      "group": "dialogueMessages.walking",
+      "ttsText": "一步一步向前走~"
+    },
+    "一脸懵逼中...": {
+      "id": "state_confused_012",
+      "group": "dialogueMessages.confused",
+      "ttsText": "一脸懵逼中..."
+    },
+    "一起庆祝吧！": {
+      "id": "state_celebrate_014",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "一起庆祝吧！"
+    },
+    "一起来跳舞吧！": {
+      "id": "state_dancing_006",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "一起来跳舞吧！"
+    },
+    "一蹦三尺高！": {
+      "id": "state_jumping_012",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "一蹦三尺高！"
+    },
+    "万岁！": {
+      "id": "state_celebrate_007",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "万岁！"
+    },
+    "丈量这个世界的宽度~": {
+      "id": "state_walking_010",
+      "group": "dialogueMessages.walking",
+      "ttsText": "丈量这个世界的宽度~"
+    },
+    "上班时间到！": {
+      "id": "work_enter_003",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "上班时间到！"
+    },
+    "下午好！": {
+      "id": "greet_afternoon_001",
+      "group": "greetingMessages.afternoon",
+      "ttsText": "下午好！"
+    },
+    "下午好！精神满满！": {
+      "id": "wakeup_afternoon_001",
+      "group": "wakeUpGreetingMessages.afternoon",
+      "ttsText": "下午好！精神满满！"
+    },
+    "下班万岁！": {
+      "id": "work_exit_013",
+      "group": "workScheduleExitMessages",
+      "ttsText": "下班万岁！"
+    },
+    "下班啦！": {
+      "id": "work_exit_001",
+      "group": "workScheduleExitMessages",
+      "ttsText": "下班啦！"
+    },
+    "下班心情好~": {
+      "id": "work_exit_016",
+      "group": "workScheduleExitMessages",
+      "ttsText": "下班心情好~"
+    },
+    "下班时间到！": {
+      "id": "work_exit_010",
+      "group": "workScheduleExitMessages",
+      "ttsText": "下班时间到！"
+    },
+    "下班最快乐~": {
+      "id": "work_exit_019",
+      "group": "workScheduleExitMessages",
+      "ttsText": "下班最快乐~"
+    },
+    "下班真开心！": {
+      "id": "work_exit_006",
+      "group": "workScheduleExitMessages",
+      "ttsText": "下班真开心！"
+    },
+    "下雨啦~": {
+      "id": "weather_lightRain_001",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "下雨啦~"
+    },
+    "下雪啦！": {
+      "id": "weather_lightSnow_001",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "下雪啦！"
+    },
+    "下雪天好安静~": {
+      "id": "weather_lightSnow_012",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "下雪天好安静~"
+    },
+    "下雪天好梦幻~": {
+      "id": "weather_lightSnow_024",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "下雪天好梦幻~"
+    },
+    "下雪天适合窝在家~": {
+      "id": "weather_lightSnow_020",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "下雪天适合窝在家~"
+    },
+    "下雪适合吃火锅~": {
+      "id": "weather_lightSnow_016",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "下雪适合吃火锅~"
+    },
+    "下雪适合喝热饮~": {
+      "id": "weather_lightSnow_028",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "下雪适合喝热饮~"
+    },
+    "不可原谅！": {
+      "id": "state_angry_004",
+      "group": "dialogueMessages.angry",
+      "ttsText": "不可原谅！"
+    },
+    "不好意思...": {
+      "id": "state_shy_005",
+      "group": "dialogueMessages.shy",
+      "ttsText": "不好意思..."
+    },
+    "不怀好意地笑~": {
+      "id": "state_grin_015",
+      "group": "dialogueMessages.grin",
+      "ttsText": "不怀好意地笑~"
+    },
+    "不想停下来~": {
+      "id": "state_swinging_018",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "不想停下来~"
+    },
+    "不想动...": {
+      "id": "mood_bad_003",
+      "group": "moodDialogues.bad",
+      "ttsText": "不想动..."
+    },
+    "不想理你了！": {
+      "id": "state_angry_014",
+      "group": "dialogueMessages.angry",
+      "ttsText": "不想理你了！"
+    },
+    "不想起床...": {
+      "id": "state_sleeping_010",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "不想起床..."
+    },
+    "不想醒来...": {
+      "id": "state_sleeping_021",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "不想醒来..."
+    },
+    "不敢直视你...": {
+      "id": "state_shy_011",
+      "group": "dialogueMessages.shy",
+      "ttsText": "不敢直视你..."
+    },
+    "不敢睁开眼睛...": {
+      "id": "state_scared_012",
+      "group": "dialogueMessages.scared",
+      "ttsText": "不敢睁开眼睛..."
+    },
+    "不是你想的那样！": {
+      "id": "state_embarrassed_008",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "不是你想的那样！"
+    },
+    "不要吓我！": {
+      "id": "state_scared_002",
+      "group": "dialogueMessages.scared",
+      "ttsText": "不要吓我！"
+    },
+    "不要吵我……": {
+      "id": "state_sleepy_005",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "不要吵我……"
+    },
+    "不要看我...": {
+      "id": "state_shy_001",
+      "group": "dialogueMessages.shy",
+      "ttsText": "不要看我..."
+    },
+    "不要走...": {
+      "id": "dream_001",
+      "group": "dreamTalkMessages",
+      "ttsText": "不要走..."
+    },
+    "不要这样...": {
+      "id": "state_crying_003",
+      "group": "dialogueMessages.crying",
+      "ttsText": "不要这样..."
+    },
+    "不该说那句话的……": {
+      "id": "state_embarrassed_028",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "不该说那句话的……"
+    },
+    "专注工作中...": {
+      "id": "work_busy_011",
+      "group": "workBusyMessages",
+      "ttsText": "专注工作中..."
+    },
+    "世界变白了~": {
+      "id": "weather_heavySnow_002",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "世界变白了~"
+    },
+    "世界在旋转...": {
+      "id": "state_fallen_011",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "世界在旋转..."
+    },
+    "世界真奇妙，我在观察~": {
+      "id": "state_idle_011",
+      "group": "dialogueMessages.idle",
+      "ttsText": "世界真奇妙，我在观察~"
+    },
+    "中午好！": {
+      "id": "greet_noon_001",
+      "group": "greetingMessages.noon",
+      "ttsText": "中午好！"
+    },
+    "中午好！睡得好香~": {
+      "id": "wakeup_noon_001",
+      "group": "wakeUpGreetingMessages.noon",
+      "ttsText": "中午好！睡得好香~"
+    },
+    "为了家人努力搬砖~": {
+      "id": "state_brickCarrying_040",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "为了家人努力搬砖~"
+    },
+    "为了明天更好搬砖~": {
+      "id": "state_brickCarrying_032",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "为了明天更好搬砖~"
+    },
+    "为了梦想开工！": {
+      "id": "work_enter_010",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "为了梦想开工！"
+    },
+    "为了梦想而搬砖~": {
+      "id": "state_brickCarrying_016",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "为了梦想而搬砖~"
+    },
+    "为了生活在拼搏~": {
+      "id": "work_busy_021",
+      "group": "workBusyMessages",
+      "ttsText": "为了生活在拼搏~"
+    },
+    "为了生活！": {
+      "id": "state_brickCarrying_005",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "为了生活！"
+    },
+    "为了美好生活搬砖~": {
+      "id": "state_brickCarrying_024",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "为了美好生活搬砖~"
+    },
+    "为什么要欺负我...": {
+      "id": "state_crying_004",
+      "group": "dialogueMessages.crying",
+      "ttsText": "为什么要欺负我..."
+    },
+    "主人还在忙吗？": {
+      "id": "state_idle_005",
+      "group": "dialogueMessages.idle",
+      "ttsText": "主人还在忙吗？"
+    },
+    "了解一下？": {
+      "id": "state_flyerDistributing_005",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "了解一下？"
+    },
+    "云像山峰一样高~": {
+      "id": "weather_cloudy_020",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云像山峰一样高~"
+    },
+    "云像棉花糖~": {
+      "id": "weather_cloudy_003",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云像棉花糖~"
+    },
+    "云像棉花糖一样软~": {
+      "id": "weather_cloudy_012",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云像棉花糖一样软~"
+    },
+    "云像海浪在翻滚~": {
+      "id": "weather_cloudy_024",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云像海浪在翻滚~"
+    },
+    "云像羊群在奔跑~": {
+      "id": "weather_cloudy_016",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云像羊群在奔跑~"
+    },
+    "云像羽毛一样轻~": {
+      "id": "weather_cloudy_027",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云像羽毛一样轻~"
+    },
+    "云层像棉被一样~": {
+      "id": "weather_cloudy_017",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云层像棉被一样~"
+    },
+    "云层厚厚的~": {
+      "id": "weather_cloudy_008",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云层厚厚的~"
+    },
+    "云朵在变换形状~": {
+      "id": "weather_cloudy_014",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云朵在变换形状~"
+    },
+    "云朵在天上画画~": {
+      "id": "weather_cloudy_019",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云朵在天上画画~"
+    },
+    "云朵在天上飘~": {
+      "id": "weather_cloudy_010",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云朵在天上飘~"
+    },
+    "云朵在慢慢移动~": {
+      "id": "weather_cloudy_026",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云朵在慢慢移动~"
+    },
+    "云朵在散步~": {
+      "id": "weather_cloudy_006",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云朵在散步~"
+    },
+    "云朵在轻轻飘动~": {
+      "id": "weather_cloudy_022",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云朵在轻轻飘动~"
+    },
+    "云朵好漂亮~": {
+      "id": "weather_cloudy_001",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "云朵好漂亮~"
+    },
+    "享受美食中请勿打扰~": {
+      "id": "eat_busy_017",
+      "group": "eatingBusyMessages",
+      "ttsText": "享受美食中请勿打扰~"
+    },
+    "享受这一刻~": {
+      "id": "state_swinging_024",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "享受这一刻~"
+    },
+    "享受这片刻宁静~": {
+      "id": "state_idle_030",
+      "group": "dialogueMessages.idle",
+      "ttsText": "享受这片刻宁静~"
+    },
+    "享受这美好阳光~": {
+      "id": "weather_sunny_028",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "享受这美好阳光~"
+    },
+    "享受阳光浴~": {
+      "id": "weather_sunny_020",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "享受阳光浴~"
+    },
+    "什么情况？": {
+      "id": "state_confused_001",
+      "group": "dialogueMessages.confused",
+      "ttsText": "什么情况？"
+    },
+    "什么都不想做...": {
+      "id": "mood_bad_005",
+      "group": "moodDialogues.bad",
+      "ttsText": "什么都不想做..."
+    },
+    "今天也是搬砖的一天~": {
+      "id": "state_brickCarrying_012",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "今天也是搬砖的一天~"
+    },
+    "今天也要努力工作！": {
+      "id": "work_enter_014",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "今天也要努力工作！"
+    },
+    "今天发了好多份~": {
+      "id": "state_flyerDistributing_018",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "今天发了好多份~"
+    },
+    "今天天气很给力~": {
+      "id": "weather_default_017",
+      "group": "weatherDialogues.default",
+      "ttsText": "今天天气很给力~"
+    },
+    "今天天气很美好~": {
+      "id": "weather_default_020",
+      "group": "weatherDialogues.default",
+      "ttsText": "今天天气很美好~"
+    },
+    "今天天气很赞~": {
+      "id": "weather_default_014",
+      "group": "weatherDialogues.default",
+      "ttsText": "今天天气很赞~"
+    },
+    "今天天气真好~": {
+      "id": "weather_default_004",
+      "group": "weatherDialogues.default",
+      "ttsText": "今天天气真好~"
+    },
+    "今天好丧...": {
+      "id": "mood_bad_007",
+      "group": "moodDialogues.bad",
+      "ttsText": "今天好丧..."
+    },
+    "今天好暖和！": {
+      "id": "weather_sunny_002",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "今天好暖和！"
+    },
+    "今天很适合出门~": {
+      "id": "weather_default_010",
+      "group": "weatherDialogues.default",
+      "ttsText": "今天很适合出门~"
+    },
+    "今天心情超好~": {
+      "id": "mood_good_001",
+      "group": "moodDialogues.good",
+      "ttsText": "今天心情超好~"
+    },
+    "今天怎么样？": {
+      "id": "weather_default_002",
+      "group": "weatherDialogues.default",
+      "ttsText": "今天怎么样？"
+    },
+    "今天搬砖明天吃肉~": {
+      "id": "state_brickCarrying_022",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "今天搬砖明天吃肉~"
+    },
+    "今天是个好日子~": {
+      "id": "weather_sunny_009",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "今天是个好日子~"
+    },
+    "今天最后一天！": {
+      "id": "state_flyerDistributing_007",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "今天最后一天！"
+    },
+    "今天有点阴呢": {
+      "id": "weather_cloudy_002",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "今天有点阴呢"
+    },
+    "今天气候宜人~": {
+      "id": "weather_default_007",
+      "group": "weatherDialogues.default",
+      "ttsText": "今天气候宜人~"
+    },
+    "今天的我超级开心！": {
+      "id": "state_happy_020",
+      "group": "dialogueMessages.happy",
+      "ttsText": "今天的我超级开心！"
+    },
+    "今天真是美好的一天！": {
+      "id": "state_happy_006",
+      "group": "dialogueMessages.happy",
+      "ttsText": "今天真是美好的一天！"
+    },
+    "今天要做什么呢？": {
+      "id": "state_idle_009",
+      "group": "dialogueMessages.idle",
+      "ttsText": "今天要做什么呢？"
+    },
+    "今天走了好多步呢~": {
+      "id": "state_walking_014",
+      "group": "dialogueMessages.walking",
+      "ttsText": "今天走了好多步呢~"
+    },
+    "今天阳光真明媚~": {
+      "id": "weather_sunny_026",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "今天阳光真明媚~"
+    },
+    "今天阳光超棒~": {
+      "id": "weather_sunny_019",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "今天阳光超棒~"
+    },
+    "今晚加班...": {
+      "id": "state_programmer_005",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "今晚加班..."
+    },
+    "代码review一下~": {
+      "id": "state_programmer_026",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "代码评审一下~"
+    },
+    "代码写不完啦~": {
+      "id": "state_programmer_015",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "代码写不完啦~"
+    },
+    "代码如诗我如画~": {
+      "id": "state_programmer_051",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "代码如诗我如画~"
+    },
+    "代码如诗我如诗人~": {
+      "id": "state_programmer_022",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "代码如诗我如诗人~"
+    },
+    "代码如诗般优美~": {
+      "id": "state_programmer_033",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "代码如诗般优美~"
+    },
+    "代码如诗般流淌~": {
+      "id": "state_programmer_055",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "代码如诗般流淌~"
+    },
+    "代码注释写清楚~": {
+      "id": "state_programmer_037",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "代码注释写清楚~"
+    },
+    "代码洁癖发作~": {
+      "id": "state_programmer_029",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "代码洁癖发作~"
+    },
+    "代码洁癖晚期~": {
+      "id": "state_programmer_045",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "代码洁癖晚期~"
+    },
+    "代码重构真酸爽~": {
+      "id": "state_programmer_041",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "代码重构真酸爽~"
+    },
+    "优惠活动哦！": {
+      "id": "state_flyerDistributing_006",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "优惠活动哦！"
+    },
+    "传单传单~": {
+      "id": "state_flyerDistributing_001",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "传单传单~"
+    },
+    "传单在手天下我有~": {
+      "id": "state_flyerDistributing_013",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "传单在手天下我有~"
+    },
+    "伤心到无法自拔...": {
+      "id": "state_crying_009",
+      "group": "dialogueMessages.crying",
+      "ttsText": "伤心到无法自拔..."
+    },
+    "伸个懒腰~": {
+      "id": "state_stretch_001",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "伸个懒腰~"
+    },
+    "伸个懒腰充充电~": {
+      "id": "state_stretch_019",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "伸个懒腰充充电~"
+    },
+    "伸个懒腰精神好~": {
+      "id": "state_stretch_011",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "伸个懒腰精神好~"
+    },
+    "伸伸胳膊伸伸腿~": {
+      "id": "state_stretch_017",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "伸伸胳膊伸伸腿~"
+    },
+    "伸完懒腰好轻松~": {
+      "id": "state_stretch_007",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "伸完懒腰好轻松~"
+    },
+    "伸完懒腰心情好~": {
+      "id": "state_stretch_013",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "伸完懒腰心情好~"
+    },
+    "伸展运动开始~": {
+      "id": "state_stretch_009",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "伸展运动开始~"
+    },
+    "体力不够，休息一下～": {
+      "id": "blocked_tooTiredToWork_001",
+      "group": "interactionBlockedMessages.tooTiredToWork",
+      "ttsText": "体力不够，休息一下～"
+    },
+    "体力不够，等一下再干~": {
+      "id": "work_tired_003",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "体力不够，等一下再干~"
+    },
+    "体力不支请稍候...": {
+      "id": "work_tired_016",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "体力不支请稍候..."
+    },
+    "体力见底了...": {
+      "id": "work_tired_013",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "体力见底了..."
+    },
+    "体力透支中...": {
+      "id": "work_tired_008",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "体力透支中..."
+    },
+    "你好呀！": {
+      "id": "state_hello_001",
+      "group": "dialogueMessages.hello",
+      "ttsText": "你好呀！"
+    },
+    "你好呀，小可爱~": {
+      "id": "state_hello_017",
+      "group": "dialogueMessages.hello",
+      "ttsText": "你好呀，小可爱~"
+    },
+    "你好呀，我的朋友~": {
+      "id": "state_hello_008",
+      "group": "dialogueMessages.hello",
+      "ttsText": "你好呀，我的朋友~"
+    },
+    "你好，我是你的桌面宠物！": {
+      "id": "test_001",
+      "group": "testVoiceMessage",
+      "ttsText": "你好，我是你的桌面宠物！"
+    },
+    "你来了真好~": {
+      "id": "state_hello_014",
+      "group": "dialogueMessages.hello",
+      "ttsText": "你来了真好~"
+    },
+    "你看那个云……": {
+      "id": "state_embarrassed_012",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "你看那个云……"
+    },
+    "你看那片云像什么？": {
+      "id": "state_idle_016",
+      "group": "dialogueMessages.idle",
+      "ttsText": "你看那片云像什么？"
+    },
+    "你跑不掉的~": {
+      "id": "state_chase_010",
+      "group": "dialogueMessages.chase",
+      "ttsText": "你跑不掉的~"
+    },
+    "佩服我自己~": {
+      "id": "state_smug_007",
+      "group": "dialogueMessages.smug",
+      "ttsText": "佩服我自己~"
+    },
+    "值得庆祝！": {
+      "id": "state_celebrate_005",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "值得庆祝！"
+    },
+    "假装什么都没发生~": {
+      "id": "state_embarrassed_021",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "假装什么都没发生~"
+    },
+    "假装在冥想~": {
+      "id": "state_idle_029",
+      "group": "dialogueMessages.idle",
+      "ttsText": "假装在冥想~"
+    },
+    "假装自己是个雕像~": {
+      "id": "state_idle_022",
+      "group": "dialogueMessages.idle",
+      "ttsText": "假装自己是个雕像~"
+    },
+    "做个安静的美男子~": {
+      "id": "state_idle_036",
+      "group": "dialogueMessages.idle",
+      "ttsText": "做个安静的美男子~"
+    },
+    "停不下来啦！": {
+      "id": "state_rolling_008",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "停不下来啦！"
+    },
+    "偶尔放空一下也不错~": {
+      "id": "state_idle_015",
+      "group": "dialogueMessages.idle",
+      "ttsText": "偶尔放空一下也不错~"
+    },
+    "偷偷摸摸的样子~": {
+      "id": "state_peek_015",
+      "group": "dialogueMessages.peek",
+      "ttsText": "偷偷摸摸的样子~"
+    },
+    "偷偷看...": {
+      "id": "state_peek_001",
+      "group": "dialogueMessages.peek",
+      "ttsText": "偷偷看..."
+    },
+    "偷偷瞄一眼~": {
+      "id": "state_peek_006",
+      "group": "dialogueMessages.peek",
+      "ttsText": "偷偷瞄一眼~"
+    },
+    "像在云端飘~": {
+      "id": "state_swinging_020",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "像在云端飘~"
+    },
+    "像小鸟一样~": {
+      "id": "state_swinging_010",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "像小鸟一样~"
+    },
+    "像弹簧一样活力满满~": {
+      "id": "state_jumping_009",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "像弹簧一样活力满满~"
+    },
+    "像飞一样~": {
+      "id": "state_swinging_004",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "像飞一样~"
+    },
+    "先休息一下...": {
+      "id": "work_tired_004",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "先休息一下..."
+    },
+    "先别打扰我~": {
+      "id": "work_busy_003",
+      "group": "workBusyMessages",
+      "ttsText": "先别打扰我~"
+    },
+    "光芒万丈！": {
+      "id": "weather_sunny_005",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "光芒万丈！"
+    },
+    "全身都舒展开了~": {
+      "id": "state_stretch_006",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "全身都舒展开了~"
+    },
+    "内存泄漏？": {
+      "id": "state_programmer_012",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "内存泄漏？"
+    },
+    "再坚持一会儿...": {
+      "id": "work_busy_009",
+      "group": "workBusyMessages",
+      "ttsText": "再坚持一会儿..."
+    },
+    "再改一版...": {
+      "id": "state_programmer_008",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "再改一版..."
+    },
+    "再来一个...": {
+      "id": "dream_010",
+      "group": "dreamTalkMessages",
+      "ttsText": "再来一个..."
+    },
+    "再来一口！": {
+      "id": "state_eating_004",
+      "group": "dialogueMessages.eating",
+      "ttsText": "再来一口！"
+    },
+    "再来一次！": {
+      "id": "state_rolling_010",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "再来一次！"
+    },
+    "再来再来！": {
+      "id": "state_swinging_011",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "再来再来！"
+    },
+    "再睡五分钟...": {
+      "id": "state_sleeping_011",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "再睡五分钟..."
+    },
+    "再睡五分钟……": {
+      "id": "state_sleepy_007",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "再睡五分钟……"
+    },
+    "再等一会儿~": {
+      "id": "bath_busy_006",
+      "group": "bathingBusyMessages",
+      "ttsText": "再等一会儿~"
+    },
+    "再高一点~": {
+      "id": "state_swinging_002",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "再高一点~"
+    },
+    "写代码中...": {
+      "id": "state_programmer_001",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "写代码中..."
+    },
+    "冷汗直流……": {
+      "id": "state_embarrassed_005",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "冷汗直流……"
+    },
+    "冻僵了...": {
+      "id": "weather_heavySnow_007",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "冻僵了..."
+    },
+    "准备大干一场~": {
+      "id": "work_enter_016",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "准备大干一场~"
+    },
+    "准备好迎接今天啦~": {
+      "id": "state_stretch_016",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "准备好迎接今天啦~"
+    },
+    "准备工作模式~": {
+      "id": "work_enter_007",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "准备工作模式~"
+    },
+    "别出门了~": {
+      "id": "weather_heavyRain_003",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "别出门了~"
+    },
+    "别吵我睡觉……": {
+      "id": "state_sleepy_028",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "别吵我睡觉……"
+    },
+    "别惹我！": {
+      "id": "state_angry_002",
+      "group": "dialogueMessages.angry",
+      "ttsText": "别惹我！"
+    },
+    "别惹毛了我！": {
+      "id": "state_angry_018",
+      "group": "dialogueMessages.angry",
+      "ttsText": "别惹毛了我！"
+    },
+    "别打扰我睡觉……": {
+      "id": "state_sleepy_014",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "别打扰我睡觉……"
+    },
+    "别跑...": {
+      "id": "dream_007",
+      "group": "dreamTalkMessages",
+      "ttsText": "别跑..."
+    },
+    "别跑那么快嘛~": {
+      "id": "state_chase_015",
+      "group": "dialogueMessages.chase",
+      "ttsText": "别跑那么快嘛~"
+    },
+    "别跑！": {
+      "id": "state_chase_002",
+      "group": "dialogueMessages.chase",
+      "ttsText": "别跑！"
+    },
+    "别过来！": {
+      "id": "state_scared_005",
+      "group": "dialogueMessages.scared",
+      "ttsText": "别过来！"
+    },
+    "别逼我生气！": {
+      "id": "state_angry_008",
+      "group": "dialogueMessages.angry",
+      "ttsText": "别逼我生气！"
+    },
+    "别闹～": {
+      "id": "state_sleepy_002",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "别闹～"
+    },
+    "加油干！": {
+      "id": "state_brickCarrying_006",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "加油干！"
+    },
+    "动感舞步来袭~": {
+      "id": "state_dancing_027",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "动感舞步来袭~"
+    },
+    "动次打次！": {
+      "id": "state_dancing_002",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "动次打次！"
+    },
+    "动起来~": {
+      "id": "state_walking_005",
+      "group": "dialogueMessages.walking",
+      "ttsText": "动起来~"
+    },
+    "努力工作！": {
+      "id": "work_enter_004",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "努力工作！"
+    },
+    "努力搬砖！": {
+      "id": "state_brickCarrying_009",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "努力搬砖！"
+    },
+    "劳动最光荣！": {
+      "id": "state_brickCarrying_002",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "劳动最光荣！"
+    },
+    "勤劳的小蜜蜂上线~": {
+      "id": "work_enter_009",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "勤劳的小蜜蜂上线~"
+    },
+    "单元测试覆盖中~": {
+      "id": "state_programmer_039",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "单元测试覆盖中~"
+    },
+    "厉害吧~": {
+      "id": "state_smug_002",
+      "group": "dialogueMessages.smug",
+      "ttsText": "厉害吧~"
+    },
+    "去发现新的风景~": {
+      "id": "state_walking_012",
+      "group": "dialogueMessages.walking",
+      "ttsText": "去发现新的风景~"
+    },
+    "去哪里呢？": {
+      "id": "state_walking_002",
+      "group": "dialogueMessages.walking",
+      "ttsText": "去哪里呢？"
+    },
+    "又报错了...": {
+      "id": "state_programmer_003",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "又报错了..."
+    },
+    "发传单也是份工作~": {
+      "id": "state_flyerDistributing_021",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单也是份工作~"
+    },
+    "发传单也是技术活~": {
+      "id": "state_flyerDistributing_011",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单也是技术活~"
+    },
+    "发传单也是种修行~": {
+      "id": "state_flyerDistributing_027",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单也是种修行~"
+    },
+    "发传单也是种历练~": {
+      "id": "state_flyerDistributing_017",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单也是种历练~"
+    },
+    "发传单也是种贡献~": {
+      "id": "state_flyerDistributing_034",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单也是种贡献~"
+    },
+    "发传单虽然累但有收获~": {
+      "id": "state_flyerDistributing_040",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单虽然累但有收获~"
+    },
+    "发传单让我学会坚持~": {
+      "id": "state_flyerDistributing_024",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单让我学会坚持~"
+    },
+    "发传单让我学会沟通~": {
+      "id": "state_flyerDistributing_039",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单让我学会沟通~"
+    },
+    "发传单让我成长~": {
+      "id": "state_flyerDistributing_033",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单让我成长~"
+    },
+    "发传单让我更勇敢~": {
+      "id": "state_flyerDistributing_019",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单让我更勇敢~"
+    },
+    "发传单让我更坚强~": {
+      "id": "state_flyerDistributing_036",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单让我更坚强~"
+    },
+    "发传单让我更自信~": {
+      "id": "state_flyerDistributing_028",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单让我更自信~"
+    },
+    "发传单锻炼口才~": {
+      "id": "state_flyerDistributing_030",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单锻炼口才~"
+    },
+    "发传单锻炼胆量~": {
+      "id": "state_flyerDistributing_015",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发传单锻炼胆量~"
+    },
+    "发呆中...": {
+      "id": "state_idle_002",
+      "group": "dialogueMessages.idle",
+      "ttsText": "发呆中..."
+    },
+    "发呆也是门艺术~": {
+      "id": "state_idle_032",
+      "group": "dialogueMessages.idle",
+      "ttsText": "发呆也是门艺术~"
+    },
+    "发呆是最高级的享受~": {
+      "id": "state_idle_020",
+      "group": "dialogueMessages.idle",
+      "ttsText": "发呆是最高级的享受~"
+    },
+    "发完这些就休息~": {
+      "id": "state_flyerDistributing_014",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发完这些就休息~"
+    },
+    "发完这些就能休息~": {
+      "id": "state_flyerDistributing_037",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发完这些就能休息~"
+    },
+    "发完这叠就下班~": {
+      "id": "state_flyerDistributing_025",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发完这叠就下班~"
+    },
+    "发得手臂都酸了~": {
+      "id": "state_flyerDistributing_031",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发得手臂都酸了~"
+    },
+    "发得越多越熟练~": {
+      "id": "state_flyerDistributing_022",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "发得越多越熟练~"
+    },
+    "发抖发抖...": {
+      "id": "state_scared_004",
+      "group": "dialogueMessages.scared",
+      "ttsText": "发抖发抖..."
+    },
+    "发生了什么事？": {
+      "id": "state_confused_013",
+      "group": "dialogueMessages.confused",
+      "ttsText": "发生了什么事？"
+    },
+    "变干净了~": {
+      "id": "state_bathing_010",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "变干净了~"
+    },
+    "可以休息啦~": {
+      "id": "work_exit_008",
+      "group": "workScheduleExitMessages",
+      "ttsText": "可以休息啦~"
+    },
+    "可以放松了~": {
+      "id": "work_exit_014",
+      "group": "workScheduleExitMessages",
+      "ttsText": "可以放松了~"
+    },
+    "吃东西中，别打扰~": {
+      "id": "eat_busy_001",
+      "group": "eatingBusyMessages",
+      "ttsText": "吃东西中，别打扰~"
+    },
+    "吃得乐不可支~": {
+      "id": "state_eating_038",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得乐不可支~"
+    },
+    "吃得乐呵呵~": {
+      "id": "state_eating_031",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得乐呵呵~"
+    },
+    "吃得停不下来~": {
+      "id": "state_eating_021",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得停不下来~"
+    },
+    "吃得好享受~": {
+      "id": "state_eating_019",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得好享受~"
+    },
+    "吃得好开心~": {
+      "id": "state_eating_014",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得好开心~"
+    },
+    "吃得好满足呀~": {
+      "id": "state_eating_036",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得好满足呀~"
+    },
+    "吃得好舒坦~": {
+      "id": "state_eating_043",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得好舒坦~"
+    },
+    "吃得好饱~": {
+      "id": "state_eating_007",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得好饱~"
+    },
+    "吃得心满意足~": {
+      "id": "state_eating_025",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得心满意足~"
+    },
+    "吃得忘乎所以~": {
+      "id": "state_eating_027",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得忘乎所以~"
+    },
+    "吃得忘乎所以中~": {
+      "id": "eat_busy_021",
+      "group": "eatingBusyMessages",
+      "ttsText": "吃得忘乎所以中~"
+    },
+    "吃得怡然自乐~": {
+      "id": "state_eating_045",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得怡然自乐~"
+    },
+    "吃得悠然自得~": {
+      "id": "state_eating_041",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得悠然自得~"
+    },
+    "吃得正开心呢~": {
+      "id": "eat_busy_018",
+      "group": "eatingBusyMessages",
+      "ttsText": "吃得正开心呢~"
+    },
+    "吃得正香呢~": {
+      "id": "eat_busy_008",
+      "group": "eatingBusyMessages",
+      "ttsText": "吃得正香呢~"
+    },
+    "吃得津津有味~": {
+      "id": "state_eating_017",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得津津有味~"
+    },
+    "吃得津津有味中~": {
+      "id": "eat_busy_012",
+      "group": "eatingBusyMessages",
+      "ttsText": "吃得津津有味中~"
+    },
+    "吃得眉开眼笑~": {
+      "id": "state_eating_023",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得眉开眼笑~"
+    },
+    "吃得酣畅淋漓~": {
+      "id": "state_eating_029",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得酣畅淋漓~"
+    },
+    "吃得陶醉其中~": {
+      "id": "state_eating_033",
+      "group": "dialogueMessages.eating",
+      "ttsText": "吃得陶醉其中~"
+    },
+    "吃饭不聊天~": {
+      "id": "eat_busy_005",
+      "group": "eatingBusyMessages",
+      "ttsText": "吃饭不聊天~"
+    },
+    "吃饭是最幸福的时刻~": {
+      "id": "eat_busy_014",
+      "group": "eatingBusyMessages",
+      "ttsText": "吃饭是最幸福的时刻~"
+    },
+    "吃饭需要仪式感~": {
+      "id": "eat_busy_023",
+      "group": "eatingBusyMessages",
+      "ttsText": "吃饭需要仪式感~"
+    },
+    "吓出心理阴影了...": {
+      "id": "state_scared_017",
+      "group": "dialogueMessages.scared",
+      "ttsText": "吓出心理阴影了..."
+    },
+    "吓得不敢动了...": {
+      "id": "state_scared_020",
+      "group": "dialogueMessages.scared",
+      "ttsText": "吓得不敢动了..."
+    },
+    "吓得毛都竖起来了...": {
+      "id": "state_scared_014",
+      "group": "dialogueMessages.scared",
+      "ttsText": "吓得毛都竖起来了..."
+    },
+    "吓得魂都没了...": {
+      "id": "state_scared_011",
+      "group": "dialogueMessages.scared",
+      "ttsText": "吓得魂都没了..."
+    },
+    "吓死我了...": {
+      "id": "weather_thunderstorm_004",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "吓死我了..."
+    },
+    "吓死我了！": {
+      "id": "state_scared_001",
+      "group": "dialogueMessages.scared",
+      "ttsText": "吓死我了！"
+    },
+    "听说对着流星许愿特别灵": {
+      "id": "wish_012",
+      "group": "wishUponStarMessages",
+      "ttsText": "听说对着流星许愿特别灵"
+    },
+    "听雨声入睡很香~": {
+      "id": "weather_lightRain_020",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "听雨声入睡很香~"
+    },
+    "听雨声好惬意~": {
+      "id": "weather_lightRain_010",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "听雨声好惬意~"
+    },
+    "呃……": {
+      "id": "state_embarrassed_001",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "呃……"
+    },
+    "呃，你听到了吗？": {
+      "id": "state_embarrassed_017",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "呃，你听到了吗？"
+    },
+    "呃，天气不错？": {
+      "id": "state_embarrassed_011",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "呃，天气不错？"
+    },
+    "呜呜...好疼": {
+      "id": "state_fallen_003",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "呜呜...好疼"
+    },
+    "呜呜呜...": {
+      "id": "state_crying_001",
+      "group": "dialogueMessages.crying",
+      "ttsText": "呜呜呜..."
+    },
+    "呜呜，太委屈了...": {
+      "id": "state_crying_013",
+      "group": "dialogueMessages.crying",
+      "ttsText": "呜呜，太委屈了..."
+    },
+    "味道好极了！": {
+      "id": "state_eating_013",
+      "group": "dialogueMessages.eating",
+      "ttsText": "味道好极了！"
+    },
+    "呼...噜...": {
+      "id": "dream_008",
+      "group": "dreamTalkMessages",
+      "ttsText": "呼...噜..."
+    },
+    "呼...好温暖...": {
+      "id": "dream_023",
+      "group": "dreamTalkMessages",
+      "ttsText": "呼...好温暖..."
+    },
+    "呼...好舒服...": {
+      "id": "dream_015",
+      "group": "dreamTalkMessages",
+      "ttsText": "呼...好舒服..."
+    },
+    "呼~呼~": {
+      "id": "state_sleeping_014",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "呼~呼~"
+    },
+    "呼~好凉快~": {
+      "id": "state_swinging_009",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "呼~好凉快~"
+    },
+    "呼噜...呼噜...": {
+      "id": "state_sleeping_023",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "呼噜...呼噜..."
+    },
+    "呼噜...嗯...": {
+      "id": "dream_028",
+      "group": "dreamTalkMessages",
+      "ttsText": "呼噜...嗯..."
+    },
+    "呼噜呼噜~": {
+      "id": "state_sleeping_002",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "呼噜呼噜~"
+    },
+    "咕噜咕噜~": {
+      "id": "state_rolling_002",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "咕噜咕噜~"
+    },
+    "咖啡续命~": {
+      "id": "state_programmer_004",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "咖啡续命~"
+    },
+    "咳咳...": {
+      "id": "state_sneeze_004",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "咳咳..."
+    },
+    "哇~好晕~": {
+      "id": "state_rolling_012",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "哇~好晕~"
+    },
+    "哈~欠~好困~": {
+      "id": "state_yawn_009",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "哈~欠~好困~"
+    },
+    "哈欠~": {
+      "id": "state_yawn_001",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "哈欠~"
+    },
+    "哈欠连天~": {
+      "id": "state_yawn_012",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "哈欠连天~"
+    },
+    "哎呀呀，丢脸了...": {
+      "id": "state_fallen_020",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "哎呀呀，丢脸了..."
+    },
+    "哎呀好丢人……": {
+      "id": "state_embarrassed_024",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "哎呀好丢人……"
+    },
+    "哎呀，好难为情...": {
+      "id": "state_shy_006",
+      "group": "dialogueMessages.shy",
+      "ttsText": "哎呀，好难为情..."
+    },
+    "哗啦啦~": {
+      "id": "weather_heavyRain_002",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "哗啦啦~"
+    },
+    "哪里在痒呢...": {
+      "id": "state_scratch_010",
+      "group": "dialogueMessages.scratch",
+      "ttsText": "哪里在痒呢..."
+    },
+    "哪里痒？": {
+      "id": "state_scratch_001",
+      "group": "dialogueMessages.scratch",
+      "ttsText": "哪里痒？"
+    },
+    "哭出来会好受些...": {
+      "id": "state_crying_018",
+      "group": "dialogueMessages.crying",
+      "ttsText": "哭出来会好受些..."
+    },
+    "哭哭...": {
+      "id": "state_crying_005",
+      "group": "dialogueMessages.crying",
+      "ttsText": "哭哭..."
+    },
+    "哼哼~": {
+      "id": "state_grin_004",
+      "group": "dialogueMessages.grin",
+      "ttsText": "哼哼~"
+    },
+    "哼哼哼！": {
+      "id": "state_angry_005",
+      "group": "dialogueMessages.angry",
+      "ttsText": "哼哼哼！"
+    },
+    "哼！生气了！": {
+      "id": "state_angry_001",
+      "group": "dialogueMessages.angry",
+      "ttsText": "哼！生气了！"
+    },
+    "哼，哄不好的那种！": {
+      "id": "state_angry_015",
+      "group": "dialogueMessages.angry",
+      "ttsText": "哼，哄不好的那种！"
+    },
+    "哼，我最强！": {
+      "id": "state_smug_001",
+      "group": "dialogueMessages.smug",
+      "ttsText": "哼，我最强！"
+    },
+    "唉...好烦啊": {
+      "id": "mood_bad_004",
+      "group": "moodDialogues.bad",
+      "ttsText": "唉...好烦啊"
+    },
+    "唔...好暖和...": {
+      "id": "state_sleeping_007",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "唔...好暖和..."
+    },
+    "唔……好困……": {
+      "id": "state_sleepy_004",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "唔……好困……"
+    },
+    "啊~欠~": {
+      "id": "state_yawn_004",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "啊~欠~"
+    },
+    "啊呜~好困呀~": {
+      "id": "state_yawn_015",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "啊呜~好困呀~"
+    },
+    "啊哈哈……": {
+      "id": "state_embarrassed_007",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "啊哈哈……"
+    },
+    "啊哈哈……好尴尬……": {
+      "id": "state_embarrassed_029",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "啊哈哈……好尴尬……"
+    },
+    "啊！什么东西！": {
+      "id": "state_scared_006",
+      "group": "dialogueMessages.scared",
+      "ttsText": "啊！什么东西！"
+    },
+    "喜大普奔！": {
+      "id": "state_celebrate_011",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "喜大普奔！"
+    },
+    "喷嚏打不出来好难受...": {
+      "id": "state_sneeze_008",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "喷嚏打不出来好难受..."
+    },
+    "喷嚏连连...": {
+      "id": "state_sneeze_013",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "喷嚏连连..."
+    },
+    "嗨~": {
+      "id": "state_hello_002",
+      "group": "dialogueMessages.hello",
+      "ttsText": "嗨~"
+    },
+    "嗨，一起玩耍吧~": {
+      "id": "state_hello_020",
+      "group": "dialogueMessages.hello",
+      "ttsText": "嗨，一起玩耍吧~"
+    },
+    "嗨，今天过得怎么样？": {
+      "id": "state_hello_012",
+      "group": "dialogueMessages.hello",
+      "ttsText": "嗨，今天过得怎么样？"
+    },
+    "嗯...": {
+      "id": "state_thinking_001",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "嗯..."
+    },
+    "嗯...接下来干嘛呢？": {
+      "id": "state_idle_013",
+      "group": "dialogueMessages.idle",
+      "ttsText": "嗯...接下来干嘛呢？"
+    },
+    "嗯...让我理理思路...": {
+      "id": "state_thinking_010",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "嗯...让我理理思路..."
+    },
+    "嗯~美味~": {
+      "id": "state_eating_006",
+      "group": "dialogueMessages.eating",
+      "ttsText": "嗯~美味~"
+    },
+    "嗯……困……": {
+      "id": "state_sleepy_009",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "嗯……困……"
+    },
+    "嘘...": {
+      "id": "state_peek_004",
+      "group": "dialogueMessages.peek",
+      "ttsText": "嘘..."
+    },
+    "嘘...我在听风说话~": {
+      "id": "state_idle_018",
+      "group": "dialogueMessages.idle",
+      "ttsText": "嘘...我在听风说话~"
+    },
+    "嘘，别出声...": {
+      "id": "state_peek_014",
+      "group": "dialogueMessages.peek",
+      "ttsText": "嘘，别出声..."
+    },
+    "嘴巴塞满了~": {
+      "id": "state_eating_011",
+      "group": "dialogueMessages.eating",
+      "ttsText": "嘴巴塞满了~"
+    },
+    "嘴巴满了没法说话~": {
+      "id": "eat_busy_004",
+      "group": "eatingBusyMessages",
+      "ttsText": "嘴巴满了没法说话~"
+    },
+    "嘴角上扬到天际~": {
+      "id": "state_happy_015",
+      "group": "dialogueMessages.happy",
+      "ttsText": "嘴角上扬到天际~"
+    },
+    "嘴角微微上扬~": {
+      "id": "state_grin_008",
+      "group": "dialogueMessages.grin",
+      "ttsText": "嘴角微微上扬~"
+    },
+    "嘿嘿...": {
+      "id": "state_grin_001",
+      "group": "dialogueMessages.grin",
+      "ttsText": "嘿嘿..."
+    },
+    "嘿嘿...好吃...": {
+      "id": "dream_027",
+      "group": "dreamTalkMessages",
+      "ttsText": "嘿嘿...好吃..."
+    },
+    "嘿嘿嘿...": {
+      "id": "dream_019",
+      "group": "dreamTalkMessages",
+      "ttsText": "嘿嘿嘿..."
+    },
+    "嘿嘿嘿~": {
+      "id": "state_happy_003",
+      "group": "dialogueMessages.happy",
+      "ttsText": "嘿嘿嘿~"
+    },
+    "嘿嘿嘿，有主意了~": {
+      "id": "state_grin_006",
+      "group": "dialogueMessages.grin",
+      "ttsText": "嘿嘿嘿，有主意了~"
+    },
+    "嘿嘿，想到了有趣的事~": {
+      "id": "state_grin_016",
+      "group": "dialogueMessages.grin",
+      "ttsText": "嘿嘿，想到了有趣的事~"
+    },
+    "嘿嘿，我知道个秘密~": {
+      "id": "state_grin_010",
+      "group": "dialogueMessages.grin",
+      "ttsText": "嘿嘿，我知道个秘密~"
+    },
+    "嘿嘿，有好玩的事了~": {
+      "id": "state_grin_012",
+      "group": "dialogueMessages.grin",
+      "ttsText": "嘿嘿，有好玩的事了~"
+    },
+    "嘿嘿，等着看好戏吧~": {
+      "id": "state_grin_014",
+      "group": "dialogueMessages.grin",
+      "ttsText": "嘿嘿，等着看好戏吧~"
+    },
+    "嘿嘿，赢了！": {
+      "id": "state_smug_003",
+      "group": "dialogueMessages.smug",
+      "ttsText": "嘿嘿，赢了！"
+    },
+    "噜啦啦~": {
+      "id": "state_bathing_008",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "噜啦啦~"
+    },
+    "嚼嚼嚼~": {
+      "id": "state_eating_012",
+      "group": "dialogueMessages.eating",
+      "ttsText": "嚼嚼嚼~"
+    },
+    "困得不想动……": {
+      "id": "state_sleepy_011",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困得不想动……"
+    },
+    "困得不想睁眼……": {
+      "id": "state_sleepy_031",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困得不想睁眼……"
+    },
+    "困得不想说话……": {
+      "id": "state_sleepy_021",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困得不想说话……"
+    },
+    "困得不想起床……": {
+      "id": "state_sleepy_039",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困得不想起床……"
+    },
+    "困得不行啦...": {
+      "id": "state_yawn_011",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "困得不行啦..."
+    },
+    "困得东倒西歪……": {
+      "id": "state_sleepy_023",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困得东倒西歪……"
+    },
+    "困得想闭眼……": {
+      "id": "state_sleepy_029",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困得想闭眼……"
+    },
+    "困得打哈欠……": {
+      "id": "state_sleepy_019",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困得打哈欠……"
+    },
+    "困得没力气……": {
+      "id": "state_sleepy_037",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困得没力气……"
+    },
+    "困得没精神……": {
+      "id": "state_sleepy_025",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困得没精神……"
+    },
+    "困得直打盹……": {
+      "id": "state_sleepy_035",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困得直打盹……"
+    },
+    "困得直点头……": {
+      "id": "state_sleepy_027",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困得直点头……"
+    },
+    "困得眼泪都出来了...": {
+      "id": "state_yawn_008",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "困得眼泪都出来了..."
+    },
+    "困得睁不开眼...": {
+      "id": "state_sleeping_016",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "困得睁不开眼..."
+    },
+    "困得软绵绵……": {
+      "id": "state_sleepy_033",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困得软绵绵……"
+    },
+    "困得迷迷糊糊……": {
+      "id": "state_sleepy_017",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困得迷迷糊糊……"
+    },
+    "困意挡不住了...": {
+      "id": "state_yawn_014",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "困意挡不住了..."
+    },
+    "困意来袭...": {
+      "id": "state_yawn_005",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "困意来袭..."
+    },
+    "困意正浓……": {
+      "id": "state_sleepy_015",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "困意正浓……"
+    },
+    "困意满满...": {
+      "id": "state_sleeping_019",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "困意满满..."
+    },
+    "在努力工作中~": {
+      "id": "work_busy_028",
+      "group": "workBusyMessages",
+      "ttsText": "在努力工作中~"
+    },
+    "在努力搬砖中~": {
+      "id": "work_busy_015",
+      "group": "workBusyMessages",
+      "ttsText": "在努力搬砖中~"
+    },
+    "坏坏地笑~": {
+      "id": "state_grin_011",
+      "group": "dialogueMessages.grin",
+      "ttsText": "坏坏地笑~"
+    },
+    "坏笑中...": {
+      "id": "state_grin_005",
+      "group": "dialogueMessages.grin",
+      "ttsText": "坏笑中..."
+    },
+    "外面成了水世界~": {
+      "id": "weather_heavyRain_020",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "外面成了水世界~"
+    },
+    "外面水汪汪~": {
+      "id": "weather_heavyRain_007",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "外面水汪汪~"
+    },
+    "外面白茫茫一片~": {
+      "id": "weather_heavySnow_012",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "外面白茫茫一片~"
+    },
+    "外面雨幕重重~": {
+      "id": "weather_heavyRain_015",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "外面雨幕重重~"
+    },
+    "大脑当机中...": {
+      "id": "state_confused_019",
+      "group": "dialogueMessages.confused",
+      "ttsText": "大脑当机中..."
+    },
+    "大脑高速运转中...": {
+      "id": "state_thinking_014",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "大脑高速运转中..."
+    },
+    "大雨也有美感~": {
+      "id": "weather_heavyRain_028",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "大雨也有美感~"
+    },
+    "大雨倾盆！": {
+      "id": "weather_heavyRain_004",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "大雨倾盆！"
+    },
+    "大雨冲刷一切~": {
+      "id": "weather_heavyRain_010",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "大雨冲刷一切~"
+    },
+    "大雨带来清凉~": {
+      "id": "weather_heavyRain_016",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "大雨带来清凉~"
+    },
+    "大雨洗尽尘埃~": {
+      "id": "weather_heavyRain_018",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "大雨洗尽尘埃~"
+    },
+    "大雨滂沱不停~": {
+      "id": "weather_heavyRain_013",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "大雨滂沱不停~"
+    },
+    "大雨滋润万物~": {
+      "id": "weather_heavyRain_025",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "大雨滋润万物~"
+    },
+    "大雨让人敬畏~": {
+      "id": "weather_heavyRain_021",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "大雨让人敬畏~"
+    },
+    "大雨过后是彩虹~": {
+      "id": "weather_heavyRain_023",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "大雨过后是彩虹~"
+    },
+    "大雪天好壮观~": {
+      "id": "weather_heavySnow_011",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "大雪天好壮观~"
+    },
+    "大雪天适合打雪仗~": {
+      "id": "weather_heavySnow_027",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "大雪天适合打雪仗~"
+    },
+    "大雪天适合滑雪~": {
+      "id": "weather_heavySnow_017",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "大雪天适合滑雪~"
+    },
+    "大雪带来严寒~": {
+      "id": "weather_heavySnow_015",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "大雪带来严寒~"
+    },
+    "大雪带来欢乐~": {
+      "id": "weather_heavySnow_025",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "大雪带来欢乐~"
+    },
+    "大雪是冬天的礼物~": {
+      "id": "weather_heavySnow_021",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "大雪是冬天的礼物~"
+    },
+    "大雪纷飞不停~": {
+      "id": "weather_heavySnow_013",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "大雪纷飞不停~"
+    },
+    "大雪纷飞！": {
+      "id": "weather_heavySnow_003",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "大雪纷飞！"
+    },
+    "大雪覆盖一切~": {
+      "id": "weather_heavySnow_009",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "大雪覆盖一切~"
+    },
+    "大雪覆盖屋顶~": {
+      "id": "weather_heavySnow_023",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "大雪覆盖屋顶~"
+    },
+    "大雪让世界安静~": {
+      "id": "weather_heavySnow_019",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "大雪让世界安静~"
+    },
+    "天上好多云~": {
+      "id": "weather_cloudy_004",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "天上好多云~"
+    },
+    "天公发怒了~": {
+      "id": "weather_thunderstorm_007",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "天公发怒了~"
+    },
+    "天旋地转...": {
+      "id": "state_fallen_004",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "天旋地转..."
+    },
+    "天气不错~": {
+      "id": "weather_default_001",
+      "group": "weatherDialogues.default",
+      "ttsText": "天气不错~"
+    },
+    "天气刚刚好~": {
+      "id": "weather_default_009",
+      "group": "weatherDialogues.default",
+      "ttsText": "天气刚刚好~"
+    },
+    "天气很宜人~": {
+      "id": "weather_default_019",
+      "group": "weatherDialogues.default",
+      "ttsText": "天气很宜人~"
+    },
+    "天气很舒适~": {
+      "id": "weather_default_013",
+      "group": "weatherDialogues.default",
+      "ttsText": "天气很舒适~"
+    },
+    "天气真舒服~": {
+      "id": "weather_default_011",
+      "group": "weatherDialogues.default",
+      "ttsText": "天气真舒服~"
+    },
+    "天气让人心情好~": {
+      "id": "weather_default_006",
+      "group": "weatherDialogues.default",
+      "ttsText": "天气让人心情好~"
+    },
+    "天气让人愉悦~": {
+      "id": "weather_default_016",
+      "group": "weatherDialogues.default",
+      "ttsText": "天气让人愉悦~"
+    },
+    "天空在发怒~": {
+      "id": "weather_thunderstorm_014",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "天空在发怒~"
+    },
+    "天空好蓝好美~": {
+      "id": "state_swinging_027",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "天空好蓝好美~"
+    },
+    "天空布满云朵~": {
+      "id": "weather_cloudy_023",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "天空布满云朵~"
+    },
+    "天空被云遮住了~": {
+      "id": "weather_cloudy_013",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "天空被云遮住了~"
+    },
+    "太不好意思了...": {
+      "id": "state_shy_015",
+      "group": "dialogueMessages.shy",
+      "ttsText": "太不好意思了..."
+    },
+    "太完美了！": {
+      "id": "state_celebrate_008",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "太完美了！"
+    },
+    "太开心了~": {
+      "id": "state_swinging_013",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "太开心了~"
+    },
+    "太恐怖了...": {
+      "id": "state_scared_009",
+      "group": "dialogueMessages.scared",
+      "ttsText": "太恐怖了..."
+    },
+    "太棒了！": {
+      "id": "state_eating_008",
+      "group": "dialogueMessages.eating",
+      "ttsText": "太棒了！"
+    },
+    "太棒啦~": {
+      "id": "state_happy_002",
+      "group": "dialogueMessages.happy",
+      "ttsText": "太棒啦~"
+    },
+    "太棒啦！": {
+      "id": "state_celebrate_001",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "太棒啦！"
+    },
+    "太累了，先歇会儿...": {
+      "id": "work_tired_001",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "太累了，先歇会儿..."
+    },
+    "太累了，干不动...": {
+      "id": "work_tired_012",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "太累了，干不动..."
+    },
+    "太阳公公出来啦~": {
+      "id": "weather_sunny_003",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "太阳公公出来啦~"
+    },
+    "太阳公公笑哈哈~": {
+      "id": "weather_sunny_014",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "太阳公公笑哈哈~"
+    },
+    "太阳出来喜洋洋~": {
+      "id": "weather_sunny_022",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "太阳出来喜洋洋~"
+    },
+    "太阳当空照~": {
+      "id": "weather_sunny_010",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "太阳当空照~"
+    },
+    "头发又掉了...": {
+      "id": "state_programmer_010",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "头发又掉了..."
+    },
+    "头晕目眩...": {
+      "id": "state_fallen_009",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "头晕目眩..."
+    },
+    "奋斗中请勿打扰~": {
+      "id": "work_busy_018",
+      "group": "workBusyMessages",
+      "ttsText": "奋斗中请勿打扰~"
+    },
+    "奋斗的时间到啦~": {
+      "id": "work_enter_011",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "奋斗的时间到啦~"
+    },
+    "好久不见，甚是想念~": {
+      "id": "state_hello_015",
+      "group": "dialogueMessages.hello",
+      "ttsText": "好久不见，甚是想念~"
+    },
+    "好像在和风玩耍~": {
+      "id": "state_swinging_032",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "好像在和风玩耍~"
+    },
+    "好像要感冒了...": {
+      "id": "state_sneeze_014",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "好像要感冒了..."
+    },
+    "好像过敏了...": {
+      "id": "state_sneeze_007",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "好像过敏了..."
+    },
+    "好冷...": {
+      "id": "dream_016",
+      "group": "dreamTalkMessages",
+      "ttsText": "好冷..."
+    },
+    "好冷好冷~": {
+      "id": "weather_lightSnow_004",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "好冷好冷~"
+    },
+    "好冷好冷！": {
+      "id": "weather_heavySnow_004",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "好冷好冷！"
+    },
+    "好刺激呀~": {
+      "id": "state_swinging_005",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "好刺激呀~"
+    },
+    "好可怕...": {
+      "id": "state_scared_003",
+      "group": "dialogueMessages.scared",
+      "ttsText": "好可怕..."
+    },
+    "好吃~": {
+      "id": "state_eating_001",
+      "group": "dialogueMessages.eating",
+      "ttsText": "好吃~"
+    },
+    "好吃到流泪~": {
+      "id": "state_eating_022",
+      "group": "dialogueMessages.eating",
+      "ttsText": "好吃到流泪~"
+    },
+    "好吃到飞起~": {
+      "id": "state_eating_030",
+      "group": "dialogueMessages.eating",
+      "ttsText": "好吃到飞起~"
+    },
+    "好吃好吃...": {
+      "id": "dream_031",
+      "group": "dreamTalkMessages",
+      "ttsText": "好吃好吃..."
+    },
+    "好吃好吃，别催~": {
+      "id": "eat_busy_006",
+      "group": "eatingBusyMessages",
+      "ttsText": "好吃好吃，别催~"
+    },
+    "好吃得想唱歌~": {
+      "id": "state_eating_040",
+      "group": "dialogueMessages.eating",
+      "ttsText": "好吃得想唱歌~"
+    },
+    "好吃得想转圈圈~": {
+      "id": "state_eating_026",
+      "group": "dialogueMessages.eating",
+      "ttsText": "好吃得想转圈圈~"
+    },
+    "好吃得直点头~": {
+      "id": "state_eating_034",
+      "group": "dialogueMessages.eating",
+      "ttsText": "好吃得直点头~"
+    },
+    "好吃得眯起眼~": {
+      "id": "state_eating_037",
+      "group": "dialogueMessages.eating",
+      "ttsText": "好吃得眯起眼~"
+    },
+    "好吃得舔嘴唇~": {
+      "id": "state_eating_044",
+      "group": "dialogueMessages.eating",
+      "ttsText": "好吃得舔嘴唇~"
+    },
+    "好困...Zzz...": {
+      "id": "state_sleeping_022",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "好困，嘘嘘嘘"
+    },
+    "好困……": {
+      "id": "state_sleepy_001",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "好困……"
+    },
+    "好困啊...": {
+      "id": "state_sleeping_003",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "好困啊..."
+    },
+    "好困好困...": {
+      "id": "state_sleeping_012",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "好困好困..."
+    },
+    "好困好困……": {
+      "id": "state_sleepy_013",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "好困好困……"
+    },
+    "好多好吃的...": {
+      "id": "dream_005",
+      "group": "dreamTalkMessages",
+      "ttsText": "好多好吃的..."
+    },
+    "好多朋友...": {
+      "id": "dream_032",
+      "group": "dreamTalkMessages",
+      "ttsText": "好多朋友..."
+    },
+    "好多玩具...": {
+      "id": "dream_014",
+      "group": "dreamTalkMessages",
+      "ttsText": "好多玩具..."
+    },
+    "好天气好心情~": {
+      "id": "weather_sunny_016",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "好天气好心情~"
+    },
+    "好天气适合出去玩~": {
+      "id": "weather_sunny_024",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "好天气适合出去玩~"
+    },
+    "好天气适合运动~": {
+      "id": "weather_default_008",
+      "group": "weatherDialogues.default",
+      "ttsText": "好天气适合运动~"
+    },
+    "好奇怪的感觉...": {
+      "id": "state_scratch_003",
+      "group": "dialogueMessages.scratch",
+      "ttsText": "好奇怪的感觉..."
+    },
+    "好好吃！": {
+      "id": "state_eating_005",
+      "group": "dialogueMessages.eating",
+      "ttsText": "好好吃！"
+    },
+    "好好玩！": {
+      "id": "state_rolling_004",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "好好玩！"
+    },
+    "好安静...": {
+      "id": "state_sleeping_015",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "好安静..."
+    },
+    "好安静啊...": {
+      "id": "state_idle_007",
+      "group": "dialogueMessages.idle",
+      "ttsText": "好安静啊..."
+    },
+    "好害羞...": {
+      "id": "state_shy_002",
+      "group": "dialogueMessages.shy",
+      "ttsText": "好害羞..."
+    },
+    "好尴尬呀...": {
+      "id": "state_shy_012",
+      "group": "dialogueMessages.shy",
+      "ttsText": "好尴尬呀..."
+    },
+    "好尴尬啊……": {
+      "id": "state_embarrassed_004",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "好尴尬啊……"
+    },
+    "好幸福啊~": {
+      "id": "mood_good_003",
+      "group": "moodDialogues.good",
+      "ttsText": "好幸福啊~"
+    },
+    "好开心...": {
+      "id": "dream_009",
+      "group": "dreamTalkMessages",
+      "ttsText": "好开心..."
+    },
+    "好开心呀...": {
+      "id": "dream_020",
+      "group": "dreamTalkMessages",
+      "ttsText": "好开心呀..."
+    },
+    "好开心好开心！": {
+      "id": "state_celebrate_003",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "好开心好开心！"
+    },
+    "好开心！": {
+      "id": "state_happy_001",
+      "group": "dialogueMessages.happy",
+      "ttsText": "好开心！"
+    },
+    "好怕怕，要抱抱...": {
+      "id": "state_scared_015",
+      "group": "dialogueMessages.scared",
+      "ttsText": "好怕怕，要抱抱..."
+    },
+    "好惬意呀~": {
+      "id": "state_swinging_014",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "好惬意呀~"
+    },
+    "好想一直睡下去...": {
+      "id": "state_sleeping_018",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "好想一直睡下去..."
+    },
+    "好想找地缝钻进去……": {
+      "id": "state_embarrassed_026",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "好想找地缝钻进去……"
+    },
+    "好想挖个洞钻进去……": {
+      "id": "state_embarrassed_018",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "好想挖个洞钻进去……"
+    },
+    "好想继续睡……": {
+      "id": "state_sleepy_018",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "好想继续睡……"
+    },
+    "好想躲起来哭...": {
+      "id": "state_crying_019",
+      "group": "dialogueMessages.crying",
+      "ttsText": "好想躲起来哭..."
+    },
+    "好想躺平...": {
+      "id": "state_yawn_007",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "好想躺平..."
+    },
+    "好明亮的一天~": {
+      "id": "weather_sunny_006",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "好明亮的一天~"
+    },
+    "好晕...": {
+      "id": "state_fallen_001",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "好晕..."
+    },
+    "好温暖...": {
+      "id": "dream_018",
+      "group": "dreamTalkMessages",
+      "ttsText": "好温暖..."
+    },
+    "好满足~": {
+      "id": "state_eating_003",
+      "group": "dialogueMessages.eating",
+      "ttsText": "好满足~"
+    },
+    "好漂亮...": {
+      "id": "dream_026",
+      "group": "dreamTalkMessages",
+      "ttsText": "好漂亮..."
+    },
+    "好甜...": {
+      "id": "dream_012",
+      "group": "dreamTalkMessages",
+      "ttsText": "好甜..."
+    },
+    "好痒好痒~": {
+      "id": "state_scratch_011",
+      "group": "dialogueMessages.scratch",
+      "ttsText": "好痒好痒~"
+    },
+    "好痛啊，要吹吹...": {
+      "id": "state_fallen_014",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "好痛啊，要吹吹..."
+    },
+    "好累啊...": {
+      "id": "state_brickCarrying_004",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "好累啊..."
+    },
+    "好舒服...": {
+      "id": "state_sleeping_006",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "好舒服..."
+    },
+    "好舒服的水~": {
+      "id": "state_bathing_002",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "好舒服的水~"
+    },
+    "好软...": {
+      "id": "dream_022",
+      "group": "dreamTalkMessages",
+      "ttsText": "好软..."
+    },
+    "好难过...": {
+      "id": "state_crying_002",
+      "group": "dialogueMessages.crying",
+      "ttsText": "好难过..."
+    },
+    "好香啊...": {
+      "id": "dream_002",
+      "group": "dreamTalkMessages",
+      "ttsText": "好香啊..."
+    },
+    "好高好高！": {
+      "id": "state_jumping_003",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "好高好高！"
+    },
+    "完全不明白...": {
+      "id": "state_confused_006",
+      "group": "dialogueMessages.confused",
+      "ttsText": "完全不明白..."
+    },
+    "完美发挥~": {
+      "id": "state_smug_013",
+      "group": "dialogueMessages.smug",
+      "ttsText": "完美发挥~"
+    },
+    "实力不允许我低调~": {
+      "id": "state_smug_016",
+      "group": "dialogueMessages.smug",
+      "ttsText": "实力不允许我低调~"
+    },
+    "害羞也是一种可爱~": {
+      "id": "state_shy_019",
+      "group": "dialogueMessages.shy",
+      "ttsText": "害羞也是一种可爱~"
+    },
+    "害羞到说不出话...": {
+      "id": "state_shy_013",
+      "group": "dialogueMessages.shy",
+      "ttsText": "害羞到说不出话..."
+    },
+    "容器化部署中~": {
+      "id": "state_programmer_057",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "容器化部署中~"
+    },
+    "小心被发现...": {
+      "id": "state_peek_010",
+      "group": "dialogueMessages.peek",
+      "ttsText": "小心被发现..."
+    },
+    "小意思~": {
+      "id": "state_smug_005",
+      "group": "dialogueMessages.smug",
+      "ttsText": "小意思~"
+    },
+    "小雨像牛毛一样细~": {
+      "id": "weather_lightRain_019",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "小雨像牛毛一样细~"
+    },
+    "小雨带来清凉~": {
+      "id": "weather_lightRain_023",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "小雨带来清凉~"
+    },
+    "小雨洗清空气~": {
+      "id": "weather_lightRain_014",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "小雨洗清空气~"
+    },
+    "小雨淅沥沥~": {
+      "id": "weather_lightRain_003",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "小雨淅沥沥~"
+    },
+    "小雨滋润大地~": {
+      "id": "weather_lightRain_011",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "小雨滋润大地~"
+    },
+    "小雨让花儿更艳~": {
+      "id": "weather_lightRain_026",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "小雨让花儿更艳~"
+    },
+    "小雨轻轻下~": {
+      "id": "weather_lightRain_008",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "小雨轻轻下~"
+    },
+    "小雪带来冬日气息~": {
+      "id": "weather_lightSnow_014",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "小雪带来冬日气息~"
+    },
+    "小雪带来纯净~": {
+      "id": "weather_lightSnow_026",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "小雪带来纯净~"
+    },
+    "小雪纷纷~": {
+      "id": "weather_lightSnow_006",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "小雪纷纷~"
+    },
+    "小雪给大地披白衣~": {
+      "id": "weather_lightSnow_010",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "小雪给大地披白衣~"
+    },
+    "小雪覆盖大地~": {
+      "id": "weather_lightSnow_022",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "小雪覆盖大地~"
+    },
+    "小雪让世界变温柔~": {
+      "id": "weather_lightSnow_018",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "小雪让世界变温柔~"
+    },
+    "尴尬得想消失……": {
+      "id": "state_embarrassed_022",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "尴尬得想消失……"
+    },
+    "工作ing~": {
+      "id": "work_busy_010",
+      "group": "workBusyMessages",
+      "ttsText": "工作中~"
+    },
+    "工作专注度100%~": {
+      "id": "work_busy_032",
+      "group": "workBusyMessages",
+      "ttsText": "工作专注度百分之一百~"
+    },
+    "工作使我快乐~": {
+      "id": "work_busy_014",
+      "group": "workBusyMessages",
+      "ttsText": "工作使我快乐~"
+    },
+    "工作告一段落~": {
+      "id": "work_exit_017",
+      "group": "workScheduleExitMessages",
+      "ttsText": "工作告一段落~"
+    },
+    "工作是我的使命~": {
+      "id": "work_busy_030",
+      "group": "workBusyMessages",
+      "ttsText": "工作是我的使命~"
+    },
+    "工作是我的热爱~": {
+      "id": "work_busy_038",
+      "group": "workBusyMessages",
+      "ttsText": "工作是我的热爱~"
+    },
+    "工作模式全开~": {
+      "id": "work_busy_023",
+      "group": "workBusyMessages",
+      "ttsText": "工作模式全开~"
+    },
+    "工作热情满满~": {
+      "id": "work_enter_017",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "工作热情满满~"
+    },
+    "工作热情高涨中~": {
+      "id": "work_busy_020",
+      "group": "workBusyMessages",
+      "ttsText": "工作热情高涨中~"
+    },
+    "工作状态极佳~": {
+      "id": "work_busy_036",
+      "group": "workBusyMessages",
+      "ttsText": "工作状态极佳~"
+    },
+    "工作结束啦~": {
+      "id": "work_exit_007",
+      "group": "workScheduleExitMessages",
+      "ttsText": "工作结束啦~"
+    },
+    "工作要紧~": {
+      "id": "work_busy_017",
+      "group": "workBusyMessages",
+      "ttsText": "工作要紧~"
+    },
+    "工作让我充实~": {
+      "id": "work_busy_027",
+      "group": "workBusyMessages",
+      "ttsText": "工作让我充实~"
+    },
+    "工作让我成长~": {
+      "id": "work_busy_040",
+      "group": "workBusyMessages",
+      "ttsText": "工作让我成长~"
+    },
+    "工作需要我投入~": {
+      "id": "work_busy_034",
+      "group": "workBusyMessages",
+      "ttsText": "工作需要我投入~"
+    },
+    "左边右边~": {
+      "id": "state_dancing_007",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "左边右边~"
+    },
+    "希望今晚梦到好吃的~": {
+      "id": "wish_009",
+      "group": "wishUponStarMessages",
+      "ttsText": "希望今晚梦到好吃的~"
+    },
+    "希望天天都能见到你~": {
+      "id": "wish_006",
+      "group": "wishUponStarMessages",
+      "ttsText": "希望天天都能见到你~"
+    },
+    "希望明天有好吃的！": {
+      "id": "wish_003",
+      "group": "wishUponStarMessages",
+      "ttsText": "希望明天有好吃的！"
+    },
+    "干活中请勿打扰~": {
+      "id": "work_busy_007",
+      "group": "workBusyMessages",
+      "ttsText": "干活中请勿打扰~"
+    },
+    "平静如水的心境~": {
+      "id": "state_idle_025",
+      "group": "dialogueMessages.idle",
+      "ttsText": "平静如水的心境~"
+    },
+    "幸福感爆棚~": {
+      "id": "mood_good_011",
+      "group": "moodDialogues.good",
+      "ttsText": "幸福感爆棚~"
+    },
+    "幸福感爆棚啦~": {
+      "id": "state_happy_018",
+      "group": "dialogueMessages.happy",
+      "ttsText": "幸福感爆棚啦~"
+    },
+    "幸福满满~": {
+      "id": "state_eating_009",
+      "group": "dialogueMessages.eating",
+      "ttsText": "幸福满满~"
+    },
+    "幸福满满当当~": {
+      "id": "state_happy_009",
+      "group": "dialogueMessages.happy",
+      "ttsText": "幸福满满当当~"
+    },
+    "庆祝一下！": {
+      "id": "state_celebrate_002",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "庆祝一下！"
+    },
+    "庆祝胜利！": {
+      "id": "state_celebrate_009",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "庆祝胜利！"
+    },
+    "开启赚钱模式~": {
+      "id": "work_enter_013",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "开启赚钱模式~"
+    },
+    "开始搬砖啦！": {
+      "id": "work_enter_008",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "开始搬砖啦！"
+    },
+    "开工啦！": {
+      "id": "work_enter_001",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "开工啦！"
+    },
+    "开心到冒泡泡~": {
+      "id": "state_happy_014",
+      "group": "dialogueMessages.happy",
+      "ttsText": "开心到冒泡泡~"
+    },
+    "开心到爆炸！": {
+      "id": "state_celebrate_012",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "开心到爆炸！"
+    },
+    "开心到飞起！": {
+      "id": "state_happy_005",
+      "group": "dialogueMessages.happy",
+      "ttsText": "开心到飞起！"
+    },
+    "开心地跳！": {
+      "id": "state_dancing_011",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "开心地跳！"
+    },
+    "开心得想唱歌~": {
+      "id": "state_swinging_033",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "开心得想唱歌~"
+    },
+    "开心得想抱抱你~": {
+      "id": "state_happy_019",
+      "group": "dialogueMessages.happy",
+      "ttsText": "开心得想抱抱你~"
+    },
+    "开心得想拥抱世界~": {
+      "id": "mood_good_025",
+      "group": "moodDialogues.good",
+      "ttsText": "开心得想拥抱世界~"
+    },
+    "开心得想跳舞~": {
+      "id": "mood_good_017",
+      "group": "moodDialogues.good",
+      "ttsText": "开心得想跳舞~"
+    },
+    "开心得想转圈圈~": {
+      "id": "state_happy_010",
+      "group": "dialogueMessages.happy",
+      "ttsText": "开心得想转圈圈~"
+    },
+    "弹跳力满分！": {
+      "id": "state_jumping_008",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "弹跳力满分！"
+    },
+    "强者就是这样自信~": {
+      "id": "state_smug_012",
+      "group": "dialogueMessages.smug",
+      "ttsText": "强者就是这样自信~"
+    },
+    "当什么都没发生……": {
+      "id": "state_embarrassed_016",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "当什么都没发生……"
+    },
+    "很高兴见到你！": {
+      "id": "state_hello_003",
+      "group": "dialogueMessages.hello",
+      "ttsText": "很高兴见到你！"
+    },
+    "微服务拆分中...": {
+      "id": "state_programmer_053",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "微服务拆分中..."
+    },
+    "心情不太好...": {
+      "id": "mood_bad_001",
+      "group": "moodDialogues.bad",
+      "ttsText": "心情不太好..."
+    },
+    "心情像下雨一样...": {
+      "id": "mood_bad_016",
+      "group": "moodDialogues.bad",
+      "ttsText": "心情像下雨一样..."
+    },
+    "心情像小鸟一样自由~": {
+      "id": "mood_good_020",
+      "group": "moodDialogues.good",
+      "ttsText": "心情像小鸟一样自由~"
+    },
+    "心情像彩虹一样~": {
+      "id": "mood_good_016",
+      "group": "moodDialogues.good",
+      "ttsText": "心情像彩虹一样~"
+    },
+    "心情像打翻的调色盘...": {
+      "id": "mood_bad_024",
+      "group": "moodDialogues.bad",
+      "ttsText": "心情像打翻的调色盘..."
+    },
+    "心情像蜜一样甜~": {
+      "id": "mood_good_024",
+      "group": "moodDialogues.good",
+      "ttsText": "心情像蜜一样甜~"
+    },
+    "心情像被乌云遮住...": {
+      "id": "mood_bad_020",
+      "group": "moodDialogues.bad",
+      "ttsText": "心情像被乌云遮住..."
+    },
+    "心情像被石头压住...": {
+      "id": "mood_bad_028",
+      "group": "moodDialogues.bad",
+      "ttsText": "心情像被石头压住..."
+    },
+    "心情像阳光一样灿烂~": {
+      "id": "mood_good_008",
+      "group": "moodDialogues.good",
+      "ttsText": "心情像阳光一样灿烂~"
+    },
+    "心情像阴天一样...": {
+      "id": "mood_bad_008",
+      "group": "moodDialogues.bad",
+      "ttsText": "心情像阴天一样..."
+    },
+    "心情变好了~": {
+      "id": "state_swinging_015",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "心情变好了~"
+    },
+    "心情好到想唱歌~": {
+      "id": "state_happy_017",
+      "group": "dialogueMessages.happy",
+      "ttsText": "心情好到想唱歌~"
+    },
+    "心情好到爆~": {
+      "id": "mood_good_014",
+      "group": "moodDialogues.good",
+      "ttsText": "心情好到爆~"
+    },
+    "心情好到飞起~": {
+      "id": "mood_good_010",
+      "group": "moodDialogues.good",
+      "ttsText": "心情好到飞起~"
+    },
+    "心情好得想分享~": {
+      "id": "mood_good_022",
+      "group": "moodDialogues.good",
+      "ttsText": "心情好得想分享~"
+    },
+    "心情好得想大笑~": {
+      "id": "mood_good_026",
+      "group": "moodDialogues.good",
+      "ttsText": "心情好得想大笑~"
+    },
+    "心情好得没话说~": {
+      "id": "mood_good_018",
+      "group": "moodDialogues.good",
+      "ttsText": "心情好得没话说~"
+    },
+    "心情有点沉重...": {
+      "id": "mood_bad_010",
+      "group": "moodDialogues.bad",
+      "ttsText": "心情有点沉重..."
+    },
+    "心情棒棒的~": {
+      "id": "mood_good_005",
+      "group": "moodDialogues.good",
+      "ttsText": "心情棒棒的~"
+    },
+    "心情美丽如花~": {
+      "id": "mood_good_012",
+      "group": "moodDialogues.good",
+      "ttsText": "心情美丽如花~"
+    },
+    "心情跌到谷底...": {
+      "id": "mood_bad_012",
+      "group": "moodDialogues.bad",
+      "ttsText": "心情跌到谷底..."
+    },
+    "心情需要安慰...": {
+      "id": "mood_bad_018",
+      "group": "moodDialogues.bad",
+      "ttsText": "心情需要安慰..."
+    },
+    "心情需要治愈...": {
+      "id": "mood_bad_022",
+      "group": "moodDialogues.bad",
+      "ttsText": "心情需要治愈..."
+    },
+    "心情需要调整...": {
+      "id": "mood_bad_014",
+      "group": "moodDialogues.bad",
+      "ttsText": "心情需要调整..."
+    },
+    "心情需要阳光...": {
+      "id": "mood_bad_026",
+      "group": "moodDialogues.bad",
+      "ttsText": "心情需要阳光..."
+    },
+    "心跳得好快...": {
+      "id": "state_scared_007",
+      "group": "dialogueMessages.scared",
+      "ttsText": "心跳得好快..."
+    },
+    "心都要碎了...": {
+      "id": "state_crying_014",
+      "group": "dialogueMessages.crying",
+      "ttsText": "心都要碎了..."
+    },
+    "心里像吃了蜜一样甜~": {
+      "id": "state_happy_011",
+      "group": "dialogueMessages.happy",
+      "ttsText": "心里像吃了蜜一样甜~"
+    },
+    "心里好难受...": {
+      "id": "state_crying_007",
+      "group": "dialogueMessages.crying",
+      "ttsText": "心里好难受..."
+    },
+    "忙完找你~": {
+      "id": "work_busy_005",
+      "group": "workBusyMessages",
+      "ttsText": "忙完找你~"
+    },
+    "忙着为梦想奋斗~": {
+      "id": "work_busy_033",
+      "group": "workBusyMessages",
+      "ttsText": "忙着为梦想奋斗~"
+    },
+    "忙着创造价值~": {
+      "id": "work_busy_037",
+      "group": "workBusyMessages",
+      "ttsText": "忙着创造价值~"
+    },
+    "忙着创造价值呢~": {
+      "id": "work_busy_022",
+      "group": "workBusyMessages",
+      "ttsText": "忙着创造价值呢~"
+    },
+    "忙着呢，一会儿聊~": {
+      "id": "work_busy_016",
+      "group": "workBusyMessages",
+      "ttsText": "忙着呢，一会儿聊~"
+    },
+    "忙着完成任务~": {
+      "id": "work_busy_029",
+      "group": "workBusyMessages",
+      "ttsText": "忙着完成任务~"
+    },
+    "忙着实现小目标~": {
+      "id": "work_busy_019",
+      "group": "workBusyMessages",
+      "ttsText": "忙着实现小目标~"
+    },
+    "忙着积累财富~": {
+      "id": "work_busy_026",
+      "group": "workBusyMessages",
+      "ttsText": "忙着积累财富~"
+    },
+    "忙着赚钱呢~": {
+      "id": "work_busy_012",
+      "group": "workBusyMessages",
+      "ttsText": "忙着赚钱呢~"
+    },
+    "快乐其实很简单~": {
+      "id": "mood_good_021",
+      "group": "moodDialogues.good",
+      "ttsText": "快乐其实很简单~"
+    },
+    "快乐加倍！": {
+      "id": "mood_good_006",
+      "group": "moodDialogues.good",
+      "ttsText": "快乐加倍！"
+    },
+    "快乐就是这么简单~": {
+      "id": "state_happy_012",
+      "group": "dialogueMessages.happy",
+      "ttsText": "快乐就是这么简单~"
+    },
+    "快乐得像只小鸟~": {
+      "id": "state_happy_007",
+      "group": "dialogueMessages.happy",
+      "ttsText": "快乐得像只小鸟~"
+    },
+    "快乐无处不在~": {
+      "id": "mood_good_013",
+      "group": "moodDialogues.good",
+      "ttsText": "快乐无处不在~"
+    },
+    "快乐能量爆棚~": {
+      "id": "state_happy_016",
+      "group": "dialogueMessages.happy",
+      "ttsText": "快乐能量爆棚~"
+    },
+    "快来看看！": {
+      "id": "state_flyerDistributing_002",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "快来看看！"
+    },
+    "怎么感觉有点热……": {
+      "id": "state_embarrassed_013",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "怎么感觉有点热……"
+    },
+    "怎么说呢……": {
+      "id": "state_embarrassed_006",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "怎么说呢……"
+    },
+    "怒火中烧！": {
+      "id": "state_angry_009",
+      "group": "dialogueMessages.angry",
+      "ttsText": "怒火中烧！"
+    },
+    "思考中...": {
+      "id": "state_thinking_004",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "思考中..."
+    },
+    "思考中，请勿打扰...": {
+      "id": "state_thinking_018",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "思考中，请勿打扰..."
+    },
+    "思考宠物生意义中...": {
+      "id": "state_idle_023",
+      "group": "dialogueMessages.idle",
+      "ttsText": "思考宠物生意义中..."
+    },
+    "思考是进步的阶梯~": {
+      "id": "state_thinking_012",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "思考是进步的阶梯~"
+    },
+    "思考的样子很认真~": {
+      "id": "state_thinking_015",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "思考的样子很认真~"
+    },
+    "思考让我变聪明~": {
+      "id": "state_thinking_009",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "思考让我变聪明~"
+    },
+    "性能优化无止境~": {
+      "id": "state_programmer_043",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "性能优化无止境~"
+    },
+    "您好，优惠活动别错过~": {
+      "id": "state_flyerDistributing_029",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "您好，优惠活动别错过~"
+    },
+    "您好，免费了解一下~": {
+      "id": "state_flyerDistributing_016",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "您好，免费了解一下~"
+    },
+    "您好，有兴趣看看吗~": {
+      "id": "state_flyerDistributing_026",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "您好，有兴趣看看吗~"
+    },
+    "您好，欢迎了解详情~": {
+      "id": "state_flyerDistributing_032",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "您好，欢迎了解详情~"
+    },
+    "您好，看一下吧~": {
+      "id": "state_flyerDistributing_012",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "您好，看一下吧~"
+    },
+    "您好，耽误您一分钟~": {
+      "id": "state_flyerDistributing_020",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "您好，耽误您一分钟~"
+    },
+    "您好，请收下这份心意~": {
+      "id": "state_flyerDistributing_038",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "您好，请收下这份心意~"
+    },
+    "您好，这是最新活动~": {
+      "id": "state_flyerDistributing_035",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "您好，这是最新活动~"
+    },
+    "您好，这是活动介绍~": {
+      "id": "state_flyerDistributing_023",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "您好，这是活动介绍~"
+    },
+    "悲伤逆流成河...": {
+      "id": "state_crying_017",
+      "group": "dialogueMessages.crying",
+      "ttsText": "悲伤逆流成河..."
+    },
+    "惊魂未定中...": {
+      "id": "state_scared_019",
+      "group": "dialogueMessages.scared",
+      "ttsText": "惊魂未定中..."
+    },
+    "想什么呢？": {
+      "id": "state_grin_002",
+      "group": "dialogueMessages.grin",
+      "ttsText": "想什么呢？"
+    },
+    "想出去走走": {
+      "id": "state_idle_004",
+      "group": "dialogueMessages.idle",
+      "ttsText": "想出去走走"
+    },
+    "想和你分享这份喜悦~": {
+      "id": "state_happy_013",
+      "group": "dialogueMessages.happy",
+      "ttsText": "想和你分享这份喜悦~"
+    },
+    "想找个地缝钻进去...": {
+      "id": "state_shy_008",
+      "group": "dialogueMessages.shy",
+      "ttsText": "想找个地缝钻进去..."
+    },
+    "想睡觉了...": {
+      "id": "state_yawn_002",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "想睡觉了..."
+    },
+    "想钻进被窝...": {
+      "id": "state_yawn_013",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "想钻进被窝..."
+    },
+    "意味深长地笑~": {
+      "id": "state_grin_009",
+      "group": "dialogueMessages.grin",
+      "ttsText": "意味深长地笑~"
+    },
+    "感冒了吗？": {
+      "id": "state_sneeze_003",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "感冒了吗？"
+    },
+    "感受重力的挑战~": {
+      "id": "state_jumping_007",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "感受重力的挑战~"
+    },
+    "感觉一切都很好~": {
+      "id": "mood_good_023",
+      "group": "moodDialogues.good",
+      "ttsText": "感觉一切都很好~"
+    },
+    "感觉世界充满爱~": {
+      "id": "mood_good_019",
+      "group": "moodDialogues.good",
+      "ttsText": "感觉世界充满爱~"
+    },
+    "感觉世界都在发光！": {
+      "id": "mood_good_002",
+      "group": "moodDialogues.good",
+      "ttsText": "感觉世界都在发光！"
+    },
+    "感觉世界都灰暗了...": {
+      "id": "state_crying_011",
+      "group": "dialogueMessages.crying",
+      "ttsText": "感觉世界都灰暗了..."
+    },
+    "感觉今天特别顺~": {
+      "id": "mood_good_027",
+      "group": "moodDialogues.good",
+      "ttsText": "感觉今天特别顺~"
+    },
+    "感觉好压抑...": {
+      "id": "mood_bad_015",
+      "group": "moodDialogues.bad",
+      "ttsText": "感觉好压抑..."
+    },
+    "感觉好失落...": {
+      "id": "mood_bad_021",
+      "group": "moodDialogues.bad",
+      "ttsText": "感觉好失落..."
+    },
+    "感觉好孤独...": {
+      "id": "mood_bad_017",
+      "group": "moodDialogues.bad",
+      "ttsText": "感觉好孤独..."
+    },
+    "感觉好无力...": {
+      "id": "mood_bad_013",
+      "group": "moodDialogues.bad",
+      "ttsText": "感觉好无力..."
+    },
+    "感觉好沮丧...": {
+      "id": "mood_bad_025",
+      "group": "moodDialogues.bad",
+      "ttsText": "感觉好沮丧..."
+    },
+    "感觉好焦虑...": {
+      "id": "mood_bad_023",
+      "group": "moodDialogues.bad",
+      "ttsText": "感觉好焦虑..."
+    },
+    "感觉好疲惫...": {
+      "id": "mood_bad_011",
+      "group": "moodDialogues.bad",
+      "ttsText": "感觉好疲惫..."
+    },
+    "感觉好自由~": {
+      "id": "state_swinging_026",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "感觉好自由~"
+    },
+    "感觉好迷茫...": {
+      "id": "mood_bad_019",
+      "group": "moodDialogues.bad",
+      "ttsText": "感觉好迷茫..."
+    },
+    "感觉好郁闷...": {
+      "id": "mood_bad_027",
+      "group": "moodDialogues.bad",
+      "ttsText": "感觉好郁闷..."
+    },
+    "感觉提不起劲...": {
+      "id": "mood_bad_009",
+      "group": "moodDialogues.bad",
+      "ttsText": "感觉提不起劲..."
+    },
+    "感觉有灰尘...": {
+      "id": "state_sneeze_011",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "感觉有灰尘..."
+    },
+    "感觉生活真美好~": {
+      "id": "mood_good_009",
+      "group": "moodDialogues.good",
+      "ttsText": "感觉生活真美好~"
+    },
+    "感觉自己是幸运儿~": {
+      "id": "mood_good_015",
+      "group": "moodDialogues.good",
+      "ttsText": "感觉自己是幸运儿~"
+    },
+    "愤怒的小宇宙爆发了！": {
+      "id": "state_angry_012",
+      "group": "dialogueMessages.angry",
+      "ttsText": "愤怒的小宇宙爆发了！"
+    },
+    "愤怒的小鸟模式开启！": {
+      "id": "state_angry_017",
+      "group": "dialogueMessages.angry",
+      "ttsText": "愤怒的小鸟模式开启！"
+    },
+    "愿望会实现的~": {
+      "id": "wish_001",
+      "group": "wishUponStarMessages",
+      "ttsText": "愿望会实现的~"
+    },
+    "愿望保密！说出来就不灵了": {
+      "id": "wish_007",
+      "group": "wishUponStarMessages",
+      "ttsText": "愿望保密！说出来就不灵了"
+    },
+    "愿望已发送到宇宙~": {
+      "id": "wish_011",
+      "group": "wishUponStarMessages",
+      "ttsText": "愿望已发送到宇宙~"
+    },
+    "懒腰伸得好爽~": {
+      "id": "state_stretch_005",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "懒腰伸得好爽~"
+    },
+    "懒腰伸得真舒服~": {
+      "id": "state_stretch_015",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "懒腰伸得真舒服~"
+    },
+    "我们做到了！": {
+      "id": "state_celebrate_006",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "我们做到了！"
+    },
+    "我喜欢下雨~": {
+      "id": "weather_lightRain_006",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "我喜欢下雨~"
+    },
+    "我在做深度思考~": {
+      "id": "state_thinking_020",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "我在做深度思考~"
+    },
+    "我在听心跳的声音~": {
+      "id": "state_idle_031",
+      "group": "dialogueMessages.idle",
+      "ttsText": "我在听心跳的声音~"
+    },
+    "我在和灰尘玩耍~": {
+      "id": "state_idle_027",
+      "group": "dialogueMessages.idle",
+      "ttsText": "我在和灰尘玩耍~"
+    },
+    "我在巡视我的领地~": {
+      "id": "state_walking_020",
+      "group": "dialogueMessages.walking",
+      "ttsText": "我在巡视我的领地~"
+    },
+    "我在想事情": {
+      "id": "state_idle_008",
+      "group": "dialogueMessages.idle",
+      "ttsText": "我在想事情"
+    },
+    "我在收集阳光~": {
+      "id": "state_idle_021",
+      "group": "dialogueMessages.idle",
+      "ttsText": "我在收集阳光~"
+    },
+    "我在积攒能量~": {
+      "id": "state_idle_034",
+      "group": "dialogueMessages.idle",
+      "ttsText": "我在积攒能量~"
+    },
+    "我在练习隐身术~": {
+      "id": "state_idle_017",
+      "group": "dialogueMessages.idle",
+      "ttsText": "我在练习隐身术~"
+    },
+    "我在说什么啊……": {
+      "id": "state_embarrassed_014",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "我在说什么啊……"
+    },
+    "我太优秀了~": {
+      "id": "state_smug_010",
+      "group": "dialogueMessages.smug",
+      "ttsText": "我太优秀了~"
+    },
+    "我就知道！": {
+      "id": "state_smug_004",
+      "group": "dialogueMessages.smug",
+      "ttsText": "我就知道！"
+    },
+    "我很凶的！": {
+      "id": "state_angry_003",
+      "group": "dialogueMessages.angry",
+      "ttsText": "我很凶的！"
+    },
+    "我想一直荡下去~": {
+      "id": "state_swinging_012",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "我想一直荡下去~"
+    },
+    "我想荡到云端~": {
+      "id": "state_swinging_028",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "我想荡到云端~"
+    },
+    "我是个球！": {
+      "id": "state_rolling_006",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "我是个球！"
+    },
+    "我是圆滚滚~": {
+      "id": "state_rolling_025",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "我是圆滚滚~"
+    },
+    "我是翻滚小能手~": {
+      "id": "state_rolling_016",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "我是翻滚小能手~"
+    },
+    "我是舞王！": {
+      "id": "state_dancing_008",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "我是舞王！"
+    },
+    "我是跳跃小能手~": {
+      "id": "state_jumping_013",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "我是跳跃小能手~"
+    },
+    "我最爱跳舞！": {
+      "id": "state_dancing_005",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "我最爱跳舞！"
+    },
+    "我果然是最棒的！": {
+      "id": "state_smug_014",
+      "group": "dialogueMessages.smug",
+      "ttsText": "我果然是最棒的！"
+    },
+    "我没有……": {
+      "id": "state_embarrassed_009",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "我没有……"
+    },
+    "我生病了，不能打工～": {
+      "id": "blocked_tooSickToWork_001",
+      "group": "interactionBlockedMessages.tooSickToWork",
+      "ttsText": "我生病了，不能打工～"
+    },
+    "我的屁股...": {
+      "id": "state_fallen_010",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "我的屁股..."
+    },
+    "我的脚步停不下来~": {
+      "id": "state_walking_011",
+      "group": "dialogueMessages.walking",
+      "ttsText": "我的脚步停不下来~"
+    },
+    "我简直是个天才！": {
+      "id": "state_smug_006",
+      "group": "dialogueMessages.smug",
+      "ttsText": "我简直是个天才！"
+    },
+    "我糊涂了...": {
+      "id": "state_confused_014",
+      "group": "dialogueMessages.confused",
+      "ttsText": "我糊涂了..."
+    },
+    "我要发火了！": {
+      "id": "state_angry_007",
+      "group": "dialogueMessages.angry",
+      "ttsText": "我要发火了！"
+    },
+    "我要触摸天空~": {
+      "id": "state_jumping_018",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "我要触摸天空~"
+    },
+    "我要超过你！": {
+      "id": "state_chase_014",
+      "group": "dialogueMessages.chase",
+      "ttsText": "我要超过你！"
+    },
+    "我要跳得更高！": {
+      "id": "state_jumping_006",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "我要跳得更高！"
+    },
+    "我要躲起来...": {
+      "id": "state_scared_010",
+      "group": "dialogueMessages.scared",
+      "ttsText": "我要躲起来..."
+    },
+    "我要追上你！": {
+      "id": "state_chase_007",
+      "group": "dialogueMessages.chase",
+      "ttsText": "我要追上你！"
+    },
+    "我要闹了！": {
+      "id": "state_angry_019",
+      "group": "dialogueMessages.angry",
+      "ttsText": "我要闹了！"
+    },
+    "我要飞得更高！": {
+      "id": "state_swinging_006",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "我要飞得更高！"
+    },
+    "我超凶的，嗷呜！": {
+      "id": "state_angry_010",
+      "group": "dialogueMessages.angry",
+      "ttsText": "我超凶的，嗷呜！"
+    },
+    "我还要荡~": {
+      "id": "state_swinging_017",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "我还要荡~"
+    },
+    "我选择失忆……": {
+      "id": "state_embarrassed_020",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "我选择失忆……"
+    },
+    "手头有活儿！": {
+      "id": "work_busy_004",
+      "group": "workBusyMessages",
+      "ttsText": "手头有活儿！"
+    },
+    "手好酸...": {
+      "id": "state_flyerDistributing_010",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "手好酸..."
+    },
+    "打个大大的哈欠~": {
+      "id": "state_yawn_006",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "打个大大的哈欠~"
+    },
+    "打工人打工魂~": {
+      "id": "work_enter_015",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "打工人打工魂~"
+    },
+    "打工魂正在燃烧~": {
+      "id": "work_busy_025",
+      "group": "workBusyMessages",
+      "ttsText": "打工魂正在燃烧~"
+    },
+    "打工魂燃烧！": {
+      "id": "work_enter_005",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "打工魂燃烧！"
+    },
+    "打雷了！好可怕...": {
+      "id": "weather_thunderstorm_001",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "打雷了！好可怕..."
+    },
+    "扫码有惊喜~": {
+      "id": "state_flyerDistributing_008",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "扫码有惊喜~"
+    },
+    "技术债务要还了~": {
+      "id": "state_programmer_047",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "技术债务要还了~"
+    },
+    "把愿望悄悄告诉星星了": {
+      "id": "wish_004",
+      "group": "wishUponStarMessages",
+      "ttsText": "把愿望悄悄告诉星星了"
+    },
+    "抓到你！": {
+      "id": "state_chase_003",
+      "group": "dialogueMessages.chase",
+      "ttsText": "抓到你！"
+    },
+    "持续集成跑起来~": {
+      "id": "state_programmer_049",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "持续集成跑起来~"
+    },
+    "挠挠好舒服呀~": {
+      "id": "state_scratch_012",
+      "group": "dialogueMessages.scratch",
+      "ttsText": "挠挠好舒服呀~"
+    },
+    "挠挠就不痒了~": {
+      "id": "state_scratch_009",
+      "group": "dialogueMessages.scratch",
+      "ttsText": "挠挠就不痒了~"
+    },
+    "挠挠挠~": {
+      "id": "state_scratch_002",
+      "group": "dialogueMessages.scratch",
+      "ttsText": "挠挠挠~"
+    },
+    "挠挠更舒服~": {
+      "id": "state_scratch_005",
+      "group": "dialogueMessages.scratch",
+      "ttsText": "挠挠更舒服~"
+    },
+    "挠痒痒好爽~": {
+      "id": "state_scratch_007",
+      "group": "dialogueMessages.scratch",
+      "ttsText": "挠痒痒好爽~"
+    },
+    "捂脸逃跑...": {
+      "id": "state_shy_014",
+      "group": "dialogueMessages.shy",
+      "ttsText": "捂脸逃跑..."
+    },
+    "捉迷藏的云~": {
+      "id": "weather_cloudy_007",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "捉迷藏的云~"
+    },
+    "换个话题吧……": {
+      "id": "state_embarrassed_015",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "换个话题吧……"
+    },
+    "探头探脑中...": {
+      "id": "state_peek_011",
+      "group": "dialogueMessages.peek",
+      "ttsText": "探头探脑中..."
+    },
+    "探索新世界！": {
+      "id": "state_walking_004",
+      "group": "dialogueMessages.walking",
+      "ttsText": "探索新世界！"
+    },
+    "探索未知的领域~": {
+      "id": "state_walking_015",
+      "group": "dialogueMessages.walking",
+      "ttsText": "探索未知的领域~"
+    },
+    "接一份吧！": {
+      "id": "state_flyerDistributing_004",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "接一份吧！"
+    },
+    "搓出好多泡泡~": {
+      "id": "state_bathing_013",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "搓出好多泡泡~"
+    },
+    "搓搓搓~": {
+      "id": "state_bathing_003",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "搓搓搓~"
+    },
+    "搓澡中请勿打扰~": {
+      "id": "bath_busy_005",
+      "group": "bathingBusyMessages",
+      "ttsText": "搓澡中请勿打扰~"
+    },
+    "搓澡搓得好舒服~": {
+      "id": "state_bathing_024",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "搓澡搓得好舒服~"
+    },
+    "搞不懂...": {
+      "id": "state_confused_002",
+      "group": "dialogueMessages.confused",
+      "ttsText": "搞不懂..."
+    },
+    "搬完这些就休息~": {
+      "id": "state_brickCarrying_028",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬完这些就休息~"
+    },
+    "搬完这块就下班~": {
+      "id": "state_brickCarrying_038",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬完这块就下班~"
+    },
+    "搬完这块还有三块~": {
+      "id": "state_brickCarrying_014",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬完这块还有三块~"
+    },
+    "搬得越多赚得越多~": {
+      "id": "state_brickCarrying_034",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬得越多赚得越多~"
+    },
+    "搬砖也是技术活~": {
+      "id": "state_brickCarrying_017",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖也是技术活~"
+    },
+    "搬砖也是种修行~": {
+      "id": "state_brickCarrying_027",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖也是种修行~"
+    },
+    "搬砖也是门艺术~": {
+      "id": "state_brickCarrying_035",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖也是门艺术~"
+    },
+    "搬砖人的坚持~": {
+      "id": "state_brickCarrying_039",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖人的坚持~"
+    },
+    "搬砖人的日常~": {
+      "id": "state_brickCarrying_015",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖人的日常~"
+    },
+    "搬砖人的自我修养~": {
+      "id": "state_brickCarrying_025",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖人的自我修养~"
+    },
+    "搬砖人的骄傲~": {
+      "id": "state_brickCarrying_033",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖人的骄傲~"
+    },
+    "搬砖使我快乐~": {
+      "id": "state_brickCarrying_011",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖使我快乐~"
+    },
+    "搬砖搬出人生哲理~": {
+      "id": "state_brickCarrying_019",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖搬出人生哲理~"
+    },
+    "搬砖搬到手软~": {
+      "id": "state_brickCarrying_023",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖搬到手软~"
+    },
+    "搬砖搬砖~": {
+      "id": "state_brickCarrying_001",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖搬砖~"
+    },
+    "搬砖虽然累但值得~": {
+      "id": "state_brickCarrying_031",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖虽然累但值得~"
+    },
+    "搬砖虽然辛苦但充实~": {
+      "id": "state_brickCarrying_021",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖虽然辛苦但充实~"
+    },
+    "搬砖让我变强壮~": {
+      "id": "state_brickCarrying_029",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖让我变强壮~"
+    },
+    "搬砖让我更踏实~": {
+      "id": "state_brickCarrying_037",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "搬砖让我更踏实~"
+    },
+    "摇摆摇摆~": {
+      "id": "state_dancing_004",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "摇摆摇摆~"
+    },
+    "摔了个四脚朝天...": {
+      "id": "state_fallen_007",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "摔了个四脚朝天..."
+    },
+    "摔倒了...": {
+      "id": "state_fallen_002",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "摔倒了..."
+    },
+    "摔得七荤八素...": {
+      "id": "state_fallen_015",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "摔得七荤八素..."
+    },
+    "摔懵了...": {
+      "id": "state_fallen_012",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "摔懵了..."
+    },
+    "摸不着头脑...": {
+      "id": "state_confused_017",
+      "group": "dialogueMessages.confused",
+      "ttsText": "摸不着头脑..."
+    },
+    "撸起袖子加油干！": {
+      "id": "work_enter_012",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "撸起袖子加油干！"
+    },
+    "收工~": {
+      "id": "work_exit_002",
+      "group": "workScheduleExitMessages",
+      "ttsText": "收工~"
+    },
+    "敏捷开发冲冲冲~": {
+      "id": "state_programmer_030",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "敏捷开发冲冲冲~"
+    },
+    "救命啊！": {
+      "id": "state_scared_013",
+      "group": "dialogueMessages.scared",
+      "ttsText": "救命啊！"
+    },
+    "散步是最好的运动~": {
+      "id": "state_walking_008",
+      "group": "dialogueMessages.walking",
+      "ttsText": "散步是最好的运动~"
+    },
+    "散步真开心": {
+      "id": "state_walking_003",
+      "group": "dialogueMessages.walking",
+      "ttsText": "散步真开心"
+    },
+    "数据库调优中...": {
+      "id": "state_programmer_035",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "数据库调优中..."
+    },
+    "数羊数到睡着了...": {
+      "id": "state_idle_026",
+      "group": "dialogueMessages.idle",
+      "ttsText": "数羊数到睡着了..."
+    },
+    "新的一天开始奋斗！": {
+      "id": "work_enter_006",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "新的一天开始奋斗！"
+    },
+    "新的一天新的奋斗~": {
+      "id": "work_enter_018",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "新的一天新的奋斗~"
+    },
+    "新的一天新的开始~": {
+      "id": "state_stretch_012",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "新的一天新的开始~"
+    },
+    "新的一天！": {
+      "id": "state_stretch_004",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "新的一天！"
+    },
+    "旋转吧小陀螺~": {
+      "id": "state_rolling_036",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "旋转吧小陀螺~"
+    },
+    "旋转跳跃不停歇~": {
+      "id": "state_rolling_018",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "旋转跳跃不停歇~"
+    },
+    "旋转跳跃我不停歇~": {
+      "id": "state_dancing_015",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "旋转跳跃我不停歇~"
+    },
+    "旋转跳跃我闭着眼~": {
+      "id": "state_rolling_043",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "旋转跳跃我闭着眼~"
+    },
+    "无敌是多么寂寞~": {
+      "id": "state_smug_011",
+      "group": "dialogueMessages.smug",
+      "ttsText": "无敌是多么寂寞~"
+    },
+    "早上好！": {
+      "id": "greet_morning_001",
+      "group": "greetingMessages.morning",
+      "ttsText": "早上好！"
+    },
+    "早安！新的一天开始啦~": {
+      "id": "wakeup_morning_001",
+      "group": "wakeUpGreetingMessages.morning",
+      "ttsText": "早安！新的一天开始啦~"
+    },
+    "时间好像变慢了...": {
+      "id": "state_idle_019",
+      "group": "dialogueMessages.idle",
+      "ttsText": "时间好像变慢了..."
+    },
+    "明天继续加油~": {
+      "id": "work_exit_020",
+      "group": "workScheduleExitMessages",
+      "ttsText": "明天继续加油~"
+    },
+    "星星听见了，一定会实现的": {
+      "id": "wish_008",
+      "group": "wishUponStarMessages",
+      "ttsText": "星星听见了，一定会实现的"
+    },
+    "晒太阳最舒服了~": {
+      "id": "weather_sunny_004",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "晒太阳最舒服了~"
+    },
+    "晕了晕了...": {
+      "id": "state_rolling_005",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "晕了晕了..."
+    },
+    "晚上好！": {
+      "id": "greet_dusk_001",
+      "group": "greetingMessages.dusk",
+      "ttsText": "晚上好！"
+    },
+    "晚安世界~": {
+      "id": "state_sleeping_008",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "晚安世界~"
+    },
+    "智慧的火花在闪烁~": {
+      "id": "state_thinking_011",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "智慧的火花在闪烁~"
+    },
+    "暖洋洋的~": {
+      "id": "weather_sunny_007",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "暖洋洋的~"
+    },
+    "暗中观察中...": {
+      "id": "state_peek_009",
+      "group": "dialogueMessages.peek",
+      "ttsText": "暗中观察中..."
+    },
+    "暴雨来袭~": {
+      "id": "weather_heavyRain_008",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "暴雨来袭~"
+    },
+    "暴风雨中的安全~": {
+      "id": "weather_thunderstorm_026",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "暴风雨中的安全~"
+    },
+    "暴风雨后的宁静~": {
+      "id": "weather_thunderstorm_023",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "暴风雨后的宁静~"
+    },
+    "暴风雨来了~": {
+      "id": "weather_thunderstorm_011",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "暴风雨来了~"
+    },
+    "暴风雨来得快去得也快~": {
+      "id": "weather_thunderstorm_020",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "暴风雨来得快去得也快~"
+    },
+    "暴风雨真猛烈~": {
+      "id": "weather_thunderstorm_017",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "暴风雨真猛烈~"
+    },
+    "最喜欢你了！": {
+      "id": "state_happy_004",
+      "group": "dialogueMessages.happy",
+      "ttsText": "最喜欢你了！"
+    },
+    "有人在吗？": {
+      "id": "state_peek_002",
+      "group": "dialogueMessages.peek",
+      "ttsText": "有人在吗？"
+    },
+    "有人在看我吗？": {
+      "id": "state_idle_001",
+      "group": "dialogueMessages.idle",
+      "ttsText": "有人在看我吗？"
+    },
+    "有点低落...": {
+      "id": "mood_bad_002",
+      "group": "moodDialogues.bad",
+      "ttsText": "有点低落..."
+    },
+    "有点意思~": {
+      "id": "state_grin_003",
+      "group": "dialogueMessages.grin",
+      "ttsText": "有点意思~"
+    },
+    "有点无聊呢": {
+      "id": "state_idle_003",
+      "group": "dialogueMessages.idle",
+      "ttsText": "有点无聊呢"
+    },
+    "有道理...": {
+      "id": "state_thinking_005",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "有道理..."
+    },
+    "来抓你啦~": {
+      "id": "state_chase_009",
+      "group": "dialogueMessages.chase",
+      "ttsText": "来抓你啦~"
+    },
+    "来玩吧！": {
+      "id": "state_hello_005",
+      "group": "dialogueMessages.hello",
+      "ttsText": "来玩吧！"
+    },
+    "来追我呀~": {
+      "id": "state_chase_004",
+      "group": "dialogueMessages.chase",
+      "ttsText": "来追我呀~"
+    },
+    "架构设计真烧脑~": {
+      "id": "state_programmer_027",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "架构设计真烧脑~"
+    },
+    "欢呼雀跃！": {
+      "id": "state_celebrate_010",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "欢呼雀跃！"
+    },
+    "欢迎光临我的世界~": {
+      "id": "state_hello_009",
+      "group": "dialogueMessages.hello",
+      "ttsText": "欢迎光临我的世界~"
+    },
+    "欢迎回来~": {
+      "id": "state_hello_013",
+      "group": "dialogueMessages.hello",
+      "ttsText": "欢迎回来~"
+    },
+    "欢迎来到我的地盘~": {
+      "id": "state_hello_018",
+      "group": "dialogueMessages.hello",
+      "ttsText": "欢迎来到我的地盘~"
+    },
+    "欢迎欢迎~": {
+      "id": "state_hello_004",
+      "group": "dialogueMessages.hello",
+      "ttsText": "欢迎欢迎~"
+    },
+    "正在享受洗澡~": {
+      "id": "bath_busy_008",
+      "group": "bathingBusyMessages",
+      "ttsText": "正在享受洗澡~"
+    },
+    "正在冲洗中~": {
+      "id": "bath_busy_017",
+      "group": "bathingBusyMessages",
+      "ttsText": "正在冲洗中~"
+    },
+    "正在忙呢...": {
+      "id": "work_busy_001",
+      "group": "workBusyMessages",
+      "ttsText": "正在忙呢..."
+    },
+    "正在打泡泡~": {
+      "id": "bath_busy_020",
+      "group": "bathingBusyMessages",
+      "ttsText": "正在打泡泡~"
+    },
+    "正在搓澡中~": {
+      "id": "bath_busy_014",
+      "group": "bathingBusyMessages",
+      "ttsText": "正在搓澡中~"
+    },
+    "正在泡澡中~": {
+      "id": "bath_busy_023",
+      "group": "bathingBusyMessages",
+      "ttsText": "正在泡澡中~"
+    },
+    "段错误！": {
+      "id": "state_programmer_011",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "段错误！"
+    },
+    "每一块砖都有故事~": {
+      "id": "state_brickCarrying_030",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "每一块砖都有故事~"
+    },
+    "每一次荡起都是快乐~": {
+      "id": "state_swinging_029",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "每一次荡起都是快乐~"
+    },
+    "每一次跳跃都是飞翔~": {
+      "id": "state_jumping_020",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "每一次跳跃都是飞翔~"
+    },
+    "每一步都是新的开始~": {
+      "id": "state_walking_018",
+      "group": "dialogueMessages.walking",
+      "ttsText": "每一步都是新的开始~"
+    },
+    "每一秒都很开心！": {
+      "id": "mood_good_004",
+      "group": "moodDialogues.good",
+      "ttsText": "每一秒都很开心！"
+    },
+    "气冲冲的样子也很可爱~": {
+      "id": "state_angry_016",
+      "group": "dialogueMessages.angry",
+      "ttsText": "气冲冲的样子也很可爱~"
+    },
+    "气得脸都鼓起来了！": {
+      "id": "state_angry_013",
+      "group": "dialogueMessages.angry",
+      "ttsText": "气得脸都鼓起来了！"
+    },
+    "气死我了！": {
+      "id": "state_angry_006",
+      "group": "dialogueMessages.angry",
+      "ttsText": "气死我了！"
+    },
+    "水好暖和~": {
+      "id": "state_bathing_005",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "水好暖和~"
+    },
+    "水温刚刚好~": {
+      "id": "state_bathing_014",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "水温刚刚好~"
+    },
+    "水珠晶莹剔透~": {
+      "id": "state_bathing_029",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "水珠晶莹剔透~"
+    },
+    "水花四溅好欢乐~": {
+      "id": "state_bathing_012",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "水花四溅好欢乐~"
+    },
+    "水花跳跃好活泼~": {
+      "id": "state_bathing_032",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "水花跳跃好活泼~"
+    },
+    "水花飞溅好有趣~": {
+      "id": "state_bathing_039",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "水花飞溅好有趣~"
+    },
+    "水花飞舞好美丽~": {
+      "id": "state_bathing_022",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "水花飞舞好美丽~"
+    },
+    "汗水换饭吃~": {
+      "id": "state_brickCarrying_007",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "汗水换饭吃~"
+    },
+    "汗水浇灌希望之花~": {
+      "id": "state_brickCarrying_020",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "汗水浇灌希望之花~"
+    },
+    "汗都出来了……": {
+      "id": "state_embarrassed_025",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "汗都出来了……"
+    },
+    "沉浸在舞蹈中~": {
+      "id": "state_dancing_020",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "沉浸在舞蹈中~"
+    },
+    "沐浴在幸福中~": {
+      "id": "state_bathing_019",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "沐浴在幸福中~"
+    },
+    "沐浴在快乐中~": {
+      "id": "state_bathing_034",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "沐浴在快乐中~"
+    },
+    "沐浴在泡泡中~": {
+      "id": "bath_busy_011",
+      "group": "bathingBusyMessages",
+      "ttsText": "沐浴在泡泡中~"
+    },
+    "沐浴在阳光下~": {
+      "id": "weather_sunny_012",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "沐浴在阳光下~"
+    },
+    "沐浴时光勿扰~": {
+      "id": "bath_busy_007",
+      "group": "bathingBusyMessages",
+      "ttsText": "沐浴时光勿扰~"
+    },
+    "沐浴时光很珍贵~": {
+      "id": "bath_busy_016",
+      "group": "bathingBusyMessages",
+      "ttsText": "沐浴时光很珍贵~"
+    },
+    "沐浴时光最享受~": {
+      "id": "state_bathing_011",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "沐浴时光最享受~"
+    },
+    "沐浴春风般温暖~": {
+      "id": "state_bathing_027",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "沐浴春风般温暖~"
+    },
+    "沐浴让我焕然一新~": {
+      "id": "bath_busy_022",
+      "group": "bathingBusyMessages",
+      "ttsText": "沐浴让我焕然一新~"
+    },
+    "没人理我...": {
+      "id": "state_flyerDistributing_009",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "没人理我..."
+    },
+    "没力气了...": {
+      "id": "work_tired_002",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "没力气了..."
+    },
+    "没有沐浴露了～": {
+      "id": "blocked_noBathItem_001",
+      "group": "interactionBlockedMessages.noBathItem",
+      "ttsText": "没有沐浴露了～"
+    },
+    "没有食物了～": {
+      "id": "blocked_noFood_001",
+      "group": "interactionBlockedMessages.noFood",
+      "ttsText": "没有食物了～"
+    },
+    "泡沫之夏好浪漫~": {
+      "id": "state_bathing_017",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "泡沫之夏好浪漫~"
+    },
+    "泡泡包围着我~": {
+      "id": "state_bathing_036",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "泡泡包围着我~"
+    },
+    "泡泡好多~": {
+      "id": "state_bathing_006",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "泡泡好多~"
+    },
+    "泡泡浴太享受了~": {
+      "id": "state_bathing_025",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "泡泡浴太享受了~"
+    },
+    "泡澡好惬意~": {
+      "id": "state_bathing_021",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "泡澡好惬意~"
+    },
+    "洗刷刷洗刷刷~": {
+      "id": "state_bathing_018",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗刷刷洗刷刷~"
+    },
+    "洗完澡心情大好~": {
+      "id": "state_bathing_040",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗完澡心情大好~"
+    },
+    "洗完澡神清气爽~": {
+      "id": "state_bathing_030",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗完澡神清气爽~"
+    },
+    "洗干净变漂亮~": {
+      "id": "state_bathing_020",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗干净变漂亮~"
+    },
+    "洗干净啦~": {
+      "id": "state_bathing_007",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗干净啦~"
+    },
+    "洗得焕然一新~": {
+      "id": "state_bathing_033",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗得焕然一新~"
+    },
+    "洗得白白净净~": {
+      "id": "state_bathing_026",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗得白白净净~"
+    },
+    "洗得舒舒服服~": {
+      "id": "state_bathing_037",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗得舒舒服服~"
+    },
+    "洗得香喷喷~": {
+      "id": "state_bathing_015",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗得香喷喷~"
+    },
+    "洗澡不接客~": {
+      "id": "bath_busy_004",
+      "group": "bathingBusyMessages",
+      "ttsText": "洗澡不接客~"
+    },
+    "洗澡中，别看~": {
+      "id": "bath_busy_001",
+      "group": "bathingBusyMessages",
+      "ttsText": "洗澡中，别看~"
+    },
+    "洗澡时间到啦~": {
+      "id": "state_bathing_035",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗澡时间到啦~"
+    },
+    "洗澡是最放松的~": {
+      "id": "state_bathing_038",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗澡是最放松的~"
+    },
+    "洗澡是最棒的~": {
+      "id": "state_bathing_023",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗澡是最棒的~"
+    },
+    "洗澡是每日仪式~": {
+      "id": "bath_busy_019",
+      "group": "bathingBusyMessages",
+      "ttsText": "洗澡是每日仪式~"
+    },
+    "洗澡是每日必修课~": {
+      "id": "state_bathing_031",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗澡是每日必修课~"
+    },
+    "洗澡是私人时间~": {
+      "id": "bath_busy_010",
+      "group": "bathingBusyMessages",
+      "ttsText": "洗澡是私人时间~"
+    },
+    "洗澡歌哼起来~": {
+      "id": "state_bathing_016",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗澡歌哼起来~"
+    },
+    "洗澡洗得好开心~": {
+      "id": "state_bathing_028",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗澡洗得好开心~"
+    },
+    "洗澡澡~": {
+      "id": "state_bathing_001",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗澡澡~"
+    },
+    "洗澡真开心！": {
+      "id": "state_bathing_009",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "洗澡真开心！"
+    },
+    "洗澡让我放松~": {
+      "id": "bath_busy_013",
+      "group": "bathingBusyMessages",
+      "ttsText": "洗澡让我放松~"
+    },
+    "活力四射地跳跃~": {
+      "id": "state_jumping_016",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "活力四射地跳跃~"
+    },
+    "活力满满起床啦~": {
+      "id": "state_stretch_008",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "活力满满起床啦~"
+    },
+    "流星！快许愿快许愿！": {
+      "id": "wish_005",
+      "group": "wishUponStarMessages",
+      "ttsText": "流星！快许愿快许愿！"
+    },
+    "浑身都疼...": {
+      "id": "state_fallen_019",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "浑身都疼..."
+    },
+    "深思熟虑中...": {
+      "id": "state_thinking_006",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "深思熟虑中..."
+    },
+    "滚出新境界~": {
+      "id": "state_rolling_017",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚出新境界~"
+    },
+    "滚得停不下来~": {
+      "id": "state_rolling_019",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚得停不下来~"
+    },
+    "滚得停不下来呀~": {
+      "id": "state_rolling_037",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚得停不下来呀~"
+    },
+    "滚得尽兴而归~": {
+      "id": "state_rolling_044",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚得尽兴而归~"
+    },
+    "滚得忘乎所以~": {
+      "id": "state_rolling_030",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚得忘乎所以~"
+    },
+    "滚得快乐无边~": {
+      "id": "state_rolling_042",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚得快乐无边~"
+    },
+    "滚得晕头转向~": {
+      "id": "state_rolling_024",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚得晕头转向~"
+    },
+    "滚得欢快无比~": {
+      "id": "state_rolling_035",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚得欢快无比~"
+    },
+    "滚得自由自在~": {
+      "id": "state_rolling_040",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚得自由自在~"
+    },
+    "滚得酣畅淋漓~": {
+      "id": "state_rolling_047",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚得酣畅淋漓~"
+    },
+    "滚得随心所欲~": {
+      "id": "state_rolling_028",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚得随心所欲~"
+    },
+    "滚得风生水起~": {
+      "id": "state_rolling_033",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚得风生水起~"
+    },
+    "滚得飞起~": {
+      "id": "state_rolling_014",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚得飞起~"
+    },
+    "滚来滚去~": {
+      "id": "state_rolling_007",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚来滚去~"
+    },
+    "滚来滚去真开心~": {
+      "id": "state_rolling_021",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "滚来滚去真开心~"
+    },
+    "满满的正能量~": {
+      "id": "mood_good_007",
+      "group": "moodDialogues.good",
+      "ttsText": "满满的正能量~"
+    },
+    "满脸问号...": {
+      "id": "state_confused_005",
+      "group": "dialogueMessages.confused",
+      "ttsText": "满脸问号..."
+    },
+    "满血复活！": {
+      "id": "state_stretch_018",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "满血复活！"
+    },
+    "滴答滴答~": {
+      "id": "weather_lightRain_002",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "滴答滴答~"
+    },
+    "滴答滴答下雨啦~": {
+      "id": "weather_lightRain_007",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "滴答滴答下雨啦~"
+    },
+    "漫步在这美好时光~": {
+      "id": "state_walking_017",
+      "group": "dialogueMessages.walking",
+      "ttsText": "漫步在这美好时光~"
+    },
+    "灵光一闪的感觉~": {
+      "id": "state_thinking_019",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "灵光一闪的感觉~"
+    },
+    "热情似火地跳舞~": {
+      "id": "state_dancing_023",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "热情似火地跳舞~"
+    },
+    "热舞一曲~": {
+      "id": "state_dancing_032",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "热舞一曲~"
+    },
+    "理解不能...": {
+      "id": "state_confused_016",
+      "group": "dialogueMessages.confused",
+      "ttsText": "理解不能..."
+    },
+    "瑟瑟发抖中...": {
+      "id": "state_scared_008",
+      "group": "dialogueMessages.scared",
+      "ttsText": "瑟瑟发抖中..."
+    },
+    "生气到想跺脚！": {
+      "id": "state_angry_011",
+      "group": "dialogueMessages.angry",
+      "ttsText": "生气到想跺脚！"
+    },
+    "生气气，要抱抱才能好~": {
+      "id": "state_angry_020",
+      "group": "dialogueMessages.angry",
+      "ttsText": "生气气，要抱抱才能好~"
+    },
+    "用脚步书写故事~": {
+      "id": "state_walking_016",
+      "group": "dialogueMessages.walking",
+      "ttsText": "用脚步书写故事~"
+    },
+    "用餐时间勿扰~": {
+      "id": "eat_busy_010",
+      "group": "eatingBusyMessages",
+      "ttsText": "用餐时间勿扰~"
+    },
+    "疑惑地看着你...": {
+      "id": "state_confused_009",
+      "group": "dialogueMessages.confused",
+      "ttsText": "疑惑地看着你..."
+    },
+    "痒得受不了了...": {
+      "id": "state_scratch_008",
+      "group": "dialogueMessages.scratch",
+      "ttsText": "痒得受不了了..."
+    },
+    "痒痒的好难受...": {
+      "id": "state_scratch_004",
+      "group": "dialogueMessages.scratch",
+      "ttsText": "痒痒的好难受..."
+    },
+    "白白的~": {
+      "id": "weather_lightSnow_003",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "白白的~"
+    },
+    "百思不得其解...": {
+      "id": "state_confused_010",
+      "group": "dialogueMessages.confused",
+      "ttsText": "百思不得其解..."
+    },
+    "看看前面有什么好玩的~": {
+      "id": "state_walking_007",
+      "group": "dialogueMessages.walking",
+      "ttsText": "看看前面有什么好玩的~"
+    },
+    "看看外面什么情况~": {
+      "id": "state_peek_008",
+      "group": "dialogueMessages.peek",
+      "ttsText": "看看外面什么情况~"
+    },
+    "看看有没有人~": {
+      "id": "state_peek_013",
+      "group": "dialogueMessages.peek",
+      "ttsText": "看看有没有人~"
+    },
+    "看看窗外风景~": {
+      "id": "state_idle_033",
+      "group": "dialogueMessages.idle",
+      "ttsText": "看看窗外风景~"
+    },
+    "真好玩...": {
+      "id": "dream_024",
+      "group": "dreamTalkMessages",
+      "ttsText": "真好玩..."
+    },
+    "真好玩！": {
+      "id": "state_swinging_008",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "真好玩！"
+    },
+    "真香！": {
+      "id": "state_eating_002",
+      "group": "dialogueMessages.eating",
+      "ttsText": "真香！"
+    },
+    "眼冒金星中...": {
+      "id": "state_fallen_006",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "眼冒金星中..."
+    },
+    "眼泪像断了线的珠子...": {
+      "id": "state_crying_010",
+      "group": "dialogueMessages.crying",
+      "ttsText": "眼泪像断了线的珠子..."
+    },
+    "眼泪是心灵的雨水...": {
+      "id": "state_crying_016",
+      "group": "dialogueMessages.crying",
+      "ttsText": "眼泪是心灵的雨水..."
+    },
+    "眼泪止不住地流...": {
+      "id": "state_crying_006",
+      "group": "dialogueMessages.crying",
+      "ttsText": "眼泪止不住地流..."
+    },
+    "眼皮好重……": {
+      "id": "state_sleepy_006",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "眼皮好重……"
+    },
+    "眼皮打架中……": {
+      "id": "state_sleepy_020",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "眼皮打架中……"
+    },
+    "眼皮跳得好厉害……": {
+      "id": "state_embarrassed_030",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "眼皮跳得好厉害……"
+    },
+    "眼睛睁不开……": {
+      "id": "state_sleepy_010",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "眼睛睁不开……"
+    },
+    "眼睛睁不开了...": {
+      "id": "state_yawn_003",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "眼睛睁不开了..."
+    },
+    "睡得好沉...": {
+      "id": "state_sleeping_020",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "睡得好沉..."
+    },
+    "睡得好踏实...": {
+      "id": "state_sleeping_024",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "睡得好踏实..."
+    },
+    "睡得好香...": {
+      "id": "dream_011",
+      "group": "dreamTalkMessages",
+      "ttsText": "睡得好香..."
+    },
+    "睡得好香~": {
+      "id": "state_sleeping_005",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "睡得好香~"
+    },
+    "睡得正沉呢……": {
+      "id": "state_sleepy_026",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "睡得正沉呢……"
+    },
+    "睡得正舒服……": {
+      "id": "state_sleepy_034",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "睡得正舒服……"
+    },
+    "睡得正香呢...": {
+      "id": "state_sleeping_017",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "睡得正香呢..."
+    },
+    "睡得正香呢……": {
+      "id": "state_sleepy_016",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "睡得正香呢……"
+    },
+    "睡得真香~": {
+      "id": "state_sleeping_009",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "睡得真香~"
+    },
+    "睡得迷迷糊糊...": {
+      "id": "state_sleeping_013",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "睡得迷迷糊糊..."
+    },
+    "睡意朦胧中...": {
+      "id": "state_yawn_010",
+      "group": "dialogueMessages.yawn",
+      "ttsText": "睡意朦胧中..."
+    },
+    "睡意正浓……": {
+      "id": "state_sleepy_030",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "睡意正浓……"
+    },
+    "睡梦正甜呢……": {
+      "id": "state_sleepy_038",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "睡梦正甜呢……"
+    },
+    "睡眼惺忪中……": {
+      "id": "state_sleepy_022",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "睡眼惺忪中……"
+    },
+    "砖头堆成小山高~": {
+      "id": "state_brickCarrying_026",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "砖头堆成小山高~"
+    },
+    "砖头虽轻责任重~": {
+      "id": "state_brickCarrying_036",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "砖头虽轻责任重~"
+    },
+    "砖头虽重意志更坚~": {
+      "id": "state_brickCarrying_013",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "砖头虽重意志更坚~"
+    },
+    "秋千真好玩~": {
+      "id": "state_swinging_022",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "秋千真好玩~"
+    },
+    "秋千让我忘记烦恼~": {
+      "id": "state_swinging_030",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "秋千让我忘记烦恼~"
+    },
+    "程序员的世界你不懂~": {
+      "id": "state_programmer_028",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的世界你不懂~"
+    },
+    "程序员的信仰~": {
+      "id": "state_programmer_052",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的信仰~"
+    },
+    "程序员的坚持~": {
+      "id": "state_programmer_038",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的坚持~"
+    },
+    "程序员的快乐~": {
+      "id": "state_programmer_040",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的快乐~"
+    },
+    "程序员的执着~": {
+      "id": "state_programmer_046",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的执着~"
+    },
+    "程序员的无奈~": {
+      "id": "state_programmer_042",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的无奈~"
+    },
+    "程序员的日常~": {
+      "id": "state_programmer_018",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的日常~"
+    },
+    "程序员的日常加班~": {
+      "id": "state_programmer_056",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的日常加班~"
+    },
+    "程序员的智慧~": {
+      "id": "state_programmer_048",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的智慧~"
+    },
+    "程序员的未来~": {
+      "id": "state_programmer_050",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的未来~"
+    },
+    "程序员的梦想~": {
+      "id": "state_programmer_036",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的梦想~"
+    },
+    "程序员的浪漫~": {
+      "id": "state_programmer_025",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的浪漫~"
+    },
+    "程序员的浪漫你不懂~": {
+      "id": "state_programmer_054",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的浪漫你不懂~"
+    },
+    "程序员的爱情~": {
+      "id": "state_programmer_034",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的爱情~"
+    },
+    "程序员的自我修养~": {
+      "id": "state_programmer_031",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的自我修养~"
+    },
+    "程序员的骄傲~": {
+      "id": "state_programmer_044",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "程序员的骄傲~"
+    },
+    "稍等一下！": {
+      "id": "work_busy_006",
+      "group": "workBusyMessages",
+      "ttsText": "稍等一下！"
+    },
+    "空气很清新~": {
+      "id": "weather_default_003",
+      "group": "weatherDialogues.default",
+      "ttsText": "空气很清新~"
+    },
+    "站不起来...": {
+      "id": "state_fallen_005",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "站不起来..."
+    },
+    "笑容停不下来~": {
+      "id": "state_happy_008",
+      "group": "dialogueMessages.happy",
+      "ttsText": "笑容停不下来~"
+    },
+    "笑得很神秘~": {
+      "id": "state_grin_013",
+      "group": "dialogueMessages.grin",
+      "ttsText": "笑得很神秘~"
+    },
+    "笑而不语...": {
+      "id": "state_grin_007",
+      "group": "dialogueMessages.grin",
+      "ttsText": "笑而不语..."
+    },
+    "等一下...": {
+      "id": "dream_004",
+      "group": "dreamTalkMessages",
+      "ttsText": "等一下..."
+    },
+    "等会好吗？": {
+      "id": "work_busy_002",
+      "group": "workBusyMessages",
+      "ttsText": "等会好吗？"
+    },
+    "等你好久了呢~": {
+      "id": "state_hello_010",
+      "group": "dialogueMessages.hello",
+      "ttsText": "等你好久了呢~"
+    },
+    "等待主人的召唤~": {
+      "id": "state_idle_024",
+      "group": "dialogueMessages.idle",
+      "ttsText": "等待主人的召唤~"
+    },
+    "等待也是种美好~": {
+      "id": "state_idle_012",
+      "group": "dialogueMessages.idle",
+      "ttsText": "等待也是种美好~"
+    },
+    "等待有趣的事情发生~": {
+      "id": "state_idle_035",
+      "group": "dialogueMessages.idle",
+      "ttsText": "等待有趣的事情发生~"
+    },
+    "等我享受完沐浴~": {
+      "id": "bath_busy_018",
+      "group": "bathingBusyMessages",
+      "ttsText": "等我享受完沐浴~"
+    },
+    "等我享受完美味~": {
+      "id": "eat_busy_022",
+      "group": "eatingBusyMessages",
+      "ttsText": "等我享受完美味~"
+    },
+    "等我享受完美食~": {
+      "id": "eat_busy_013",
+      "group": "eatingBusyMessages",
+      "ttsText": "等我享受完美食~"
+    },
+    "等我冲完这遍~": {
+      "id": "bath_busy_012",
+      "group": "bathingBusyMessages",
+      "ttsText": "等我冲完这遍~"
+    },
+    "等我吃完再说~": {
+      "id": "eat_busy_003",
+      "group": "eatingBusyMessages",
+      "ttsText": "等我吃完再说~"
+    },
+    "等我吃完这口~": {
+      "id": "eat_busy_016",
+      "group": "eatingBusyMessages",
+      "ttsText": "等我吃完这口~"
+    },
+    "等我吃完这顿饭~": {
+      "id": "eat_busy_024",
+      "group": "eatingBusyMessages",
+      "ttsText": "等我吃完这顿饭~"
+    },
+    "等我品尝完这道菜~": {
+      "id": "eat_busy_019",
+      "group": "eatingBusyMessages",
+      "ttsText": "等我品尝完这道菜~"
+    },
+    "等我填饱肚子~": {
+      "id": "eat_busy_009",
+      "group": "eatingBusyMessages",
+      "ttsText": "等我填饱肚子~"
+    },
+    "等我处理完手头事~": {
+      "id": "work_busy_031",
+      "group": "workBusyMessages",
+      "ttsText": "等我处理完手头事~"
+    },
+    "等我完成工作~": {
+      "id": "work_busy_039",
+      "group": "workBusyMessages",
+      "ttsText": "等我完成工作~"
+    },
+    "等我完成这个任务~": {
+      "id": "work_busy_024",
+      "group": "workBusyMessages",
+      "ttsText": "等我完成这个任务~"
+    },
+    "等我忙完这一单~": {
+      "id": "work_busy_035",
+      "group": "workBusyMessages",
+      "ttsText": "等我忙完这一单~"
+    },
+    "等我忙完这阵~": {
+      "id": "work_busy_013",
+      "group": "workBusyMessages",
+      "ttsText": "等我忙完这阵~"
+    },
+    "等我洗完再聊~": {
+      "id": "bath_busy_021",
+      "group": "bathingBusyMessages",
+      "ttsText": "等我洗完再聊~"
+    },
+    "等我洗完再说~": {
+      "id": "bath_busy_003",
+      "group": "bathingBusyMessages",
+      "ttsText": "等我洗完再说~"
+    },
+    "等我洗完香香~": {
+      "id": "bath_busy_015",
+      "group": "bathingBusyMessages",
+      "ttsText": "等我洗完香香~"
+    },
+    "等我洗干净~": {
+      "id": "bath_busy_009",
+      "group": "bathingBusyMessages",
+      "ttsText": "等我洗干净~"
+    },
+    "等我清洁完毕~": {
+      "id": "bath_busy_024",
+      "group": "bathingBusyMessages",
+      "ttsText": "等我清洁完毕~"
+    },
+    "等等我...": {
+      "id": "dream_025",
+      "group": "dreamTalkMessages",
+      "ttsText": "等等我..."
+    },
+    "等等我！": {
+      "id": "state_chase_005",
+      "group": "dialogueMessages.chase",
+      "ttsText": "等等我！"
+    },
+    "等雨小点再出门~": {
+      "id": "weather_heavyRain_027",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "等雨小点再出门~"
+    },
+    "筋骨都活动开了~": {
+      "id": "state_stretch_010",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "筋骨都活动开了~"
+    },
+    "算法优化中...": {
+      "id": "state_programmer_024",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "算法优化中..."
+    },
+    "精力耗尽了...": {
+      "id": "work_tired_010",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "精力耗尽了..."
+    },
+    "精神百倍！": {
+      "id": "state_stretch_003",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "精神百倍！"
+    },
+    "累坏了...": {
+      "id": "work_tired_018",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "累坏了..."
+    },
+    "累得动不了...": {
+      "id": "work_tired_009",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "累得动不了..."
+    },
+    "累得直喘气...": {
+      "id": "work_tired_015",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "累得直喘气..."
+    },
+    "累趴下了...": {
+      "id": "work_tired_007",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "累趴下了..."
+    },
+    "细雨绵绵不断~": {
+      "id": "weather_lightRain_017",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "细雨绵绵不断~"
+    },
+    "终于下班了！": {
+      "id": "work_exit_003",
+      "group": "workScheduleExitMessages",
+      "ttsText": "终于下班了！"
+    },
+    "终于等到你了！": {
+      "id": "state_hello_006",
+      "group": "dialogueMessages.hello",
+      "ttsText": "终于等到你了！"
+    },
+    "继续睡...": {
+      "id": "dream_003",
+      "group": "dreamTalkMessages",
+      "ttsText": "继续睡..."
+    },
+    "编译中请稍候...": {
+      "id": "state_programmer_009",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "编译中请稍候..."
+    },
+    "美味在口中绽放~": {
+      "id": "state_eating_035",
+      "group": "dialogueMessages.eating",
+      "ttsText": "美味在口中绽放~"
+    },
+    "美味在舌尖跳舞~": {
+      "id": "state_eating_018",
+      "group": "dialogueMessages.eating",
+      "ttsText": "美味在舌尖跳舞~"
+    },
+    "美味无法抵挡~": {
+      "id": "state_eating_028",
+      "group": "dialogueMessages.eating",
+      "ttsText": "美味无法抵挡~"
+    },
+    "美味让我着迷~": {
+      "id": "state_eating_042",
+      "group": "dialogueMessages.eating",
+      "ttsText": "美味让我着迷~"
+    },
+    "美食当前不能停~": {
+      "id": "state_eating_015",
+      "group": "dialogueMessages.eating",
+      "ttsText": "美食当前不能停~"
+    },
+    "美食当前勿扰~": {
+      "id": "eat_busy_007",
+      "group": "eatingBusyMessages",
+      "ttsText": "美食当前勿扰~"
+    },
+    "美食当前无法回应~": {
+      "id": "eat_busy_020",
+      "group": "eatingBusyMessages",
+      "ttsText": "美食当前无法回应~"
+    },
+    "美食是人间至宝~": {
+      "id": "state_eating_046",
+      "group": "dialogueMessages.eating",
+      "ttsText": "美食是人间至宝~"
+    },
+    "美食是幸福源泉~": {
+      "id": "state_eating_032",
+      "group": "dialogueMessages.eating",
+      "ttsText": "美食是幸福源泉~"
+    },
+    "美食治愈一切~": {
+      "id": "state_eating_020",
+      "group": "dialogueMessages.eating",
+      "ttsText": "美食治愈一切~"
+    },
+    "美食让我快乐~": {
+      "id": "state_eating_024",
+      "group": "dialogueMessages.eating",
+      "ttsText": "美食让我快乐~"
+    },
+    "美食让我无法分心~": {
+      "id": "eat_busy_015",
+      "group": "eatingBusyMessages",
+      "ttsText": "美食让我无法分心~"
+    },
+    "美食让我沉醉~": {
+      "id": "state_eating_039",
+      "group": "dialogueMessages.eating",
+      "ttsText": "美食让我沉醉~"
+    },
+    "美食需要专注品尝~": {
+      "id": "eat_busy_011",
+      "group": "eatingBusyMessages",
+      "ttsText": "美食需要专注品尝~"
+    },
+    "羞得想藏起来...": {
+      "id": "state_shy_016",
+      "group": "dialogueMessages.shy",
+      "ttsText": "羞得想藏起来..."
+    },
+    "羞羞脸...": {
+      "id": "state_shy_007",
+      "group": "dialogueMessages.shy",
+      "ttsText": "羞羞脸..."
+    },
+    "翩翩起舞~": {
+      "id": "state_dancing_031",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "翩翩起舞~"
+    },
+    "翻滚吧小可爱~": {
+      "id": "state_rolling_026",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "翻滚吧小可爱~"
+    },
+    "翻滚吧小宇宙！": {
+      "id": "state_rolling_013",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "翻滚吧小宇宙！"
+    },
+    "翻滚吧小宝贝~": {
+      "id": "state_rolling_031",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "翻滚吧小宝贝~"
+    },
+    "翻滚吧小精灵~": {
+      "id": "state_rolling_038",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "翻滚吧小精灵~"
+    },
+    "翻滚吧小萌宠~": {
+      "id": "state_rolling_045",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "翻滚吧小萌宠~"
+    },
+    "翻滚吧少年~": {
+      "id": "state_rolling_023",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "翻滚吧少年~"
+    },
+    "翻滚吧！": {
+      "id": "state_rolling_001",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "翻滚吧！"
+    },
+    "翻跟头大赛开始~": {
+      "id": "state_rolling_029",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "翻跟头大赛开始~"
+    },
+    "翻跟头小达人~": {
+      "id": "state_rolling_048",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "翻跟头小达人~"
+    },
+    "翻跟头我最行~": {
+      "id": "state_rolling_034",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "翻跟头我最行~"
+    },
+    "翻跟头真刺激~": {
+      "id": "state_rolling_041",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "翻跟头真刺激~"
+    },
+    "翻跟头真好玩~": {
+      "id": "state_rolling_020",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "翻跟头真好玩~"
+    },
+    "老板又催了...": {
+      "id": "state_brickCarrying_008",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "老板又催了..."
+    },
+    "耶耶耶！": {
+      "id": "state_celebrate_016",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "耶耶耶！"
+    },
+    "耶！成功啦！": {
+      "id": "state_celebrate_004",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "耶！成功啦！"
+    },
+    "胜利属于我们！": {
+      "id": "state_celebrate_015",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "胜利属于我们！"
+    },
+    "能假装没看见吗？": {
+      "id": "state_embarrassed_023",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "能假装没看见吗？"
+    },
+    "脑子转不过来了...": {
+      "id": "state_confused_008",
+      "group": "dialogueMessages.confused",
+      "ttsText": "脑子转不过来了..."
+    },
+    "脑袋嗡嗡响...": {
+      "id": "state_fallen_016",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "脑袋嗡嗡响..."
+    },
+    "脸红了...": {
+      "id": "state_shy_003",
+      "group": "dialogueMessages.shy",
+      "ttsText": "脸红了..."
+    },
+    "脸红得像苹果...": {
+      "id": "state_shy_010",
+      "group": "dialogueMessages.shy",
+      "ttsText": "脸红得像苹果..."
+    },
+    "脸红心跳中...": {
+      "id": "state_shy_018",
+      "group": "dialogueMessages.shy",
+      "ttsText": "脸红心跳中..."
+    },
+    "腰好酸...": {
+      "id": "state_brickCarrying_010",
+      "group": "dialogueMessages.brickCarrying",
+      "ttsText": "腰好酸..."
+    },
+    "腾空的感觉真棒~": {
+      "id": "state_jumping_014",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "腾空的感觉真棒~"
+    },
+    "自信满满的我~": {
+      "id": "state_smug_020",
+      "group": "dialogueMessages.smug",
+      "ttsText": "自信满满的我~"
+    },
+    "自由了！": {
+      "id": "work_exit_004",
+      "group": "workScheduleExitMessages",
+      "ttsText": "自由了！"
+    },
+    "舒服~": {
+      "id": "state_stretch_002",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "舒服~"
+    },
+    "舞出快乐心情~": {
+      "id": "state_dancing_044",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞出快乐心情~"
+    },
+    "舞出真我~": {
+      "id": "state_dancing_041",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞出真我~"
+    },
+    "舞出精彩~": {
+      "id": "state_dancing_037",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞出精彩~"
+    },
+    "舞出精彩瞬间~": {
+      "id": "state_dancing_047",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞出精彩瞬间~"
+    },
+    "舞出自我风采~": {
+      "id": "state_dancing_026",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞出自我风采~"
+    },
+    "舞动奇迹~": {
+      "id": "state_dancing_033",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞动奇迹~"
+    },
+    "舞动起来~": {
+      "id": "state_dancing_013",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞动起来~"
+    },
+    "舞动青春~": {
+      "id": "state_dancing_021",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞动青春~"
+    },
+    "舞姿优美动人~": {
+      "id": "state_dancing_019",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞姿优美动人~"
+    },
+    "舞姿曼妙动人~": {
+      "id": "state_dancing_043",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞姿曼妙动人~"
+    },
+    "舞技大爆发~": {
+      "id": "state_dancing_039",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞技大爆发~"
+    },
+    "舞技超群~": {
+      "id": "state_dancing_022",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞技超群~"
+    },
+    "舞林高手在此~": {
+      "id": "state_dancing_030",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞林高手在此~"
+    },
+    "舞步充满力量~": {
+      "id": "state_dancing_035",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞步充满力量~"
+    },
+    "舞步炫酷炸裂~": {
+      "id": "state_dancing_040",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞步炫酷炸裂~"
+    },
+    "舞步行云流水~": {
+      "id": "state_dancing_045",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞步行云流水~"
+    },
+    "舞步轻盈飘逸~": {
+      "id": "state_dancing_024",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞步轻盈飘逸~"
+    },
+    "舞步飞扬~": {
+      "id": "state_dancing_016",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞步飞扬~"
+    },
+    "舞蹈是我的语言~": {
+      "id": "state_dancing_029",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "舞蹈是我的语言~"
+    },
+    "节奏感满分！": {
+      "id": "state_dancing_009",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "节奏感满分！"
+    },
+    "荡到天上去~": {
+      "id": "state_swinging_021",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "荡到天上去~"
+    },
+    "荡呀荡~": {
+      "id": "state_swinging_007",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "荡呀荡~"
+    },
+    "荡来荡去真有趣~": {
+      "id": "state_swinging_031",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "荡来荡去真有趣~"
+    },
+    "荡秋千好开心~": {
+      "id": "state_swinging_001",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "荡秋千好开心~"
+    },
+    "荡秋千是我的最爱~": {
+      "id": "state_swinging_025",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "荡秋千是我的最爱~"
+    },
+    "荡秋千最棒了！": {
+      "id": "state_swinging_016",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "荡秋千最棒了！"
+    },
+    "被发现了好害羞...": {
+      "id": "state_shy_017",
+      "group": "dialogueMessages.shy",
+      "ttsText": "被发现了好害羞..."
+    },
+    "被夸奖了好害羞~": {
+      "id": "state_shy_009",
+      "group": "dialogueMessages.shy",
+      "ttsText": "被夸奖了好害羞~"
+    },
+    "要下雨吗？": {
+      "id": "weather_cloudy_005",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "要下雨吗？"
+    },
+    "要不要来玩？": {
+      "id": "state_idle_006",
+      "group": "dialogueMessages.idle",
+      "ttsText": "要不要来玩？"
+    },
+    "要堆雪人吗？": {
+      "id": "weather_lightSnow_007",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "要堆雪人吗？"
+    },
+    "要躲起来~": {
+      "id": "weather_thunderstorm_006",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "要躲起来~"
+    },
+    "见到你太棒了！": {
+      "id": "state_hello_016",
+      "group": "dialogueMessages.hello",
+      "ttsText": "见到你太棒了！"
+    },
+    "见到你心情变好了~": {
+      "id": "state_hello_011",
+      "group": "dialogueMessages.hello",
+      "ttsText": "见到你心情变好了~"
+    },
+    "见到你真开心~": {
+      "id": "state_hello_007",
+      "group": "dialogueMessages.hello",
+      "ttsText": "见到你真开心~"
+    },
+    "见到你真是缘分~": {
+      "id": "state_hello_019",
+      "group": "dialogueMessages.hello",
+      "ttsText": "见到你真是缘分~"
+    },
+    "观察蚂蚁搬家中~": {
+      "id": "state_idle_028",
+      "group": "dialogueMessages.idle",
+      "ttsText": "观察蚂蚁搬家中~"
+    },
+    "解放啦！": {
+      "id": "work_exit_011",
+      "group": "workScheduleExitMessages",
+      "ttsText": "解放啦！"
+    },
+    "让我休息一下再干...": {
+      "id": "work_tired_019",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "让我休息一下再干..."
+    },
+    "让我偷偷看一下...": {
+      "id": "state_peek_016",
+      "group": "dialogueMessages.peek",
+      "ttsText": "让我偷偷看一下..."
+    },
+    "让我再睡会儿...": {
+      "id": "state_sleeping_004",
+      "group": "dialogueMessages.sleeping",
+      "ttsText": "让我再睡会儿..."
+    },
+    "让我分析一下...": {
+      "id": "state_thinking_013",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "让我分析一下..."
+    },
+    "让我多睡一会儿……": {
+      "id": "state_sleepy_012",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "让我多睡一会儿……"
+    },
+    "让我好好琢磨一下...": {
+      "id": "state_thinking_007",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "让我好好琢磨一下..."
+    },
+    "让我想想...": {
+      "id": "state_thinking_002",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "让我想想..."
+    },
+    "让我想想……": {
+      "id": "state_embarrassed_010",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "让我想想……"
+    },
+    "让我用智慧解决它~": {
+      "id": "state_thinking_017",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "让我用智慧解决它~"
+    },
+    "让我睡个够……": {
+      "id": "state_sleepy_032",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "让我睡个够……"
+    },
+    "让我瞧瞧...": {
+      "id": "state_peek_005",
+      "group": "dialogueMessages.peek",
+      "ttsText": "让我瞧瞧..."
+    },
+    "记得带伞哦~": {
+      "id": "weather_lightRain_004",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "记得带伞哦~"
+    },
+    "许愿中...不许偷看！": {
+      "id": "wish_002",
+      "group": "wishUponStarMessages",
+      "ttsText": "许愿中...不许偷看！"
+    },
+    "该干活了~": {
+      "id": "work_enter_002",
+      "group": "workScheduleEnterMessages",
+      "ttsText": "该干活了~"
+    },
+    "谁能理解我的难过...": {
+      "id": "state_crying_020",
+      "group": "dialogueMessages.crying",
+      "ttsText": "谁能理解我的难过..."
+    },
+    "赢得很轻松~": {
+      "id": "state_smug_019",
+      "group": "dialogueMessages.smug",
+      "ttsText": "赢得很轻松~"
+    },
+    "走走走~": {
+      "id": "state_walking_001",
+      "group": "dialogueMessages.walking",
+      "ttsText": "走走走~"
+    },
+    "走路也能走出花样~": {
+      "id": "state_walking_019",
+      "group": "dialogueMessages.walking",
+      "ttsText": "走路也能走出花样~"
+    },
+    "走路带风的感觉真好~": {
+      "id": "state_walking_013",
+      "group": "dialogueMessages.walking",
+      "ttsText": "走路带风的感觉真好~"
+    },
+    "走过路过不要错过~": {
+      "id": "state_flyerDistributing_003",
+      "group": "dialogueMessages.flyerDistributing",
+      "ttsText": "走过路过不要错过~"
+    },
+    "起不来了，拉我一把...": {
+      "id": "state_fallen_013",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "起不来了，拉我一把..."
+    },
+    "起飞！": {
+      "id": "state_jumping_005",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "起飞！"
+    },
+    "超级翻滚！": {
+      "id": "state_rolling_011",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "超级翻滚！"
+    },
+    "跑步比赛开始！": {
+      "id": "state_chase_013",
+      "group": "dialogueMessages.chase",
+      "ttsText": "跑步比赛开始！"
+    },
+    "跑那么快干嘛~": {
+      "id": "state_chase_006",
+      "group": "dialogueMessages.chase",
+      "ttsText": "跑那么快干嘛~"
+    },
+    "跟着感觉走~": {
+      "id": "state_walking_009",
+      "group": "dialogueMessages.walking",
+      "ttsText": "跟着感觉走~"
+    },
+    "跟着节拍摇摆~": {
+      "id": "state_dancing_014",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "跟着节拍摇摆~"
+    },
+    "跟着音乐嗨起来~": {
+      "id": "state_dancing_036",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "跟着音乐嗨起来~"
+    },
+    "跳出新高度~": {
+      "id": "state_jumping_015",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "跳出新高度~"
+    },
+    "跳出精彩人生~": {
+      "id": "state_dancing_018",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "跳出精彩人生~"
+    },
+    "跳到云朵上去~": {
+      "id": "state_jumping_010",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "跳到云朵上去~"
+    },
+    "跳得停不下来~": {
+      "id": "state_dancing_028",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "跳得停不下来~"
+    },
+    "跳得忘乎所以~": {
+      "id": "state_dancing_038",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "跳得忘乎所以~"
+    },
+    "跳得热血沸腾~": {
+      "id": "state_dancing_042",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "跳得热血沸腾~"
+    },
+    "跳得酣畅淋漓~": {
+      "id": "state_dancing_034",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "跳得酣畅淋漓~"
+    },
+    "跳舞啦~": {
+      "id": "state_dancing_001",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "跳舞啦~"
+    },
+    "跳舞让我快乐~": {
+      "id": "state_dancing_025",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "跳舞让我快乐~"
+    },
+    "跳舞释放天性~": {
+      "id": "state_dancing_046",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "跳舞释放天性~"
+    },
+    "跳跃吧，小宇宙！": {
+      "id": "state_jumping_019",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "跳跃吧，小宇宙！"
+    },
+    "跳跃是快乐的表达~": {
+      "id": "state_jumping_011",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "跳跃是快乐的表达~"
+    },
+    "跳跳跳！": {
+      "id": "state_jumping_001",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "跳跳跳！"
+    },
+    "蹦擦擦~": {
+      "id": "state_dancing_012",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "蹦擦擦~"
+    },
+    "蹦蹦跳跳~": {
+      "id": "state_jumping_004",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "蹦蹦跳跳~"
+    },
+    "蹦蹦跳跳真可爱~": {
+      "id": "state_jumping_017",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "蹦蹦跳跳真可爱~"
+    },
+    "身体苏醒中...": {
+      "id": "state_stretch_014",
+      "group": "dialogueMessages.stretch",
+      "ttsText": "身体苏醒中..."
+    },
+    "身体被掏空...": {
+      "id": "work_tired_005",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "身体被掏空..."
+    },
+    "躲在家里最安全~": {
+      "id": "weather_heavyRain_012",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "躲在家里最安全~"
+    },
+    "躲在屋里最安全~": {
+      "id": "weather_thunderstorm_012",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "躲在屋里最安全~"
+    },
+    "躲在这里安全吗？": {
+      "id": "state_peek_007",
+      "group": "dialogueMessages.peek",
+      "ttsText": "躲在这里安全吗？"
+    },
+    "躲猫猫~": {
+      "id": "state_peek_003",
+      "group": "dialogueMessages.peek",
+      "ttsText": "躲猫猫~"
+    },
+    "躲起来~": {
+      "id": "state_shy_004",
+      "group": "dialogueMessages.shy",
+      "ttsText": "躲起来~"
+    },
+    "躲起来偷偷看~": {
+      "id": "state_peek_012",
+      "group": "dialogueMessages.peek",
+      "ttsText": "躲起来偷偷看~"
+    },
+    "躲雨躲雨~": {
+      "id": "weather_heavyRain_005",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "躲雨躲雨~"
+    },
+    "转个圈圈~": {
+      "id": "state_dancing_010",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "转个圈圈~"
+    },
+    "转圈圈！": {
+      "id": "state_rolling_003",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "转圈圈！"
+    },
+    "转得世界在旋转~": {
+      "id": "state_rolling_027",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "转得世界在旋转~"
+    },
+    "转得天旋地转~": {
+      "id": "state_rolling_046",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "转得天旋地转~"
+    },
+    "转得头晕眼花~": {
+      "id": "state_rolling_015",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "转得头晕眼花~"
+    },
+    "转得找不着北~": {
+      "id": "state_rolling_022",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "转得找不着北~"
+    },
+    "转得晕乎乎~": {
+      "id": "state_rolling_032",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "转得晕乎乎~"
+    },
+    "转得眼花缭乱~": {
+      "id": "state_rolling_039",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "转得眼花缭乱~"
+    },
+    "转晕了...": {
+      "id": "state_rolling_009",
+      "group": "dialogueMessages.rolling",
+      "ttsText": "转晕了..."
+    },
+    "轰隆隆！": {
+      "id": "weather_thunderstorm_002",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "轰隆隆！"
+    },
+    "轻松搞定~": {
+      "id": "state_smug_009",
+      "group": "dialogueMessages.smug",
+      "ttsText": "轻松搞定~"
+    },
+    "辛苦一天~": {
+      "id": "work_exit_005",
+      "group": "workScheduleExitMessages",
+      "ttsText": "辛苦一天~"
+    },
+    "辛苦了一天~": {
+      "id": "work_exit_015",
+      "group": "workScheduleExitMessages",
+      "ttsText": "辛苦了一天~"
+    },
+    "辛苦但值得~": {
+      "id": "work_exit_009",
+      "group": "workScheduleExitMessages",
+      "ttsText": "辛苦但值得~"
+    },
+    "迎接自由时光~": {
+      "id": "work_exit_018",
+      "group": "workScheduleExitMessages",
+      "ttsText": "迎接自由时光~"
+    },
+    "还想再睡睡……": {
+      "id": "state_sleepy_036",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "还想再睡睡……"
+    },
+    "还想吃~": {
+      "id": "state_eating_010",
+      "group": "dialogueMessages.eating",
+      "ttsText": "还想吃~"
+    },
+    "还想睡...": {
+      "id": "state_sleepy_003",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "还想睡..."
+    },
+    "还想赖床……": {
+      "id": "state_sleepy_024",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "还想赖床……"
+    },
+    "还没吃完呢！": {
+      "id": "eat_busy_002",
+      "group": "eatingBusyMessages",
+      "ttsText": "还没吃完呢！"
+    },
+    "还没洗完呢！": {
+      "id": "bath_busy_002",
+      "group": "bathingBusyMessages",
+      "ttsText": "还没洗完呢！"
+    },
+    "还没睡醒呢……": {
+      "id": "state_sleepy_008",
+      "group": "dialogueMessages.sleepy",
+      "ttsText": "还没睡醒呢……"
+    },
+    "这一跤摔得不轻...": {
+      "id": "state_fallen_017",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "这一跤摔得不轻..."
+    },
+    "这个……": {
+      "id": "state_embarrassed_002",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "这个……"
+    },
+    "这个逻辑有问题~": {
+      "id": "state_programmer_020",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "这个逻辑有问题~"
+    },
+    "这个问题值得深思...": {
+      "id": "state_thinking_016",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "这个问题值得深思..."
+    },
+    "这个问题有点复杂...": {
+      "id": "state_thinking_008",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "这个问题有点复杂..."
+    },
+    "这个需求不合理...": {
+      "id": "state_programmer_007",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "这个需求不合理..."
+    },
+    "这么晚了还不睡吗？": {
+      "id": "greet_dawn_001",
+      "group": "greetingMessages.dawn",
+      "ttsText": "这么晚了还不睡吗？"
+    },
+    "这事儿能翻篇吗？": {
+      "id": "state_embarrassed_019",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "这事儿能翻篇吗？"
+    },
+    "这太复杂了...": {
+      "id": "state_confused_015",
+      "group": "dialogueMessages.confused",
+      "ttsText": "这太复杂了..."
+    },
+    "这就是实力！": {
+      "id": "state_smug_008",
+      "group": "dialogueMessages.smug",
+      "ttsText": "这就是实力！"
+    },
+    "这就是成功的滋味！": {
+      "id": "state_celebrate_013",
+      "group": "dialogueMessages.celebrate",
+      "ttsText": "这就是成功的滋味！"
+    },
+    "这就是我的实力！": {
+      "id": "state_smug_018",
+      "group": "dialogueMessages.smug",
+      "ttsText": "这就是我的实力！"
+    },
+    "这是个问题...": {
+      "id": "state_thinking_003",
+      "group": "dialogueMessages.thinking",
+      "ttsText": "这是个问题..."
+    },
+    "这是什么情况？": {
+      "id": "state_confused_018",
+      "group": "dialogueMessages.confused",
+      "ttsText": "这是什么情况？"
+    },
+    "这是什么操作？": {
+      "id": "state_confused_007",
+      "group": "dialogueMessages.confused",
+      "ttsText": "这是什么操作？"
+    },
+    "这是啥？": {
+      "id": "state_confused_003",
+      "group": "dialogueMessages.confused",
+      "ttsText": "这是啥？"
+    },
+    "这是最开心的时刻~": {
+      "id": "state_swinging_019",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "这是最开心的时刻~"
+    },
+    "这是最棒的时光~": {
+      "id": "state_swinging_034",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "这是最棒的时光~"
+    },
+    "这气氛……有点冷……": {
+      "id": "state_embarrassed_027",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "这气氛……有点冷……"
+    },
+    "这种程度小菜一碟~": {
+      "id": "state_smug_015",
+      "group": "dialogueMessages.smug",
+      "ttsText": "这种程度小菜一碟~"
+    },
+    "这超出了我的理解...": {
+      "id": "state_confused_011",
+      "group": "dialogueMessages.confused",
+      "ttsText": "这超出了我的理解..."
+    },
+    "这里好痒啊...": {
+      "id": "state_scratch_006",
+      "group": "dialogueMessages.scratch",
+      "ttsText": "这里好痒啊..."
+    },
+    "这颗流星真漂亮...": {
+      "id": "wish_010",
+      "group": "wishUponStarMessages",
+      "ttsText": "这颗流星真漂亮..."
+    },
+    "追上你啦！": {
+      "id": "state_chase_011",
+      "group": "dialogueMessages.chase",
+      "ttsText": "追上你啦！"
+    },
+    "追不上我生气啦！": {
+      "id": "state_chase_008",
+      "group": "dialogueMessages.chase",
+      "ttsText": "追不上我生气啦！"
+    },
+    "追你！": {
+      "id": "state_chase_001",
+      "group": "dialogueMessages.chase",
+      "ttsText": "追你！"
+    },
+    "追我呀，来呀~": {
+      "id": "state_chase_012",
+      "group": "dialogueMessages.chase",
+      "ttsText": "追我呀，来呀~"
+    },
+    "追追追，冲冲冲~": {
+      "id": "state_chase_016",
+      "group": "dialogueMessages.chase",
+      "ttsText": "追追追，冲冲冲~"
+    },
+    "适合外出活动~": {
+      "id": "weather_default_005",
+      "group": "weatherDialogues.default",
+      "ttsText": "适合外出活动~"
+    },
+    "适合户外活动~": {
+      "id": "weather_default_015",
+      "group": "weatherDialogues.default",
+      "ttsText": "适合户外活动~"
+    },
+    "适合散步运动~": {
+      "id": "weather_default_018",
+      "group": "weatherDialogues.default",
+      "ttsText": "适合散步运动~"
+    },
+    "适合晒太阳~": {
+      "id": "weather_default_012",
+      "group": "weatherDialogues.default",
+      "ttsText": "适合晒太阳~"
+    },
+    "那个……": {
+      "id": "state_embarrassed_003",
+      "group": "dialogueMessages.embarrassed",
+      "ttsText": "那个……"
+    },
+    "郁闷中...": {
+      "id": "mood_bad_006",
+      "group": "moodDialogues.bad",
+      "ttsText": "郁闷中..."
+    },
+    "重构一下代码~": {
+      "id": "state_programmer_021",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "重构一下代码~"
+    },
+    "银装素裹~": {
+      "id": "weather_heavySnow_006",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "银装素裹~"
+    },
+    "键盘敲得飞起~": {
+      "id": "state_programmer_019",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "键盘敲得飞起~"
+    },
+    "闪电像银蛇~": {
+      "id": "weather_thunderstorm_016",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "闪电像银蛇~"
+    },
+    "闪电划破天空~": {
+      "id": "weather_thunderstorm_009",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "闪电划破天空~"
+    },
+    "闪电好亮！": {
+      "id": "weather_thunderstorm_003",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "闪电好亮！"
+    },
+    "闪电照亮黑夜~": {
+      "id": "weather_thunderstorm_022",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "闪电照亮黑夜~"
+    },
+    "闪电瞬间即逝~": {
+      "id": "weather_thunderstorm_027",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "闪电瞬间即逝~"
+    },
+    "阳光明媚心情好~": {
+      "id": "weather_sunny_011",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "阳光明媚心情好~"
+    },
+    "阳光是最好的滤镜~": {
+      "id": "weather_sunny_018",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "阳光是最好的滤镜~"
+    },
+    "阳光是最好的礼物~": {
+      "id": "weather_sunny_027",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "阳光是最好的礼物~"
+    },
+    "阳光普照万物~": {
+      "id": "weather_sunny_025",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "阳光普照万物~"
+    },
+    "阳光正好微风不燥~": {
+      "id": "weather_sunny_013",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "阳光正好微风不燥~"
+    },
+    "阳光正好，适合发呆~": {
+      "id": "state_idle_010",
+      "group": "dialogueMessages.idle",
+      "ttsText": "阳光正好，适合发呆~"
+    },
+    "阳光洒满大地~": {
+      "id": "weather_sunny_008",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "阳光洒满大地~"
+    },
+    "阳光温暖如春~": {
+      "id": "weather_sunny_015",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "阳光温暖如春~"
+    },
+    "阳光满满正能量~": {
+      "id": "weather_sunny_023",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "阳光满满正能量~"
+    },
+    "阳光灿烂的日子~": {
+      "id": "weather_sunny_017",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "阳光灿烂的日子~"
+    },
+    "阳光真好~": {
+      "id": "weather_sunny_001",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "阳光真好~"
+    },
+    "阳光让人心情愉悦~": {
+      "id": "weather_sunny_021",
+      "group": "weatherDialogues.sunny",
+      "ttsText": "阳光让人心情愉悦~"
+    },
+    "阴天也很美好~": {
+      "id": "weather_cloudy_028",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "阴天也很美好~"
+    },
+    "阴天也很舒服~": {
+      "id": "weather_cloudy_015",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "阴天也很舒服~"
+    },
+    "阴天也有美景~": {
+      "id": "weather_cloudy_009",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "阴天也有美景~"
+    },
+    "阴天别有一番风味~": {
+      "id": "weather_cloudy_021",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "阴天别有一番风味~"
+    },
+    "阴天适合发呆~": {
+      "id": "weather_cloudy_011",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "阴天适合发呆~"
+    },
+    "阴天适合思考~": {
+      "id": "weather_cloudy_025",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "阴天适合思考~"
+    },
+    "阴天适合睡觉~": {
+      "id": "weather_cloudy_018",
+      "group": "weatherDialogues.cloudy",
+      "ttsText": "阴天适合睡觉~"
+    },
+    "阴影面积无限大...": {
+      "id": "state_scared_016",
+      "group": "dialogueMessages.scared",
+      "ttsText": "阴影面积无限大..."
+    },
+    "阿嚏阿嚏！": {
+      "id": "state_sneeze_005",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "阿嚏阿嚏！"
+    },
+    "阿嚏！": {
+      "id": "state_sneeze_001",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "阿嚏！"
+    },
+    "阿嚏！吓到你了吗？": {
+      "id": "state_sneeze_010",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "阿嚏！吓到你了吗？"
+    },
+    "阿嚏！谁在说我坏话？": {
+      "id": "state_sneeze_015",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "阿嚏！谁在说我坏话？"
+    },
+    "难过到不想说话...": {
+      "id": "state_crying_012",
+      "group": "dialogueMessages.crying",
+      "ttsText": "难过到不想说话..."
+    },
+    "雨丝像银线~": {
+      "id": "weather_lightRain_009",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "雨丝像银线~"
+    },
+    "雨丝轻轻飘落~": {
+      "id": "weather_lightRain_022",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "雨丝轻轻飘落~"
+    },
+    "雨中漫步很浪漫~": {
+      "id": "weather_lightRain_012",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "雨中漫步很浪漫~"
+    },
+    "雨像泼水一样~": {
+      "id": "weather_heavyRain_022",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "雨像泼水一样~"
+    },
+    "雨像瀑布一样~": {
+      "id": "weather_heavyRain_009",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "雨像瀑布一样~"
+    },
+    "雨势好凶猛~": {
+      "id": "weather_heavyRain_011",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "雨势好凶猛~"
+    },
+    "雨势汹涌澎湃~": {
+      "id": "weather_heavyRain_026",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "雨势汹涌澎湃~"
+    },
+    "雨势越来越猛~": {
+      "id": "weather_heavyRain_019",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "雨势越来越猛~"
+    },
+    "雨后的空气很清新~": {
+      "id": "weather_lightRain_018",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "雨后的空气很清新~"
+    },
+    "雨声像交响乐~": {
+      "id": "weather_heavyRain_024",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "雨声像交响乐~"
+    },
+    "雨声像音乐~": {
+      "id": "weather_lightRain_013",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "雨声像音乐~"
+    },
+    "雨声好大~": {
+      "id": "weather_heavyRain_006",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "雨声好大~"
+    },
+    "雨声让人平静~": {
+      "id": "weather_lightRain_028",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "雨声让人平静~"
+    },
+    "雨声震耳欲聋~": {
+      "id": "weather_heavyRain_017",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "雨声震耳欲聋~"
+    },
+    "雨天也有好心情~": {
+      "id": "weather_lightRain_016",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "雨天也有好心情~"
+    },
+    "雨天适合听音乐~": {
+      "id": "weather_lightRain_027",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "雨天适合听音乐~"
+    },
+    "雨天适合喝茶~": {
+      "id": "weather_lightRain_021",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "雨天适合喝茶~"
+    },
+    "雨天适合看书~": {
+      "id": "weather_lightRain_024",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "雨天适合看书~"
+    },
+    "雨好大！": {
+      "id": "weather_heavyRain_001",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "雨好大！"
+    },
+    "雨水好凉~": {
+      "id": "weather_lightRain_005",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "雨水好凉~"
+    },
+    "雨滴像珍珠~": {
+      "id": "weather_lightRain_025",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "雨滴像珍珠~"
+    },
+    "雨滴落在窗上~": {
+      "id": "weather_lightRain_015",
+      "group": "weatherDialogues.lightRain",
+      "ttsText": "雨滴落在窗上~"
+    },
+    "雨点像豆子大~": {
+      "id": "weather_heavyRain_014",
+      "group": "weatherDialogues.heavyRain",
+      "ttsText": "雨点像豆子大~"
+    },
+    "雪世界真美丽~": {
+      "id": "weather_heavySnow_028",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "雪世界真美丽~"
+    },
+    "雪人雪人~": {
+      "id": "weather_heavySnow_005",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "雪人雪人~"
+    },
+    "雪像棉花一样厚~": {
+      "id": "weather_heavySnow_010",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "雪像棉花一样厚~"
+    },
+    "雪像棉被一样厚~": {
+      "id": "weather_heavySnow_026",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "雪像棉被一样厚~"
+    },
+    "雪像羽毛~": {
+      "id": "weather_lightSnow_005",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "雪像羽毛~"
+    },
+    "雪地像棉花糖~": {
+      "id": "weather_heavySnow_016",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "雪地像棉花糖~"
+    },
+    "雪地留下脚印~": {
+      "id": "weather_heavySnow_020",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "雪地留下脚印~"
+    },
+    "雪天路滑小心~": {
+      "id": "weather_heavySnow_022",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "雪天路滑小心~"
+    },
+    "雪好大！": {
+      "id": "weather_heavySnow_001",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "雪好大！"
+    },
+    "雪景好浪漫~": {
+      "id": "weather_lightSnow_009",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "雪景好浪漫~"
+    },
+    "雪景如诗如画~": {
+      "id": "weather_heavySnow_024",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "雪景如诗如画~"
+    },
+    "雪片像鹅毛大~": {
+      "id": "weather_heavySnow_018",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "雪片像鹅毛大~"
+    },
+    "雪积得好厚~": {
+      "id": "weather_heavySnow_014",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "雪积得好厚~"
+    },
+    "雪花一片片落下~": {
+      "id": "weather_lightSnow_017",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "雪花一片片落下~"
+    },
+    "雪花像星星闪烁~": {
+      "id": "weather_lightSnow_025",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "雪花像星星闪烁~"
+    },
+    "雪花像精灵~": {
+      "id": "weather_lightSnow_011",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "雪花像精灵~"
+    },
+    "雪花像蝴蝶飞舞~": {
+      "id": "weather_lightSnow_019",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "雪花像蝴蝶飞舞~"
+    },
+    "雪花在空中旋转~": {
+      "id": "weather_lightSnow_027",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "雪花在空中旋转~"
+    },
+    "雪花在空中跳舞~": {
+      "id": "weather_lightSnow_013",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "雪花在空中跳舞~"
+    },
+    "雪花好美~": {
+      "id": "weather_lightSnow_002",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "雪花好美~"
+    },
+    "雪花是冬天的信使~": {
+      "id": "weather_lightSnow_021",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "雪花是冬天的信使~"
+    },
+    "雪花晶莹剔透~": {
+      "id": "weather_lightSnow_015",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "雪花晶莹剔透~"
+    },
+    "雪花落在手心~": {
+      "id": "weather_lightSnow_023",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "雪花落在手心~"
+    },
+    "雪花轻轻飘落~": {
+      "id": "weather_lightSnow_008",
+      "group": "weatherDialogues.lightSnow",
+      "ttsText": "雪花轻轻飘落~"
+    },
+    "雷声像战鼓~": {
+      "id": "weather_thunderstorm_021",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "雷声像战鼓~"
+    },
+    "雷声是大自然的音乐~": {
+      "id": "weather_thunderstorm_028",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "雷声是大自然的音乐~"
+    },
+    "雷声滚滚而来~": {
+      "id": "weather_thunderstorm_015",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "雷声滚滚而来~"
+    },
+    "雷声让人心惊~": {
+      "id": "weather_thunderstorm_018",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "雷声让人心惊~"
+    },
+    "雷声轰鸣不断~": {
+      "id": "weather_thunderstorm_024",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "雷声轰鸣不断~"
+    },
+    "雷声轰鸣！": {
+      "id": "weather_thunderstorm_005",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "雷声轰鸣！"
+    },
+    "雷声震耳欲聋~": {
+      "id": "weather_thunderstorm_010",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "雷声震耳欲聋~"
+    },
+    "雷电交加好恐怖~": {
+      "id": "weather_thunderstorm_008",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "雷电交加好恐怖~"
+    },
+    "雷电交加的夜晚~": {
+      "id": "weather_thunderstorm_025",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "雷电交加的夜晚~"
+    },
+    "雷电好吓人~": {
+      "id": "weather_thunderstorm_013",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "雷电好吓人~"
+    },
+    "雷电是大自然的力量~": {
+      "id": "weather_thunderstorm_019",
+      "group": "weatherDialogues.thunderstorm",
+      "ttsText": "雷电是大自然的力量~"
+    },
+    "需求又改了...": {
+      "id": "state_programmer_016",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "需求又改了..."
+    },
+    "需要一个肩膀...": {
+      "id": "state_crying_015",
+      "group": "dialogueMessages.crying",
+      "ttsText": "需要一个肩膀..."
+    },
+    "需要休息一下...": {
+      "id": "state_fallen_018",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "需要休息一下..."
+    },
+    "需要休息充电...": {
+      "id": "work_tired_011",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "需要休息充电..."
+    },
+    "需要好好休息一下...": {
+      "id": "work_tired_014",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "需要好好休息一下..."
+    },
+    "需要安慰的抱抱...": {
+      "id": "state_crying_008",
+      "group": "dialogueMessages.crying",
+      "ttsText": "需要安慰的抱抱..."
+    },
+    "需要安抚一下...": {
+      "id": "state_scared_018",
+      "group": "dialogueMessages.scared",
+      "ttsText": "需要安抚一下..."
+    },
+    "需要恢复体力...": {
+      "id": "work_tired_017",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "需要恢复体力..."
+    },
+    "需要缓缓...": {
+      "id": "state_fallen_008",
+      "group": "dialogueMessages.fallen",
+      "ttsText": "需要缓缓..."
+    },
+    "需要补充能量...": {
+      "id": "work_tired_006",
+      "group": "workScheduleTooTiredMessages",
+      "ttsText": "需要补充能量..."
+    },
+    "静静地陪着你也好~": {
+      "id": "state_idle_014",
+      "group": "dialogueMessages.idle",
+      "ttsText": "静静地陪着你也好~"
+    },
+    "面向对象编程~": {
+      "id": "state_programmer_013",
+      "group": "dialogueMessages.programmer",
+      "ttsText": "面向对象编程~"
+    },
+    "音乐响起来！": {
+      "id": "state_dancing_003",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "音乐响起来！"
+    },
+    "音乐是我的灵魂~": {
+      "id": "state_dancing_017",
+      "group": "dialogueMessages.dancing",
+      "ttsText": "音乐是我的灵魂~"
+    },
+    "风吹得好舒服~": {
+      "id": "state_swinging_003",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "风吹得好舒服~"
+    },
+    "飞得更高更远~": {
+      "id": "state_swinging_023",
+      "group": "dialogueMessages.swinging",
+      "ttsText": "飞得更高更远~"
+    },
+    "飞起来了...": {
+      "id": "dream_029",
+      "group": "dreamTalkMessages",
+      "ttsText": "飞起来了..."
+    },
+    "飞起来啦~": {
+      "id": "state_jumping_002",
+      "group": "dialogueMessages.jumping",
+      "ttsText": "飞起来啦~"
+    },
+    "香香的~": {
+      "id": "state_bathing_004",
+      "group": "dialogueMessages.bathing",
+      "ttsText": "香香的~"
+    },
+    "马上就好！": {
+      "id": "work_busy_008",
+      "group": "workBusyMessages",
+      "ttsText": "马上就好！"
+    },
+    "骄傲一下下~": {
+      "id": "state_smug_017",
+      "group": "dialogueMessages.smug",
+      "ttsText": "骄傲一下下~"
+    },
+    "鹅毛大雪~": {
+      "id": "weather_heavySnow_008",
+      "group": "weatherDialogues.heavySnow",
+      "ttsText": "鹅毛大雪~"
+    },
+    "鼻子不舒服...": {
+      "id": "state_sneeze_012",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "鼻子不舒服..."
+    },
+    "鼻子好痒好痒...": {
+      "id": "state_sneeze_009",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "鼻子好痒好痒..."
+    },
+    "鼻子好难受...": {
+      "id": "state_sneeze_006",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "鼻子好难受..."
+    },
+    "鼻子痒痒的...": {
+      "id": "state_sneeze_002",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "鼻子痒痒的..."
+    },
+    "鼻子痒痒的好想挠...": {
+      "id": "state_sneeze_016",
+      "group": "dialogueMessages.sneeze",
+      "ttsText": "鼻子痒痒的好想挠..."
+    }
+  }
+}

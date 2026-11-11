@@ -1,5 +1,10 @@
 /// <reference types="vite/client" />
 
+declare module "*.json" {
+  const value: unknown;
+  export default value;
+}
+
 declare module "*.vue" {
   import type { DefineComponent } from "vue";
   const component: DefineComponent<{}, {}, any>;
@@ -83,11 +88,6 @@ declare global {
         apiHost: string,
       ) => Promise<any>;
       fetchLLM: (url: string, options: any) => Promise<any>;
-      initEdgeTTS: (
-        callback: (status: string, message: string) => void,
-      ) => Promise<boolean>;
-      speakWithEdgeTTS: (text: string) => Promise<void>;
-      stopEdgeTTS: () => void;
       // 本地语音识别
       speechCheckStatus: () => Promise<{
         soxInstalled: boolean;
